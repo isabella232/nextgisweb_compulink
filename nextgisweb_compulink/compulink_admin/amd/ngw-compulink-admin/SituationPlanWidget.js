@@ -7,7 +7,7 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "ngw-resource/serialize",
     // resource
-    "dojo/text!./template/FoclProjectWidget.html",
+    "dojo/text!./template/SituationPlanWidget.html",
     // template
     "ngw/form/UploaderList"
 ], function (
@@ -22,16 +22,16 @@ define([
 ) {
     return declare([ContentPane, serialize.Mixin, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
-        title: "Проект строительства ВОЛС",
-        serializePrefix: "focl_project",
+        title: "Ситуационный план",
+        serializePrefix: "situation_plan",
 
         postCreate: function () {
             this.inherited(arguments);
         },
 
          serializeInMixin: function (data) {
-             if (data.focl_project === undefined) {
-                 data.focl_project = {};
+             if (data.situation_plan === undefined) {
+                 data.situation_plan = {};
              }
          }
 

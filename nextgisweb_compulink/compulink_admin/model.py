@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import logging
-from nextgisweb.auth import User
 
 from nextgisweb.models import declarative_base
 from nextgisweb.resource import (
-    Resource,
     DataStructureScope,
-    DataScope, ResourceGroup)
-from sqlalchemy.orm import MapperExtension
+    DataScope, ResourceGroup, Serializer)
 
 
 Base = declarative_base()
@@ -18,14 +14,8 @@ class FoclProject(Base, ResourceGroup):
     identity = 'focl_project'
     cls_display_name = "Проект строительства ВОЛС"
 
-    __scope__ = (DataStructureScope, DataScope)
-
-    class OnInitExtension(MapperExtension):
-        def after_insert(self, mapper, connection, instance):
-            pass
-
     @classmethod
-    def check_parent(self, parent):
+    def check_parent(cls, parent):
         #tree review for unsupported parents
         parent_temp = parent
         while parent_temp:
@@ -36,37 +26,61 @@ class FoclProject(Base, ResourceGroup):
         return isinstance(parent, ResourceGroup)
 
 
+class FoclProjectSerializer(Serializer):
+    identity = FoclProject.identity
+    resclass = FoclProject
+
+    def deserialize(self, *args, **kwargs):
+        super(FoclProjectSerializer, self).deserialize(*args, **kwargs)
+
+        #инсерт объекта в БД
+        if not self.obj.id:
+            test_group = ResourceGroup(parent=self.obj, owner_user=self.obj.owner_user,
+                                display_name="АвтоГруппа")
+            test_group.persist()
+
 
 class FoclStruct(Base, ResourceGroup):
     identity = 'focl_struct'
     cls_display_name = "Структура ВОЛС"
 
-    __scope__ = (DataStructureScope, DataScope)
-
-    class OnInitExtension(MapperExtension):
-        def after_insert(self, mapper, connection, instance):
-            pass
-
     @classmethod
-    def check_parent(self, parent):
+    def check_parent(cls, parent):
         return isinstance(parent, FoclProject)
+
+
+class FoclStructSerializer(Serializer):
+    identity = FoclStruct.identity
+    resclass = FoclStruct
+
+    def deserialize(self, *args, **kwargs):
+        super(FoclStructSerializer, self).deserialize(*args, **kwargs)
+
+        #инсерт объекта в БД
+        if not self.obj.id:
+            test_group = ResourceGroup(parent=self.obj, owner_user=self.obj.owner_user,
+                                display_name="АвтоГруппа")
+            test_group.persist()
 
 
 class SituationPlan(Base, ResourceGroup):
     identity = 'situation_plan'
     cls_display_name = "Ситуационный план"
 
-    __scope__ = (DataStructureScope, DataScope)
-
-    class OnInitExtension(MapperExtension):
-        def after_insert(self, mapper, connection, instance):
-            adminusr = User.filter_by(keyname='administrator').one()
-            obj = ResourceGroup(parent_id=instance.id, owner_user=adminusr,
-                                display_name="АвтоГруппа")
-            obj.persist()
-
-    __mapper_args__ = {'extension': OnInitExtension()}
-
     @classmethod
-    def check_parent(self, parent):
+    def check_parent(cls, parent):
         return isinstance(parent, FoclProject)
+
+
+class SituationPlanSerializer(Serializer):
+    identity = SituationPlan.identity
+    resclass = SituationPlan
+
+    def deserialize(self, *args, **kwargs):
+        super(SituationPlanSerializer, self).deserialize(*args, **kwargs)
+
+        #инсерт объекта в БД
+        if not self.obj.id:
+            test_group = ResourceGroup(parent=self.obj, owner_user=self.obj.owner_user,
+                                display_name="АвтоГруппа")
+            test_group.persist()
