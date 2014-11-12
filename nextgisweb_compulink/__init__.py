@@ -3,11 +3,11 @@ from __future__ import unicode_literals
 
 
 def pkginfo():
-    #return dict(components=dict(file_bucket="nextgisweb_compulink.file_bucket"))
-    return dict(components=dict())
+    return dict(components=dict(compulink_admin="nextgisweb_compulink.compulink_admin"))
+
 
 def amd_packages():
     return (
-        #('ngw-file-bucket', 'nextgisweb_compulink:file_bucket/amd/ngw-file-bucket'),
+        ('ngw-compulink-admin', 'nextgisweb_compulink:compulink_admin/amd/ngw-compulink-admin'),
     )
 
