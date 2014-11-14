@@ -1,0 +1,56 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Трансформаторная подстанция",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "oid",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Номер",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "voltage_values",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Напряжение подстанции",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "owner",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Собственник",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "srs": {
+            "id": 3857
+        }
+    }
+}

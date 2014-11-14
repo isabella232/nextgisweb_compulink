@@ -1,0 +1,88 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Строительная длина ОК",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "oid",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Номер",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "fibers",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Количество оптических волокон",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "length",
+                "datatype": "REAL",
+                "typemod": null,
+                "display_name": "Длина",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "laying_method",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Способ прокладки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_built",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Статус готовности",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_built_ch",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Изменение статуса",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_check",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Статус проверки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_check_ch",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Изменение статуса проверки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "srs": {
+            "id": 3857
+        }
+    }
+}

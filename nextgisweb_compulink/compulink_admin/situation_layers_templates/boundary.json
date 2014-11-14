@@ -1,0 +1,48 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Границы АТЕ",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "oid",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Номер",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "type_ate",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Вид АТЕ",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "srs": {
+            "id": 3857
+        }
+    }
+}
