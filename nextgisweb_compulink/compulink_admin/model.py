@@ -5,7 +5,6 @@ import uuid
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
-from nextgisweb.spatial_ref_sys import SRS
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
 
@@ -75,11 +74,12 @@ class FoclStructSerializer(Serializer):
                     cs.deserialize()
 
                     vl.geometry_type = geom_type
-                    vl.keyname = '%s_%s' % (vl_name, vl.tbl_uuid)
 
                     vl.tbl_uuid = uuid.uuid4().hex
                     for fld in vl.fields:
                         fld.fld_uuid = uuid.uuid4().hex
+
+                    vl.keyname = '%s_%s' % (vl_name, vl.tbl_uuid)
 
                     vl.persist()
 
