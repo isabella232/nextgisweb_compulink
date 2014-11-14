@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 import json
 import uuid
 
-from nextgisweb.models import declarative_base
+from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
-from nextgisweb.vector_layer.model import VectorLayer
+from nextgisweb.spatial_ref_sys import SRS
+from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
@@ -73,11 +74,24 @@ class FoclStructSerializer(Serializer):
                     cs = CompositeSerializer(vl, self.obj.owner_user, data_str)
                     cs.deserialize()
 
-                    vl.tbl_uuid = uuid.uuid4().hex
                     vl.geometry_type = geom_type
                     vl.keyname = '%s_%s' % (vl_name, vl.tbl_uuid)
 
+                    vl.tbl_uuid = uuid.uuid4().hex
+                    for fld in vl.fields:
+                        fld.fld_uuid = uuid.uuid4().hex
+
                     vl.persist()
+
+                    # Теоретически создание таблиц должно выполняться
+                    # автоматически, но пока этого не происходит - #266.
+                    # То же относится и к генерации uuid для таблиц и полей.
+
+                    vl.srs_id = vl.srs.id
+                    ti = TableInfo.from_layer(vl)
+                    ti.setup_metadata(vl._tablename)
+                    ti.metadata.create_all(bind=DBSession.connection())
+
                 #TODO: add style to layer
 
 
