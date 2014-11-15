@@ -69,23 +69,15 @@ class FoclStructSerializer(Serializer):
             layers_template_path = os.path.join(base_path, 'layers_templates/')
 
             wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
-            wfs_service.persist()
 
             for vl_name, geom_type in FOCL_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
                     json_data = json.load(json_file, encoding='utf-8')
                     vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
-
-                    #add to wfs
-                    wfs_layer = WfsLayer()
-                    keyname = vl_name
-                    display_name = vector_layer.display_name
-                    service = wfs_service
-                    resource = vector_layer
-                    wfs_layer.persist()
-
+                    ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                     #TODO: add style to layer
-                    #TODO: add to wfs service
+
+            wfs_service.persist()
 
 
 class SituationPlan(Base, ResourceGroup):
@@ -108,15 +100,16 @@ class SituationPlanSerializer(Serializer):
         if not self.obj.id:
             base_path = os.path.abspath(os.path.dirname(__file__))
             layers_template_path = os.path.join(base_path, 'situation_layers_templates/')
-            from nextgisweb.resource.serialize import CompositeSerializer
-            import codecs
+
+            wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
+
             for vl_name, geom_type in SIT_PLAN_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
                     json_data = json.load(json_file, encoding='utf-8')
                     vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
+                    ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
 
                     #TODO: add style to layer
-                    #TODO: add to wfs service
 
 
 class ModelsUtils():
@@ -145,3 +138,13 @@ class ModelsUtils():
         ti.metadata.create_all(bind=DBSession.connection())
 
         return vl
+
+    @classmethod
+    def append_lyr_to_wfs(cls, wfs_service, vector_layer, keyname):
+        wfs_layer = WfsLayer()
+        wfs_layer.keyname = keyname
+        wfs_layer.display_name = vector_layer.display_name
+        wfs_layer.service = wfs_service
+        wfs_layer.resource = vector_layer
+        wfs_service.layers.append(wfs_layer)
+        #wfs_layer.persist()
