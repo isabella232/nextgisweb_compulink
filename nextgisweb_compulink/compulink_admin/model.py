@@ -2,10 +2,13 @@
 from __future__ import unicode_literals
 import json
 import uuid
+import codecs
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
+from nextgisweb.wfsserver import Service as WfsService
+from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
@@ -64,35 +67,25 @@ class FoclStructSerializer(Serializer):
         if not self.obj.id:
             base_path = os.path.abspath(os.path.dirname(__file__))
             layers_template_path = os.path.join(base_path, 'layers_templates/')
-            from nextgisweb.resource.serialize import CompositeSerializer
-            import codecs
+
+            wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
+            wfs_service.persist()
+
             for vl_name, geom_type in FOCL_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    data_str = json.load(json_file, encoding='utf-8')
-                    vl = VectorLayer(parent=self.obj, owner_user=self.obj.owner_user)
-                    cs = CompositeSerializer(vl, self.obj.owner_user, data_str)
-                    cs.deserialize()
+                    json_data = json.load(json_file, encoding='utf-8')
+                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
 
-                    vl.geometry_type = geom_type
+                    #add to wfs
+                    wfs_layer = WfsLayer()
+                    keyname = vl_name
+                    display_name = vector_layer.display_name
+                    service = wfs_service
+                    resource = vector_layer
+                    wfs_layer.persist()
 
-                    vl.tbl_uuid = uuid.uuid4().hex
-                    for fld in vl.fields:
-                        fld.fld_uuid = uuid.uuid4().hex
-
-                    vl.keyname = '%s_%s' % (vl_name, vl.tbl_uuid)
-
-                    vl.persist()
-
-                    # Теоретически создание таблиц должно выполняться
-                    # автоматически, но пока этого не происходит - #266.
-                    # То же относится и к генерации uuid для таблиц и полей.
-
-                    vl.srs_id = vl.srs.id
-                    ti = TableInfo.from_layer(vl)
-                    ti.setup_metadata(vl._tablename)
-                    ti.metadata.create_all(bind=DBSession.connection())
-
-                #TODO: add style to layer
+                    #TODO: add style to layer
+                    #TODO: add to wfs service
 
 
 class SituationPlan(Base, ResourceGroup):
@@ -119,14 +112,36 @@ class SituationPlanSerializer(Serializer):
             import codecs
             for vl_name, geom_type in SIT_PLAN_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    data_str = json.load(json_file, encoding='utf-8')
-                    vl = VectorLayer(parent=self.obj, owner_user=self.obj.owner_user)
-                    cs = CompositeSerializer(vl, self.obj.owner_user, data_str)
-                    cs.deserialize()
+                    json_data = json.load(json_file, encoding='utf-8')
+                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
 
-                    vl.tbl_uuid = uuid.uuid4().hex
-                    vl.geometry_type = geom_type
-                    vl.keyname = '%s_%s' % (vl_name, vl.tbl_uuid)
+                    #TODO: add style to layer
+                    #TODO: add to wfs service
 
-                    vl.persist()
-                #TODO: add style to layer
+
+class ModelsUtils():
+
+    @classmethod
+    def create_vector_layer(cls, parent_obj, json_data, geom_type, layer_name):
+        from nextgisweb.resource.serialize import CompositeSerializer  # only where!!!
+
+        vl = VectorLayer(parent=parent_obj, owner_user=parent_obj.owner_user)
+        cs = CompositeSerializer(vl, parent_obj.owner_user, json_data)
+        cs.deserialize()
+
+        vl.geometry_type = geom_type
+
+        vl.tbl_uuid = uuid.uuid4().hex
+        for fld in vl.fields:
+            fld.fld_uuid = uuid.uuid4().hex
+
+        vl.keyname = '%s_%s' % (layer_name, vl.tbl_uuid)
+        vl.persist()
+
+        # temporary workaround #266.
+        vl.srs_id = vl.srs.id
+        ti = TableInfo.from_layer(vl)
+        ti.setup_metadata(vl._tablename)
+        ti.metadata.create_all(bind=DBSession.connection())
+
+        return vl
