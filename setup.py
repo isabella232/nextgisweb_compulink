@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
-import sys, os
 
 version = '0.1'
 
 requires = (
     'nextgisweb',
-    'nextgisweb_rekod'
+    'nextgisweb_rekod',
+    'lxml'
 )
 
 entry_points = {
