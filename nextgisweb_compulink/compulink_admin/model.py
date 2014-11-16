@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+from lxml import etree
 import uuid
 import codecs
+from lxml.etree import parse
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
@@ -10,6 +12,8 @@ from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.wfsserver import Service as WfsService
 from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
+from nextgisweb_mapserver import qml
+from nextgisweb_mapserver.model import MapserverStyle
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 
@@ -75,7 +79,7 @@ class FoclStructSerializer(Serializer):
                     json_data = json.load(json_file, encoding='utf-8')
                     vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
                     ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
-                    #TODO: add style to layer
+                    ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
 
             wfs_service.persist()
 
@@ -108,8 +112,9 @@ class SituationPlanSerializer(Serializer):
                     json_data = json.load(json_file, encoding='utf-8')
                     vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
                     ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
+                    ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
 
-                    #TODO: add style to layer
+            wfs_service.persist()
 
 
 class ModelsUtils():
@@ -148,3 +153,21 @@ class ModelsUtils():
         wfs_layer.resource = vector_layer
         wfs_service.layers.append(wfs_layer)
         #wfs_layer.persist()
+
+    @classmethod
+    def set_default_style(cls, vector_layer, keyname, style_name):
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        layers_def_styles_path = os.path.join(base_path, 'layers_default_styles/')
+        def_style_path = os.path.join(layers_def_styles_path, keyname+'.qml')
+
+        if not os.path.exists(def_style_path):
+            return  # Need to set common style
+
+        elem = parse(def_style_path).getroot()
+        dst = qml.transform(elem)
+        mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
+
+        ms = MapserverStyle(parent=vector_layer, owner_user=vector_layer.owner_user)
+        ms.display_name = style_name
+        ms.xml = mapserver_xml
+        ms.persist()
