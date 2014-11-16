@@ -4,7 +4,6 @@ import json
 from lxml import etree
 import uuid
 import codecs
-from lxml.etree import parse
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
@@ -17,8 +16,11 @@ from nextgisweb_mapserver.model import MapserverStyle
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 
-
 Base = declarative_base()
+
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+LAYERS_DEF_STYLES_PATH = os.path.join(BASE_PATH, 'layers_default_styles/')
+
 
 
 class FoclProject(Base, ResourceGroup):
@@ -69,8 +71,7 @@ class FoclStructSerializer(Serializer):
 
         #инсерт объекта в БД
         if not self.obj.id:
-            base_path = os.path.abspath(os.path.dirname(__file__))
-            layers_template_path = os.path.join(base_path, 'layers_templates/')
+            layers_template_path = os.path.join(BASE_PATH, 'layers_templates/')
 
             wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
 
@@ -156,14 +157,12 @@ class ModelsUtils():
 
     @classmethod
     def set_default_style(cls, vector_layer, keyname, style_name):
-        base_path = os.path.abspath(os.path.dirname(__file__))
-        layers_def_styles_path = os.path.join(base_path, 'layers_default_styles/')
-        def_style_path = os.path.join(layers_def_styles_path, keyname+'.qml')
+        def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname+'.qml')
 
         if not os.path.exists(def_style_path):
-            return  # Need to set common style
+            return  # Need to set common point\line\polygon style
 
-        elem = parse(def_style_path).getroot()
+        elem = etree.parse(def_style_path).getroot()
         dst = qml.transform(elem)
         mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
 
