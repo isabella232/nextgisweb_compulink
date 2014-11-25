@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Воздушная линия электропередач",
+        "display_name": "Границы АТЕ",
         "description": null
     },
     "feature_layer": {
@@ -31,24 +31,17 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "voltage",
+                "keyname": "type_ate",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Напряжение",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "owner",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Собственник",
+                "display_name": "Вид АТЕ",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "POLYGON",
         "srs": {
             "id": 3857
         }

@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Опорный узел",
+        "display_name": "Трансформаторная подстанция",
         "description": null
     },
     "feature_layer": {
@@ -31,16 +31,25 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "status_built",
+                "keyname": "voltage_values",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Напряжение подстанции",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "owner",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Собственник",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }

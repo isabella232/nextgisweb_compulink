@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Границы АТЕ",
+        "display_name": "Точка доступа",
         "description": null
     },
     "feature_layer": {
@@ -31,16 +31,17 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "type_ate",
+                "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Вид АТЕ",
+                "display_name": "Готовность объекта",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }

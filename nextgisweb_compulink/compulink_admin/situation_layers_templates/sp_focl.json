@@ -31,10 +31,10 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "status_built",
+                "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Готовность объекта",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -57,6 +57,7 @@
         ]
     },
     "vector_layer": {
+        "geometry_type": "LINESTRING",
         "srs": {
             "id": 3857
         }

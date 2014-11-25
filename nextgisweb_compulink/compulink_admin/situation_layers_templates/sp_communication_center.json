@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Оптический кросс",
+        "display_name": "Опорный узел связи",
         "description": null
     },
     "feature_layer": {
@@ -31,16 +31,17 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "status_built",
+                "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Готовность объекта",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }

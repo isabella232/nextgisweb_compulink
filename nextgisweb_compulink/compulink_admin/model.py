@@ -75,10 +75,10 @@ class FoclStructSerializer(Serializer):
 
             wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
 
-            for vl_name, geom_type in FOCL_LAYER_STRUCT:
+            for vl_name in FOCL_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    json_data = json.load(json_file, encoding='utf-8')
-                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
+                    json_layer_struct = json.load(json_file, encoding='utf-8')
+                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_layer_struct, vl_name)
                     ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                     ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
 
@@ -108,10 +108,10 @@ class SituationPlanSerializer(Serializer):
 
             wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
 
-            for vl_name, geom_type in SIT_PLAN_LAYER_STRUCT:
+            for vl_name in SIT_PLAN_LAYER_STRUCT:
                 with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    json_data = json.load(json_file, encoding='utf-8')
-                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_data, geom_type, vl_name)
+                    json_layer_struct = json.load(json_file, encoding='utf-8')
+                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_layer_struct, vl_name)
                     ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                     ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
 
@@ -121,11 +121,11 @@ class SituationPlanSerializer(Serializer):
 class ModelsUtils():
 
     @classmethod
-    def create_vector_layer(cls, parent_obj, json_data, geom_type, layer_name):
+    def create_vector_layer(cls, parent_obj, json_layer_struct, layer_name):
         from nextgisweb.resource.serialize import CompositeSerializer  # only where!!!
 
         vl = VectorLayer(parent=parent_obj, owner_user=parent_obj.owner_user)
-        cs = CompositeSerializer(vl, parent_obj.owner_user, json_data)
+        cs = CompositeSerializer(vl, parent_obj.owner_user, json_layer_struct)
         cs.deserialize()
 
         #vl.geometry_type = geom_type

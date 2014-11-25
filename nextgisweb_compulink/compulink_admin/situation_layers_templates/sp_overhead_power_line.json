@@ -1,8 +1,7 @@
 {
     "resource": {
-        "permissions": [],
         "keyname": null,
-        "display_name": "Оптическая муфта",
+        "display_name": "Воздушная линия электропередач",
         "description": null
     },
     "feature_layer": {
@@ -32,32 +31,25 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "status_built",
+                "keyname": "voltage",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Напряжение",
                 "label_field": false,
                 "grid_visibility": true
             },
             {
-                "keyname": "type_fosc",
+                "keyname": "owner",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Тип",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "fosc_placement",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Место размещения",
+                "display_name": "Собственник",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "LINESTRING",
         "srs": {
             "id": 3857
         }

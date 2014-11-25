@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Трансформаторная подстанция",
+        "display_name": "Оптический кросс",
         "description": null
     },
     "feature_layer": {
@@ -31,24 +31,17 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "voltage_values",
+                "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Напряжение подстанции",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "owner",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Собственник",
+                "display_name": "Готовность объекта",
                 "label_field": false,
                 "grid_visibility": true
             }
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }
