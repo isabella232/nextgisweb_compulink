@@ -25,4 +25,8 @@ SIT_PLAN_LAYER_STRUCT = [
     'sp_optical_cross',
     'sp_overhead_power_line',
     'sp_electrical_substation',
+    'sp_sump_canalization',
+    'sp_cellular_station',
+    'sp_gas_pipeline',
+    'sp_oil_pipeline',
 ]

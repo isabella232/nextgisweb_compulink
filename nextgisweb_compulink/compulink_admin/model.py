@@ -128,8 +128,6 @@ class ModelsUtils():
         cs = CompositeSerializer(vl, parent_obj.owner_user, json_layer_struct)
         cs.deserialize()
 
-        #vl.geometry_type = geom_type
-
         vl.tbl_uuid = uuid.uuid4().hex
         for fld in vl.fields:
             fld.fld_uuid = uuid.uuid4().hex

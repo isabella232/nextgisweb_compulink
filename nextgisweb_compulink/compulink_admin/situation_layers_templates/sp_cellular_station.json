@@ -1,0 +1,57 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Базовая станция сотовой связи",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "oid",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Номер",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "address",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Адрес местонахождения",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "owner",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Собственник",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
