@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Столб",
+        "display_name": "Столб/Оконечная опора",
         "description": null
     },
     "feature_layer": {
@@ -81,6 +81,7 @@
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }

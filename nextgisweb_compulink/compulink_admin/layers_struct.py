@@ -13,6 +13,7 @@ FOCL_LAYER_STRUCT = [
     ('pole', 'POINT'),
     ('gas_pipeline', 'LINESTRING'),
     ('oil_pipeline', 'LINESTRING'),
+    ('sump_canalization', 'POINT'),
 ]
 
 SIT_PLAN_LAYER_STRUCT = [

@@ -14,6 +14,14 @@
                 "label_field": false,
                 "grid_visibility": true
             },
+             {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": false,
+                "grid_visibility": true
+            },
             {
                 "keyname": "fibers",
                 "datatype": "INTEGER",
@@ -81,6 +89,7 @@
         ]
     },
     "vector_layer": {
+        "geometry_type": "LINESTRING",
         "srs": {
             "id": 3857
         }

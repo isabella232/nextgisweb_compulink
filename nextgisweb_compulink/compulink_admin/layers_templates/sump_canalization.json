@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Узел связи",
+        "display_name": "Колодец кабельной канализации",
         "description": null
     },
     "feature_layer": {
@@ -19,14 +19,6 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Наименование",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "address",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Адрес местонахождения",
                 "label_field": false,
                 "grid_visibility": true
             },

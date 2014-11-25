@@ -57,6 +57,7 @@
         ]
     },
     "vector_layer": {
+        "geometry_type": "POINT",
         "srs": {
             "id": 3857
         }
