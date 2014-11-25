@@ -14,6 +14,7 @@ FOCL_LAYER_STRUCT = [
     'gas_pipeline',
     'oil_pipeline',
     'sump_canalization',
+    'note',
 ]
 
 SIT_PLAN_LAYER_STRUCT = [
@@ -29,6 +30,7 @@ SIT_PLAN_LAYER_STRUCT = [
     'sp_cellular_station',
     'sp_gas_pipeline',
     'sp_oil_pipeline',
+    'sp_note',
 ]
 
 PROJECT_LAYER_STRUCT = [
