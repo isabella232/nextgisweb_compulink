@@ -14,7 +14,8 @@ from nextgisweb_rekod.file_bucket.model import FileBucket, os
 from nextgisweb_mapserver import qml
 from nextgisweb_mapserver.model import MapserverStyle
 
-from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
+from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
+    PROJECT_LAYER_STRUCT
 
 Base = declarative_base()
 
@@ -51,6 +52,20 @@ class FoclProjectSerializer(Serializer):
             doc_res = FileBucket(parent=self.obj, owner_user=self.obj.owner_user,
                                  display_name="Документы")
             doc_res.persist()
+
+            base_path = os.path.abspath(os.path.dirname(__file__))
+            layers_template_path = os.path.join(base_path, 'project_layers_templates/')
+
+            wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
+
+            for vl_name in PROJECT_LAYER_STRUCT:
+                with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+                    json_layer_struct = json.load(json_file, encoding='utf-8')
+                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_layer_struct, vl_name)
+                    ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
+                    ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+
+            wfs_service.persist()
 
 
 class FoclStruct(Base, ResourceGroup):

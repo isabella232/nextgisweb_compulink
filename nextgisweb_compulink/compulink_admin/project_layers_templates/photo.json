@@ -1,0 +1,50 @@
+{
+    "resource": {
+        "permissions": [],
+        "keyname": null,
+        "display_name": "Фото",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "oid",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Номер",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Подпись",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "shooting date",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Дата съемки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}

@@ -30,3 +30,7 @@ SIT_PLAN_LAYER_STRUCT = [
     'sp_gas_pipeline',
     'sp_oil_pipeline',
 ]
+
+PROJECT_LAYER_STRUCT = [
+    'photo',
+]
