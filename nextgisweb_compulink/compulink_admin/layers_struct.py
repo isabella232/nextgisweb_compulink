@@ -11,8 +11,8 @@ FOCL_LAYER_STRUCT = [
     'transmission_tower',
     'electrical_substation',
     'pole',
-    'gas_pipeline',
-    'oil_pipeline',
+    #'gas_pipeline',
+    #'oil_pipeline',
     'sump_canalization',
     'note',
 ]
@@ -28,8 +28,8 @@ SIT_PLAN_LAYER_STRUCT = [
     'sp_electrical_substation',
     'sp_sump_canalization',
     'sp_cellular_station',
-    'sp_gas_pipeline',
-    'sp_oil_pipeline',
+    #'sp_gas_pipeline',
+    #'sp_oil_pipeline',
     'sp_note',
 ]
 
