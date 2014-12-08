@@ -8,14 +8,6 @@
     "feature_layer": {
         "fields": [
             {
-                "keyname": "oid",
-                "datatype": "INTEGER",
-                "typemod": null,
-                "display_name": "Номер",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
                 "keyname": "name",
                 "datatype": "STRING",
                 "typemod": null,
@@ -35,7 +27,7 @@
                 "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Готовность объекта",
+                "display_name": "Статус объекта",
                 "label_field": false,
                 "grid_visibility": true
             },
