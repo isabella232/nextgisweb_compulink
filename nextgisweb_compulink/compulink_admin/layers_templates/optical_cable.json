@@ -6,14 +6,6 @@
     },
     "feature_layer": {
         "fields": [
-            {
-                "keyname": "oid",
-                "datatype": "INTEGER",
-                "typemod": null,
-                "display_name": "Номер",
-                "label_field": false,
-                "grid_visibility": true
-            },
              {
                 "keyname": "name",
                 "datatype": "STRING",
@@ -50,7 +42,7 @@
                 "keyname": "status_built",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Статус строительства",
                 "label_field": false,
                 "grid_visibility": true
             },

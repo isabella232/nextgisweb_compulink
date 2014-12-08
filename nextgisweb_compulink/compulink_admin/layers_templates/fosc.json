@@ -8,14 +8,6 @@
     "feature_layer": {
         "fields": [
             {
-                "keyname": "oid",
-                "datatype": "INTEGER",
-                "typemod": null,
-                "display_name": "Номер",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
                 "keyname": "type_fosc",
                 "datatype": "STRING",
                 "typemod": null,
@@ -43,7 +35,7 @@
                 "keyname": "status_built",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Статус готовности",
+                "display_name": "Статус строительства",
                 "label_field": false,
                 "grid_visibility": true
             },
