@@ -1,33 +1,16 @@
 {
     "resource": {
-        "permissions": [],
         "keyname": null,
-        "display_name": "Пометка",
+        "display_name": "Заметка",
         "description": null
     },
     "feature_layer": {
         "fields": [
             {
-                "keyname": "oid",
-                "datatype": "INTEGER",
-                "typemod": null,
-                "display_name": "Номер",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "name",
+                "keyname": "text",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Пометка",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "description",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Описание",
+                "display_name": "Текст",
                 "label_field": false,
                 "grid_visibility": true
             }

@@ -1,20 +1,11 @@
 {
     "resource": {
-        "permissions": [],
         "keyname": null,
         "display_name": "Фото",
         "description": null
     },
     "feature_layer": {
         "fields": [
-            {
-                "keyname": "oid",
-                "datatype": "INTEGER",
-                "typemod": null,
-                "display_name": "Номер",
-                "label_field": false,
-                "grid_visibility": true
-            },
             {
                 "keyname": "name",
                 "datatype": "STRING",
