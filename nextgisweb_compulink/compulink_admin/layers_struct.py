@@ -18,7 +18,6 @@ FOCL_LAYER_STRUCT = [
 ]
 
 SIT_PLAN_LAYER_STRUCT = [
-    'sp_boundary',
     'sp_focl',
     'sp_access_point',
     'sp_communication_center',
@@ -31,8 +30,9 @@ SIT_PLAN_LAYER_STRUCT = [
     #'sp_gas_pipeline',
     #'sp_oil_pipeline',
     'sp_note',
+    'sp_photo',
+    'sp_boundary',
 ]
 
 PROJECT_LAYER_STRUCT = [
-    'photo',
 ]
