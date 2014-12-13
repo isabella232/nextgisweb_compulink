@@ -24,10 +24,10 @@ class TestDataGenerator():
     def generate_data(self):
         self.created_structs = 0
 
-        session = DBSession
+        self.session = DBSession
 
         #parent element
-        root_res = session.query(Resource).get(self.parent_res_id)
+        root_res = self.session.query(Resource).get(self.parent_res_id)
 
         #group of resources
         group_res = ResourceGroup(parent=root_res,
@@ -60,6 +60,9 @@ class TestDataGenerator():
             #check count
             if self.created_structs >= self.focl_srtuct_count:
                 break
+
+            self.session.flush()
+
 
     def create_districts(self, region_id, reg_group_res):
         districts = self.data_src.GetDistricts(region_id)
