@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy.orm import sessionmaker
+import transaction
 
 from nextgisweb.command import Command
 from nextgisweb.resource import Resource, ResourceGroup
 from nextgisweb.models import declarative_base, DBSession
-from nextgisweb_compulink.compulink_admin.model import FoclProject, SituationPlan
+from nextgisweb_compulink.compulink_admin.model import FoclProject, SituationPlan, FoclStruct
 
 from osm_data_source import OsmDataSource
 
@@ -37,7 +38,13 @@ class GenerateTestDataCommand():
 
         regions = data_src.GetRegions(22468)  # HARDCODE!!!Russia code in db
         created_structs = 0
+        appended_regs = []
         for reg in regions:
+            if reg.name in appended_regs or not reg.name:
+                continue
+            else:
+                appended_regs.append(reg.name)
+
             print reg.ogc_fid, ' ', reg.name
 
             reg_group_res = ResourceGroup(parent=group_res, owner_user=group_res.owner_user, display_name=reg.name)
@@ -48,7 +55,7 @@ class GenerateTestDataCommand():
             for dist in districts:
                 print '    ', dist.ogc_fid, ' ', dist.name
 
-                if dist.name in appended_dist:
+                if dist.name in appended_dist or not dist.name:
                     continue
                 else:
                     appended_dist.append(dist.name)
@@ -59,8 +66,23 @@ class GenerateTestDataCommand():
                 sit_plan = SituationPlan(parent=vols_proj, owner_user=vols_proj.owner_user, display_name='Ситуационный план')
                 sit_plan.persist()
 
+                points = data_src.GetPoints(dist.ogc_fid)
+                appended_vols = []
+                for point in points:
+                    if point.name in appended_vols or not point.name:
+                        continue
+                    else:
+                        appended_vols.append(point.name)
+
+                    vols_strut = FoclStruct(parent=vols_proj, owner_user=vols_proj.owner_user, display_name=u'ВОЛС ' + unicode(point.name))
+                    vols_strut.persist()
+
+                    #check
+                    created_structs += 1
+                    if created_structs >= args.vols_count:
+                        break
                 #roads = data_src.GetRoads(dist.ogc_fid)
-                #points = data_src.GetPoints(dist.ogc_fid)
+
 
                 #check
                 created_structs += 1
@@ -70,8 +92,7 @@ class GenerateTestDataCommand():
             if created_structs >= args.vols_count:
                 break
 
-        session.flush()
-        tra
+        transaction.commit()
 
 
 

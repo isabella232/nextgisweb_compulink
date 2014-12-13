@@ -49,12 +49,12 @@ class OsmDataSource():
 
     def GetRegions(self, country_id):
         russia_select = self.session.query(Adm.geom).filter(Adm.ogc_fid == country_id)
-        regions = self.session.query(Adm).filter(Adm.adm_lvl == '4').filter(Adm.geom.within(russia_select)).all()
+        regions = self.session.query(Adm.ogc_fid, Adm.name).filter(Adm.adm_lvl == '4').filter(Adm.geom.within(russia_select)).all()
         return regions
 
     def GetDistricts(self, region_id):
         region_select = self.session.query(Adm.geom).filter(Adm.ogc_fid == region_id)
-        districts = self.session.query(Adm).filter(Adm.adm_lvl == '6').filter(Adm.geom.within(region_select)).all()
+        districts = self.session.query(Adm.ogc_fid, Adm.name).filter(Adm.adm_lvl == '6').filter(Adm.geom.within(region_select)).all()
         return districts
 
     def GetRoads(self, district_id):
@@ -64,6 +64,6 @@ class OsmDataSource():
 
     def GetPoints(self, district_id):
         district_select = self.session.query(Adm.geom).filter(Adm.ogc_fid == district_id)
-        points = self.session.query(functions.centroid(Adm.geom)).filter(Adm.adm_lvl == '10').filter(functions.centroid(Adm.geom).within(district_select)).all()
+        points = self.session.query(Adm.name, functions.centroid(Adm.geom)).filter(Adm.adm_lvl.in_(['8', '10'])).filter(functions.centroid(Adm.geom).within(district_select)).all()
         return points
 

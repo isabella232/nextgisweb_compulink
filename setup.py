@@ -34,5 +34,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
-    entry_points=entry_points,
+    entry_points=entry_points, requires=['transaction']
 )
