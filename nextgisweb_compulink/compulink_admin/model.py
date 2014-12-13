@@ -49,9 +49,14 @@ class FoclProjectSerializer(Serializer):
 
         #инсерт объекта в БД
         if not self.obj.id:
-            doc_res = FileBucket(parent=self.obj, owner_user=self.obj.owner_user,
-                                 display_name="Документы")
-            doc_res.persist()
+            self.create_focl_project_content(self.obj)
+
+    @classmethod
+    def create_focl_project_content(cls, focl_project):
+        doc_res = FileBucket(parent=focl_project,
+                             owner_user=focl_project.owner_user,
+                             display_name="Документы")
+        doc_res.persist()
 
 
 class FoclStruct(Base, ResourceGroup):
@@ -72,18 +77,24 @@ class FoclStructSerializer(Serializer):
 
         #инсерт объекта в БД
         if not self.obj.id:
-            layers_template_path = os.path.join(BASE_PATH, 'layers_templates/')
+            self.create_focl_struct_content(self.obj)
 
-            wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
+    @classmethod
+    def create_focl_struct_content(cls, focl_struct_obj):
+        layers_template_path = os.path.join(BASE_PATH, 'layers_templates/')
 
-            for vl_name in FOCL_LAYER_STRUCT:
-                with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    json_layer_struct = json.load(json_file, encoding='utf-8')
-                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_layer_struct, vl_name)
-                    ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
-                    ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+        wfs_service = WfsService(parent=focl_struct_obj,
+                                 owner_user=focl_struct_obj.owner_user,
+                                 display_name='Сервис редактирования')
 
-            wfs_service.persist()
+        for vl_name in FOCL_LAYER_STRUCT:
+            with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
+                ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
+                ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+
+        wfs_service.persist()
 
 
 class SituationPlan(Base, ResourceGroup):
@@ -104,19 +115,25 @@ class SituationPlanSerializer(Serializer):
 
         #инсерт объекта в БД
         if not self.obj.id:
-            base_path = os.path.abspath(os.path.dirname(__file__))
-            layers_template_path = os.path.join(base_path, 'situation_layers_templates/')
+            self.create_situation_plan_content(self.obj)
 
-            wfs_service = WfsService(parent=self.obj, owner_user=self.obj.owner_user, display_name='Сервис редактирования')
+    @classmethod
+    def create_situation_plan_content(cls, sit_plan):
+        base_path = os.path.abspath(os.path.dirname(__file__))
+        layers_template_path = os.path.join(base_path, 'situation_layers_templates/')
 
-            for vl_name in SIT_PLAN_LAYER_STRUCT:
-                with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                    json_layer_struct = json.load(json_file, encoding='utf-8')
-                    vector_layer = ModelsUtils.create_vector_layer(self.obj, json_layer_struct, vl_name)
-                    ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
-                    ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+        wfs_service = WfsService(parent=sit_plan,
+                                 owner_user=sit_plan.owner_user,
+                                 display_name='Сервис редактирования')
 
-            wfs_service.persist()
+        for vl_name in SIT_PLAN_LAYER_STRUCT:
+            with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                vector_layer = ModelsUtils.create_vector_layer(sit_plan, json_layer_struct, vl_name)
+                ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
+                ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+
+        wfs_service.persist()
 
 
 class ModelsUtils():
