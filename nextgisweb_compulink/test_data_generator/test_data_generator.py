@@ -35,13 +35,16 @@ class TestDataGenerator():
                                   display_name=self.res_name)
         group_res.persist()
 
-        self.create_regions(self.counry_id, group_res)
+        self.session.flush()
+        group_res_id = group_res.id
+
+        self.create_regions(self.counry_id, group_res_id)
 
         transaction.commit()
 
 
-    def create_regions(self, country_id, parent_group):
-        regions = self.data_src.GetRegions(country_id) #22468)  # HARDCODE!!!Russia code in db
+    def create_regions(self, country_id, parent_group_id):
+        regions = self.data_src.GetRegions(country_id)
 
         appended_regs = []
         for reg in regions:
@@ -50,6 +53,8 @@ class TestDataGenerator():
             else:
                 appended_regs.append(reg.name)
                 print reg.name
+
+            parent_group = self.session.query(Resource).get(parent_group_id)
 
             reg_group_res = ResourceGroup(parent=parent_group,
                                           owner_user=parent_group.owner_user,
@@ -61,8 +66,7 @@ class TestDataGenerator():
             if self.created_structs >= self.focl_srtuct_count:
                 break
 
-            self.session.flush()
-
+            transaction.commit()
 
     def create_districts(self, region_id, reg_group_res):
         districts = self.data_src.GetDistricts(region_id)
