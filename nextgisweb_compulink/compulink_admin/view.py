@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from nextgisweb.resource import Widget
+from nextgisweb.resource import Widget, Resource
 
 from .model import FoclProject, FoclStruct, SituationPlan
 
@@ -25,9 +25,8 @@ class SituationPlanWidget(Widget):
 
 
 def setup_pyramid(comp, config):
-    pass
     #Регистрируем секцую Проект строительства ВОЛС в Групповом ресурсе
-    # Resource.__psection__.register(
-    #    key='focl_project', priority=20, title="Проект строительства ВОЛС",
-    #    is_applicable=lambda obj: isinstance(obj, FoclProject),
-    #    template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
+    Resource.__psection__.register(
+       key='focl_project', priority=10, title="Проект строительства ВОЛС",
+       is_applicable=lambda obj: isinstance(obj, FoclProject),
+       template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
