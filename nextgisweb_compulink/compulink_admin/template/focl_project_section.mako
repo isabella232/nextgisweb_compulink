@@ -1,4 +1,4 @@
-<span>Наименование</span> <input type="text" placeholder="${obj}"> <br/><br/>
+<span>Наименование проекта</span> <input type="text" placeholder="${obj}"> <br/><br/>
 <a href="${request.route_url('resource.create', id=obj.id, _query=dict(cls='focl_struct'))}">
     Создать Структуру ВОЛС
 </a>
