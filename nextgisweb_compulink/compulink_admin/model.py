@@ -4,6 +4,7 @@ import json
 from lxml import etree
 import uuid
 import codecs
+from nextgisweb import db
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer)
@@ -62,6 +63,30 @@ class FoclProjectSerializer(Serializer):
 class FoclStruct(Base, ResourceGroup):
     identity = 'focl_struct'
     cls_display_name = "Структура ВОЛС"
+
+    # region = db.Column(db.Unicode, nullable=False)  # Субъект РФ
+    # district = db.Column(db.Unicode, nullable=False)  # Муниципальный район
+    # settlement = db.Column(db.Unicode, nullable=False)  # Населенный пункт
+    # #name # Наименование ВОЛС (Узел А - Узел В)
+    # access_point_count = db.Column(db.Integer, nullable=False)  # Количество точек доступа
+    # focl_need_build = db.Column(db.Boolean, nullable=False)  # Необходимость строительства ВОЛС
+    # deadline_contract = db.Column(db.Date, nullable=False)  # Срок сдачи по договору - дата
+    # project_manager = db.Column(db.String, nullable=False)  # Руководитель проекта
+    # focl_length_order = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС по заказу
+    # focl_length_project = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС по проекту
+    # focl_length_fact = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС фактическая
+    # length_on_ol = db.Column(db.Float, nullable=False)  # Протяженность по ВЛ
+    # length_in_ground = db.Column(db.Float, nullable=False)  # Протяженность в грунте
+    # length_in_canalization = db.Column(db.Float, nullable=False)  # Протяженность в кабельной канализации
+    #
+    # customer = db.Column(db.String, nullable=False)  # Заказчик строительства
+    # planned_start_date = db.Column(db.Date, nullable=False)  # Планируемая дата начала СМР
+    # planned_finish_date = db.Column(db.Date, nullable=False)  # Планируемая дата окончания СМР
+    # subcontr_pir_focl = db.Column(db.String, nullable=False)   # Субподрядчик ПИР ВОЛС
+    # subcontr_smr_focl = db.Column(db.String, nullable=False)   # Субподрядчик СМР ВОЛС
+    # subcontr_pir_access = db.Column(db.String, nullable=False)   # Субподрядчик ПИР Сетей доступа
+    # # Статус (проект, идет строительство, построена)
+
 
     @classmethod
     def check_parent(cls, parent):
