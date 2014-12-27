@@ -17,5 +17,5 @@ def setup_pyramid(comp, config):
 
 
 def show_map(request):
-    values = {}
-    return render_to_response('templates/monitoring_webmap/display.mako', values, request=request)
+    values = dict(custom_layout=True)
+    return render_to_response('nextgisweb_compulink:compulink_site/templates/monitoring_webmap/display.mako', values, request=request)
