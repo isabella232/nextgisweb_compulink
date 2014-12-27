@@ -12,8 +12,8 @@ def setup_pyramid(comp, config):
         '/compulink/monitoring_map').add_view(show_map)
 
     config.add_static_view(
-        '/compulink/static',
-        path.join(CURR_PATH, 'static'), cache_max_age=3600)
+        name='compulink/static',
+        path='nextgisweb_compulink:compulink_site/static', cache_max_age=3600)
 
 
 def show_map(request):

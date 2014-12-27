@@ -14,14 +14,16 @@
             data-dojo-props="closable: false, iconClass: 'iconMap'"
             style="width: 100%; height: 100%; padding: 0">
 
-            <div data-dojo-type="dijit/layout/BorderContainer"
-                data-dojo-props="gutters: false"
-                style="width: 100%; height: 100%;">
+            <div id = "mainContainer"
+                 data-dojo-type="dijit/layout/BorderContainer"
+                 data-dojo-props="gutters: false"
+                 style="width: 100%; height: 100%;">
 
                 <!-- Панель для размещения OL карты -->
-                <div data-dojo-type="dijit/layout/BorderContainer"
+                <div id="centerContainer"
+                    data-dojo-type="dijit/layout/BorderContainer"
                     data-dojo-props="region: 'center'"
-                    style="padding-left: 0;">
+                    style="padding-left: 0; padding-right: 0px">
 
                     <!-- Тулбар над картой -->
                     <div data-dojo-attach-point="mapToolbar"
@@ -49,9 +51,27 @@
                             data-dojo-props="iconClass: 'iconArrowInOut', showLabel: false">
                         </div>
 
-                        <div data-dojo-type="dijit/ToolbarSeparator"
-                            data-dojo-props="label: 'Начальный охват'">                      
+                        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
+                        <div data-dojo-attach-point="leftToolbarSwitch"
+                             data-dojo-attach-event="onChange: switchLeftToolbar"
+                             data-dojo-type="dijit/form/ToggleButton"
+                             data-dojo-props="iconClass: 'iconLeftPanel', showLabel: false, checked: true">
                         </div>
+
+                        <div data-dojo-attach-point="bottomToolbarSwitch"
+                            data-dojo-attach-event="onChange: switchBottomToolbar"
+                            data-dojo-type="dijit/form/ToggleButton"
+                            data-dojo-props="iconClass: 'iconBottomPanel', showLabel: false, checked: true">
+                        </div>
+
+                        <div data-dojo-attach-point="rightToolbarSwitch"
+                            data-dojo-attach-event="onChange: switchRightToolbar"
+                            data-dojo-type="dijit/form/ToggleButton"
+                            data-dojo-props="iconClass: 'iconRightPanel', showLabel: false, checked: true">
+                        </div>
+
+                        <div data-dojo-type="dijit/ToolbarSeparator"></div>
 
                         <div data-dojo-attach-point="infoNode"
                             style="display: inline-block; vertical-align: middle; float: right; padding: 0 4px;">
@@ -78,7 +98,7 @@
                         style="width: 100%; padding: 0;">
 
                         <div data-dojo-attach-point="mapNode"
-                            style="position: absolute: width: 100%; height: 100%; padding: 0;">
+                            style="position: absolute; width: 100%; height: 100%; padding: 0;">
 
                             <div style="position: absolute; top: 0; right: 0; z-index: 2000; margin: 4px; background-color: rgba(255, 255, 255, 0.5)">
                                 <a href="http://nextgis.ru/nextgis-web/" target="_blank"><img src="${assetUrl}img/nextgis.png"/></a>
@@ -91,11 +111,20 @@
 
                     </div>
 
+                    <!-- Панель для размещения таблицы ресурсов -->
+                    <div id="bottomPanel"
+                         data-dojo-attach-point="resourcesTablePane"
+                         data-dojo-type="dijit/layout/ContentPane"
+                         data-dojo-props="region: 'bottom', splitter: true, gutters: false"
+                         style="padding: 0; height: 100px">
+                    </div>
                 </div>
 
-                <div data-dojo-type="dijit/layout/BorderContainer"
-                    data-dojo-props="region: 'left', splitter: true, gutters: false"
-                    style="width: 250px; padding: 0;">
+                <!-- Левая панель -->
+                <div id='leftPanel'
+                     data-dojo-type="dijit/layout/BorderContainer"
+                     data-dojo-props="region: 'left', splitter: true, gutters: false"
+                     style="width: 250px; padding: 0;">
 
                     <div data-dojo-type="dijit/layout/BorderContainer"
                         data-dojo-props="region: 'center'"
@@ -106,18 +135,27 @@
                             data-dojo-props="region: 'top'">
 
                             <div data-dojo-type="dijit/form/DropDownButton"
-                                data-dojo-props="label: 'Слой'">
+                                data-dojo-props="label: 'ВОЛС'">
                                 
                                 <div data-dojo-attach-point="itemMenu"
                                     data-dojo-type="dijit/Menu">
+                                    <div data-dojo-type="dijit/MenuItem"
+                                         data-dojo-props="label: 'ВОЛС'">
+                                    </div>
+                                    <div data-dojo-type="dijit/MenuItem"
+                                         data-dojo-props="label: 'Ситуационные планы'">
+                                    </div>
+                                    <div data-dojo-type="dijit/MenuItem"
+                                         data-dojo-props="label: 'ВОЛС и Ситуационные планы'">
+                                    </div>
                                 </div>
 
                             </div>
 
                         </div>
 
-                        <!-- Панель для размещения дерева слоев -->
-                        <div data-dojo-attach-point="layerTreePane"
+                        <!-- Панель для размещения дерева ресурсов -->
+                        <div data-dojo-attach-point="resourceTreePane"
                             data-dojo-type="dijit/layout/ContentPane"
                             data-dojo-props="region: 'center'"
                             style="padding: 0">
@@ -138,6 +176,25 @@
 
                     </div>
 
+                </div>
+
+                <!-- Правая панель -->
+                <div id='rightPanel'
+                     data-dojo-type="dijit/layout/BorderContainer"
+                     data-dojo-props="region: 'right', splitter: true, gutters: false"
+                     style="width: 250px; padding: 0;">
+
+                    <div data-dojo-type="dijit/layout/BorderContainer"
+                        data-dojo-props="region: 'center'"
+                        style="padding-left: 0">
+
+                        <!-- Панель для размещения списка типа слоев -->
+                        <div data-dojo-attach-point="layerTreePane"
+                            data-dojo-type="dijit/layout/ContentPane"
+                            data-dojo-props="region: 'center'"
+                            style="padding: 0">
+                        </div>
+                    </div>
                 </div>
 
             </div>

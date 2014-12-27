@@ -6,6 +6,9 @@
 </%def>
 
 <%def name="head()">
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/icons.css')}"
+        rel="stylesheet" type="text/css" media="screen"/>
+
     <script type="text/javascript">
         var displayConfig = {
             "bookmarkLayerId": null, 

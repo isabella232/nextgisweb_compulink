@@ -392,6 +392,33 @@ define([
             this._postCreateDeferred.resolve();
         },
 
+        switchLeftToolbar: function(val) {
+            panel = registry.byId("leftPanel");
+            mainContainer = registry.byId("mainContainer");
+            if(val)
+                mainContainer.addChild(panel);
+            else
+                mainContainer.removeChild(panel);
+        },
+
+        switchRightToolbar: function(val) {
+            panel = registry.byId("rightPanel");
+            mainContainer = registry.byId("mainContainer");
+            if(val)
+                mainContainer.addChild(panel);
+            else
+                mainContainer.removeChild(panel);
+        },
+
+        switchBottomToolbar: function(val) {
+            panel = registry.byId("bottomPanel");
+            mainContainer = registry.byId("centerContainer");
+            if(val)
+                mainContainer.addChild(panel);
+            else
+                mainContainer.removeChild(panel);
+        },
+
         startup: function () {
             this.inherited(arguments);
 

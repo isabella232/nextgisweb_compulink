@@ -1,0 +1,29 @@
+.iconLeftPanel{
+    background: url('../img/left_panel.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover;    /* Mozilla*/
+    -o-background-size: cover;      /* Opera*/
+    background-size: cover;         /* Generic*/
+}
+
+.iconRightPanel{
+    background: url('../img/right_panel.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover;    /* Mozilla*/
+    -o-background-size: cover;      /* Opera*/
+    background-size: cover;         /* Generic*/
+}
+
+.iconBottomPanel{
+    background: url('../img/bottom_panel.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover;    /* Mozilla*/
+    -o-background-size: cover;      /* Opera*/
+    background-size: cover;         /* Generic*/
+}
