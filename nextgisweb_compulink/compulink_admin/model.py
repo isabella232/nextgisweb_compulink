@@ -7,7 +7,8 @@ import codecs
 from nextgisweb import db
 
 from nextgisweb.models import declarative_base, DBSession
-from nextgisweb.resource import (ResourceGroup, Serializer)
+from nextgisweb.auth.models import User
+from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.wfsserver import Service as WfsService
 from nextgisweb.wfsserver.model import Layer as WfsLayer
@@ -18,11 +19,53 @@ from nextgisweb_mapserver.model import MapserverStyle
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
     PROJECT_LAYER_STRUCT
 
+from nextgisweb.resource import SerializedProperty as SP, SerializedRelationship as SR
+
+
 Base = declarative_base()
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 LAYERS_DEF_STYLES_PATH = os.path.join(BASE_PATH, 'layers_default_styles/')
 
+
+class Region(Base):
+    __tablename__ = 'compulink_region'
+
+    identity = 'region'
+    cls_display_name = "Субъект РФ"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode, nullable=False)
+
+
+class District(Base):
+    __tablename__ = 'compulink_district'
+
+    identity = 'district'
+    cls_display_name = "Муниципальный район"
+
+    id = db.Column(db.Integer, primary_key=True)
+    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=False)
+    name = db.Column(db.Unicode, nullable=False)
+
+
+class Customer(Base):
+    __tablename__ = 'compulink_customer'
+
+    identity = 'customer'
+    cls_display_name = "Заказчик строительства"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode, nullable=False)
+
+class Subcontr(Base):
+    __tablename__ = 'compulink_subcontr'
+
+    identity = 'subcontr'
+    cls_display_name = "Субподрядчик СМР ВОЛС"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode, nullable=False)
 
 
 class FoclProject(Base, ResourceGroup):
@@ -64,38 +107,44 @@ class FoclStruct(Base, ResourceGroup):
     identity = 'focl_struct'
     cls_display_name = "Структура ВОЛС"
 
-    # region = db.Column(db.Unicode, nullable=False)  # Субъект РФ
-    # district = db.Column(db.Unicode, nullable=False)  # Муниципальный район
-    # settlement = db.Column(db.Unicode, nullable=False)  # Населенный пункт
-    # #name # Наименование ВОЛС (Узел А - Узел В)
-    # access_point_count = db.Column(db.Integer, nullable=False)  # Количество точек доступа
-    # focl_need_build = db.Column(db.Boolean, nullable=False)  # Необходимость строительства ВОЛС
-    # deadline_contract = db.Column(db.Date, nullable=False)  # Срок сдачи по договору - дата
-    # project_manager = db.Column(db.String, nullable=False)  # Руководитель проекта
-    # focl_length_order = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС по заказу
-    # focl_length_project = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС по проекту
-    # focl_length_fact = db.Column(db.Float, nullable=False)  # Протяженность ВОЛС фактическая
-    # length_on_ol = db.Column(db.Float, nullable=False)  # Протяженность по ВЛ
-    # length_in_ground = db.Column(db.Float, nullable=False)  # Протяженность в грунте
-    # length_in_canalization = db.Column(db.Float, nullable=False)  # Протяженность в кабельной канализации
-    #
-    # customer = db.Column(db.String, nullable=False)  # Заказчик строительства
-    # planned_start_date = db.Column(db.Date, nullable=False)  # Планируемая дата начала СМР
-    # planned_finish_date = db.Column(db.Date, nullable=False)  # Планируемая дата окончания СМР
-    # subcontr_pir_focl = db.Column(db.String, nullable=False)   # Субподрядчик ПИР ВОЛС
-    # subcontr_smr_focl = db.Column(db.String, nullable=False)   # Субподрядчик СМР ВОЛС
-    # subcontr_pir_access = db.Column(db.String, nullable=False)   # Субподрядчик ПИР Сетей доступа
-    # # Статус (проект, идет строительство, построена)
+    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=True)
+    district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)  # Муниципальный район
+    settlement = db.Column(db.Unicode, nullable=True)  # Населенный пункт
+    access_point_count = db.Column(db.Integer, nullable=True, default=0)  # Количество точек доступа
+    deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору - дата
+    project_manager_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=True)  # Руководитель проекта
+    focl_length_order = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по заказу
+    focl_length_project = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по проекту
+    focl_length_fact = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС фактическая
+    length_on_ol = db.Column(db.Float, nullable=True, default=0)  # Протяженность по ВЛ
+    length_in_ground = db.Column(db.Float, nullable=True, default=0)  # Протяженность в грунте
+    length_in_canalization = db.Column(db.Float, nullable=True, default=0)  # Протяженность в кабельной канализации
+
+    customer = db.Column(db.Integer, db.ForeignKey(Customer.id), nullable=True)  # Заказчик строительства
+    planned_start_date = db.Column(db.Date, nullable=True)  # Планируемая дата начала СМР
+    planned_finish_date = db.Column(db.Date, nullable=True)  # Планируемая дата окончания СМР
+    subcontr = db.Column(db.Integer, db.ForeignKey(Subcontr.id), nullable=True)   # Субподрядчик СМР ВОЛС
+
+    status = db.Column(db.Unicode, nullable=True)  # Статус (проект, идет строительство, построена)
+    status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
 
 
     @classmethod
     def check_parent(cls, parent):
         return isinstance(parent, FoclProject)
 
+P_DSS_READ = DataStructureScope.read
+P_DSS_WRITE = DataStructureScope.write
+P_DS_READ = DataScope.read
+P_DS_WRITE = DataScope.write
 
 class FoclStructSerializer(Serializer):
     identity = FoclStruct.identity
     resclass = FoclStruct
+
+    #region = SR(read=P_DSS_READ)
+    settlement = SP(read=P_DSS_READ)
+
 
     def deserialize(self, *args, **kwargs):
         super(FoclStructSerializer, self).deserialize(*args, **kwargs)
@@ -161,6 +210,8 @@ class SituationPlanSerializer(Serializer):
         wfs_service.persist()
 
 
+
+
 class ModelsUtils():
 
     @classmethod
@@ -211,3 +262,5 @@ class ModelsUtils():
         ms.display_name = style_name
         ms.xml = mapserver_xml
         ms.persist()
+
+
