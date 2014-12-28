@@ -111,7 +111,7 @@ class FoclStruct(Base, ResourceGroup):
     district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)  # Муниципальный район
     settlement = db.Column(db.Unicode, nullable=True)  # Населенный пункт
     access_point_count = db.Column(db.Integer, nullable=True, default=0)  # Количество точек доступа
-    deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору - дата
+    deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору
     project_manager_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=True)  # Руководитель проекта
     focl_length_order = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по заказу
     focl_length_project = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по проекту
