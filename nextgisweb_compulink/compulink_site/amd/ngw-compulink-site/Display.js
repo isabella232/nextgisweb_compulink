@@ -14,6 +14,7 @@ define([
     "dojo/io-query",
     "ngw/openlayers",
     "ngw/openlayers/Map",
+    'dgrid/Grid',
     "dijit/registry",
     "dijit/form/DropDownButton",
     "dijit/DropDownMenu",
@@ -64,6 +65,7 @@ define([
     ioQuery,
     openlayers,
     Map,
+    Grid,
     registry,
     DropDownButton,
     DropDownMenu,
@@ -429,7 +431,6 @@ define([
             // this.itemTree.startup();
 
             // Типы слоев для ВОЛС
-            var icons = { type: { '*': 'test'}};
             var foclLayersStore = new Memory( { data: this.config.focl_layers_type } );
             var foclLayersModel = new ForestStoreModel({ store:foclLayersStore, checkedState:true});
             var foclLayersTree  = new Tree( { model:foclLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "foclLayersTree" );
@@ -440,6 +441,15 @@ define([
             var spLayersModel = new ForestStoreModel({ store:spLayersStore, checkedState:true});
             var spLayersTree  = new Tree( { model:spLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "spLayersTree" );
             spLayersTree.startup();
+
+            //Таблица ресурсов
+            columns = {
+                name: 'Название ВОЛС',
+                region: 'Субъект РФ',
+                district: 'Муниципальный район',
+                settlement: 'Населенный пункт'
+            };
+            var resourcesGrid = new Grid({ columns: columns }, 'resourcesTable');
 
             this._startupDeferred.resolve();
         },
