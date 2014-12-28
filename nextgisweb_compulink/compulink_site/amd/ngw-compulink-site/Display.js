@@ -25,7 +25,9 @@ define([
     "dojo/request/xhr",
     "dojo/data/ItemFileWriteStore",
     "cbtree/models/TreeStoreModel",
+    "cbtree/model/ForestStoreModel",
     "cbtree/Tree",
+    "cbtree/store/Memory",
     "ngw/route",
     // tools
     "webmap/tool/Base",
@@ -73,7 +75,9 @@ define([
     xhr,
     ItemFileWriteStore,
     TreeStoreModel,
+    ForestStoreModel,
     Tree,
+    Memory,
     route,
     ToolBase,
     ToolZoom,
@@ -423,6 +427,19 @@ define([
             this.inherited(arguments);
 
             // this.itemTree.startup();
+
+            // Типы слоев для ВОЛС
+            var icons = { type: { '*': 'test'}};
+            var foclLayersStore = new Memory( { data: this.config.focl_layers_type } );
+            var foclLayersModel = new ForestStoreModel({ store:foclLayersStore, checkedState:true});
+            var foclLayersTree  = new Tree( { model:foclLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "foclLayersTree" );
+            foclLayersTree.startup();
+
+            // Типы слоев для Сит плана
+            var spLayersStore = new Memory( { data: this.config.sit_plan_layers_type } );
+            var spLayersModel = new ForestStoreModel({ store:spLayersStore, checkedState:true});
+            var spLayersTree  = new Tree( { model:spLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "spLayersTree" );
+            spLayersTree.startup();
 
             this._startupDeferred.resolve();
         },

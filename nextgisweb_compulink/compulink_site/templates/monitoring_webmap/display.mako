@@ -10,8 +10,14 @@
         rel="stylesheet" type="text/css" media="screen"/>
 
     <script type="text/javascript">
+        <% import json %>
+        var focl_layers_type = ${json.dumps(focl_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n};
+        var sit_plan_layers_type = ${json.dumps(sit_plan_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n};
+
         var displayConfig = {
-            "bookmarkLayerId": null, 
+            "focl_layers_type": focl_layers_type,
+            "sit_plan_layers_type": sit_plan_layers_type,
+            "bookmarkLayerId": null,
             "rootItem": {
                 "children": [], 
                 "expanded": null, 

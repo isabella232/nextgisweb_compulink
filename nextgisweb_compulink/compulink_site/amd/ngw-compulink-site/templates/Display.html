@@ -188,12 +188,24 @@
                         data-dojo-props="region: 'center'"
                         style="padding-left: 0">
 
-                        <!-- Панель для размещения списка типа слоев -->
-                        <div data-dojo-attach-point="layerTreePane"
+                        <!-- Панель для размещения списка типа слоев ВОЛС -->
+                        <div data-dojo-attach-point="foclLayersTreePane"
                             data-dojo-type="dijit/layout/ContentPane"
                             data-dojo-props="region: 'center'"
                             style="padding: 0">
+                            <div class="title">Слои ВОЛС</div>
+                            <div id="foclLayersTree"></div>
                         </div>
+
+                        <!-- Панель для размещения списка типа слоев Сит плана-->
+                        <div data-dojo-attach-point="sitPlanLayersTreePane"
+                            data-dojo-type="dijit/layout/ContentPane"
+                            data-dojo-props="region: 'bottom', splitter: true"
+                            style="padding: 0; height: 50%">
+                            <div class="title">Слои Сит. плана</div>
+                            <div id="spLayersTree"></div>
+                        </div>
+
                     </div>
                 </div>
 
