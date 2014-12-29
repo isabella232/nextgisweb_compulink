@@ -4,6 +4,10 @@ import json
 import codecs
 from os import path
 from pyramid.renderers import render_to_response
+from pyramid.response import Response
+from pyramid.view import view_config
+from nextgisweb import DBSession
+from nextgisweb.resource import Resource
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 import nextgisweb_compulink.compulink_admin
 
@@ -16,10 +20,36 @@ def setup_pyramid(comp, config):
         'compulink.site.map',
         '/compulink/monitoring_map').add_view(show_map)
 
+    config.add_route(
+        'compulink.site.json',
+        '/compulink/json_tree_api').add_view(json_tree_api)
+
     config.add_static_view(
         name='compulink/static',
         path='nextgisweb_compulink:compulink_site/static', cache_max_age=3600)
 
+
+def json_tree_api(request):
+
+    res_id = None
+    if 'parent' in request.params:
+        try:
+            res_id = int(request.params['parent'])
+        except:
+            pass
+
+    session = DBSession
+
+    if res_id!=None:
+        res = session.query(Resource).get(res_id)
+        children = res.children
+    else:
+        children = session.query(Resource).filter(Resource.parent==None).all()
+
+    ret_obj = []
+    for ch in children:
+        ret_obj.append({'id': ch.id, 'name': ch.display_name, 'parent': res_id})
+    return Response(json.dumps(ret_obj))
 
 def show_map(request):
     focl_layers_type = get_focl_layers_list()
