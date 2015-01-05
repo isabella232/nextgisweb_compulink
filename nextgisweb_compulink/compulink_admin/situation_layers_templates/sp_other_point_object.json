@@ -1,0 +1,42 @@
+{
+    "resource": {
+        "permissions": [],
+        "keyname": null,
+        "display_name": "Другие точечные объекты",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "type_sp_other_point",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Тип",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
