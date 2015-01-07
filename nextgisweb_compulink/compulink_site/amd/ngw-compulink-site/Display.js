@@ -99,17 +99,19 @@ define([
                 var attributes = this.getAttributes(item);
 
                 if (attributes && attributes.length > 0) {
-                    var i;
+                    var attributesCount,
+                        i;
 
-                    for (i = 0; i < attributes.length; i++) {
+                    for (i = 0, attributesCount = attributes.length; i < attributesCount; i++) {
                         var values = this.getValues(item, attributes[i]);
 
                         if (values) {
                             if (values.length > 1) {
-                                var j;
+                                var valuesCount,
+                                    j;
 
                                 obj[attributes[i]] = [];
-                                for (j = 0; j < values.length; j++) {
+                                for (j = 0, valuesCount = values.length; j < valuesCount; j++) {
                                     var value = values[j];
 
                                     if (this.isItem(value)) {
@@ -215,9 +217,10 @@ define([
 
                 var midarr = mids[k];
                 require(midarr, function () {
-                    var obj = {};
-                    var i;
-                    for (i = 0; i < arguments.length; i++) {
+                    var obj = {},
+                        argumentsCount,
+                        i;
+                    for (i = 0, argumentsCount = arguments.length; i < argumentsCount; i++) {
                         obj[midarr[i]] = arguments[i];
                     }
 
