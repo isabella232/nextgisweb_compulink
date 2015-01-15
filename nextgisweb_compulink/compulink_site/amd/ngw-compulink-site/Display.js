@@ -36,6 +36,7 @@ define([
     "webmap/tool/Base",
     "webmap/tool/Zoom",
     "webmap/tool/Measure",
+    "ngw-compulink-site/ResourcesTree",
     // settings
     "ngw/settings!webmap",
     // template
@@ -88,6 +89,7 @@ define([
     ToolBase,
     ToolZoom,
     ToolMeasure,
+    ResourcesTree,
     clientSettings
 ) {
 
@@ -288,6 +290,7 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 function () {
                     widget._mapSetup();
+                    new ResourcesTree("#resourcesTree");
                 }
             ).then(undefined, function (err) { console.error(err); });
 
@@ -401,7 +404,6 @@ define([
                     this.updateTabVisibility();
                 }
             });
-
             this._postCreateDeferred.resolve();
         },
 
@@ -434,64 +436,6 @@ define([
 
         startup: function () {
             this.inherited(arguments);
-
-            // this.itemTree.startup();
-
-            // Дерево ресурсов
-            myStore = new JsonRest(
-                {
-                    target:"/compulink/json_tree_api?parent=",
-
-                    idProperty: "id",
-                    parentProperty: "parent",
-
-                    mayHaveChildren: function(object){
-                        // see if it has a children property
-                        return true; //"children" in object;
-                    },
-
-                    getChildren: function(object, onComplete, onError){
-                        // retrieve the full copy of the object
-                        object.children = []
-                        this.get(object.id).then(function(fullObject){
-                            // copy to the original object so it has the children array as well.
-                            object.children = fullObject;
-                            // now that we have the full object, we should have an array of children
-                            qr = new QueryResults(object.children)
-                            onComplete(qr);
-                        }, function(error){
-                            // an error occurred, log it, and indicate no children
-                            console.error(error);
-                            onError(error);
-                        });
-                        return object.children;
-                    },
-                    getRoot: function(onItem, onError){
-                        // get the root object, we will do a get() and callback the result
-                        this.get("0").then(onItem, onError);
-                    },
-                    getLabel: function(object){
-                        return object.name;
-                    },
-                    hasChildren: function(parent){
-                        return true;
-                    }
-                }
-            );
-
-            var memStory = new Memory();
-            var cacheStore = new Cache(myStore, memStory);
-
-            myModel = new ForestStoreModel({
-                store: cacheStore,
-                deferItemLoadingUntilExpand: true,
-                rootId: 0,
-                showRoot: false,
-                rootLabel: "Resources",
-                labelAttr: "name"
-            });
-            myTree = new Tree({model: myModel}, "resourcesTree");
-            myTree.startup();
 
             // Типы слоев для ВОЛС
             var foclLayersStore = new Memory( { data: this.config.focl_layers_type } );
