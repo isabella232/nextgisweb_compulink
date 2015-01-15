@@ -7,9 +7,10 @@ from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
 from nextgisweb import DBSession
-from nextgisweb.resource import Resource
+from nextgisweb.resource import Resource, ResourceGroup
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 import nextgisweb_compulink.compulink_admin
+from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(nextgisweb_compulink.compulink_admin.__file__))
@@ -47,11 +48,16 @@ def get_child_resx_by_parent(request):
 
     child_resources_json = []
     for child_resource in children:
-        child_resources_json.append({
-            'id': 'res_' + str(child_resource.id),
-            'text': child_resource.display_name,
-            'children': True
-        })
+        if child_resource.identity in (
+                ResourceGroup.identity,
+                SituationPlan.identity,
+                FoclStruct.identity,
+                FoclProject.identity):
+            child_resources_json.append({
+                'id': 'res_' + str(child_resource.id),
+                'text': child_resource.display_name,
+                'children': True
+            })
 
     return Response(json.dumps(child_resources_json))
 
