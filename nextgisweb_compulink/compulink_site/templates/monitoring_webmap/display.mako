@@ -9,6 +9,10 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/icons.css')}"
         rel="stylesheet" type="text/css" media="screen"/>
 
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jstree-3.0.9/themes/default/style.css')}"
+        rel="stylesheet" type="text/css"/>
+    <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery-src.js')}"></script>
+
     <script type="text/javascript">
         <% import json %>
         var focl_layers_type = ${json.dumps(focl_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n};
@@ -47,10 +51,7 @@
             "dojo/parser",
             "dojo/ready",
             "ngw-compulink-site/Display"
-        ], function (
-            parser,
-            ready
-        ) {
+        ], function ( parser, ready) {
             ready(function() {
                 parser.parse();
             });
