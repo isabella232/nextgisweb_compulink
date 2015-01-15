@@ -7,7 +7,7 @@
     "feature_layer": {
         "fields": [
             {
-                "keyname": "test",
+                "keyname": "text",
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Текст",
