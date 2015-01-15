@@ -56,7 +56,7 @@ def get_child_resx_by_parent(request):
             child_resources_json.append({
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
-                'children': True
+                'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity) #temporary TODO: add check for real children
             })
 
     return Response(json.dumps(child_resources_json))
