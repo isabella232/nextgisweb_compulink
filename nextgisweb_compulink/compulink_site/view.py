@@ -22,34 +22,39 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink.site.json',
-        '/compulink/json_tree_api').add_view(json_tree_api)
+        '/compulink/resources/child').add_view(get_child_resx_by_parent)
 
     config.add_static_view(
         name='compulink/static',
         path='nextgisweb_compulink:compulink_site/static', cache_max_age=3600)
 
 
-def json_tree_api(request):
+@view_config(renderer='json')
+def get_child_resx_by_parent(request):
+    parent_resource_id = request.params['id'].replace('res_', '')
+    is_root_node_requsted = parent_resource_id == '#'
 
-    res_id = None
-    if 'parent' in request.params:
-        try:
-            res_id = int(request.params['parent'])
-        except:
-            pass
+    if is_root_node_requsted:
+        parent_resource_id = None
 
-    session = DBSession
-
-    if res_id!=None:
-        res = session.query(Resource).get(res_id)
-        children = res.children
+    dbsession = DBSession()
+    if parent_resource_id:
+        parent_resource = dbsession.query(Resource).get(parent_resource_id)
+        children = parent_resource.children
     else:
-        children = session.query(Resource).filter(Resource.parent==None).all()
+        children = dbsession.query(Resource).filter(Resource.parent==None).all()
+    dbsession.close()
 
-    ret_obj = []
-    for ch in children:
-        ret_obj.append({'id': ch.id, 'name': ch.display_name, 'parent': res_id})
-    return Response(json.dumps(ret_obj))
+    child_resources_json = []
+    for child_resource in children:
+        child_resources_json.append({
+            'id': 'res_' + str(child_resource.id),
+            'text': child_resource.display_name,
+            'children': True
+        })
+
+    return Response(json.dumps(child_resources_json))
+
 
 def show_map(request):
     focl_layers_type = get_focl_layers_list()
