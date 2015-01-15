@@ -20,7 +20,7 @@ define([
                         'variant': 'small'
                     },
                     'data': {
-                        'url': '/compulink/resources/child',
+                        'url': ngwConfig.applicationUrl + '/compulink/resources/child',
                         'data': function (node) {
                             return {'id': node.id};
                         },

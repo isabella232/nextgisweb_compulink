@@ -35,15 +35,12 @@ def get_child_resx_by_parent(request):
     parent_resource_id = request.params['id'].replace('res_', '')
     is_root_node_requsted = parent_resource_id == '#'
 
-    if is_root_node_requsted:
-        parent_resource_id = None
-
     dbsession = DBSession()
-    if parent_resource_id:
-        parent_resource = dbsession.query(Resource).get(parent_resource_id)
-        children = parent_resource.children
-    else:
-        children = dbsession.query(Resource).filter(Resource.parent==None).all()
+    if is_root_node_requsted:
+        parent_resource_id = dbsession.query(Resource).filter(Resource.parent==None).all()[0].id
+
+    parent_resource = dbsession.query(Resource).get(parent_resource_id)
+    children = parent_resource.children
     dbsession.close()
 
     child_resources_json = []
