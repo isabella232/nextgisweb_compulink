@@ -56,7 +56,9 @@ def get_child_resx_by_parent(request):
             child_resources_json.append({
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
-                'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity) #temporary TODO: add check for real children
+                'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity), #temporary TODO: add check for real children
+                'need_checkbox': child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity),
+                'type': child_resource.identity
             })
 
     return Response(json.dumps(child_resources_json))
