@@ -9,7 +9,7 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/icons.css')}"
         rel="stylesheet" type="text/css" media="screen"/>
 
-    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/tree.css')}"
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/layout.css')}"
         rel="stylesheet" type="text/css" media="screen"/>
 
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jstree-3.0.9/themes/default/style.css')}"

@@ -1,85 +1,58 @@
+/* resources type drop down styles */
 
-/* -- BASE STYLES -- */
+#resourcesTypeSelector {
+    width: 100%;
+}
 
-body { font-size: 12px; }
+#resourcesTypeSelector td.dijitReset.dijitStretch.dijitButtonContents {
+    width: 100%;
+}
 
-/* -- LAYOUT STYLES -- */
+/* resource tree styles */
 
-.header { }
+#resourcesTree a[chb="false"] i.jstree-checkbox {
+    display: none;
+}
 
-    .header .pure-menu {
-        background: #2D3E50;
-        overflow: auto; }
+#resourcesTree i.jstree-themeicon-custom {
+    width: 16px;
+    height: 16px;
+    background: url(../img/compulink-sprite.png) 0, -2px;
+}
 
-    .header li a:hover,
-    .header li a:focus {
-        background: none;
-        border: none;
-        color: #AECFE5; }
+#resourcesTree i.jstree-themeicon-custom.situation_plan {
+    background-position: -32px, -2px;
+}
 
-    .header .pure-menu a {
-        padding: 0.5ex 1ex;
-        color: #6FBEF3; }
+#resourcesTree i.jstree-themeicon-custom.focl_struct {
+    background-position: -48px, -2px;
+}
 
-    .header .pure-menu .pure-menu-heading {
-        color: white;
-        font-weight: 400;
-        font-size: 14px;
-        text-transform: none; }
+/* right panel trees */
+#foclLayersTree .jstree-icon.jstree-themeicon,
+#spLayersTree .jstree-icon.jstree-themeicon {
+    background: url(../img/compulink-sprite.png) -16px, 0;
+    width: 16px;
+    height: 21px; /* todo: for centering icon by text, need implement this by background-position */
+}
 
-    .header .pure-menu ul { float: right; }
+#rightPanel div.dijitContentPane {
+    overflow: hidden;
+}
 
-    .header .pure-menu ul li.user { color: white; }
-
-    .header img.logo { float: left; }
-
-.title {
-    padding: 0.5ex 1ex;
-    background: #F1F3F9;
-    border-bottom: 1px solid #CBCBCB; }
-
-    .title h1, .title h2, .title h3 {
-        margin: 0; padding: 0;
-        border: none;
-        font-weight: normal;
-        vertical-align: middle; }
-
-    .title h1 { font-size: 14pt; }
-
-/* -- MENU STYLES -- */
-
-.pure-menu a { color: inherit; }
-
-.pure-menu li a, .pure-menu .pure-menu-heading { padding: 0.25ex 0.25ex; }
-
-/* -- TABLES -- */
-
-.pure-table tbody th { background: none repeat scroll 0 0 #E0E0E0; }
-
-/* -- CONTENT STYLES -- */
-
-.content { padding: 6px; }
-
-.content-wrapper { max-width: 1280px; margin: 0 auto; }
-
-.content-wrapper.maxwidth { max-width: none; margin: 0; }
-
-.content-maxheight {
+#rightPanel div.tree-wrapper {
+    overflow: auto;
     position: absolute;
-    left: 0; top: 0;
-    bottom: 0; right: 0;
-    padding: 6px 0; }
+    top: 23px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 
-    .content-maxheight .expand {
-        height: 100%;
-        padding-top: 0px;
-        padding-bottom: 0px; }
+#rightPanel i.jstree-ocl {
+    display: none;
+}
 
-.content h2 {
-    font-weight: normal;
-    text-transform: uppercase;
-    color: #555;
-    margin: 2ex 0ex 1ex;
-    padding: 0ex 0ex 4px; }
-
-    .content h2:first-child { margin-top: 0; }
+#rightPanel i.jstree-checkbox {
+    margin-right: 2px;
+}
