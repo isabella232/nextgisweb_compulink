@@ -71,14 +71,18 @@ def show_map(request):
 def get_focl_layers_list():
     layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
 
-    layers = []
+    layers_for_jstree = []
 
     for vl_name in FOCL_LAYER_STRUCT:
             with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
                 json_layer_struct = json.load(json_file, encoding='utf-8')
-                layers.append({'name': json_layer_struct['resource']['display_name'], 'type': vl_name})
+                layers_for_jstree.append({
+                    'text': json_layer_struct['resource']['display_name'],
+                    'id': vl_name,
+                    'children': False
+                    })
 
-    return layers
+    return layers_for_jstree
 
 
 def get_sit_plan_layers_list():
@@ -89,6 +93,10 @@ def get_sit_plan_layers_list():
     for vl_name in SIT_PLAN_LAYER_STRUCT:
             with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
                 json_layer_struct = json.load(json_file, encoding='utf-8')
-                layers.append({'name': json_layer_struct['resource']['display_name'], 'type': vl_name})
+                layers.append({
+                    'text': json_layer_struct['resource']['display_name'],
+                    'id': vl_name,
+                    'children': False
+                })
 
     return layers
