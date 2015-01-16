@@ -1,3 +1,18 @@
 #resourcesTree a[chb="false"] i.jstree-checkbox {
     display: none;
 }
+
+/* tree icons styles */
+#resourcesTree i.jstree-themeicon-custom {
+    background-image: url(../img/compulink-sprite.png);
+    width: 16px;
+    height: 16px;
+}
+
+#resourcesTree i.situation_plan {
+    background-position: -32px, 0;
+}
+
+#resourcesTree i.focl_struct {
+    background-position: -48px, 0;
+}
