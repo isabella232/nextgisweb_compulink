@@ -54,7 +54,7 @@ def get_child_resx_by_parent(request):
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
                 'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity), #temporary TODO: add check for real children
-                'type': child_resource.identity,
+                'icon': child_resource.identity,
                 'a_attr': {'chb': child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)}
             })
 
