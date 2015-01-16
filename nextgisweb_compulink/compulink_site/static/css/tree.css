@@ -20,8 +20,7 @@
 /* right panel trees */
 #foclLayersTree .jstree-icon.jstree-themeicon,
 #spLayersTree .jstree-icon.jstree-themeicon {
-    background-image: url(../img/compulink-sprite.png);
-    background-position: -16px, 0;
+    background: url(../img/compulink-sprite.png) -16px, 0;
     width: 16px;
-    height: 16px;
+    height: 21px; /* todo: for centering icon by text, need implement this by background-position */
 }
