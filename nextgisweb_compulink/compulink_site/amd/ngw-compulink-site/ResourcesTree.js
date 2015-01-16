@@ -4,16 +4,20 @@ define([
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
+    'ngw-compulink-site/dialogs/ConfirmDialog',
     'ngw-compulink-libs/jstree-3.0.9/jstree',
     'ngw-compulink-libs/mustache/mustache'
-    //'ngw-compulink-libs/jquery-1.11.2/jquery'
-], function (declare, lang, topic, Deferred, xhr, jstree, mustache) {
+], function (declare, lang, topic, Deferred, xhr, ConfirmDialog, jstree, mustache) {
     return declare([], {
         $resourcesTree: null,
+        settings: {},
 
-        constructor: function (domSelector) {
+        constructor: function (domSelector, settings) {
             var context = this,
                 $tree = this.$resourcesTree = jQuery(domSelector);
+
+            this.setDefaultValues(settings);
+
             $tree.jstree({
                 'core': {
                     'themes': {
@@ -39,18 +43,35 @@ define([
             this._bindEvents($tree);
         },
 
+        setDefaultValues: function (settings) {
+            lang.mixin(this.settings, settings);
+
+            if (!this.settings.limitCheckedNodesCount) {
+                this.settings.limitCheckedNodesCount = 1;
+            }
+        },
+
         _bindEvents: function ($tree) {
-            //$tree.on('changed.jstree', function () {
-            //    topic.publish('taxon/selected/changed', $tree.jstree('get_top_selected'));
-            //});
-            //
-            //$tree.on('loaded.jstree', function () {
-            //    $tree.jstree('open_node', 'root');
-            //});
-            //
-            //topic.subscribe('taxon/select', lang.hitch(this, function () {
-            //    this.selectTaxonNode(arguments[0]);
-            //}));
+            $tree.on('changed.jstree', lang.hitch(this, function (e, node) {
+                this.checkSelectedBottomNodeLimit();
+            }));
+        },
+
+        checkSelectedBottomNodeLimit: function (selected_node) {
+            var checkedNodesCount = this.$resourcesTree.jstree(true).get_bottom_selected().length;
+            if (this.settings.limitCheckedNodesCount &&
+                this.settings.limitCheckedNodesCount < checkedNodesCount) {
+                // todo: add call of confirmDialog
+            }
+        },
+
+        showConfirmDialog: function () {
+            new ConfirmDialog({
+                title: 'Внимание!',
+                message: 'Может быть загружено большое количество слое - это может привести к замедлению работы.',
+                buttonOk: 'Да',
+                buttonCancel: 'Нет'
+            }).startup().show();
         },
 
         createHtmlNodes: function (data) {
