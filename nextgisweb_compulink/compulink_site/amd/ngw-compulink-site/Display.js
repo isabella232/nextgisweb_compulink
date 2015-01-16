@@ -37,6 +37,7 @@ define([
     "webmap/tool/Zoom",
     "webmap/tool/Measure",
     "ngw-compulink-site/ResourcesTree",
+    "ngw-compulink-site/EventsMediator",
     // settings
     "ngw/settings!webmap",
     // template
@@ -90,6 +91,7 @@ define([
     ToolZoom,
     ToolMeasure,
     ResourcesTree,
+    EventsMediator,
     clientSettings
 ) {
 
@@ -288,9 +290,10 @@ define([
 
             // Карта
             all([this._midDeferred.basemap, this._startupDeferred]).then(
-                function () {
+                lang.hitch(this, function () {
                     widget._mapSetup();
-                }
+                    new EventsMediator(this);
+                })
             ).then(undefined, function (err) { console.error(err); });
 
             all([this._mapDeferred, this._postCreateDeferred]).then(
