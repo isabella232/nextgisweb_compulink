@@ -24,3 +24,16 @@
     width: 16px;
     height: 21px; /* todo: for centering icon by text, need implement this by background-position */
 }
+
+#rightPanel div.dijitContentPane {
+    overflow: hidden;
+}
+
+#rightPanel div.tree-wrapper {
+    overflow: auto;
+    position: absolute;
+    top: 23px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
