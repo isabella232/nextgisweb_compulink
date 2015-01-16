@@ -4,15 +4,24 @@
 
 /* tree icons styles */
 #resourcesTree i.jstree-themeicon-custom {
-    background-image: url(../img/compulink-sprite.png);
     width: 16px;
     height: 16px;
+    background: url(../img/compulink-sprite.png) 0, -2px;
 }
 
-#resourcesTree i.situation_plan {
-    background-position: -32px, 0;
+#resourcesTree i.jstree-themeicon-custom.situation_plan {
+    background-position: -32px, -2px;
 }
 
-#resourcesTree i.focl_struct {
-    background-position: -48px, 0;
+#resourcesTree i.jstree-themeicon-custom.focl_struct {
+    background-position: -48px, -2px;
+}
+
+/* right panel trees */
+#foclLayersTree .jstree-icon.jstree-themeicon,
+#spLayersTree .jstree-icon.jstree-themeicon {
+    background-image: url(../img/compulink-sprite.png);
+    background-position: -16px, 0;
+    width: 16px;
+    height: 16px;
 }
