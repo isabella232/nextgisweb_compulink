@@ -290,7 +290,6 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 function () {
                     widget._mapSetup();
-                    new ResourcesTree("#resourcesTree");
                 }
             ).then(undefined, function (err) { console.error(err); });
 
@@ -457,6 +456,7 @@ define([
                 settlement: 'Населенный пункт'
             };
             var resourcesGrid = new Grid({ columns: columns }, 'resourcesTable');
+            new ResourcesTree("#resourcesTree");
 
             this._startupDeferred.resolve();
         },
