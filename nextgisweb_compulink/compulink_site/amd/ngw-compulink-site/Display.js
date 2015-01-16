@@ -439,17 +439,25 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            // Типы слоев для ВОЛС
-            var foclLayersStore = new Memory( { data: this.config.focl_layers_type } );
-            var foclLayersModel = new ForestStoreModel({ store:foclLayersStore, checkedState:true});
-            var foclLayersTree  = new Tree( { model:foclLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "foclLayersTree" );
-            foclLayersTree.startup();
+            jQuery('#foclLayersTree').jstree({
+                'core': {
+                    'data': this.config.focl_layers_type
+                },
+                'checkbox': {
+                    'keep_selected_style': false
+                },
+                'plugins': ['checkbox']
+            });
 
-            // Типы слоев для Сит плана
-            var spLayersStore = new Memory( { data: this.config.sit_plan_layers_type } );
-            var spLayersModel = new ForestStoreModel({ store:spLayersStore, checkedState:true});
-            var spLayersTree  = new Tree( { model:spLayersModel, showRoot:false, branchIcons:false, leafIcons:false}, "spLayersTree" );
-            spLayersTree.startup();
+            jQuery('#spLayersTree').jstree({
+                'core': {
+                    'data': this.config.sit_plan_layers_type
+                },
+                'checkbox': {
+                    'keep_selected_style': false
+                },
+                'plugins': ['checkbox']
+            });
 
             //Таблица ресурсов
             columns = {
@@ -668,7 +676,7 @@ define([
             this.zoomToInitialExtentButton.on("click", function() {
                 widget._zoomToInitialExtent();
             });
-            
+
             this._zoomToInitialExtent();
 
             this._mapDeferred.resolve();
@@ -705,7 +713,7 @@ define([
                 onItem: function (item) {
                     widget._layerSetup(item);
                     widget._layer_order.unshift(store.getValue(item, "id"));
-                    
+
                     // Включаем слои, указанные в URL
                     var cond,
                         layer = widget._layers[store.getValue(item, "id")],
@@ -828,7 +836,7 @@ define([
                             return this.itemStore.dumpItem(i).styleId;
                         })
                     );
-                    
+
                     queryStr = ioQuery.objectToQuery({
                         base: this.map.olMap.baseLayer.keyname,
                         bbox: this.map.olMap.getExtent(),
