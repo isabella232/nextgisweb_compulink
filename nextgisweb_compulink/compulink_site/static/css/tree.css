@@ -37,3 +37,11 @@
     left: 0;
     right: 0;
 }
+
+#rightPanel i.jstree-ocl {
+    display: none;
+}
+
+#rightPanel i.jstree-checkbox {
+    margin-right: 2px;
+}
