@@ -14,7 +14,9 @@ define([
             $tree.jstree({
                 'core': {
                     'themes': {
-                        'variant': 'small'
+                        'variant': 'small',
+                        'dots' : false,
+                        'icons': false
                     },
                     'data': data
                 },
