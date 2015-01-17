@@ -12,15 +12,13 @@ define([
 
         constructor: function (Display) {
             this.Display = Display;
-            this.TreeTypeSelector = {
-                dropdown: registry.byId('treeTypeSelectorDropDown'),
-                menu: registry.byId('treeTypeSelectorMenu')
-            };
+            this.ResourcesTypeSelector = registry.byId('resourcesTypeSelector');
+
             this.bindTreeTypeSelectorEvents();
         },
 
         bindTreeTypeSelectorEvents: function () {
-            on(this.TreeTypeSelector.dropdown.dropDown, 'onclick', lang.hitch(this, function (newValue) {
+            on(this.ResourcesTypeSelector, 'change', lang.hitch(this, function (newValue) {
                 console.log(newValue);
             }));
         }
