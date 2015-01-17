@@ -29,16 +29,37 @@ define([
                             return {'id': node.id};
                         },
                         success: function (data) {
-                            //context.createHtmlNodes(data);
                             return data;
                         },
                         dataType: 'json'
+                    },
+                    'strings' : {
+                        'Loading ...' : 'Загружается...'
                     }
                 },
                 'checkbox': {
-                    'keep_selected_style': false
+                    'keep_selected_style': false,
+                    'two_state': true
                 },
-                'plugins': ['wholerow', 'checkbox']
+                'types': {
+                    'types': {
+                        'disabled': {
+                            'check_node': false,
+                            'uncheck_node': false
+                        },
+                        'default': {
+                            'check_node': function (node) {
+                                jQuery(node).children('ul').children('li').children('a').children('.jstree-checkbox').click();
+                                return true;
+                            },
+                            'uncheck_node': function (node) {
+                                jQuery(node).children('ul').children('li').children('a').children('.jstree-checkbox').click();
+                                return true;
+                            }
+                        }
+                    }
+                },
+                'plugins': ['checkbox', 'types']
             });
             this._bindEvents($tree);
         },
@@ -72,87 +93,6 @@ define([
                 buttonOk: 'Да',
                 buttonCancel: 'Нет'
             }).startup().show();
-        },
-
-        createHtmlNodes: function (data) {
-            var taxonItem;
-
-            for (var i = 0, countTaxons = data.length; i < countTaxons; i++) {
-                taxonItem = data[i];
-                if (taxonItem.is_specie && taxonItem.author) {
-                    taxonItem.text = mustache.render(this.specieNodeTemplate, {
-                        name: taxonItem.text,
-                        author: taxonItem.author
-                    });
-                }
-            }
-        },
-
-        selectTaxonNode: function (taxonId) {
-            var tree = this.$resourcesTree,
-                getPath = xhr(application_root + '/taxon/path/' + taxonId, {
-                    handleAs: 'json'
-                }),
-                deferred = new Deferred();
-
-            if (tree.jstree('is_loaded', taxonId)) {
-
-            }
-
-            getPath.then(lang.hitch(this, function (data) {
-                this._expandBranchByHierarchy(data.path, data.path.length, deferred);
-            }));
-
-            return deferred.promise;
-        },
-
-        _expandBranchByHierarchy: function (hierarchyPathArray, hierarchyDepth, deferred) {
-            var tree = this.$resourcesTree,
-                node = tree.jstree('get_node', hierarchyPathArray[0]);
-
-            if (hierarchyDepth === 1) {
-                if (!node.state.selected) {
-                    tree.jstree('select_node', node);
-                }
-                this._focusToNode(node);
-                deferred.resolve();
-                return true;
-            }
-
-            if (node.state.loaded) {
-                hierarchyDepth = this._decreaseHierarchyArray(hierarchyPathArray, hierarchyDepth);
-                this._expandBranchByHierarchy(hierarchyPathArray, hierarchyDepth, deferred);
-            } else {
-                tree.jstree('load_node', node.id, lang.hitch(this, function (data) {
-                    hierarchyDepth = this._decreaseHierarchyArray(hierarchyPathArray, hierarchyDepth);
-                    this._expandBranchByHierarchy(hierarchyPathArray, hierarchyDepth, deferred);
-                }));
-            }
-        },
-
-        _decreaseHierarchyArray: function (hierarchyPathArray, hierarchyDepth) {
-            hierarchyPathArray.splice(0, 1);
-            return hierarchyDepth - 1;
-        },
-
-        _focusToNode: function (node) {
-            var $tree = this.$resourcesTree,
-                $treeOffsetTop = $tree.offset().top,
-                scrollToTop,
-                $treeContainer = $tree.parent(),
-                $node = jQuery('#' + node.id),
-                $nodeOffsetTop = $node.offset().top,
-                abs = Math.abs;
-
-            if ($treeOffsetTop < 0 && $nodeOffsetTop > 0) {
-                scrollToTop = abs($treeOffsetTop) + $nodeOffsetTop;
-            } else if ($treeOffsetTop > 0 && $nodeOffsetTop > 0) {
-                scrollToTop = $nodeOffsetTop - $treeOffsetTop;
-            } else if ($treeOffsetTop < 0 && $nodeOffsetTop < 0) {
-                scrollToTop = abs($treeOffsetTop) - abs($nodeOffsetTop);
-            }
-
-            $treeContainer.scrollTop(scrollToTop - $treeContainer.height() / 2);
         }
     });
 });

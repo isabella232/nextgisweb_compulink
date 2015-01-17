@@ -50,14 +50,19 @@ def get_child_resx_by_parent(request):
                 SituationPlan.identity,
                 FoclStruct.identity,
                 FoclProject.identity):
+            is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
+
             child_resources_json.append({
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
                 'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity), #temporary TODO: add check for real children
                 'icon': child_resource.identity,
-                'a_attr': {'chb': child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)}
+                'a_attr': {'chb': is_need_checkbox},
+                'type': 'default' if is_need_checkbox else 'disabled'
             })
 
+            if is_need_checkbox is False:
+                child_resources_json[-1]['li_attr'] = {'rel': 'disabled'}
     return Response(json.dumps(child_resources_json))
 
 
