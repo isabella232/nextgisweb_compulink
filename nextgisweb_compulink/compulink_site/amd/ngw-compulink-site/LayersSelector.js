@@ -39,7 +39,7 @@ define([
 
         _resourceTypeFilter: 'all',
         setResourceType: function (resourceType) {
-
+            this.$panel.attr('data-resource-type-filter', resourceType);
         },
 
         buildLayerTree: function (domSelector, layersTreeData) {
