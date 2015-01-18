@@ -25,16 +25,16 @@ define([
                     },
                     'data': {
                         'url': ngwConfig.applicationUrl + '/compulink/resources/child',
-                        'data': function (node) {
-                            return {'id': node.id};
-                        },
+                        'data': lang.hitch(this, function (node) {
+                            return this._getJsTreeQuery(node);
+                        }),
                         success: function (data) {
                             return data;
                         },
                         dataType: 'json'
                     },
-                    'strings' : {
-                        'Loading ...' : 'Загружается...'
+                    'strings': {
+                        'Loading ...': 'Загружается...'
                     }
                 },
                 'checkbox': {
@@ -64,17 +64,32 @@ define([
             this._bindEvents($tree);
         },
 
+        _getJsTreeQuery: function (node) {
+            var query;
+            query = {'id': node.id};
+
+            if (this.settings.type) {
+                query.type = this.settings.type;
+            }
+
+            return query;
+        },
+
         setDefaultValues: function (settings) {
             lang.mixin(this.settings, settings);
 
-            if (!this.settings.limitCheckedNodesCount) {
-                this.settings.limitCheckedNodesCount = 1;
-            }
+            this.settings.limitCheckedNodesCount = this.settings.limitCheckedNodesCount || 1;
+            this.settings.type = this.settings.type || null;
         },
 
         _bindEvents: function ($tree) {
             $tree.on('changed.jstree', lang.hitch(this, function (e, node) {
                 this.checkSelectedBottomNodeLimit();
+            }));
+
+            topic.subscribe('resources/type/set', lang.hitch(this, function (resourceType) {
+                this.settings.type = resourceType === 'all' ? null : resourceType;
+                this.$resourcesTree.jstree('refresh');
             }));
         },
 
