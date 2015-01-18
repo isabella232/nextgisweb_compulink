@@ -441,7 +441,7 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            new LayersSelector({
+            this.LayersSelector = new LayersSelector({
                 resources: {
                     'sit': {
                         domIdTree: 'spLayersTree',
@@ -452,7 +452,7 @@ define([
                         data: this.config.focl_layers_type
                     }
                 }
-            }).buildLayersTrees();
+            });
 
             //Таблица ресурсов
             columns = {
