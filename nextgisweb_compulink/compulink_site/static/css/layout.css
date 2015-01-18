@@ -73,7 +73,7 @@
 }
 
 #rightPanel[data-resource-type-filter=vols] div.vols div.tree-wrapper,
-#rightPanel[data-resource-type-filter=sit] div.tree-wrapper {
+#rightPanel[data-resource-type-filter=sit] div.sit div.tree-wrapper {
     overflow: hidden;
 }
 
