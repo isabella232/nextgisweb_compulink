@@ -20,6 +20,7 @@ define([
             lang.mixin(this.settings, settings);
             this.$panel = jQuery('#' + this.settings.panelIndicatorId);
             this.buildLayersTrees();
+            this.bindEvents();
         },
 
         buildLayersTrees: function () {
@@ -35,11 +36,6 @@ define([
                     }
                 }
             }
-        },
-
-        _resourceTypeFilter: 'all',
-        setResourceType: function (resourceType) {
-            this.$panel.attr('data-resource-type-filter', resourceType);
         },
 
         buildLayerTree: function (domSelector, layersTreeData) {
@@ -61,6 +57,24 @@ define([
             });
 
             return $tree.length ? $tree : null;
+        },
+
+        bindEvents: function () {
+            topic.subscribe('resources/type/set', lang.hitch(this, function (resourceType) {
+                this.setResourceType(resourceType);
+            }));
+        },
+
+        _resourceTypeFilter: 'all',
+        setResourceType: function (resourceType) {
+            this._resourceTypeFilter = resourceType;
+            this.$panel.attr('data-resource-type-filter', resourceType);
+            this.deselectAll(resourceType);
+        },
+
+        deselectAll: function (resourceType) {
+            if (resourceType === 'all') return false;
+            this.settings.resources[resourceType].$tree.jstree('deselect_all');
         }
     });
 });
