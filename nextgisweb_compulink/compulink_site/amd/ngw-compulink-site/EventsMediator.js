@@ -13,15 +13,12 @@ define([
         constructor: function (Display, LayersSelector) {
             this.Display = Display;
             this.LayersSelector = Display.LayersSelector;
-            this.ResourcesTypeSelector = registry.byId('resourcesTypeSelector');
 
             this.bindTreeTypeSelectorEvents();
         },
 
         bindTreeTypeSelectorEvents: function () {
-            on(this.ResourcesTypeSelector, 'change', lang.hitch(this, function (selectedType) {
-                this.LayersSelector.setResourceType(selectedType);
-            }));
+
         }
     });
 });
