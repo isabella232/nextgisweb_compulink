@@ -39,6 +39,7 @@ define([
     "ngw-compulink-site/ResourcesTree",
     "ngw-compulink-site/LayersSelector",
     "ngw-compulink-site/EventsMediator",
+    "ngw-compulink-site/ResourcesTypeSelector",
     // settings
     "ngw/settings!webmap",
     // template
@@ -94,6 +95,7 @@ define([
     ResourcesTree,
     LayersSelector,
     EventsMediator,
+    ResourcesTypeSelector,
     clientSettings
 ) {
 
@@ -294,6 +296,7 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
+                    new ResourcesTypeSelector('resourcesTypeSelector');
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
