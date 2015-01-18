@@ -35,6 +35,7 @@
 }
 
 /* right panel trees */
+
 #foclLayersTree .jstree-icon.jstree-themeicon,
 #spLayersTree .jstree-icon.jstree-themeicon {
     background: url(../img/compulink-sprite.png) -16px, 0;
@@ -66,17 +67,14 @@
     z-index: 9999;
 }
 
-#rightPanel.vols-disabled div.vols div.tree-overlay {
+#rightPanel[data-resource-type-filter=vols] div.vols div.tree-overlay,
+#rightPanel[data-resource-type-filter=sit] div.sit div.tree-overlay {
     display: block;
 }
 
-#rightPanel.vols-disabled div.vols div.tree-wrapper,
-#rightPanel.sit-disabled div.sit div.tree-wrapper {
+#rightPanel[data-resource-type-filter=vols] div.vols div.tree-wrapper,
+#rightPanel[data-resource-type-filter=sit] div.tree-wrapper {
     overflow: hidden;
-}
-
-#rightPanel.sit-disabled div.sit div.tree-overlay {
-    display: block;
 }
 
 #rightPanel i.jstree-ocl {
