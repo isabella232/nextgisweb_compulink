@@ -35,6 +35,11 @@ def get_child_resx_by_parent(request):
     parent_resource_id = request.params['id'].replace('res_', '')
     is_root_node_requsted = parent_resource_id == '#'
 
+    if 'type' in request.params:
+        type_filter = request.params['type']
+    else:
+        type_filter = None
+
     dbsession = DBSession()
     if is_root_node_requsted:
         parent_resource_id = dbsession.query(Resource).filter(Resource.parent==None).all()[0].id
@@ -43,13 +48,19 @@ def get_child_resx_by_parent(request):
     children = parent_resource.children
     dbsession.close()
 
+    suitable_types = [
+        ResourceGroup.identity,
+        FoclProject.identity,
+        ]
+    if type_filter == 'vols' or not type_filter:
+        suitable_types.append(FoclStruct.identity)
+    if type_filter == 'cit' or not type_filter:
+        suitable_types.append(SituationPlan.identity)
+
+
     child_resources_json = []
     for child_resource in children:
-        if child_resource.identity in (
-                ResourceGroup.identity,
-                SituationPlan.identity,
-                FoclStruct.identity,
-                FoclProject.identity):
+        if child_resource.identity in suitable_types:
             is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
 
             child_resources_json.append({
