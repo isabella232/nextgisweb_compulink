@@ -442,9 +442,15 @@ define([
             this.inherited(arguments);
 
             new LayersSelector({
-                treesLayers: {
-                    foclLayersTree: this.config.focl_layers_type,
-                    spLayersTree: this.config.sit_plan_layers_type
+                resources: {
+                    'sit': {
+                        domIdTree: 'spLayersTree',
+                        data: this.config.sit_plan_layers_type
+                    },
+                    'vols': {
+                        domIdTree: 'foclLayersTree',
+                        data: this.config.focl_layers_type
+                    }
                 }
             }).buildLayersTrees();
 

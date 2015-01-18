@@ -10,7 +10,7 @@ define([
 
     return declare('LayersSelector', [], {
         settings: {
-            treesLayers: {}
+            resources: {}
         },
 
         constructor: function (settings) {
@@ -18,14 +18,19 @@ define([
         },
 
         buildLayersTrees: function () {
-            var treeLayersConfig = this.settings.treesLayers,
-                layersTypeDomId;
+            var resourcesTypesConfig = this.settings.resources,
+                resourceType;
 
-            for(layersTypeDomId in treeLayersConfig) {
-                if (treeLayersConfig.hasOwnProperty(layersTypeDomId)) {
-                    this.buildLayerTree('#' + layersTypeDomId, treeLayersConfig[layersTypeDomId]);
+            for(resourceType in resourcesTypesConfig) {
+                if (resourcesTypesConfig.hasOwnProperty(resourceType)) {
+                    this.buildLayerTree('#' + resourcesTypesConfig[resourceType].domIdTree, resourcesTypesConfig[resourceType].data);
                 }
             }
+        },
+
+        _resourceTypeFilter: 'all',
+        setResourceType: function (resourceType) {
+
         },
 
         buildLayerTree: function (domSelector, layersTreeData) {
