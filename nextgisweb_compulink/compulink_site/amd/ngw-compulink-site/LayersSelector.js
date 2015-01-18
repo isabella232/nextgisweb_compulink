@@ -10,20 +10,29 @@ define([
 
     return declare('LayersSelector', [], {
         settings: {
+            panelIndicatorId: 'rightPanel',
             resources: {}
         },
 
+        $panel: null,
+
         constructor: function (settings) {
             lang.mixin(this.settings, settings);
+            this.$panel = jQuery('#' + this.settings.panelIndicatorId);
+            this.buildLayersTrees();
         },
 
         buildLayersTrees: function () {
             var resourcesTypesConfig = this.settings.resources,
-                resourceType;
+                resourceType,
+                $builtTree;
 
             for(resourceType in resourcesTypesConfig) {
                 if (resourcesTypesConfig.hasOwnProperty(resourceType)) {
-                    this.buildLayerTree('#' + resourcesTypesConfig[resourceType].domIdTree, resourcesTypesConfig[resourceType].data);
+                    $builtTree = this.buildLayerTree('#' + resourcesTypesConfig[resourceType].domIdTree, resourcesTypesConfig[resourceType].data);
+                    if ($builtTree) {
+                        resourcesTypesConfig[resourceType]['$tree'] = $builtTree;
+                    }
                 }
             }
         },
@@ -50,6 +59,8 @@ define([
                 },
                 'plugins': ['checkbox']
             });
+
+            return $tree.length ? $tree : null;
         }
     });
 });
