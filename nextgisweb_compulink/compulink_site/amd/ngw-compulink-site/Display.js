@@ -37,7 +37,7 @@ define([
     "webmap/tool/Zoom",
     "webmap/tool/Measure",
     "ngw-compulink-site/ResourcesTree",
-    "ngw-compulink-site/LayersTreeSelector",
+    "ngw-compulink-site/LayersSelector",
     "ngw-compulink-site/EventsMediator",
     // settings
     "ngw/settings!webmap",
@@ -92,7 +92,7 @@ define([
     ToolZoom,
     ToolMeasure,
     ResourcesTree,
-    LayersTreeSelector,
+    LayersSelector,
     EventsMediator,
     clientSettings
 ) {
@@ -441,13 +441,12 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            // todo: create LayersTreeSelector
-            //new LayersTreeSelector({
-            //    treesLayers: {
-            //        foclLayersTreePane: this.config.focl_layers_type,
-            //        spLayersTree: this.config.sit_plan_layers_type
-            //    }
-            //}).placeAt('rightPanel').startup();
+            new LayersSelector({
+                treesLayers: {
+                    foclLayersTree: this.config.focl_layers_type,
+                    spLayersTree: this.config.sit_plan_layers_type
+                }
+            }).buildLayersTrees();
 
             //Таблица ресурсов
             columns = {
