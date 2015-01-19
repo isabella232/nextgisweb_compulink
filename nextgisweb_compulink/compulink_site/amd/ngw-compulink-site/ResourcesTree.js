@@ -83,8 +83,24 @@ define([
         },
 
         _bindEvents: function ($tree) {
-            $tree.on('changed.jstree', lang.hitch(this, function (e, node) {
+            $tree.on('changed.jstree', lang.hitch(this, function (e, changed) {
+                if (changed.node.original.has_children) {
+                    if ($tree.jstree('is_loaded', changed.node)) {
+                        this._fireTriggerChanged(changed.node.children, changed.action);
+                    } else {
+                        $tree.jstree('load_all', changed.node, lang.hitch(this, function (parent_node) {
+                            this._fireTriggerChanged(parent_node.children, changed.action);
+                        }));
+                    }
+                } else {
+                    this._fireTriggerChanged(changed.node.id, changed.action);
+                }
+
                 this.checkSelectedBottomNodeLimit();
+            }));
+
+            $tree.on('refresh.jstree', lang.hitch(this, function () {
+                this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
             }));
 
             topic.subscribe('resources/type/set', lang.hitch(this, function (resourceType) {
@@ -108,6 +124,13 @@ define([
                 buttonOk: 'Да',
                 buttonCancel: 'Нет'
             }).startup().show();
+        },
+
+        _checkedResourcesId: [],
+        _fireTriggerChanged: function (resourcesId, action) {
+            var checkedNodesCount = this.$resourcesTree.jstree().get_bottom_selected().length;
+
+            topic.publish('resources/changed', this.$resourcesTree.jstree().get_bottom_selected(), null, null);
         }
     });
 });
