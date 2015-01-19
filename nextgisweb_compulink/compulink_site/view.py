@@ -62,11 +62,12 @@ def get_child_resx_by_parent(request):
     for child_resource in children:
         if child_resource.identity in suitable_types:
             is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
-
+            has_children = child_resource.identity in (ResourceGroup.identity, FoclProject.identity) # TODO: add check for real children
             child_resources_json.append({
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
-                'children': child_resource.identity in (ResourceGroup.identity, FoclProject.identity), #temporary TODO: add check for real children
+                'children': has_children,
+                'has_children': has_children,
                 'icon': child_resource.identity,
                 'a_attr': {'chb': is_need_checkbox},
                 'type': 'default' if is_need_checkbox else 'disabled'
