@@ -54,7 +54,7 @@ def get_child_resx_by_parent(request):
         ]
     if type_filter == 'vols' or not type_filter:
         suitable_types.append(FoclStruct.identity)
-    if type_filter == 'cit' or not type_filter:
+    if type_filter == 'sit' or not type_filter:
         suitable_types.append(SituationPlan.identity)
 
 
