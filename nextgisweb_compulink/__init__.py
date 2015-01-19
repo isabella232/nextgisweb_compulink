@@ -8,6 +8,8 @@ def pkginfo():
         components=dict(
             compulink_admin='nextgisweb_compulink.compulink_admin',
             compulink_site='nextgisweb_compulink.compulink_site',
+            compulink_mobile='nextgisweb_compulink.compulink_mobile',
+
         )
     )
 
