@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Другие линейные объекты",
+        "display_name": "Прочие линейные объекты",
         "description": null
     },
     "feature_layer": {

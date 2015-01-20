@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Другие точечные объекты",
+        "display_name": "Прочие точечные объекты",
         "description": null
     },
     "feature_layer": {

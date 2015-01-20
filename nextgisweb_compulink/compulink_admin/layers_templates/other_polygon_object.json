@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Другие полигональные объекты",
+        "display_name": "Прочие полигональные объекты",
         "description": null
     },
     "feature_layer": {
