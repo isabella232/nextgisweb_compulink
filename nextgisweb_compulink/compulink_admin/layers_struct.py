@@ -35,7 +35,7 @@ SIT_PLAN_LAYER_STRUCT = [
     'sp_other_point_object',
     'sp_note',
     'sp_photo',
-    'sp_cellular_station',
+    #'sp_cellular_station',
     'sp_sump_canalization',
     'sp_communication_center',
     'sp_electrical_substation',
