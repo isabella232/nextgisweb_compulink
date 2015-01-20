@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Опорный узел связи",
+        "display_name": "Опорные узлы связи",
         "description": null
     },
     "feature_layer": {

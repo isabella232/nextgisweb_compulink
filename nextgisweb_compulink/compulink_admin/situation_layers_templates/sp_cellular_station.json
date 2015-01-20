@@ -1,7 +1,7 @@
 {
     "resource": {
         "keyname": null,
-        "display_name": "Базовая станция сотовой связи",
+        "display_name": "Базовые станции сотовой связи",
         "description": null
     },
     "feature_layer": {
