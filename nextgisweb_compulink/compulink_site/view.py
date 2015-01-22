@@ -6,8 +6,10 @@ from os import path
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
+from sqlalchemy.orm import subqueryload, joinedload_all, joinedload
 from nextgisweb import DBSession
 from nextgisweb.resource import Resource, ResourceGroup
+from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 import nextgisweb_compulink.compulink_admin
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
@@ -28,6 +30,11 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.site.focl_info',
         '/compulink/resources/focl_info').add_view(get_focl_info)
+
+    config.add_route(
+        'compulink.site.layers_by_type',
+        '/compulink/resources/layers_by_type').add_view(get_layers_by_type)
+
 
     config.add_static_view(
         name='compulink/static',
@@ -142,3 +149,50 @@ def get_focl_info(request):
     dbsession.close()
 
     return Response(json.dumps(resp))
+
+
+
+@view_config(renderer='json')
+def get_layers_by_type(request):
+    # TODO: optimize this!!!
+    group_res_ids = request.POST.getall('resources')
+    layer_types = request.POST.getall('types')
+
+    if not group_res_ids or not layer_types:
+        return Response("[]")
+
+    resp_list = []
+
+    dbsession = DBSession()
+    #все ВОСЛ и СИТ планы для присланных ид
+    group_resources = dbsession.query(Resource).options(joinedload_all('children.children')).filter(Resource.id.in_(group_res_ids)).all()
+
+    for group_res in group_resources:
+        for child_res in group_res.children:
+            # Если не векторный слой или не имеет кейнейма - не подходит
+            if child_res.identity != VectorLayer.identity or not child_res.keyname:
+                continue
+            lyr_type = _get_layer_type_by_name(layer_types, child_res.keyname)
+            # Тип векторного слоя не подходит по присланному набору
+            if not lyr_type:
+                continue
+            style_resorces = child_res.children
+            # Если нет стилей - не подходит
+            if not style_resorces:
+                continue
+            resp_list.append({
+                'vector_id': child_res.id,
+                'style_id': style_resorces[0].id,
+                'res_id': group_res.id,
+                'type': lyr_type
+            })
+
+    dbsession.close()
+    return Response(json.dumps(resp_list))
+
+
+def _get_layer_type_by_name(layers_types, name):
+    for layer_type in layers_types:
+        if name.startswith(layer_type):
+            return layer_type
+    return None
