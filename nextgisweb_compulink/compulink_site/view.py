@@ -25,6 +25,10 @@ def setup_pyramid(comp, config):
         'compulink.site.json',
         '/compulink/resources/child').add_view(get_child_resx_by_parent)
 
+    config.add_route(
+        'compulink.site.focl_info',
+        '/compulink/resources/focl_info').add_view(get_focl_info)
+
     config.add_static_view(
         name='compulink/static',
         path='nextgisweb_compulink:compulink_site/static', cache_max_age=3600)
@@ -117,3 +121,24 @@ def get_sit_plan_layers_list():
                 })
 
     return layers
+
+@view_config(renderer='json')
+def get_focl_info(request):
+    if ('ids' not in request.params) or not request.params['ids']:
+        return Response("[]")
+
+    res_ids = request.params['ids'].replace('res_', '').split(',')
+
+    dbsession = DBSession()
+    resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
+
+
+    resp = []
+    for res in resources:
+        par = res.parent
+        gr_par = par.parent
+        resp.append({'id': res.id, 'display_name': res.display_name, 'district': par.display_name, 'region': gr_par.display_name})
+
+    dbsession.close()
+
+    return Response(json.dumps(resp))

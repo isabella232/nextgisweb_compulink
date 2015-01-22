@@ -40,6 +40,7 @@ define([
     "ngw-compulink-site/LayersSelector",
     "ngw-compulink-site/EventsMediator",
     "ngw-compulink-site/ResourcesTypeSelector",
+    "ngw-compulink-site/SelectedResourcesTable",
     // settings
     "ngw/settings!webmap",
     // template
@@ -96,6 +97,7 @@ define([
     LayersSelector,
     EventsMediator,
     ResourcesTypeSelector,
+    SelectedResourcesTable,
     clientSettings
 ) {
 
@@ -458,13 +460,9 @@ define([
             });
 
             //Таблица ресурсов
-            columns = {
-                name: 'Название ВОЛС',
-                region: 'Субъект РФ',
-                district: 'Муниципальный район',
-                settlement: 'Населенный пункт'
-            };
-            var resourcesGrid = new Grid({ columns: columns }, 'resourcesTable');
+            new SelectedResourcesTable('resourcesTable');
+
+            //Дерево ресурсов
             new ResourcesTree("#resourcesTree");
 
             this._startupDeferred.resolve();
