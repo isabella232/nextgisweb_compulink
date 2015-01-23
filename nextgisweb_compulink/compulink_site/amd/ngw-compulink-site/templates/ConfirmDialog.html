@@ -10,27 +10,18 @@
 
         <button
                 data-dojo-type="dijit.form.Button"
-                data-dojo-attach-point="submitButton"
-                type="submit"
+                data-dojo-attach-point="okButton"
                 >
-            OK
+            ${buttonOk}
         </button>
 
         <button
                 data-dojo-type="dijit.form.Button"
                 data-dojo-attach-point="cancelButton"
                 >
-            Cancel
+            ${buttonCancel}
         </button>
 
     </div>
 
 </div>
-
-<button data-dojo-type="dijit.form.Button" id="show-button">
-    ConfirmDialog.show()
-</button>
-
-<button data-dojo-type="dijit.form.Button" id="confirm-button">
-    MessageBox.confirm()
-</button>
