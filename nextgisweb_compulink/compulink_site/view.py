@@ -6,7 +6,7 @@ from os import path
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
-from sqlalchemy.orm import subqueryload, joinedload_all, joinedload
+from sqlalchemy.orm import joinedload_all
 from nextgisweb import DBSession
 from nextgisweb.resource import Resource, ResourceGroup
 from nextgisweb.vector_layer import VectorLayer
@@ -131,14 +131,13 @@ def get_sit_plan_layers_list():
 
 @view_config(renderer='json')
 def get_focl_info(request):
-    if ('ids' not in request.params) or not request.params['ids']:
-        return Response("[]")
-
-    res_ids = request.params['ids'].replace('res_', '').split(',')
+    res_ids = request.POST.getall('ids')
+    if not res_ids:
+        return Response('[]')
 
     dbsession = DBSession()
-    resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
-
+    resources = dbsession.query(Resource).options(joinedload_all('parent.parent')).filter(Resource.id.in_(res_ids)).all()
+    #TODO: remove joinedload_all after real props was added
 
     resp = []
     for res in resources:

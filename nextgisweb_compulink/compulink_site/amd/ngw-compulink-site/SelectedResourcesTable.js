@@ -32,7 +32,7 @@ define([
                 subcontr: 'Суб-чик СМР ВОЛС'
         },
 
-        _url: ngwConfig.applicationUrl + '/compulink/resources/focl_info?ids=',
+        _url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
 
         constructor: function (domId) {
             this._store = Memory({data: []});
@@ -57,18 +57,17 @@ define([
         },
 
         updateDataStore: function(ids) {
-            ids_str = ids.join(',').replace(new RegExp('res_','g'),'');
-            xhr.get(this._url+ids_str, {handleAs: 'json'}).then(lang.hitch(this, function (data) {
+            ids_num = [];
+            for (var i=0; i<ids.length; i++) { ids_num.push(ids[i].replace('res_','')); }
+
+            xhr.post(this._url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
                 this._store.data = data;
                 this._grid.refresh();
             }));
 
             //test backend
             var url = ngwConfig.applicationUrl + '/compulink/resources/layers_by_type';
-            var ids_num = [];
-            for (var i=0; i<ids.length; i++) { ids_num.push(ids[i].replace('res_','')); }
             var data = {resources:ids_num,types:['fosc','note','optical_cable']};
-
             xhr.post(url, {handleAs: 'json', data: data}).then(function(data){
                 console.log(data);
             });
