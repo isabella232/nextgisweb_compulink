@@ -10,13 +10,13 @@ define([
     'ngw-compulink-libs/mustache/mustache'
 ], function (declare, lang, topic, Deferred, xhr, aspect, JsTreeValidationConfirmDialog, jstree) {
     return declare([], {
-        $resourcesTree: null,
-        settings: { },
-        validators: { },
+        $tree: null,
+        settings: {},
+        validators: {},
 
         constructor: function (domSelector, settings) {
             var context = this,
-                $tree = this.$resourcesTree = jQuery(domSelector);
+                $tree = this.$tree = jQuery(domSelector);
 
             this.setDefaultValues(settings);
 
@@ -113,7 +113,7 @@ define([
 
             topic.subscribe('resources/type/set', lang.hitch(this, function (resourceType) {
                 this.settings.type = resourceType === 'all' ? null : resourceType;
-                this.$resourcesTree.jstree('refresh');
+                this.$tree.jstree('refresh');
             }));
         },
 
@@ -123,7 +123,7 @@ define([
 
 
         validateSelectedBottomNodeLimit: function () {
-            var checkedNodesCount = this.$resourcesTree.jstree(true).get_bottom_selected().length;
+            var checkedNodesCount = this.$tree.jstree(true).get_bottom_selected().length;
             if (this.settings.limitCheckedNodesCount && this.settings.limitCheckedNodesCount < checkedNodesCount) {
                 this.showConfirmDialog();
                 return false;
@@ -138,7 +138,7 @@ define([
 
         _checkedResourcesId: [],
         _fireTriggerChanged: function () {
-            topic.publish('resources/changed', this.$resourcesTree.jstree().get_bottom_selected(), null, null);
+            topic.publish('resources/changed', this.$tree.jstree().get_bottom_selected(), null, null);
         }
     });
 });
