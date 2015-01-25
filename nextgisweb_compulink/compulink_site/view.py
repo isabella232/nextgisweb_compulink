@@ -80,12 +80,11 @@ def get_child_resx_by_parent(request):
                 'children': has_children,
                 'has_children': has_children,
                 'icon': child_resource.identity,
-                'a_attr': {'chb': is_need_checkbox},
-                'type': 'default' if is_need_checkbox else 'disabled'
+                'a_attr': {'chb': is_need_checkbox}
             })
 
-            if is_need_checkbox is False:
-                child_resources_json[-1]['li_attr'] = {'rel': 'disabled'}
+            if not is_need_checkbox:
+                child_resources_json[-1]['state'] = {'disabled': True}
     return Response(json.dumps(child_resources_json))
 
 

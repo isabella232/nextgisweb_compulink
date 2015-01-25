@@ -34,6 +34,19 @@
     background-position: -48px, -2px;
 }
 
+#resourcesTree a.jstree-disabled {
+    color: black;
+}
+
+#resourcesTree a.jstree-disabled > i.jstree-icon {
+   opacity: 1;
+  /* Firefox 10+ */
+  filter: none;
+  /* IE6-9 */
+   -webkit-filter: none;
+  /* Chrome 19+ & Safari 6+ */
+}
+
 /* right panel trees */
 
 #foclLayersTree .jstree-icon.jstree-themeicon,

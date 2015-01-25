@@ -4,10 +4,11 @@ define([
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
-    'ngw-compulink-site/dialogs/ConfirmDialog',
+    'dojo/aspect',
+    'ngw-compulink-site/JsTreeValidationConfirmDialog',
     'ngw-compulink-libs/jstree-3.0.9/jstree',
     'ngw-compulink-libs/mustache/mustache'
-], function (declare, lang, topic, Deferred, xhr, ConfirmDialog, jstree, mustache) {
+], function (declare, lang, topic, Deferred, xhr, aspect, JsTreeValidationConfirmDialog, jstree) {
     return declare([], {
         $resourcesTree: null,
         settings: {},
@@ -41,25 +42,7 @@ define([
                     'keep_selected_style': false,
                     'two_state': true
                 },
-                'types': {
-                    'types': {
-                        'disabled': {
-                            'check_node': false,
-                            'uncheck_node': false
-                        },
-                        'default': {
-                            'check_node': function (node) {
-                                jQuery(node).children('ul').children('li').children('a').children('.jstree-checkbox').click();
-                                return true;
-                            },
-                            'uncheck_node': function (node) {
-                                jQuery(node).children('ul').children('li').children('a').children('.jstree-checkbox').click();
-                                return true;
-                            }
-                        }
-                    }
-                },
-                'plugins': ['checkbox', 'types']
+                'plugins': ['checkbox', 'types', 'ui']
             });
             this._bindEvents($tree);
         },
@@ -78,26 +61,43 @@ define([
         setDefaultValues: function (settings) {
             lang.mixin(this.settings, settings);
 
-            this.settings.limitCheckedNodesCount = this.settings.limitCheckedNodesCount || 1;
+            this.settings.limitCheckedNodesCount = this.settings.limitCheckedNodesCount || null;
             this.settings.type = this.settings.type || null;
         },
 
         _bindEvents: function ($tree) {
+            var node;
+
             $tree.on('changed.jstree', lang.hitch(this, function (e, changed) {
-                if (changed.node.original.has_children) {
-                    if ($tree.jstree('is_loaded', changed.node)) {
-                        this._fireTriggerChanged(changed.node.children, changed.action);
+                node = changed.node;
+                if (node.original.has_children) {
+                    if ($tree.jstree('is_loaded', node)) {
+                        this._fireTriggerChanged(node.children, changed.action);
                     } else {
-                        $tree.jstree('load_all', changed.node, lang.hitch(this, function (parent_node) {
+                        $tree.jstree('load_all', node, lang.hitch(this, function (parent_node) {
                             this._fireTriggerChanged(parent_node.children, changed.action);
                         }));
                     }
                 } else {
-                    this._fireTriggerChanged(changed.node.id, changed.action);
+                    this._fireTriggerChanged(node.id, changed.action);
                 }
 
-                this.checkSelectedBottomNodeLimit();
+                if (this.validateSelectedBottomNodeLimit()) {
+
+                }
             }));
+
+            //$tree.on('before_open.jstree', function (e, loaded) {
+            //    if (loaded.node.id === '#') {
+            //
+            //    } else {
+            //        var c = jQuery('#' + loaded.node.id + ' ul li a').on('click', function (e) {
+            //            console.log(e);
+            //            e.stopPropagation();
+            //        });
+            //        console.log(c);
+            //    }
+            //});
 
             $tree.on('refresh.jstree', lang.hitch(this, function () {
                 this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
@@ -109,27 +109,24 @@ define([
             }));
         },
 
-        checkSelectedBottomNodeLimit: function (selected_node) {
+
+
+        validateSelectedBottomNodeLimit: function () {
             var checkedNodesCount = this.$resourcesTree.jstree(true).get_bottom_selected().length;
-            if (this.settings.limitCheckedNodesCount &&
-                this.settings.limitCheckedNodesCount < checkedNodesCount) {
-                // todo: add call of confirmDialog
+            if (this.settings.limitCheckedNodesCount && this.settings.limitCheckedNodesCount < checkedNodesCount) {
+                this.showConfirmDialog();
+                return false;
+            } else {
+                return true;
             }
         },
 
         showConfirmDialog: function () {
-            new ConfirmDialog({
-                title: 'Внимание!',
-                message: 'Может быть загружено большое количество слое - это может привести к замедлению работы.',
-                buttonOk: 'Да',
-                buttonCancel: 'Нет'
-            }).startup().show();
+            JsTreeValidationConfirmDialog.show();
         },
 
         _checkedResourcesId: [],
-        _fireTriggerChanged: function (resourcesId, action) {
-            var checkedNodesCount = this.$resourcesTree.jstree().get_bottom_selected().length;
-
+        _fireTriggerChanged: function () {
             topic.publish('resources/changed', this.$resourcesTree.jstree().get_bottom_selected(), null, null);
         }
     });
