@@ -38,6 +38,7 @@ define([
     "webmap/tool/Measure",
     "ngw-compulink-site/ResourcesTree",
     "ngw-compulink-site/LayersSelector",
+    "ngw-compulink-site/LimitLayersValidator",
     "ngw-compulink-site/EventsMediator",
     "ngw-compulink-site/ResourcesTypeSelector",
     "ngw-compulink-site/SelectedResourcesTable",
@@ -95,6 +96,7 @@ define([
     ToolMeasure,
     ResourcesTree,
     LayersSelector,
+    LimitLayersValidator,
     EventsMediator,
     ResourcesTypeSelector,
     SelectedResourcesTable,
@@ -446,7 +448,16 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            this.LayersSelector = new LayersSelector({
+            this.LayersSelector = this.buildLayersSelector();
+            this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable');
+            this.ResourcesTree = new ResourcesTree("#resourcesTree");
+            this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector);
+            this.ResourcesTree.addValidator(this.LimitLayersValidator);
+            this._startupDeferred.resolve();
+        },
+
+        buildLayersSelector: function () {
+            return new LayersSelector({
                 resources: {
                     'sit': {
                         domIdTree: 'spLayersTree',
@@ -458,14 +469,6 @@ define([
                     }
                 }
             });
-
-            //Таблица ресурсов
-            new SelectedResourcesTable('resourcesTable');
-
-            //Дерево ресурсов
-            new ResourcesTree("#resourcesTree");
-
-            this._startupDeferred.resolve();
         },
 
         addTool: function (tool) {
