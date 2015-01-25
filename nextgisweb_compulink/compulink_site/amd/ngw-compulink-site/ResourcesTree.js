@@ -11,7 +11,8 @@ define([
 ], function (declare, lang, topic, Deferred, xhr, aspect, JsTreeValidationConfirmDialog, jstree) {
     return declare([], {
         $resourcesTree: null,
-        settings: {},
+        settings: { },
+        validators: { },
 
         constructor: function (domSelector, settings) {
             var context = this,
@@ -94,7 +95,7 @@ define([
             //        var c = jQuery('#' + loaded.node.id + ' ul li a').on('click', function (e) {
             //            console.log(e);
             //            e.stopPropagation();
-            //        });
+            //});
             //        console.log(c);
             //    }
             //});
@@ -109,6 +110,9 @@ define([
             }));
         },
 
+        addValidator: function (validator) {
+            this.validators[validator.validatorName] = validator;
+        },
 
 
         validateSelectedBottomNodeLimit: function () {
