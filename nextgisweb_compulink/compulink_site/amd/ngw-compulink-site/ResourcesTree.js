@@ -93,16 +93,9 @@ define([
                     return true;
                 }
 
-                var node = opened.node,
-                    $resourcesNode;
+                var node = opened.node;
                 if (!node.click) {
-                    $resourcesNode = jQuery('#' + node.id + ' ul li a:not(.jstree-disabled)');
-                    $resourcesNode.on('click', lang.hitch(this, function (e, obj) {
-                        this.validators['LimitLayersValidator'].validate('ResourcesTree', {
-                            node: $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id')),
-                            $tree: $tree
-                        });
-                    }));
+                    this._bindEventsForLimitLayersValidator(jQuery('#' + node.id + ' ul li a:not(.jstree-disabled)'));
                     node.click = true;
                 }
             }));
@@ -121,6 +114,16 @@ define([
             this.validators[validator.validatorName] = validator;
         },
 
+        _bindEventsForLimitLayersValidator: function ($nodes) {
+            var $tree;
+            $nodes.on('click', lang.hitch(this, function (e, obj) {
+                $tree = this.$tree;
+                this.validators['LimitLayersValidator'].validate('ResourcesTree', {
+                    node: $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id')),
+                    $tree: $tree
+                });
+            }));
+        },
 
         validateSelectedBottomNodeLimit: function () {
             var checkedNodesCount = this.$tree.jstree(true).get_bottom_selected().length;
