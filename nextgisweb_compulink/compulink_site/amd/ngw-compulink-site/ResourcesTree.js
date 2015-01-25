@@ -88,17 +88,24 @@ define([
                 }
             }));
 
-            //$tree.on('before_open.jstree', function (e, loaded) {
-            //    if (loaded.node.id === '#') {
-            //
-            //    } else {
-            //        var c = jQuery('#' + loaded.node.id + ' ul li a').on('click', function (e) {
-            //            console.log(e);
-            //            e.stopPropagation();
-            //});
-            //        console.log(c);
-            //    }
-            //});
+            $tree.on('before_open.jstree', lang.hitch(this, function (e, opened) {
+                if (!this.validators['LimitLayersValidator']) {
+                    return true;
+                }
+
+                var node = opened.node,
+                    $resourcesNode;
+                if (!node.click) {
+                    $resourcesNode = jQuery('#' + node.id + ' ul li a:not(.jstree-disabled)');
+                    $resourcesNode.on('click', lang.hitch(this, function (e, obj) {
+                        this.validators['LimitLayersValidator'].validate('ResourcesTree', {
+                            node: $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id')),
+                            $tree: $tree
+                        });
+                    }));
+                    node.click = true;
+                }
+            }));
 
             $tree.on('refresh.jstree', lang.hitch(this, function () {
                 this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
