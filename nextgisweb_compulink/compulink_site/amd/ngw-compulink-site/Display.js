@@ -41,6 +41,7 @@ define([
     "ngw-compulink-site/LimitLayersValidator",
     "ngw-compulink-site/EventsMediator",
     "ngw-compulink-site/ResourcesTypeSelector",
+    "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
     // settings
     "ngw/settings!webmap",
@@ -99,6 +100,7 @@ define([
     LimitLayersValidator,
     EventsMediator,
     ResourcesTypeSelector,
+    LayersManager,
     SelectedResourcesTable,
     clientSettings
 ) {
@@ -453,6 +455,7 @@ define([
             this.ResourcesTree = new ResourcesTree("#resourcesTree");
             this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
+            new LayersManager(this.ResourcesTree, this.LayersSelector);
             this._startupDeferred.resolve();
         },
 
