@@ -454,7 +454,9 @@ define([
 
             this.LayersSelector = this.buildLayersSelector();
             this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable');
-            this.ResourcesTree = new ResourcesTree("#resourcesTree");
+            this.ResourcesTree = new ResourcesTree("#resourcesTree", {
+                type: 'vols'
+            });
             this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
             new LayersManager(this.ResourcesTree, this.LayersSelector, this);
