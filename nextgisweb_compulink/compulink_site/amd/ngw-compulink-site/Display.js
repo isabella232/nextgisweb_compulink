@@ -351,12 +351,6 @@ define([
                             layer.set("visibility", newVal);
                         }
                     });
-
-
-                    var l1 = widget.appendLayerToMap(80613,80630);
-                    widget.appendLayerToMap(80609,80626);
-                    widget.removeLayerFromMap(l1);
-
                 }
             ).then(undefined, function (err) { console.error(err); });
 

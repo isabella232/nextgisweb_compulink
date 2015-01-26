@@ -64,14 +64,6 @@ define([
                 this._store.data = data;
                 this._grid.refresh();
             }));
-
-            //test backend
-            var url = ngwConfig.applicationUrl + '/compulink/resources/layers_by_type';
-            var data = {resources:ids_num,types:['fosc','note','optical_cable']};
-            xhr.post(url, {handleAs: 'json', data: data}).then(function(data){
-                console.log(data);
-            });
-            //end test backend
         }
     });
 });
