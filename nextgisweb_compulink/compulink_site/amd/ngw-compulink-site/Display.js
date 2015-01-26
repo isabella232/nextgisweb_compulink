@@ -43,6 +43,7 @@ define([
     "ngw-compulink-site/ResourcesTypeSelector",
     "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
+    "webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
     // template
@@ -102,6 +103,7 @@ define([
     ResourcesTypeSelector,
     LayersManager,
     SelectedResourcesTable,
+    Adapter,
     clientSettings
 ) {
 
@@ -349,6 +351,12 @@ define([
                             layer.set("visibility", newVal);
                         }
                     });
+
+
+                    var l1 = widget.appendLayerToMap(80613,80630);
+                    widget.appendLayerToMap(80609,80626);
+                    widget.removeLayerFromMap(l1);
+
                 }
             ).then(undefined, function (err) { console.error(err); });
 
@@ -853,6 +861,26 @@ define([
                 }),
                 function (error) { console.log(error); }
             );
+        },
+
+        appendLayerToMap: function(layer_id, style_id) {
+            var data = {
+                "layerId": layer_id,        // Слой
+                "styleId": style_id,        // Стиль
+                "visibility": true,          // Вкл
+                "name": layer_id
+            };
+
+            var adapt = new Adapter({});
+            var lyr = adapt.createLayer(data);
+
+            this.map.addLayer(lyr);
+
+            return lyr;
+        },
+
+        removeLayerFromMap: function(layer) {
+            this.map.removeLayer(layer);
         }
     });
 });
