@@ -28,9 +28,11 @@ define([
                 resourceType,
                 $builtTree;
 
-            for(resourceType in resourcesTypesConfig) {
+            for (resourceType in resourcesTypesConfig) {
                 if (resourcesTypesConfig.hasOwnProperty(resourceType)) {
-                    $builtTree = this.buildLayerTree('#' + resourcesTypesConfig[resourceType].domIdTree, resourcesTypesConfig[resourceType].data);
+                    $builtTree = this.buildLayerTree('#' + resourcesTypesConfig[resourceType].domIdTree,
+                        resourcesTypesConfig[resourceType].data,
+                        resourceType);
                     if ($builtTree) {
                         resourcesTypesConfig[resourceType]['$tree'] = $builtTree;
                     }
@@ -38,7 +40,7 @@ define([
             }
         },
 
-        buildLayerTree: function (domSelector, layersTreeData) {
+        buildLayerTree: function (domSelector, layersTreeData, resourceType) {
             var $tree = jQuery(domSelector);
 
             $tree.jstree({
@@ -56,7 +58,30 @@ define([
                 'plugins': ['checkbox']
             });
 
+            this._bindLayersTypeChangedEvent($tree, resourceType);
+
             return $tree.length ? $tree : null;
+        },
+
+        _bindLayersTypeChangedEvent: function ($tree, resourceType) {
+            $tree.on('changed.jstree', lang.hitch(this, function (e, changed) {
+                var node = changed.node,
+                    inserted = [],
+                    deleted = [];
+
+                switch (changed.action) {
+                    case 'select_node':
+                        inserted.push(changed.node.id);
+                        break;
+                    case 'deselect_node':
+                        deleted.push(changed.node.id);
+                        break;
+                    case 'deselect_all':
+                        deleted = changed.old_selection;
+                        break;
+                }
+                topic.publish('layers/type/changed', $tree.jstree().get_bottom_selected(), inserted, deleted, resourceType);
+            }));
         },
 
         bindEvents: function () {
