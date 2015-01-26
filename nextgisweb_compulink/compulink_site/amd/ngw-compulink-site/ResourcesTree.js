@@ -166,9 +166,26 @@ define([
             }));
         },
 
-        _checkedResourcesId: [],
-        _fireTriggerChanged: function () {
-            topic.publish('resources/changed', this.$tree.jstree().get_bottom_selected(), null, null);
+        _fireTriggerChanged: function (nodesId, action) {
+            var inserted = [],
+                deleted = [];
+            switch (action) {
+                case 'select_node':
+                    if (nodesId.constructor === Array) {
+                        inserted = nodesId;
+                    } else {
+                        inserted.push(nodesId);
+                    }
+                    break;
+                case 'deselect_node':
+                    if (nodesId.constructor === Array) {
+                        deleted = nodesId;
+                    } else {
+                        deleted.push(nodesId);
+                    }
+                    break;
+            }
+            topic.publish('resources/changed', this.$tree.jstree().get_bottom_selected(), inserted, deleted);
         }
     });
 });
