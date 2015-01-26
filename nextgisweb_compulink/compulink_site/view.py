@@ -183,7 +183,8 @@ def get_layers_by_type(request):
                 'vector_id': child_res.id,
                 'style_id': style_resorces[0].id,
                 'res_id': group_res.id,
-                'type': lyr_type
+                'type': lyr_type,
+                'res_type': group_res.identity
             })
 
     dbsession.close()
