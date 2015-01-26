@@ -34,7 +34,12 @@ define([
                 if (l > 0) {
                     resources = this.Resources.focl_struct.concat(this.Resources.situation_plan);
                     if (resources.length > 0) {
-                        this.getLayers(resources, types).then(function (layers) {
+
+                        var resources_prepared = array.map(resources, function (resourceId) {
+                            return resourceId.replace('res_', '');
+                        });
+
+                        this.getLayers(resources_prepared, types).then(function (layers) {
                             console.log(layers);
                         });
                     }
@@ -55,7 +60,7 @@ define([
 
                 for (i = 0, l = inserted.length; i < l; i++) {
                     node = this.ResourcesTree.$tree.jstree('get_node', inserted[i]);
-                     index = this.Resources[node.original.res_type].indexOf(inserted[i]);
+                    index = this.Resources[node.original.res_type].indexOf(inserted[i]);
                     if (index === -1) {
                         this.Resources[node.original.res_type].push(inserted[i]);
                         resources.push(inserted[i].replace('res_', ''));
@@ -86,7 +91,7 @@ define([
         getLayers: function (resources, types) {
             return xhr(ngwConfig.applicationUrl + '/compulink/resources/layers_by_type', {
                 handleAs: 'json',
-                methos: 'POST',
+                method: 'POST',
                 data: {
                     resources: resources,
                     types: types
