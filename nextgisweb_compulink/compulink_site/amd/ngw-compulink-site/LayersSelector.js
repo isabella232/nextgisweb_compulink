@@ -80,7 +80,7 @@ define([
                         deleted = changed.old_selection;
                         break;
                 }
-                topic.publish('layers/type/changed', $tree.jstree().get_bottom_selected(), inserted, deleted, resourceType);
+                topic.publish('layers/type/changed', inserted, deleted, resourceType);
             }));
         },
 
@@ -89,6 +89,21 @@ define([
                 this.setResourceType(resourceType);
             }));
         },
+
+        getLayersTypesSelected: function (type) {
+            if (type) {
+                return this.settings.resources[type].$tree.jstree('get_bottom_selected');
+            } else {
+                var result = [];
+                for (var resourceType in this.settings.resources) {
+                    if (this.settings.resources.hasOwnProperty(resourceType)) {
+                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
+                    }
+                }
+                return result;
+            }
+        },
+
 
         _resourceTypeFilter: 'all',
         setResourceType: function (resourceType) {
