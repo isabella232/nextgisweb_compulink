@@ -69,7 +69,6 @@ define([
         setResourceType: function (resourceType) {
             this._resourceTypeFilter = resourceType;
             this.$panel.attr('data-resource-type-filter', resourceType);
-            this.deselectAll(resourceType);
         },
 
         deselectAll: function (resourceType) {

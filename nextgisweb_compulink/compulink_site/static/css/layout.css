@@ -80,13 +80,13 @@
     z-index: 9999;
 }
 
-#rightPanel[data-resource-type-filter=vols] div.vols div.tree-overlay,
-#rightPanel[data-resource-type-filter=sit] div.sit div.tree-overlay {
+#rightPanel[data-resource-type-filter=vols] div.sit div.tree-overlay,
+#rightPanel[data-resource-type-filter=sit] div.vols div.tree-overlay {
     display: block;
 }
 
-#rightPanel[data-resource-type-filter=vols] div.vols div.tree-wrapper,
-#rightPanel[data-resource-type-filter=sit] div.sit div.tree-wrapper {
+#rightPanel[data-resource-type-filter=vols] div.sit div.tree-wrapper,
+#rightPanel[data-resource-type-filter=sit] div.vols div.tree-wrapper {
     overflow: hidden;
 }
 
