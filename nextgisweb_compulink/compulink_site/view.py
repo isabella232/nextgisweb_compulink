@@ -80,6 +80,7 @@ def get_child_resx_by_parent(request):
                 'children': has_children,
                 'has_children': has_children,
                 'icon': child_resource.identity,
+                'res_typr': child_resource.identity,
                 'a_attr': {'chb': is_need_checkbox}
             })
 
