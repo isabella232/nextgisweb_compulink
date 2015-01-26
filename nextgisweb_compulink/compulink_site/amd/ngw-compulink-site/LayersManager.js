@@ -49,11 +49,13 @@ define([
             }));
 
             topic.subscribe('resources/changed', lang.hitch(this, function (bottom_selected, inserted, deleted) {
-                var i, l, resources = [], types = [];
+                var i, l,
+                    resources = [], types = [],
+                    node, index;
 
                 for (i = 0, l = inserted.length; i < l; i++) {
-                    var node = this.ResourcesTree.$tree.jstree('get_node', inserted[i]);
-                    var index = this.Resources[node.original.res_type].indexOf(inserted[i]);
+                    node = this.ResourcesTree.$tree.jstree('get_node', inserted[i]);
+                     index = this.Resources[node.original.res_type].indexOf(inserted[i]);
                     if (index === -1) {
                         this.Resources[node.original.res_type].push(inserted[i]);
                         resources.push(inserted[i].replace('res_', ''));
@@ -70,8 +72,8 @@ define([
                 }
 
                 for (i = 0, l = deleted.length; i < l; i++) {
-                    var node = this.ResourcesTree.$tree.jstree('get_node', deleted[i]);
-                    var index = this.Resources[node.original.res_type].indexOf(deleted[i]);
+                    node = this.ResourcesTree.$tree.jstree('get_node', deleted[i]);
+                    index = this.Resources[node.original.res_type].indexOf(deleted[i]);
                     if (index > -1) {
                         this.Resources[node.original.res_type].splice(index, 1);
                     }
