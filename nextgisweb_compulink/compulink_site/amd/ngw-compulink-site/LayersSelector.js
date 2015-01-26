@@ -69,11 +69,18 @@ define([
         setResourceType: function (resourceType) {
             this._resourceTypeFilter = resourceType;
             this.$panel.attr('data-resource-type-filter', resourceType);
+            this.deselectAllOther(resourceType);
         },
 
-        deselectAll: function (resourceType) {
+        deselectAllOther: function (resourceTypeSelected) {
             if (resourceType === 'all') return false;
-            this.settings.resources[resourceType].$tree.jstree('deselect_all');
+
+            var resources = this.settings.resources;
+            for (var resourceType in resources) {
+                if (resources.hasOwnProperty(resourceType) && resourceType !== resourceTypeSelected) {
+                    resources[resourceType].$tree.jstree('deselect_all');
+                }
+            }
         }
     });
 });
