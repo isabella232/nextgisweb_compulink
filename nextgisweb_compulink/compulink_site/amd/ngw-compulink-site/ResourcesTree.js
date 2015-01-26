@@ -1,14 +1,13 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
     'dojo/aspect',
-    'ngw-compulink-site/JsTreeValidationConfirmDialog',
-    'ngw-compulink-libs/jstree-3.0.9/jstree',
-    'ngw-compulink-libs/mustache/mustache'
-], function (declare, lang, topic, Deferred, xhr, aspect, JsTreeValidationConfirmDialog, jstree) {
+    'ngw-compulink-libs/jstree-3.0.9/jstree'
+], function (declare, lang, array, topic, Deferred, xhr, aspect, jstree) {
     return declare([], {
         $tree: null,
         settings: {},
@@ -70,6 +69,9 @@ define([
             var node;
 
             $tree.on('changed.jstree', lang.hitch(this, function (e, changed) {
+                if (changed.action === 'deselect_all') {
+                    return false;
+                }
                 node = changed.node;
                 if (node.original.has_children) {
                     if ($tree.jstree('is_loaded', node)) {
@@ -82,23 +84,17 @@ define([
                 } else {
                     this._fireTriggerChanged(node.id, changed.action);
                 }
-
-                if (this.validateSelectedBottomNodeLimit()) {
-
-                }
             }));
 
-            $tree.on('before_open.jstree', lang.hitch(this, function (e, opened) {
-                if (!this.validators['LimitLayersValidator']) {
-                    return true;
-                }
-
-                var node = opened.node;
-                if (!node.click) {
-                    this._bindEventsForLimitLayersValidator(jQuery('#' + node.id + ' ul li a:not(.jstree-disabled)'));
-                    node.click = true;
-                }
-            }));
+            //this.$tree.on('load_node.jstree', lang.hitch(this, function (e, loaded) {
+            //    if (loaded.node.id === '#') {
+            //        this._bindClickChildNodesEvents(loaded.node, 'root');
+            //    }
+            //}));
+            //
+            //this.$tree.on('after_open.jstree', lang.hitch(this, function (e, opened) {
+            //    this._bindClickChildNodesEvents(opened.node, 'after_open');
+            //}));
 
             $tree.on('refresh.jstree', lang.hitch(this, function () {
                 this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
@@ -112,31 +108,62 @@ define([
 
         addValidator: function (validator) {
             this.validators[validator.validatorName] = validator;
-        },
-
-        _bindEventsForLimitLayersValidator: function ($nodes) {
-            var $tree;
-            $nodes.on('click', lang.hitch(this, function (e, obj) {
-                $tree = this.$tree;
-                this.validators['LimitLayersValidator'].validate('ResourcesTree', {
-                    node: $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id')),
-                    $tree: $tree
-                });
-            }));
-        },
-
-        validateSelectedBottomNodeLimit: function () {
-            var checkedNodesCount = this.$tree.jstree(true).get_bottom_selected().length;
-            if (this.settings.limitCheckedNodesCount && this.settings.limitCheckedNodesCount < checkedNodesCount) {
-                this.showConfirmDialog();
-                return false;
-            } else {
-                return true;
+            if (this.validators[validator.validatorName].bindEvents) {
+                this.validators[validator.validatorName].bindEvents('ResourcesTree');
             }
         },
 
-        showConfirmDialog: function () {
-            JsTreeValidationConfirmDialog.show();
+        _bindClickChildNodesEvents: function (parentNode, initiator) {
+            if (parentNode.click) {
+                return false;
+            }
+            var $nodes;
+            if (initiator === 'root') {
+                $nodes = array.map(parentNode.children, function (id) {
+                    return '#' + id + ' a:not(.jstree-disabled)';
+                });
+                $nodes = jQuery($nodes.join(','));
+            } else if (initiator === 'after_open') {
+                $nodes = jQuery('#' + parentNode.id + ' ul li a:not(.jstree-disabled)');
+            } else if (initiator === 'click') {
+                $nodes = null;
+            }
+
+            this._checkStatesNodes($nodes, parentNode);
+            parentNode.click = true;
+        },
+
+        _checkStatesNodes: function ($nodes, parentNode) {
+
+            if ($nodes === null && parentNode.state.loaded === false && parentNode.original.has_children === true) {
+                this.$tree.jstree('open_node', parentNode);
+            }
+
+            if (!parentNode.click && !parentNode.state.disabled) {
+                this._bindClickNodesEvents(parentNode);
+                parentNode.click = true;
+            }
+
+
+        },
+
+        _bindClickNodesEvents: function ($nodes) {
+            var $tree, node;
+            $nodes.on('click', lang.hitch(this, function (e) {
+                $tree = this.$tree;
+                node = $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id'));
+                console.log(node);
+                e.stopPropagation();
+
+
+                if (this.validators['LimitLayersValidator']) {
+                    this.validators['LimitLayersValidator'].validate('ResourcesTree', {
+                        node: node,
+                        $tree: $tree
+                    });
+                }
+
+            }));
         },
 
         _checkedResourcesId: [],
