@@ -457,18 +457,18 @@ define([
             this.ResourcesTree = new ResourcesTree("#resourcesTree");
             this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
-            new LayersManager(this.ResourcesTree, this.LayersSelector);
+            new LayersManager(this.ResourcesTree, this.LayersSelector, this);
             this._startupDeferred.resolve();
         },
 
         buildLayersSelector: function () {
             return new LayersSelector({
                 resources: {
-                    'sit': {
+                    'situation_plan': {
                         domIdTree: 'spLayersTree',
                         data: this.config.sit_plan_layers_type
                     },
-                    'vols': {
+                    'focl_struct': {
                         domIdTree: 'foclLayersTree',
                         data: this.config.focl_layers_type
                     }
