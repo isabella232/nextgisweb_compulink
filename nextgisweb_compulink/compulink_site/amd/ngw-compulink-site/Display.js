@@ -472,7 +472,8 @@ define([
                     },
                     'focl_struct': {
                         domIdTree: 'foclLayersTree',
-                        data: this.config.focl_layers_type
+                        data: this.config.focl_layers_type,
+                        selectedByDefault: ['other_line_object', 'optical_cable']
                     }
                 }
             });

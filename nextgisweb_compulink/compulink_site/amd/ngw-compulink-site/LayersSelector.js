@@ -26,7 +26,8 @@ define([
         buildLayersTrees: function () {
             var resourcesTypesConfig = this.settings.resources,
                 resourceType,
-                $builtTree;
+                $builtTree,
+                selectedByDefaultNodes;
 
             for (resourceType in resourcesTypesConfig) {
                 if (resourcesTypesConfig.hasOwnProperty(resourceType)) {
@@ -35,6 +36,15 @@ define([
                         resourceType);
                     if ($builtTree) {
                         resourcesTypesConfig[resourceType]['$tree'] = $builtTree;
+                    }
+
+                    if (resourcesTypesConfig[resourceType].selectedByDefault) {
+                        $builtTree.on('ready.jstree', function () {
+                            selectedByDefaultNodes = resourcesTypesConfig[resourceType].selectedByDefault;
+                            for (var i = 0, countSelectedNodes = selectedByDefaultNodes.length; i < countSelectedNodes; i++) {
+                                resourcesTypesConfig[resourceType]['$tree'].jstree('select_node', selectedByDefaultNodes[i]);
+                            }
+                        });
                     }
                 }
             }
