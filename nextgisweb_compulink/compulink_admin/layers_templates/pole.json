@@ -7,6 +7,14 @@
     "feature_layer": {
         "fields": [
             {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": true,
+                "grid_visibility": true
+            },
+            {
                 "keyname": "type_pole",
                 "datatype": "STRING",
                 "typemod": null,
