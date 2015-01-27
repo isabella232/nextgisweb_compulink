@@ -110,6 +110,7 @@ def get_focl_layers_list():
                     'children': False
                     })
 
+    layers_for_jstree.reverse()
     return layers_for_jstree
 
 
@@ -126,7 +127,7 @@ def get_sit_plan_layers_list():
                     'id': vl_name,
                     'children': False
                 })
-
+    layers.reverse()
     return layers
 
 @view_config(renderer='json')

@@ -473,7 +473,7 @@ define([
                     'focl_struct': {
                         domIdTree: 'foclLayersTree',
                         data: this.config.focl_layers_type,
-                        selectedByDefault: ['other_line_object', 'optical_cable']
+                        selectedByDefault: ['optical_cross', 'optical_cable', 'fosc', 'endpoint', 'pole', 'telecom_cabinet']
                     }
                 }
             });
