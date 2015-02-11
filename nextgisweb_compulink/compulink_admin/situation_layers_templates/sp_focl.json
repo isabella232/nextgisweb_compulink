@@ -15,14 +15,6 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "description",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Описание",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
                 "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
@@ -43,6 +35,14 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Собственник",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
                 "label_field": false,
                 "grid_visibility": true
             }

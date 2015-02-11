@@ -16,14 +16,6 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "description",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Описание",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
                 "keyname": "existing",
                 "datatype": "STRING",
                 "typemod": null,
@@ -32,18 +24,10 @@
                 "grid_visibility": true
             },
             {
-                "keyname": "type_fosc",
+                "keyname": "description",
                 "datatype": "STRING",
                 "typemod": null,
-                "display_name": "Тип",
-                "label_field": false,
-                "grid_visibility": true
-            },
-            {
-                "keyname": "fosc_placement",
-                "datatype": "STRING",
-                "typemod": null,
-                "display_name": "Место размещения",
+                "display_name": "Описание",
                 "label_field": false,
                 "grid_visibility": true
             }
