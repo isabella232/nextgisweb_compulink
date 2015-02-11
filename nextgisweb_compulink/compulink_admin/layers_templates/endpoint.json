@@ -24,6 +24,38 @@
                 "grid_visibility": true
             },
             {
+                "keyname": "status_measure",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Статус измерения",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_measure_ch",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Изменение статуса",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_check",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Статус проверки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "status_check_ch",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Изменение статуса проверки",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
                 "keyname": "description",
                 "datatype": "STRING",
                 "typemod": null,
