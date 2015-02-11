@@ -12,11 +12,11 @@ define([
             buttonOk: 'Да',
             buttonCancel: 'Нет',
             handlerOk: function () {
-                topic.publish('resources/tree/validation/checklimit/true');
+                topic.publish('layers/validation/checklimit/true');
 
             },
             handlerCancel: function () {
-                topic.publish('resources/tree/validation/checklimit/false');
+                topic.publish('layers/validation/checklimit/false');
             }
         });
     }
