@@ -457,9 +457,12 @@ define([
             this.ResourcesTree = new ResourcesTree("#resourcesTree", {
                 type: 'vols'
             });
-            this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector);
+            this.LayersManager = new LayersManager(this.ResourcesTree, this.LayersSelector, this);
+
+            this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector,
+                this.LayersManager, 200);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
-            new LayersManager(this.ResourcesTree, this.LayersSelector, this);
+
             this._startupDeferred.resolve();
         },
 
