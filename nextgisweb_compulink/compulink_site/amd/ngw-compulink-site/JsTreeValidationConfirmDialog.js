@@ -10,14 +10,7 @@ define([
             title: 'Внимание!',
             message: 'Выбрано большое количество слоев!<br/>загрузка дополнительных может замедлить работу приложения.<br/>Можете продолжить или выключить ненужные.<br/><br/>Загрузить новые слои?',
             buttonOk: 'Да',
-            buttonCancel: 'Нет',
-            handlerOk: function () {
-                topic.publish('layers/validation/checklimit/true');
-
-            },
-            handlerCancel: function () {
-                topic.publish('layers/validation/checklimit/false');
-            }
+            buttonCancel: 'Нет'
         });
     }
     return _instance;
