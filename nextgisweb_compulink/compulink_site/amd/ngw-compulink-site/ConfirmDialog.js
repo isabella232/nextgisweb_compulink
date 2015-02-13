@@ -15,8 +15,8 @@ define([
         message: 'Are you sure?',
         buttonOk: 'OK',
         buttonCancel: 'Cancel',
-        handlerOk: null,
-        handlerCancel: null,
+        handlerOk: function () {},
+        handlerCancel: function () {},
 
         constructor: function (kwArgs) {
             lang.mixin(this, kwArgs);
@@ -46,6 +46,11 @@ define([
                     this.hide();
                 }));
             }
+        },
+
+        config: function (params) {
+            lang.mixin(this, params);
+            return this;
         }
     });
 });
