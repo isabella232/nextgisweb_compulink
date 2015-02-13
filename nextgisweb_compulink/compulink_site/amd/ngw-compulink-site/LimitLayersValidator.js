@@ -13,12 +13,15 @@ define([
         settings: {},
         validatorName: 'LimitLayersValidator',
 
-        constructor: function (ResourcesTree, LayersSelector) {
+        constructor: function (ResourcesTree, LayersSelector, LayersManager, limit) {
             this.ResourcesTree = ResourcesTree;
             this.LayersSelector = LayersSelector;
+            this.LayersManager = LayersManager;
+            this.limit = limit || 200;
         },
 
-        validate: function (initiator, data) {
+        _validate: function (initiator, data) {
+
             switch (initiator) {
                 case 'ResourcesTree':
                     return this.validateResourcesTree(data);
@@ -33,7 +36,33 @@ define([
         },
 
         validateResourcesTree: function (data) {
+            var deferred = new Deferred(),
+                resourceType,
+                resourcesSelected = this.LayersManager.calculateCountResources(data),
+                layersTypeSelected = {
+                    situation_plan: this.LayersSelector.getLayersSelected('situation_plan'),
+                    focl_struct: this.LayersSelector.getLayersSelected('focl_struct')
+                },
+                count = 0;
 
+            for (resourceType in resourcesSelected) {
+                if (resourcesSelected.hasOwnProperty(resourceType)) {
+                    count += resourcesSelected[resourceType] * layersTypeSelected[resourceType].length;
+                }
+            }
+
+            console.log(count);
+            if (count > this.limit) {
+                this.showConfirmDialog(function () {
+                    deferred.resolve(true);
+                }, function () {
+                    deferred.resolve(false);
+                });
+                return deferred.promise;
+            } else {
+                deferred.resolve(true);
+                return deferred;
+            }
         },
 
         validateLayersSelector: function (data) {
@@ -60,7 +89,8 @@ define([
 
         validateSelectedBottomNodeLimit: function () {
             var checkedNodesCount = this.$tree.jstree(true).get_bottom_selected().length;
-            if (this.settings.limitCheckedNodesCount && this.settings.limitCheckedNodesCount < checkedNodesCount) {
+            if (this.settings.limitCheckedNodesCount &&
+                this.settings.limitCheckedNodesCount < checkedNodesCount) {
                 this.showConfirmDialog();
                 return false;
             } else {
@@ -68,8 +98,11 @@ define([
             }
         },
 
-        showConfirmDialog: function () {
-            JsTreeValidationConfirmDialog.show();
+        showConfirmDialog: function (handlerOk, handlerCancel) {
+            JsTreeValidationConfirmDialog.config({
+                handlerOk: handlerOk,
+                handlerCancel: handlerCancel
+            }).show();
         }
     });
 });
