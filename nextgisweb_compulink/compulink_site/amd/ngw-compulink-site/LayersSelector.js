@@ -131,6 +131,16 @@ define([
                     resources[resourceType].$tree.jstree('deselect_all');
                 }
             }
+        },
+
+        getLayersSelected: function (resourceType) {
+            var resourcesTypesConfig = this.settings.resources;
+
+            if (resourcesTypesConfig[resourceType]) {
+                return resourcesTypesConfig[resourceType]['$tree'].jstree('get_bottom_selected');
+            } else {
+                //throw 'LayersSelector: Resource type "' + resourceType '" is not found';
+            }
         }
     });
 });
