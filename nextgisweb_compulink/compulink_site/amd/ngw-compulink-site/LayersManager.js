@@ -126,6 +126,10 @@ define([
                     this.LayersByResources[res_type][resId.replace('res_', '')] = {};
                 }
             }));
+
+            topic.subscribe('caclulate/resources/count', lang.hitch(this, function () {
+
+            }));
         },
 
         addLayers: function (layers) {
@@ -171,6 +175,38 @@ define([
                     types: types
                 }
             });
+        },
+
+        calculateCountResources: function (insertedDeletedNodes) {
+            var i, l,
+                node, index, res_type, resId,
+                inserted = insertedDeletedNodes.inserted,
+                deleted = insertedDeletedNodes.deleted,
+                result = {
+                    'situation_plan': this.Resources.situation_plan.length,
+                    'focl_struct': this.Resources.focl_struct.length
+                };
+
+            for (i = 0, l = inserted.length; i < l; i++) {
+                node = this.ResourcesTree.$tree.jstree('get_node', inserted[i]);
+                index = this.Resources[node.original.res_type].indexOf(inserted[i]);
+                if (index === -1) {
+                    result[node.original.res_type]++;
+                }
+            }
+
+            for (i = 0, l = deleted.length; i < l; i++) {
+                resId = deleted[i];
+                node = this.ResourcesTree.$tree.jstree('get_node', resId);
+                res_type = node.original.res_type;
+
+                index = this.Resources[res_type].indexOf(resId);
+                if (index > -1) {
+                    result--;
+                }
+            }
+
+            return result;
         }
     });
 });
