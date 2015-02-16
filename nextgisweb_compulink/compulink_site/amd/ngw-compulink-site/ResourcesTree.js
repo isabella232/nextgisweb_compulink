@@ -136,17 +136,6 @@ define([
                 this._previousState = this.$tree.jstree('get_state');
             }));
 
-            //this.$tree.on('load_node.jstree', lang.hitch(this, function (e, loaded) {
-            //    console.log(loaded);
-            //    if (loaded.node.id === '#') {
-            //        this._bindClickChildNodesEvents(loaded.node, 'root');
-            //    }
-            //}));
-            //
-            //this.$tree.on('after_open.jstree', lang.hitch(this, function (e, opened) {
-            //    this._bindClickChildNodesEvents(opened.node, 'after_open');
-            //}));
-
             $tree.on('refresh.jstree', lang.hitch(this, function () {
                 this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
             }));
