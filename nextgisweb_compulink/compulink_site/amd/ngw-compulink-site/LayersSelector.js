@@ -156,6 +156,11 @@ define([
             } else {
                 return null;
             }
+        },
+
+        _statesStorage: {},
+        _saveTreeStatesStorage: function ($tree, resourceType) {
+            this._statesStorage[resourceType] = $tree.jstree('get_state');
         }
     });
 });
