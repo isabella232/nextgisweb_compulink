@@ -29,27 +29,27 @@
             "sit_plan_layers_type": sit_plan_layers_type,
             "bookmarkLayerId": null,
             "rootItem": {
-                "children": [], 
-                "expanded": null, 
-                "type": "root", 
-                "id": 1, 
+                "children": [],
+                "expanded": null,
+                "type": "root",
+                "id": 1,
                 "label": null
-            }, 
+            },
             "extent": [
                 20,
                 20,
                 180,
                 80
-            ], 
+            ],
             "mid": {
-                "adapter": [], 
+                "adapter": [],
                 "basemap": [
                     "ngw/openlayers/layer/Layer",
                     "ngw/openlayers/layer/OSM",
                     "ngw/openlayers/layer/Google",
                     "ngw/openlayers/layer/Bing"
-                ], 
-                "plugin": []
+                ],
+                "plugin": ["webmap/plugin/FeatureLayer"]
             }
         };
 
