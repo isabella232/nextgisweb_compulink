@@ -58,6 +58,7 @@ define([
     "dijit/ToolbarSeparator",
     "dijit/Dialog",
     "dijit/form/TextBox",
+    "dijit/form/NumberTextBox",
     // css
     "xstyle/css!" + ngwConfig.amdUrl + "cbtree/themes/claro/claro.css"
 ], function (
@@ -281,7 +282,7 @@ define([
                 showRoot: false
             });
 
-            // Размещаем дерево, когда виджет будет готов           
+            // Размещаем дерево, когда виджет будет готов
             // all([this._layersDeferred, this._postCreateDeferred]).then(
             //     function () { widget.itemTree.placeAt(widget.layerTreePane); }
             // ).then(undefined, function (err) { console.error(err); });
@@ -339,7 +340,7 @@ define([
 
             all([this._layersDeferred, this._mapSetup]).then(
                 function () {
-                    // Добавляем слои на карту 
+                    // Добавляем слои на карту
                     widget._mapAddLayers();
 
                     // Связываем изменение чекбокса с видимостью слоя
@@ -388,7 +389,7 @@ define([
         postCreate: function () {
             this.inherited(arguments);
 
-            // Модифицируем TabContainer так, чтобы он показывал табы только 
+            // Модифицируем TabContainer так, чтобы он показывал табы только
             // в том случае, если их больше одного, т.е. один таб не показываем
             declare.safeMixin(this.tabContainer, {
                 updateTabVisibility: function () {
@@ -683,6 +684,10 @@ define([
                 idx = idx + 1;
             }, this);
 
+            this.moveToCoordinatesButton.on("click", function() {
+                widget._moveToCoordinates();
+            });
+
             this.zoomToInitialExtentButton.on("click", function() {
                 widget._zoomToInitialExtent();
             });
@@ -826,6 +831,20 @@ define([
         dumpItem: function () {
             // Выгружает значение выбранного слоя из itemStore в виде Object
             return this.itemStore.dumpItem(this.item);
+        },
+
+        _moveToCoordinates: function () {
+            if (this.moveToLon.isValid() && this.moveToLat.isValid()) {
+                this.map.olMap.panTo(
+                    new openlayers.LonLat(
+                        this.moveToLon.get('value'),
+                        this.moveToLat.get('value'))
+                    .transform(
+                        this.lonlatProjection,
+                        this.displayProjection
+                    )
+                )
+            }
         },
 
         _zoomToInitialExtent: function () {

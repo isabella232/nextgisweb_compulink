@@ -12,6 +12,9 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/layout.css')}"
         rel="stylesheet" type="text/css" media="screen"/>
 
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/dgrid.css')}"
+        rel="stylesheet" type="text/css" media="screen"/>
+
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jstree-3.0.9/themes/default/style.css')}"
         rel="stylesheet" type="text/css"/>
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery.js')}"></script>
@@ -26,27 +29,27 @@
             "sit_plan_layers_type": sit_plan_layers_type,
             "bookmarkLayerId": null,
             "rootItem": {
-                "children": [], 
-                "expanded": null, 
-                "type": "root", 
-                "id": 1, 
+                "children": [],
+                "expanded": null,
+                "type": "root",
+                "id": 1,
                 "label": null
-            }, 
+            },
             "extent": [
                 20,
                 20,
                 180,
                 80
-            ], 
+            ],
             "mid": {
-                "adapter": [], 
+                "adapter": [],
                 "basemap": [
                     "ngw/openlayers/layer/Layer",
                     "ngw/openlayers/layer/OSM",
                     "ngw/openlayers/layer/Google",
                     "ngw/openlayers/layer/Bing"
-                ], 
-                "plugin": []
+                ],
+                "plugin": ["webmap/plugin/FeatureLayer"]
             }
         };
 
