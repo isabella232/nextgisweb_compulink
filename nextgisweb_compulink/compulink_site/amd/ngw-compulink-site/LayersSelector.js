@@ -81,10 +81,10 @@ define([
 
                 switch (changed.action) {
                     case 'select_node':
-                        inserted.push(changed.node.id);
+                        inserted.push(node.id);
                         break;
                     case 'deselect_node':
-                        deleted.push(changed.node.id);
+                        deleted.push(node.id);
                         break;
                     case 'deselect_all':
                         deleted = changed.old_selection;
