@@ -172,71 +172,6 @@ define([
             }
         },
 
-        _bindClickChildNodesEvents: function (parentNode, initiator) {
-            if (parentNode.click) {
-                return false;
-            }
-            var $nodes;
-            if (initiator === 'root') {
-                $nodes = array.map(parentNode.children, function (id) {
-                    return '#' + id + ' a:not(.jstree-disabled)';
-                });
-                $nodes = jQuery($nodes.join(','));
-            } else if (initiator === 'after_open') {
-                $nodes = jQuery('#' + parentNode.id + ' ul li a:not(.jstree-disabled)');
-            } else if (initiator === 'click') {
-                $nodes = null;
-            }
-
-            this._checkStatesNodes($nodes, parentNode, initiator);
-        },
-
-        _checkStatesNodes: function ($nodes, parentNode, initiator) {
-            if ($nodes === null && parentNode.state.loaded === false && parentNode.original.has_children === true) {
-                this.$tree.jstree('open_node', parentNode);
-            }
-
-            if (parentNode.click) {
-                return false;
-            }
-
-            if ($nodes !== null && !parentNode.state.disabled) {
-                this._bindClickNodesEvents($nodes, parentNode, initiator);
-            }
-        },
-
-        _bindClickNodesEvents: function ($nodes, parentNode, initiator) {
-            var $tree, node;
-            $nodes.on('click', lang.hitch(this, function (e) {
-                $tree = this.$tree;
-                node = $tree.jstree('get_node', jQuery(e.currentTarget).parent().attr('id'));
-                console.log(node);
-                e.stopPropagation();
-
-
-                if (node.state.loaded === false) {
-                    $tree.jstree('load_node', node, function (loaded) {
-                        $tree.jstree('select_node', node);
-                    });
-
-                    $tree.on('load_all.jstree', function (loaded) {
-                        console.log(loaded);
-                    });
-                }
-
-                if (this.validators['LimitLayersValidator']) {
-                    this.validators['LimitLayersValidator']._validate('ResourcesTree', {
-                        node: node,
-                        $tree: $tree
-                    });
-                }
-            }));
-
-            if (initiator === 'root') {
-                parentNode.click == true;
-            }
-        },
-
         _fireTriggerChanged: function (nodesId, action) {
             var insertedDeletedNodes = this._getInsertedDeletedNodes(nodesId, action);
             topic.publish('resources/changed', insertedDeletedNodes.bottom_selected, insertedDeletedNodes.inserted, insertedDeletedNodes.deleted);
@@ -264,7 +199,6 @@ define([
                     }
                     break;
             }
-
             return result;
         },
 
