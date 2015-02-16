@@ -141,6 +141,21 @@ define([
             } else {
                 //throw 'LayersSelector: Resource type "' + resourceType '" is not found';
             }
+        },
+
+        addValidator: function (validator) {
+            this.validators[validator.validatorName] = validator;
+            if (this.validators[validator.validatorName].bindEvents) {
+                this.validators[validator.validatorName].bindEvents('LayersSelector');
+            }
+        },
+
+        _validate: function (validatorName, data) {
+            if (this.validators[validatorName]) {
+                return this.validators[validatorName]._validate('LayersSelector', data);
+            } else {
+                return null;
+            }
         }
     });
 });
