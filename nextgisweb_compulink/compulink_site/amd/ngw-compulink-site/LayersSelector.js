@@ -74,6 +74,10 @@ define([
         },
 
         _bindLayersTypeChangedEvent: function ($tree, resourceType) {
+            $tree.on('loaded.jstree', lang.hitch(this, function() {
+                this._saveTreeState($tree, resourceType);
+            }));
+
             $tree.on('changed.jstree', lang.hitch(this, function (e, changed) {
                 var node = changed.node,
                     inserted = [],
@@ -90,6 +94,7 @@ define([
                         deleted = changed.old_selection;
                         break;
                 }
+                this._saveTreeState($tree, resourceType);
                 topic.publish('layers/type/changed', inserted, deleted, resourceType);
             }));
         },
@@ -159,7 +164,7 @@ define([
         },
 
         _statesStorage: {},
-        _saveTreeStatesStorage: function ($tree, resourceType) {
+        _saveTreeState: function ($tree, resourceType) {
             this._statesStorage[resourceType] = $tree.jstree('get_state');
         }
     });
