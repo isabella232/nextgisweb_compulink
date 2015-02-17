@@ -901,6 +901,9 @@ define([
             var adapt = new Adapter({});
             var lyr = adapt.createLayer(data);
 
+            lyr.name = layer_id;
+            lyr.res_id = layer_id;
+
             this.map.addLayer(lyr);
 
             return lyr;

@@ -49,7 +49,7 @@
                     "ngw/openlayers/layer/Google",
                     "ngw/openlayers/layer/Bing"
                 ],
-                "plugin": ["webmap/plugin/FeatureLayer"]
+                "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
             }
         };
 
