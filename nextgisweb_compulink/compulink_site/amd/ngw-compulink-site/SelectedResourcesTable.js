@@ -8,8 +8,9 @@ define([
     'ngw-compulink-libs/mustache/mustache',
     'dgrid/OnDemandGrid',
     'dgrid/extensions/ColumnResizer',
-    "dojo/store/Memory"
-], function (declare, lang, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory) {
+    "dojo/store/Memory",
+    "dgrid/Selection"
+], function (declare, lang, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection) {
     return declare(null, {
 
         _columns: {
@@ -32,15 +33,17 @@ define([
                 subcontr: 'Суб-чик СМР ВОЛС'
         },
 
-        _url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
+        _get_focl_info_url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
+        _get_extent_url: ngwConfig.applicationUrl + '/compulink/resources/focl_extent',
 
         constructor: function (domId) {
             this._store = Memory({data: []});
 
-            this._grid = new (declare([OnDemandGrid, ColumnResizer]))(
+            this._grid = new (declare([OnDemandGrid, ColumnResizer, Selection]))(
                 {
                     store: this._store,
                     columns: this._columns,
+                    selectionMode: "single",
                     loadingMessage: 'Загрузка данных...',
                     noDataMessage: 'Нет выбранных элементов'
                 }, domId);
@@ -54,13 +57,27 @@ define([
             topic.subscribe('resources/changed', lang.hitch(this, function (selection) {
                 this.updateDataStore(selection);
             }));
+
+            this._grid.on(".dgrid-row:dblclick", lang.hitch(this, function (evt) {
+                this.zoomToResource(evt);
+            }));
+        },
+
+        zoomToResource: function(evt) {
+            var row = this._grid.row(evt); //row.id == id of group resource
+
+            xhr.post(this._get_extent_url, {handleAs: 'json', data: {id: row.id}}).then(lang.hitch(this, function (data) {
+                if (data && data.extent) {
+                    topic.publish('map/zoom_to', data.extent);
+                }
+            }));
         },
 
         updateDataStore: function(ids) {
             ids_num = [];
             for (var i=0; i<ids.length; i++) { ids_num.push(ids[i].replace('res_','')); }
 
-            xhr.post(this._url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
+            xhr.post(this._get_focl_info_url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
                 this._store.data = data;
                 this._grid.refresh();
             }));

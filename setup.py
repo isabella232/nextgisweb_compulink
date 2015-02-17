@@ -5,7 +5,8 @@ version = '0.1'
 requires = (
     'nextgisweb',
     'nextgisweb_rekod',
-    'lxml'
+    'lxml',
+    'shapely'
 )
 
 entry_points = {
