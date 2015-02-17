@@ -51,7 +51,6 @@ define([
                 }
             }
 
-            console.log(count);
             if (count > this.limit) {
                 this.showConfirmDialog(function () {
                     deferred.resolve(true);
@@ -66,7 +65,37 @@ define([
         },
 
         validateLayersSelector: function (data) {
+            var deferred = new Deferred(),
+                resourceType,
+                resourcesSelected = {
+                    'situation_plan': this.LayersManager.Resources.situation_plan.length,
+                    'focl_struct': this.LayersManager.Resources.focl_struct.length
+                },
+                layersTypeSelected = {
+                    situation_plan: this.LayersSelector.getLayersSelected('situation_plan'),
+                    focl_struct: this.LayersSelector.getLayersSelected('focl_struct')
+                },
+                count = 0;
 
+            for (resourceType in resourcesSelected) {
+                if (resourcesSelected.hasOwnProperty(resourceType)) {
+                    count += resourcesSelected[resourceType] * layersTypeSelected[resourceType].length;
+                }
+            }
+
+            console.log(count);
+
+            if (count > this.limit) {
+                this.showConfirmDialog(function () {
+                    deferred.resolve(true);
+                }, function () {
+                    deferred.resolve(false);
+                });
+                return deferred.promise;
+            } else {
+                deferred.resolve(true);
+                return deferred;
+            }
         },
 
         bindEvents: function (initiator) {
@@ -75,7 +104,7 @@ define([
                     return this.bindEventsResourcesTree();
                     break;
                 case 'LayersSelector':
-                    return this.bindEventsLayersSelector();
+                    //return this.bindEventsLayersSelector();
                     break;
                 default:
                     console.log('LimitLayersValidator is not recognized "' + initiator + '" initiator. Returned "true".');

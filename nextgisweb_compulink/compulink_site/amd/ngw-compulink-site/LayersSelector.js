@@ -74,7 +74,7 @@ define([
         },
 
         _bindLayersTypeChangedEvent: function ($tree, resourceType) {
-            $tree.on('loaded.jstree', lang.hitch(this, function() {
+            $tree.on('loaded.jstree', lang.hitch(this, function () {
                 this._saveTreeState($tree, resourceType);
             }));
 
@@ -82,10 +82,10 @@ define([
                 var node = changed.node,
                     inserted = [],
                     deleted = [];
-
                 switch (changed.action) {
                     case 'select_node':
-                        inserted.push(node.id);
+                        this._selectLayersNodeHandler($tree, resourceType, node);
+                        return true;
                         break;
                     case 'deselect_node':
                         deleted.push(node.id);
@@ -97,6 +97,22 @@ define([
                 this._saveTreeState($tree, resourceType);
                 topic.publish('layers/type/changed', inserted, deleted, resourceType);
             }));
+        },
+
+        _selectLayersNodeHandler: function ($tree, resourceType, selected_node) {
+            var validated = this._validate('LimitLayersValidator');
+            if (validated) {
+                validated.then(lang.hitch(this, function (result) {
+                    if (result) {
+                        this._saveTreeState($tree, resourceType);
+                        topic.publish('layers/type/changed', [selected_node.id], [], resourceType);
+                    } else {
+                        this._setCurrentState($tree, resourceType);
+                    }
+                }))
+            } else {
+                topic.publish('layers/type/changed', [selected_node.id], [], resourceType);
+            }
         },
 
         bindEvents: function () {
@@ -148,6 +164,7 @@ define([
             }
         },
 
+        validators: {},
         addValidator: function (validator) {
             this.validators[validator.validatorName] = validator;
             if (this.validators[validator.validatorName].bindEvents) {
@@ -166,6 +183,10 @@ define([
         _statesStorage: {},
         _saveTreeState: function ($tree, resourceType) {
             this._statesStorage[resourceType] = $tree.jstree('get_state');
+        },
+
+        _setCurrentState: function ($tree, resourceType) {
+            $tree.jstree('set_state', this._statesStorage[resourceType]);
         }
     });
 });

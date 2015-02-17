@@ -463,6 +463,7 @@ define([
             this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector,
                 this.LayersManager, 100);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
+            this.LayersSelector.addValidator(this.LimitLayersValidator);
 
             this._startupDeferred.resolve();
         },

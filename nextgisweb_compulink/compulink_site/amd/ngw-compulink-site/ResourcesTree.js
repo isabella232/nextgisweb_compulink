@@ -109,7 +109,7 @@ define([
                                     validated.then(lang.hitch(this, function (result) {
                                         if (result) {
                                             this._previousState = this.$tree.jstree('get_state');
-                                            this._fireTriggerChanged(node.children, changed.action);
+                                            this._fireTriggerChanged(parent_node.node.children, changed.action);
                                         } else {
                                             this._set_previous_state();
                                         }
