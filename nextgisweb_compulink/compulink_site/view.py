@@ -7,12 +7,15 @@ from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload_all
+import sqlalchemy.sql as sql
 from nextgisweb import DBSession
+from nextgisweb import db
 from nextgisweb.resource import Resource, ResourceGroup
-from nextgisweb.vector_layer import VectorLayer
+from nextgisweb.vector_layer import VectorLayer, TableInfo
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 import nextgisweb_compulink.compulink_admin
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
+from shapely.wkt import loads
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(nextgisweb_compulink.compulink_admin.__file__))
@@ -30,6 +33,10 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.site.focl_info',
         '/compulink/resources/focl_info').add_view(get_focl_info)
+
+    config.add_route(
+        'compulink.site.focl_extent',
+        '/compulink/resources/focl_extent').add_view(get_focl_extent)
 
     config.add_route(
         'compulink.site.layers_by_type',
@@ -148,6 +155,58 @@ def get_focl_info(request):
 
     dbsession.close()
 
+    return Response(json.dumps(resp))
+
+
+def extent_union(extent, new_extent):
+    return [
+        extent[0] if extent[0] < new_extent[0] else new_extent[0],
+        extent[1] if extent[1] < new_extent[1] else new_extent[1],
+        extent[2] if extent[2] > new_extent[2] else new_extent[2],
+        extent[3] if extent[3] > new_extent[3] else new_extent[3],
+    ]
+
+def extent_buff(extent, buff_size):
+    return [
+        extent[0] - buff_size,
+        extent[1] - buff_size,
+        extent[2] + buff_size,
+        extent[3] + buff_size,
+    ]
+
+
+@view_config(renderer='json')
+def get_focl_extent(request):
+
+    if 'id' in request.params:
+        res_id = request.params['id']
+    else:
+        return Response('[]')
+
+    dbsession = DBSession()
+    resource = dbsession.query(Resource).filter(Resource.id==res_id).first()
+
+    extent = None
+    for res in resource.children:
+        if res.identity != VectorLayer.identity:
+            continue
+        #get extent
+        tableinfo = TableInfo.from_layer(res)
+        tableinfo.setup_metadata(tablename=res._tablename)
+
+        columns = [db.func.st_astext(db.func.st_envelope(db.text('geom')).label('box'))]
+        query = sql.select(columns=columns, from_obj=tableinfo.table)
+        extent_str = dbsession.connection().scalar(query)
+        if extent_str:
+            if not extent:
+                extent = loads(extent_str).bounds
+            else:
+                new_extent = loads(extent_str).bounds
+                extent = extent_union(extent, new_extent)
+
+    dbsession.close()
+    extent = extent_buff(extent, 3000)
+    resp = {'extent': extent}
     return Response(json.dumps(resp))
 
 

@@ -12,6 +12,7 @@ define([
     "dojo/number",
     "dojo/aspect",
     "dojo/io-query",
+    "dojo/topic",
     "ngw/openlayers",
     "ngw/openlayers/Map",
     'dgrid/Grid',
@@ -74,6 +75,7 @@ define([
     number,
     aspect,
     ioQuery,
+    topic,
     openlayers,
     Map,
     Grid,
@@ -465,6 +467,12 @@ define([
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
 
             this._startupDeferred.resolve();
+
+            //events
+            topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
+                 this.map.olMap.zoomToExtent(new_ext, true);
+            }));
+
         },
 
         buildLayersSelector: function () {
