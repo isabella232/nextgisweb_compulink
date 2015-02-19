@@ -14,7 +14,7 @@ define([
     return declare(null, {
 
         _columns: {
-                display_name: 'Название ВОЛС',
+                display_name: 'Наименование',
                 region: 'Субъект РФ',
                 district: 'Муниципальный район',
                 settlement: 'Нас. пункт',
