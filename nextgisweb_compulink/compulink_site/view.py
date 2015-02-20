@@ -16,6 +16,7 @@ from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT
 import nextgisweb_compulink.compulink_admin
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 from shapely.wkt import loads
+from pyramid.httpexceptions import HTTPForbidden
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(nextgisweb_compulink.compulink_admin.__file__))
@@ -97,6 +98,9 @@ def get_child_resx_by_parent(request):
 
 
 def show_map(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     focl_layers_type = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
     values = dict(custom_layout=True, focl_layers_type=focl_layers_type, sit_plan_layers_type=sit_plan_layers_type)
