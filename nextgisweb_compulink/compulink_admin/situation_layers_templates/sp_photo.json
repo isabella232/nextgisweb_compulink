@@ -11,7 +11,7 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Подпись",
-                "label_field": false,
+                "label_field": true,
                 "grid_visibility": true
             },
             {
