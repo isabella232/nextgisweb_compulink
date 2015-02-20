@@ -12,7 +12,7 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Наименование",
-                "label_field": false,
+                "label_field": true,
                 "grid_visibility": true
             },
             {

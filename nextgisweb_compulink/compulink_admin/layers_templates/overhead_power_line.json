@@ -19,7 +19,7 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Напряжение",
-                "label_field": false,
+                "label_field": true,
                 "grid_visibility": true
             },
             {
