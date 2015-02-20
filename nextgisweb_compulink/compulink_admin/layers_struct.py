@@ -10,7 +10,7 @@ FOCL_LAYER_STRUCT = [
     'overhead_power_line',
     'other_point_object',
     'note',
-    'cellular_station',
+    #'cellular_station',
     'sump_canalization',
     'communication_center',
     'electrical_substation',
