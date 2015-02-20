@@ -852,7 +852,8 @@ define([
                         this.lonlatProjection,
                         this.displayProjection
                     )
-                )
+                );
+                this.moveToCoordinates.closeDropDown();
             }
         },
 
