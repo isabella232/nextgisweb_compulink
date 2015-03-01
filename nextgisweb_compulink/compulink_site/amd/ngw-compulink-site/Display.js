@@ -307,7 +307,8 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    new ResourcesTypeSelector('resourcesTypeSelector');
+                    var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
+                    resourcesTypeSelector.selectResourceType('vols');
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });

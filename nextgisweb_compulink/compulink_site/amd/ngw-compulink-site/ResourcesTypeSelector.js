@@ -23,6 +23,10 @@ define([
             on(this._selectDijit, 'change', lang.hitch(this, function (selectedType) {
                 topic.publish('resources/type/set', selectedType);
             }));
+        },
+
+        selectResourceType: function (resourceType) {
+            this._selectDijit.attr( 'value', resourceType);
         }
     });
 });
