@@ -10,6 +10,8 @@ from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.auth.models import User
 from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
+from nextgisweb.webmap.adapter import ImageAdapter
+from nextgisweb.webmap.model import WebMap, WebMapItem
 from nextgisweb.wfsserver import Service as WfsService
 from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
@@ -35,7 +37,10 @@ class Region(Base):
     cls_display_name = "Субъект РФ"
 
     id = db.Column(db.Integer, primary_key=True)
+    deleted = db.Column(db.Boolean, default=False)
+
     name = db.Column(db.Unicode, nullable=False)
+
 
 
 class District(Base):
@@ -45,6 +50,8 @@ class District(Base):
     cls_display_name = "Муниципальный район"
 
     id = db.Column(db.Integer, primary_key=True)
+    deleted = db.Column(db.Boolean, default=False)
+
     region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=False)
     name = db.Column(db.Unicode, nullable=False)
 
@@ -56,7 +63,10 @@ class Customer(Base):
     cls_display_name = "Заказчик строительства"
 
     id = db.Column(db.Integer, primary_key=True)
+    deleted = db.Column(db.Boolean, default=False)
+
     name = db.Column(db.Unicode, nullable=False)
+
 
 class Subcontr(Base):
     __tablename__ = 'compulink_subcontr'
@@ -65,6 +75,7 @@ class Subcontr(Base):
     cls_display_name = "Субподрядчик СМР ВОЛС"
 
     id = db.Column(db.Integer, primary_key=True)
+    deleted = db.Column(db.Boolean, default=False)
     name = db.Column(db.Unicode, nullable=False)
 
 
@@ -111,11 +122,14 @@ class FoclStruct(Base, ResourceGroup):
     district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)  # Муниципальный район
     settlement = db.Column(db.Unicode, nullable=True)  # Населенный пункт
     access_point_count = db.Column(db.Integer, nullable=True, default=0)  # Количество точек доступа
+
     deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору
     project_manager_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=True)  # Руководитель проекта
-    focl_length_order = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по заказу
-    focl_length_project = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС по проекту
+
+    focl_length_order = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС предварительная
+    focl_length_project = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС проектная
     focl_length_fact = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС фактическая
+
     length_on_ol = db.Column(db.Float, nullable=True, default=0)  # Протяженность по ВЛ
     length_in_ground = db.Column(db.Float, nullable=True, default=0)  # Протяженность в грунте
     length_in_canalization = db.Column(db.Float, nullable=True, default=0)  # Протяженность в кабельной канализации
@@ -127,6 +141,9 @@ class FoclStruct(Base, ResourceGroup):
 
     status = db.Column(db.Unicode, nullable=True)  # Статус (проект, идет строительство, построена)
     status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
+
+    external_id = db.Column(db.Unicode, nullable=True)  # Внешний идентификатор
+
 
 
     @classmethod
@@ -161,12 +178,18 @@ class FoclStructSerializer(Serializer):
                                  owner_user=focl_struct_obj.owner_user,
                                  display_name='Сервис редактирования')
 
+        web_map = WebMap(parent=focl_struct_obj,
+                         owner_user=focl_struct_obj.owner_user,
+                         display_name='Сервис редактирования')
+        web_map.root_item = WebMapItem()
+
         for vl_name in FOCL_LAYER_STRUCT:
             with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
                 json_layer_struct = json.load(json_file, encoding='utf-8')
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
-                ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+                mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+                ModelsUtils.append_lyr_to_web_map(web_map.root_item, mapserver_style, vl_name)
 
         wfs_service.persist()
 
@@ -174,6 +197,10 @@ class FoclStructSerializer(Serializer):
 class SituationPlan(Base, ResourceGroup):
     identity = 'situation_plan'
     cls_display_name = "Ситуационный план"
+
+    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=True)
+    district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)
+
 
     @classmethod
     def check_parent(cls, parent):
@@ -248,6 +275,19 @@ class ModelsUtils():
         #wfs_layer.persist()
 
     @classmethod
+    def append_lyr_to_web_map(cls, web_map_root_item, mapserver_style, display_name):
+        map_item = WebMapItem()
+        map_item.item_type = 'layer'
+        map_item.display_name = display_name
+        map_item.layer_enabled = True
+        map_item.layer_adapter = ImageAdapter.identity
+        map_item.style = mapserver_style
+
+        web_map_root_item.children.append(map_item)
+        map_item.persist()
+
+
+    @classmethod
     def set_default_style(cls, vector_layer, keyname, style_name):
         def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname+'.qml')
 
@@ -262,5 +302,7 @@ class ModelsUtils():
         ms.display_name = style_name
         ms.xml = mapserver_xml
         ms.persist()
+
+        return ms
 
 
