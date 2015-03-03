@@ -30,54 +30,6 @@ BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 LAYERS_DEF_STYLES_PATH = os.path.join(BASE_PATH, 'layers_default_styles/')
 
 
-class Region(Base):
-    __tablename__ = 'compulink_region'
-
-    identity = 'region'
-    cls_display_name = "Субъект РФ"
-
-    id = db.Column(db.Integer, primary_key=True)
-    deleted = db.Column(db.Boolean, default=False)
-
-    name = db.Column(db.Unicode, nullable=False)
-
-
-
-class District(Base):
-    __tablename__ = 'compulink_district'
-
-    identity = 'district'
-    cls_display_name = "Муниципальный район"
-
-    id = db.Column(db.Integer, primary_key=True)
-    deleted = db.Column(db.Boolean, default=False)
-
-    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=False)
-    name = db.Column(db.Unicode, nullable=False)
-
-
-class Customer(Base):
-    __tablename__ = 'compulink_customer'
-
-    identity = 'customer'
-    cls_display_name = "Заказчик строительства"
-
-    id = db.Column(db.Integer, primary_key=True)
-    deleted = db.Column(db.Boolean, default=False)
-
-    name = db.Column(db.Unicode, nullable=False)
-
-
-class Subcontr(Base):
-    __tablename__ = 'compulink_subcontr'
-
-    identity = 'subcontr'
-    cls_display_name = "Субподрядчик СМР ВОЛС"
-
-    id = db.Column(db.Integer, primary_key=True)
-    deleted = db.Column(db.Boolean, default=False)
-    name = db.Column(db.Unicode, nullable=False)
-
 
 class FoclProject(Base, ResourceGroup):
     identity = 'focl_project'
@@ -118,10 +70,10 @@ class FoclStruct(Base, ResourceGroup):
     identity = 'focl_struct'
     cls_display_name = "Структура ВОЛС"
 
-    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=True)
-    district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)  # Муниципальный район
+    region = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Регионы
+    district = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Муниципальный район
     settlement = db.Column(db.Unicode, nullable=True)  # Населенный пункт
-    access_point_count = db.Column(db.Integer, nullable=True, default=0)  # Количество точек доступа
+    access_point_count = db.Column(db.Integer, nullable=True, default=None)  # Количество точек доступа
 
     deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору
     project_manager_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=True)  # Руководитель проекта
@@ -134,10 +86,10 @@ class FoclStruct(Base, ResourceGroup):
     length_in_ground = db.Column(db.Float, nullable=True, default=0)  # Протяженность в грунте
     length_in_canalization = db.Column(db.Float, nullable=True, default=0)  # Протяженность в кабельной канализации
 
-    customer = db.Column(db.Integer, db.ForeignKey(Customer.id), nullable=True)  # Заказчик строительства
+    customer = db.Column(db.Unicode, nullable=True)  # Справочник: Заказчик строительства
     planned_start_date = db.Column(db.Date, nullable=True)  # Планируемая дата начала СМР
     planned_finish_date = db.Column(db.Date, nullable=True)  # Планируемая дата окончания СМР
-    subcontr = db.Column(db.Integer, db.ForeignKey(Subcontr.id), nullable=True)   # Субподрядчик СМР ВОЛС
+    subcontr = db.Column(db.Unicode, nullable=True)   # Справочник: Субподрядчик СМР ВОЛС
 
     status = db.Column(db.Unicode, nullable=True)  # Статус (проект, идет строительство, построена)
     status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
@@ -198,9 +150,8 @@ class SituationPlan(Base, ResourceGroup):
     identity = 'situation_plan'
     cls_display_name = "Ситуационный план"
 
-    region_id = db.Column(db.Integer, db.ForeignKey(Region.id), nullable=True)
-    district_id = db.Column(db.Integer, db.ForeignKey(District.id), nullable=True)
-
+    region = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Регионы
+    district = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Муниципальный район
 
     @classmethod
     def check_parent(cls, parent):
