@@ -1,2 +1,229 @@
 <div data-dojo-type="${baseClass}" data-dojo-attach-point="focusNode">
+    <div data-dojo-type="dijit/layout/ContentPane" style="overflow:auto">
+        <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols:1" >
+
+            <?-- temporary lists -->
+            <div data-dojo-type="dojo/store/Memory"
+                 data-dojo-id="regions_data"
+                 data-dojo-props="data: [
+                        {name: 'Адыгея', id: 'Адыгея'},
+                        {name: 'Алтай', id: 'Алтай'},
+                        {name: 'Алтайский край', id: 'Алтайский край'},
+                        {name: 'Амурская область', id: 'Амурская область'},
+                        {name: 'Архангельская область', id: 'Архангельская область'},
+                        {name: 'Астраханская область', id: 'Астраханская область'},
+                        {name: 'Башкортостан', id: 'Башкортостан'},
+                        {name: 'Белгородская область', id: 'Белгородская область'},
+                        {name: 'Брянская область', id: 'Брянская область'},
+                        {name: 'Бурятия', id: 'Бурятия'},
+                        {name: 'Владимирская область', id: 'Владимирская область'},
+                        {name: 'Волгоградская область', id: 'Волгоградская область'},
+                        {name: 'Вологодская область', id: 'Вологодская область'},
+                        {name: 'Воронежская область', id: 'Воронежская область'},
+                        {name: 'Дагестан', id: 'Дагестан'},
+                        {name: 'Еврейская автономная область', id: 'Еврейская автономная область'},
+                        {name: 'Забайкальский край', id: 'Забайкальский край'},
+                        {name: 'Ивановская область', id: 'Ивановская область'},
+                        {name: 'Ингушетия', id: 'Ингушетия'},
+                        {name: 'Иркутская область', id: 'Иркутская область'},
+                        {name: 'Кабардино-Балкария', id: 'Кабардино-Балкария'},
+                        {name: 'Калининградская область', id: 'Калининградская область'},
+                        {name: 'Калмыкия', id: 'Калмыкия'},
+                        {name: 'Калужская область', id: 'Калужская область'},
+                        {name: 'Камчатский край', id: 'Камчатский край'},
+                        {name: 'Карачаево-Черкесия', id: 'Карачаево-Черкесия'},
+                        {name: 'Карелия', id: 'Карелия'},
+                        {name: 'Кемеровская область', id: 'Кемеровская область'},
+                        {name: 'Кировская область', id: 'Кировская область'},
+                        {name: 'Коми', id: 'Коми'},
+                        {name: 'Костромская область', id: 'Костромская область'},
+                        {name: 'Краснодарский край', id: 'Краснодарский край'},
+                        {name: 'Красноярский край', id: 'Красноярский край'},
+                        {name: 'Курганская область', id: 'Курганская область'},
+                        {name: 'Курская область', id: 'Курская область'},
+                        {name: 'Ленинградская область', id: 'Ленинградская область'},
+                        {name: 'Липецкая область', id: 'Липецкая область'},
+                        {name: 'Магаданская область', id: 'Магаданская область'},
+                        {name: 'Марий Эл', id: 'Марий Эл'},
+                        {name: 'Мордовия', id: 'Мордовия'},
+                        {name: 'Москва', id: 'Москва'},
+                        {name: 'Московская область', id: 'Московская область'},
+                        {name: 'Мурманская область', id: 'Мурманская область'},
+                        {name: 'Ненецкий автономный округ', id: 'Ненецкий автономный округ'},
+                        {name: 'Нижегородская область', id: 'Нижегородская область'},
+                        {name: 'Новгородская область', id: 'Новгородская область'},
+                        {name: 'Новосибирская область', id: 'Новосибирская область'},
+                        {name: 'Омская область', id: 'Омская область'},
+                        {name: 'Оренбургская область', id: 'Оренбургская область'},
+                        {name: 'Орловская область', id: 'Орловская область'},
+                        {name: 'Пензенская область', id: 'Пензенская область'},
+                        {name: 'Пермский край', id: 'Пермский край'},
+                        {name: 'Приморский край', id: 'Приморский край'},
+                        {name: 'Псковская область', id: 'Псковская область'},
+                        {name: 'Ростовская область', id: 'Ростовская область'},
+                        {name: 'Рязанская область', id: 'Рязанская область'},
+                        {name: 'Самарская область', id: 'Самарская область'},
+                        {name: 'Санкт-Петербург', id: 'Санкт-Петербург'},
+                        {name: 'Саратовская область', id: 'Саратовская область'},
+                        {name: 'Саха (Якутия)', id: 'Саха (Якутия)'},
+                        {name: 'Сахалинская область', id: 'Сахалинская область'},
+                        {name: 'Свердловская область', id: 'Свердловская область'},
+                        {name: 'Северная Осетия - Алания', id: 'Северная Осетия - Алания'},
+                        {name: 'Смоленская область', id: 'Смоленская область'},
+                        {name: 'Ставропольский край', id: 'Ставропольский край'},
+                        {name: 'Тамбовская область', id: 'Тамбовская область'},
+                        {name: 'Татарстан', id: 'Татарстан'},
+                        {name: 'Тверская область', id: 'Тверская область'},
+                        {name: 'Томская область', id: 'Томская область'},
+                        {name: 'Тульская область', id: 'Тульская область'},
+                        {name: 'Тыва', id: 'Тыва'},
+                        {name: 'Тюменская область', id: 'Тюменская область'},
+                        {name: 'Удмуртия', id: 'Удмуртия'},
+                        {name: 'Ульяновская область', id: 'Ульяновская область'},
+                        {name: 'Хабаровский край', id: 'Хабаровский край'},
+                        {name: 'Хакасия', id: 'Хакасия'},
+                        {name: 'Ханты-Мансийский автономный округ – Югра', id: 'Ханты-Мансийский автономный округ – Югра'},
+                        {name: 'Челябинская область', id: 'Челябинская область'},
+                        {name: 'Чечня', id: 'Чечня'},
+                        {name: 'Чувашия', id: 'Чувашия'},
+                        {name: 'Чукотский автономный округ', id: 'Чукотский автономный округ'},
+                        {name: 'Ямало-Ненецкий автономный округ', id: 'Ямало-Ненецкий автономный округ'},
+                        {name: 'Ярославская область', id: 'Ярославская область'}
+                        ]"></div>
+
+            <div data-dojo-type="dojo/store/Memory"
+                 data-dojo-id="manager_data"
+                 data-dojo-props="data: [
+                        {name: 'Administrator', id: 'Administrator'}
+                        ]"></div>
+
+            <div data-dojo-type="dojo/store/Memory"
+                 data-dojo-id="status_data"
+                 data-dojo-props="data: [
+                        {name: 'Проект', id: 'Проект'},
+                        {name: 'Идет строительство', id: 'Идет строительство'},
+                        {name: 'Построена', id: 'Построена'}
+                        ]"></div>
+
+            <div id = "region_select"
+                 data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false, store:regions_data, searchAttr:'name'"
+                 data-ngw-serialize="region"
+                 title="Субъект РФ" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="district"
+                 title="Муниципальный район" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ValidationTextBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="settlement"
+                 title="Населенный пункт" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="access_point_count"
+                 title="Количество точек доступа" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/DateTextBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="deadline_contract"
+                 title="Срок сдачи по договору" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false, store:manager_data, searchAttr:'name'"
+                 data-ngw-serialize="project_manager_id"
+                 title="Руководитель проекта" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="focl_length_order"
+                 title="Протяженность ВОЛС по заказу" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="focl_length_project"
+                 title="Протяженность ВОЛС по проекту" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="focl_length_fact"
+                 title="Протяженность ВОЛС фактическая" style="width: 100%">
+            </div>
+
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="length_on_ol"
+                 title="Протяженность по ВЛ" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="length_in_ground"
+                 title="Протяженность в грунте" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/NumberTextBox"
+                 data-dojo-props="required: false, constraints:{min:0},
+                                invalidMessage:'Пожалуйста введите числовое значение!',
+                                rangeMessage:'Значение должно быть больше нуля!'"
+                 data-ngw-serialize="length_in_canalization"
+                 title="Протяженность в кабельной канализации" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="customer"
+                 title="Заказчик строительства" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="subcontr"
+                 title="Субподрядчик СМР ВОЛС" style="width: 100%">
+            </div>
+
+
+            <div data-dojo-type="dijit/form/DateTextBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="planned_start_date"
+                 title="Планируемая дата начала СМР" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/DateTextBox"
+                 data-dojo-props="required: false"
+                 data-ngw-serialize="planned_finish_date"
+                 title="Планируемая дата окончания СМР" style="width: 100%">
+            </div>
+
+            <div data-dojo-type="dijit/form/ComboBox"
+                 data-dojo-props="required: false, store:status_data, searchAttr:'name'"
+                 data-ngw-serialize="status"
+                 title="Статус" style="width: 100%">
+            </div>
+
+        </div>
+    </div>
 </div>
