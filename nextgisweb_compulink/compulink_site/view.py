@@ -118,7 +118,8 @@ def get_focl_layers_list():
                 layers_for_jstree.append({
                     'text': json_layer_struct['resource']['display_name'],
                     'id': vl_name,
-                    'children': False
+                    'children': False,
+                    'icon': vl_name
                     })
 
     layers_for_jstree.reverse()
@@ -136,7 +137,8 @@ def get_sit_plan_layers_list():
                 layers.append({
                     'text': json_layer_struct['resource']['display_name'],
                     'id': vl_name,
-                    'children': False
+                    'children': False,
+                    'icon': vl_name
                 })
     layers.reverse()
     return layers
