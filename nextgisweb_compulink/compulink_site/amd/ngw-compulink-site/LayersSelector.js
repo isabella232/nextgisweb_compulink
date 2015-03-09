@@ -58,7 +58,7 @@ define([
                     'themes': {
                         'variant': 'small',
                         'dots': false,
-                        'icons': false
+                        'icons': true
                     },
                     'data': layersTreeData
                 },
@@ -140,7 +140,7 @@ define([
         setResourceType: function (resourceType) {
             this._resourceTypeFilter = resourceType;
             this.$panel.attr('data-resource-type-filter', resourceType);
-            this.deselectAllOther(resourceType);
+            //this.deselectAllOther(resourceType);
         },
 
         deselectAllOther: function (resourceTypeSelected) {
@@ -187,6 +187,13 @@ define([
 
         _setCurrentState: function ($tree, resourceType) {
             $tree.jstree('set_state', this._statesStorage[resourceType]);
+        },
+
+        selectLayers: function (layers, resourceType) {
+            var resourcesTypesConfig = this.settings.resources;
+            for (var i = 0, countSelectedNodes = layers.length; i < countSelectedNodes; i++) {
+                resourcesTypesConfig[resourceType]['$tree'].jstree('select_node', layers[i]);
+            }
         }
     });
 });
