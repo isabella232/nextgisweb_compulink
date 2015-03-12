@@ -16,9 +16,9 @@
     margin: 1%;
 }
 
-#resourcesTree a[chb="false"] i.jstree-checkbox {
-    display: none;
-}
+/*#resourcesTree a[chb="false"] i.jstree-checkbox {*/
+    /*display: none;*/
+/*}*/
 
 #resourcesTree i.jstree-themeicon-custom {
     width: 16px;
@@ -71,13 +71,6 @@
 
 #rightPanel div.tree-wrapper {
     overflow: auto;
-}
-
-#rightPanel div.tree-overlay {
-    display: none;
-    background-image: url(../img/disabled-overlay.png);
-    opacity: 0.6;
-    z-index: 9999;
 }
 
 #rightPanel[data-resource-type-filter=vols] div.sit,
