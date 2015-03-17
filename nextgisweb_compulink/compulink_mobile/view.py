@@ -13,8 +13,7 @@ SYNC_LAYERS_TYPES = [
     'fosc',
     'optical_cable',
     'optical_cross',
-    'telecom_cabinet',
-    'pole',
+    'access_point',
     'endpoint',
 ]
 
@@ -27,21 +26,27 @@ def setup_pyramid(comp, config):
 
 @view_config(renderer='json')
 def get_user_focl_list(request):
+    # TODO: Now - very simple variant. Linear alg.
+    # TODO: Maybe need tree walking!!!
 
     dbsession = DBSession()
-    #TODO: permission check. Now only for Kursk hardcode!!!
-    parent_res = dbsession.query(Resource).filter(Resource.id == 80373).first()
-    #resources = dbsession.query(Resource).filter(Resource.parent == parent_res).filter(Resource.identity == FoclStruct.identity).all()
-    resources = parent_res.children
+
+    #parent_res = dbsession.query(Resource).get(0)
+    #resources = parent_res.children
+
+    resources = dbsession.query(Resource).filter(Resource.cls == FoclStruct.identity).all()
 
     focl_list = []
     for resource in resources:
-        if resource.identity != FoclStruct.identity:
-            continue
+        # TODO: permission check
+        #if not resource.has_permission(???):
+        #   continue
 
         focl = {
             'id': resource.id,
             'name': resource.display_name,
+            'region': resource.region,
+            'district': resource.district,
             'layers': []
         }
 
@@ -57,5 +62,6 @@ def get_user_focl_list(request):
                     break
 
         focl_list.append(focl)
+
     dbsession.close()
     return Response(json.dumps(focl_list))
