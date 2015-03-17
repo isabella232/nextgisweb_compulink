@@ -132,8 +132,9 @@ class FoclStructSerializer(Serializer):
 
         web_map = WebMap(parent=focl_struct_obj,
                          owner_user=focl_struct_obj.owner_user,
-                         display_name='Сервис редактирования')
+                         display_name='Веб-карта ВОЛС')
         web_map.root_item = WebMapItem()
+        web_map.root_item.item_type = 'root'
 
         for vl_name in FOCL_LAYER_STRUCT:
             with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
@@ -144,6 +145,8 @@ class FoclStructSerializer(Serializer):
                 ModelsUtils.append_lyr_to_web_map(web_map.root_item, mapserver_style, vl_name)
 
         wfs_service.persist()
+        web_map.persist()
+        web_map.root_item.persist()
 
 
 class SituationPlan(Base, ResourceGroup):
