@@ -27,6 +27,6 @@ class SituationPlanWidget(Widget):
 def setup_pyramid(comp, config):
     #Регистрируем секцую Проект строительства ВОЛС в Групповом ресурсе
     Resource.__psection__.register(
-       key='focl_project', priority=10, title="Проект строительства ВОЛС",
+       key='focl_project', priority=10,
        is_applicable=lambda obj: isinstance(obj, FoclProject),
        template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
