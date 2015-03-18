@@ -1,0 +1,41 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Спецпереходы",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+             {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": true,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "special_laying_method",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Способ прокладки кабеля",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "LINESTRING",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
