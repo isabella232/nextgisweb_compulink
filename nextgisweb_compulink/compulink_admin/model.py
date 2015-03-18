@@ -33,7 +33,7 @@ LAYERS_DEF_STYLES_PATH = os.path.join(BASE_PATH, 'layers_default_styles/')
 
 class FoclProject(Base, ResourceGroup):
     identity = 'focl_project'
-    cls_display_name = "Проект строительства ВОЛС"
+    cls_display_name = "Проект"
 
     @classmethod
     def check_parent(cls, parent):

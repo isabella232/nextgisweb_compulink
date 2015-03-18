@@ -22,7 +22,7 @@ define([
 ) {
     return declare([ContentPane, serialize.Mixin, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
-        title: "Проект строительства ВОЛС",
+        title: "Проект",
         serializePrefix: "focl_project",
 
         postCreate: function () {
