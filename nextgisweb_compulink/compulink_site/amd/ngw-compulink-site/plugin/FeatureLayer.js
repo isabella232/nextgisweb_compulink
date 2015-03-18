@@ -183,7 +183,7 @@ define([
             this._lastCriteria = criteria;
 
             this.searchResults = new Menu({});
-            
+
             var searchResults = this.searchResults;
             domStyle.set(searchResults.domNode, "width", domStyle.get(this.tbSearch.domNode, "width") + "px");
 
@@ -231,7 +231,7 @@ define([
                         layerId = this.display.itemStore.getValue(itm, 'layerId'),
                         itmConfig = this.display._itemConfigById[id],
                         pluginConfig = itmConfig.plugin["webmap/plugin/FeatureLayer"];
-                    
+
                     if (pluginConfig != undefined && pluginConfig.likeSearch) {
                         var store = new FeatureStore({
                             layer: layerId,
@@ -272,25 +272,26 @@ define([
                 // Посылаем запрос на геокодирование
                 deferred.then(function (limit) {
 
-                    var NOMINATIM_SEARCH_URL = "http://nominatim.openstreetmap.org/search/";
-                    var CALLBACK = "json_callback";
-                    var url = NOMINATIM_SEARCH_URL + encodeURIComponent(criteria);
+                    var SPUTNIK_SEARCH_URL = "http://search.maps.sputnik.ru/search";
+                    var CALLBACK = "callback";
+                    var DLON = 0.025, DLAT = 0.025;
+                    var url = SPUTNIK_SEARCH_URL;
 
                     jsonpArgs = {
                         jsonp: CALLBACK,
-                        query: {format: "json"}
+                        query: {q: criteria}
                     };
 
                     script.get(url, jsonpArgs).then(function (data) {
-                        array.forEach(data, function (place) {
+                        array.forEach(data.result, function (place) {
                             if (limit > 0) {
                                 // Отформатируем ответ в виде удобном для отображения
                                 // и покажем в списке ответов:
 
                                 // Координаты приходят в WGS84
                                 var extent = new openlayers.Bounds(
-                                    place.boundingbox[2], place.boundingbox[0],
-                                    place.boundingbox[3], place.boundingbox[1]
+                                    place.position.lon - DLON, place.position.lat - DLAT,
+                                    place.position.lon + DLON, place.position.lat + DLAT
                                 );
 
                                 extent = extent.transform(
