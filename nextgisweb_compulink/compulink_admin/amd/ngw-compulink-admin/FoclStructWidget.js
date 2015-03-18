@@ -34,7 +34,7 @@ define([
 ) {
     return declare([ContentPane, serialize.Mixin, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
-        title: "Структура ВОЛС",
+        title: "Объект строительства",
         serializePrefix: "focl_struct",
 
         postCreate: function () {

@@ -68,7 +68,7 @@ class FoclProjectSerializer(Serializer):
 
 class FoclStruct(Base, ResourceGroup):
     identity = 'focl_struct'
-    cls_display_name = "Структура ВОЛС"
+    cls_display_name = "Объект строительства"
 
     region = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Регионы
     district = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Муниципальный район
