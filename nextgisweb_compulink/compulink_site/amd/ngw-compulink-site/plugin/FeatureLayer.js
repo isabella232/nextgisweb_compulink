@@ -272,18 +272,19 @@ define([
                 // Посылаем запрос на геокодирование
                 deferred.then(function (limit) {
 
-                    var SPUTNIK_SEARCH_URL = "http://search.maps.sputnik.ru/search";
+                    //var SPUTNIK_SEARCH_URL = "http://search.maps.sputnik.ru/search";
+                    var SPUTNIK_SEARCH_URL = "http://suggest.maps.sputnik.ru/";
                     var CALLBACK = "callback";
                     var DLON = 0.025, DLAT = 0.025;
                     var url = SPUTNIK_SEARCH_URL;
 
                     jsonpArgs = {
                         jsonp: CALLBACK,
-                        query: {q: criteria}
+                        query: {query: criteria}
                     };
 
                     script.get(url, jsonpArgs).then(function (data) {
-                        array.forEach(data.result, function (place) {
+                        array.forEach(data, function (place) {
                             if (limit > 0) {
                                 // Отформатируем ответ в виде удобном для отображения
                                 // и покажем в списке ответов:
@@ -300,7 +301,7 @@ define([
                                 );
 
                                 var feature = {
-                                    label: place['display_name'],
+                                    label: place['header'],
                                     box: extent
                                 };
 
