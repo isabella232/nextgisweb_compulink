@@ -21,7 +21,7 @@ define([
     "ngw/route",
     "ngw/openlayers",
     "ngw/openlayers/Popup",
-    "feature_layer/FieldsDisplayWidget",
+    "ngw-feature-layer/FieldsDisplayWidget",
     // settings
     "ngw/settings!feature_layer",
     "ngw/settings!webmap",
@@ -120,8 +120,8 @@ define([
             this._extWidgets = {};
 
             if (featureLayersettings.identify.attributes) {
-                this._extWidgets["feature_layer/FieldsDisplayWidget"] = new FieldsDisplayWidget({style: "padding: 2px;"});
-                this.container.addChild(this._extWidgets["feature_layer/FieldsDisplayWidget"]);
+                this._extWidgets["ngw-feature-layer/FieldsDisplayWidget"] = new FieldsDisplayWidget({style: "padding: 2px;"});
+                this.container.addChild(this._extWidgets["ngw-feature-layer/FieldsDisplayWidget"]);
             }
 
             // создаем виждеты для всех расширений IFeatureLayer
