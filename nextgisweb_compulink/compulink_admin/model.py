@@ -142,7 +142,7 @@ class FoclStructSerializer(Serializer):
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                 mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
-                ModelsUtils.append_lyr_to_web_map(web_map.root_item, mapserver_style, vl_name)
+                ModelsUtils.append_lyr_to_web_map(web_map.root_item, mapserver_style, json_layer_struct['resource']['display_name'])
 
         wfs_service.persist()
         web_map.persist()
