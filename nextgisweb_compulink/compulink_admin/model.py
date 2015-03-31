@@ -243,14 +243,17 @@ class ModelsUtils():
 
     @classmethod
     def set_default_style(cls, vector_layer, keyname, style_name):
-        def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname+'.qml')
+        def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname+'.xml')
 
         if not os.path.exists(def_style_path):
             return  # Need to set common point\line\polygon style
 
-        elem = etree.parse(def_style_path).getroot()
-        dst = qml.transform(elem)
-        mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
+        #elem = etree.parse(def_style_path).getroot()
+        #dst = qml.transform(elem)
+        #mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
+
+        with open(def_style_path) as f:
+            mapserver_xml = f.read()
 
         ms = MapserverStyle(parent=vector_layer, owner_user=vector_layer.owner_user)
         ms.display_name = style_name

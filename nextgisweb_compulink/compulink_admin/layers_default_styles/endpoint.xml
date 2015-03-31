@@ -1,0 +1,35 @@
+<map>
+  <layer>
+    <labelitem>name</labelitem>
+    <classitem>type_endpoint</classitem>
+    <class>
+      <expression>"point_a"</expression>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:circle</symbol>
+        <color red="51" green="160" blue="44"/>
+        <size>17.0078740157</size>
+      </style>
+      <style/>
+    </class>
+    <class>
+      <expression>"point_b"</expression>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:circle</symbol>
+        <color red="255" green="0" blue="0"/>
+        <size>17.0078740157</size>
+      </style>
+      <style/>
+    </class>
+    <class>
+      <expression>''</expression>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:circle</symbol>
+        <color red="201" green="44" blue="188"/>
+        <size>17.0078740157</size>
+      </style>
+    </class>
+  </layer>
+</map>

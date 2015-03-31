@@ -1,0 +1,57 @@
+<map>
+  <layer>
+    <labelitem>name</labelitem>
+    <classitem>status_built</classitem>
+    <class>
+      <expression>"built"</expression>
+      <style>
+        <outlinecolor red="51" green="160" blue="44"/>
+        <symbol>std:rectangle</symbol>
+        <color red="51" green="160" blue="44"/>
+        <size>19.842519685</size>
+      </style>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:rectangle</symbol>
+        <color red="255" green="255" blue="255"/>
+        <size>14.1732283465</size>
+      </style>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:xcross</symbol>
+        <color red="255" green="0" blue="0"/>
+        <size>14.1732283465</size>
+      </style>
+    </class>
+    <class>
+      <expression>"project"</expression>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:rectangle</symbol>
+        <color red="255" green="255" blue="255"/>
+        <size>14.1732283465</size>
+      </style>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:xcross</symbol>
+        <color red="255" green="0" blue="0"/>
+        <size>14.1732283465</size>
+      </style>
+    </class>
+    <class>
+      <expression>''</expression>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:rectangle</symbol>
+        <color red="255" green="255" blue="255"/>
+        <size>14.1732283465</size>
+      </style>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:xcross</symbol>
+        <color red="255" green="0" blue="0"/>
+        <size>14.1732283465</size>
+      </style>
+    </class>
+  </layer>
+</map> 

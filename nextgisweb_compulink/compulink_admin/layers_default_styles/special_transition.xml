@@ -1,0 +1,13 @@
+<map>
+  <layer>
+    <class>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="132" green="63" blue="174" />
+        <width>6.0</width>
+        <!-- Остались необработанные атрибуты: line_color, line_width, offset_unit, draw_inside_polygon, use_custom_dash, customdash_unit, customdash_map_unit_scale, customdash, offset_map_unit_scale, line_style, line_width_unit, width_map_unit_scale -->
+      </style>
+    </class>
+  </layer>
+</map> 

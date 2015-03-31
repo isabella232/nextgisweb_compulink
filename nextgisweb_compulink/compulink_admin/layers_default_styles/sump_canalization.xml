@@ -1,0 +1,15 @@
+<map>
+  <layer>
+    <labelitem>name</labelitem>
+    <class>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:circle</symbol>
+        <color red="188" green="188" blue="188"/>
+        <size>14.1732283465</size>
+      </style>
+      <style/>
+      <style/>
+    </class>
+  </layer>
+</map>
