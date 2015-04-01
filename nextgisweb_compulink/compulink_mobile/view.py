@@ -6,8 +6,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 
 from nextgisweb import DBSession
-from nextgisweb.resource import Resource
-from ..compulink_admin.model import FoclStruct
+from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS
 
 SYNC_LAYERS_TYPES = [
     'fosc',
@@ -34,7 +33,7 @@ def get_user_focl_list(request):
     #parent_res = dbsession.query(Resource).get(0)
     #resources = parent_res.children
 
-    resources = dbsession.query(Resource).filter(Resource.cls == FoclStruct.identity).all()
+    resources = dbsession.query(FoclStruct).filter(FoclStruct.status == PROJECT_STATUS_IN_PROGRESS).all()
 
     focl_list = []
     for resource in resources:
