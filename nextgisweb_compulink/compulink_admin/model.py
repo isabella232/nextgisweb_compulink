@@ -8,7 +8,7 @@ from nextgisweb import db
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.auth.models import User
-from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope)
+from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope, ResourceScope)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.webmap.adapter import ImageAdapter
 from nextgisweb.webmap.model import WebMap, WebMapItem
@@ -29,7 +29,10 @@ Base = declarative_base()
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
 LAYERS_DEF_STYLES_PATH = os.path.join(BASE_PATH, 'layers_default_styles/')
 
-
+PROJECT_STATUS_PROJECT = 'project'
+PROJECT_STATUS_IN_PROGRESS = 'in_progress'
+PROJECT_STATUS_FINISHED = 'finished'
+PROJECT_STATUSES = (PROJECT_STATUS_PROJECT, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_FINISHED)
 
 class FoclProject(Base, ResourceGroup):
     identity = 'focl_project'
@@ -72,48 +75,28 @@ class FoclStruct(Base, ResourceGroup):
 
     region = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Регионы
     district = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Муниципальный район
-    settlement = db.Column(db.Unicode, nullable=True)  # Населенный пункт
-    access_point_count = db.Column(db.Integer, nullable=True, default=None)  # Количество точек доступа
-
-    deadline_contract = db.Column(db.Date, nullable=True)  # Срок сдачи по договору
-    project_manager_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=True)  # Руководитель проекта
-
-    focl_length_order = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС предварительная
-    focl_length_project = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС проектная
-    focl_length_fact = db.Column(db.Float, nullable=True, default=0)  # Протяженность ВОЛС фактическая
-
-    length_on_ol = db.Column(db.Float, nullable=True, default=0)  # Протяженность по ВЛ
-    length_in_ground = db.Column(db.Float, nullable=True, default=0)  # Протяженность в грунте
-    length_in_canalization = db.Column(db.Float, nullable=True, default=0)  # Протяженность в кабельной канализации
-
-    customer = db.Column(db.Unicode, nullable=True)  # Справочник: Заказчик строительства
-    planned_start_date = db.Column(db.Date, nullable=True)  # Планируемая дата начала СМР
-    planned_finish_date = db.Column(db.Date, nullable=True)  # Планируемая дата окончания СМР
-    subcontr = db.Column(db.Unicode, nullable=True)   # Справочник: Субподрядчик СМР ВОЛС
-
-    status = db.Column(db.Unicode, nullable=True)  # Статус (проект, идет строительство, построена)
-    status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
-
     external_id = db.Column(db.Unicode, nullable=True)  # Внешний идентификатор
-
-
+    status = db.Column(db.Enum(PROJECT_STATUSES, native_enum=False), default=PROJECT_STATUS_PROJECT, nullable=True)  # Статус (проект, идет строительство, построена)
+    status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
 
     @classmethod
     def check_parent(cls, parent):
         return isinstance(parent, FoclProject)
 
-P_DSS_READ = DataStructureScope.read
-P_DSS_WRITE = DataStructureScope.write
 P_DS_READ = DataScope.read
 P_DS_WRITE = DataScope.write
+PR_READ = ResourceScope.read
+PR_UPDATE = ResourceScope.update
+
 
 class FoclStructSerializer(Serializer):
     identity = FoclStruct.identity
     resclass = FoclStruct
 
-    #region = SR(read=P_DSS_READ)
-    settlement = SP(read=P_DSS_READ)
-
+    region = SP(read=PR_READ, write=PR_UPDATE)
+    district = SP(read=PR_READ, write=PR_UPDATE)
+    external_id = SP(read=PR_READ, write=PR_UPDATE)
+    status = SP(read=PR_READ, write=PR_UPDATE)
 
     def deserialize(self, *args, **kwargs):
         super(FoclStructSerializer, self).deserialize(*args, **kwargs)
