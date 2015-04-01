@@ -309,7 +309,7 @@ define([
                     widget._mapSetup();
                     var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
                     resourcesTypeSelector.selectResourceType('vols');
-                    this.LayersSelector.selectLayers(['optical_cross', 'optical_cable', 'fosc', 'endpoint', 'pole', 'telecom_cabinet'], 'focl_struct');
+                    this.LayersSelector.selectLayers(['optical_cross', 'optical_cable', 'fosc', 'access_point', 'endpoint'], 'focl_struct');
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
