@@ -16,12 +16,12 @@ FOCL_LAYER_STRUCT = [
     #'communication_center',
     #'electrical_substation',
     'transmission_tower',
-    'access_point',
     #'telecom_cabinet',
     'optical_cable',
     #'pole',
     'fosc',
     'optical_cross',
+    'access_point',
     'endpoint',
 ]
 
