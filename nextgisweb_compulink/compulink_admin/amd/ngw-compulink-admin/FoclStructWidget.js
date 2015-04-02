@@ -44,8 +44,16 @@ define([
         postCreate: function () {
             this.inherited(arguments);
 
-            regions_ds = new Memory({data: settings.regions_dict});
-            districts_ds = new Memory({data: settings.districts_dict});
+            if (settings.regions_dict.length > 0)
+                regions_ds = new Memory({data: settings.regions_dict});
+            else
+                regions_ds = new Memory();
+
+            if (settings.districts_dict.length > 0)
+                districts_ds = new Memory({data: settings.districts_dict});
+            else
+                districts_ds = new Memory();
+
             statuses_ds = new Memory({data: settings.statuses_dict});
 
             //set data store
@@ -62,7 +70,9 @@ define([
             });
 
             //set def values
-            this.regions_cmb.set("value", regions_ds.getIdentity(regions_ds.data[0]));
+            if (settings.regions_dict.length > 0)
+                this.regions_cmb.set("value", regions_ds.getIdentity(regions_ds.data[0]));
+
             this.status_cmb.set("value", settings.def_status);
         },
 
