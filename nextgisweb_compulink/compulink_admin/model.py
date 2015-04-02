@@ -118,6 +118,7 @@ class FoclStructSerializer(Serializer):
                          display_name='Веб-карта ВОЛС')
         web_map.root_item = WebMapItem()
         web_map.root_item.item_type = 'root'
+        web_map_items = []
 
         for vl_name in FOCL_LAYER_STRUCT:
             with codecs.open(os.path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
@@ -125,9 +126,19 @@ class FoclStructSerializer(Serializer):
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                 mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
-                ModelsUtils.append_lyr_to_web_map(web_map.root_item, mapserver_style, json_layer_struct['resource']['display_name'])
+                web_map_items.append(ModelsUtils.create_web_map_item(mapserver_style, json_layer_struct['resource']['display_name']))
 
         wfs_service.persist()
+
+        #add inverted list of layers to webmap
+        web_map_items.reverse()
+        i = 1
+        for item in web_map_items:
+            item.position = i
+            i += 1
+            web_map.root_item.children.append(item)
+            item.persist()
+
         web_map.persist()
         web_map.root_item.persist()
 
@@ -212,17 +223,14 @@ class ModelsUtils():
         #wfs_layer.persist()
 
     @classmethod
-    def append_lyr_to_web_map(cls, web_map_root_item, mapserver_style, display_name):
+    def create_web_map_item(cls, mapserver_style, display_name):
         map_item = WebMapItem()
         map_item.item_type = 'layer'
         map_item.display_name = display_name
         map_item.layer_enabled = True
         map_item.layer_adapter = ImageAdapter.identity
         map_item.style = mapserver_style
-
-        web_map_root_item.children.append(map_item)
-        map_item.persist()
-
+        return map_item
 
     @classmethod
     def set_default_style(cls, vector_layer, keyname, style_name):
