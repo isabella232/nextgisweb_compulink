@@ -173,12 +173,14 @@ def extent_union(extent, new_extent):
     ]
 
 def extent_buff(extent, buff_size):
-    return [
-        extent[0] - buff_size,
-        extent[1] - buff_size,
-        extent[2] + buff_size,
-        extent[3] + buff_size,
-    ]
+    if extent:
+        return [
+            extent[0] - buff_size,
+            extent[1] - buff_size,
+            extent[2] + buff_size,
+            extent[3] + buff_size,
+        ]
+    return None
 
 
 @view_config(renderer='json')
