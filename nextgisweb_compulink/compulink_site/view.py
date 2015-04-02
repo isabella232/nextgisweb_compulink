@@ -111,18 +111,19 @@ def get_focl_layers_list():
     layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
 
     layers_for_jstree = []
+    layer_order = 0
 
-    for vl_name in FOCL_LAYER_STRUCT:
-            with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                json_layer_struct = json.load(json_file, encoding='utf-8')
-                layers_for_jstree.append({
-                    'text': json_layer_struct['resource']['display_name'],
-                    'id': vl_name,
-                    'children': False,
-                    'icon': vl_name
-                    })
-
-    layers_for_jstree.reverse()
+    for vl_name in reversed(FOCL_LAYER_STRUCT):
+        layer_order += 1
+        with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+            json_layer_struct = json.load(json_file, encoding='utf-8')
+            layers_for_jstree.append({
+                'text': json_layer_struct['resource']['display_name'],
+                'id': vl_name,
+                'children': False,
+                'icon': vl_name,
+                'order': layer_order
+                })
     return layers_for_jstree
 
 
@@ -130,17 +131,19 @@ def get_sit_plan_layers_list():
     layers_template_path = path.join(ADMIN_BASE_PATH, 'situation_layers_templates/')
 
     layers = []
+    layer_order = len(FOCL_LAYER_STRUCT)
 
-    for vl_name in SIT_PLAN_LAYER_STRUCT:
-            with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
-                json_layer_struct = json.load(json_file, encoding='utf-8')
-                layers.append({
-                    'text': json_layer_struct['resource']['display_name'],
-                    'id': vl_name,
-                    'children': False,
-                    'icon': vl_name
-                })
-    layers.reverse()
+    for vl_name in reversed(SIT_PLAN_LAYER_STRUCT):
+        layer_order += 1
+        with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+            json_layer_struct = json.load(json_file, encoding='utf-8')
+            layers.append({
+                'text': json_layer_struct['resource']['display_name'],
+                'id': vl_name,
+                'children': False,
+                'icon': vl_name,
+                'order': layer_order
+            })
     return layers
 
 @view_config(renderer='json')
