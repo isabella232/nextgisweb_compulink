@@ -71,18 +71,18 @@ def get_region_name(reg_id):
 
     reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
     if not reg_res_id:
-        return []
+        return ''
 
     dbsession = DBSession()
     # get dictionary
     vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
     if not vector_res:
-        return []
+        return ''
 
     # check fields
     fields_names = [field.keyname for field in vector_res.fields]
     if REGIONS_ID_FIELD not in fields_names or REGIONS_NAME_FIELD not in fields_names:
-        return []
+        return ''
 
     # receive values
     query = vector_res.feature_query()
@@ -131,19 +131,19 @@ def get_districts_from_resource():
 def get_district_name(distr_id):
     distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
     if not distr_res_id:
-        return []
+        return ''
 
     dbsession = DBSession()
 
     vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
     if not vector_res:
-        return []
+        return ''
 
     fields_names = [field.keyname for field in vector_res.fields]
     if DISTRICT_ID_FIELD not in fields_names or \
        DISTRICT_NAME_FIELD not in fields_names or \
        DISTRICT_PARENT_ID_FIELD not in fields_names:
-        return []
+        return ''
 
     # receive values
     query = vector_res.feature_query()
