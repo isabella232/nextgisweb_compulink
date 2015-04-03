@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from .test_data_generator import command  # NOQA
-
+from .style_updater import command  # NOQA
 
 def pkginfo():
     return dict(
