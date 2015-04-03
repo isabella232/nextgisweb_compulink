@@ -17,6 +17,7 @@ from ..compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_ST
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
+from ..compulink_admin.view import get_region_name, get_district_name
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
@@ -159,8 +160,8 @@ def get_focl_info(request):
 
     resp = []
     for res in resources:
-        region = res.region      # TODO: change to dict value
-        district = res.district  # TODO: change to dict value
+        region = get_region_name(res.region)
+        district = get_district_name(res.district)
         resp.append({'id': res.id, 'display_name': res.display_name, 'district': district, 'region': region})
 
     dbsession.close()

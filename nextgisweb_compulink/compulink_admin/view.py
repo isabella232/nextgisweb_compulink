@@ -37,6 +37,8 @@ def setup_pyramid(comp, config):
        template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
 
 
+# TODO: NEED BIG REFACTORING!!!!
+
 def get_regions_from_resource():
     reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
     if not reg_res_id:
@@ -61,6 +63,39 @@ def get_regions_from_resource():
 
     dbsession.close()
     return features
+
+
+def get_region_name(reg_id):
+    if not reg_id:
+        return ''
+
+    reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
+    if not reg_res_id:
+        return []
+
+    dbsession = DBSession()
+    # get dictionary
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
+    if not vector_res:
+        return []
+
+    # check fields
+    fields_names = [field.keyname for field in vector_res.fields]
+    if REGIONS_ID_FIELD not in fields_names or REGIONS_NAME_FIELD not in fields_names:
+        return []
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(reg_id=reg_id)  # TODO: Need remake to REGIONS_ID_FIELD
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    dbsession.close()
+    return feature.fields[REGIONS_NAME_FIELD]
+
 
 
 def get_districts_from_resource():
@@ -91,6 +126,36 @@ def get_districts_from_resource():
 
     dbsession.close()
     return features
+
+
+def get_district_name(distr_id):
+    distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
+    if not distr_res_id:
+        return []
+
+    dbsession = DBSession()
+
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
+    if not vector_res:
+        return []
+
+    fields_names = [field.keyname for field in vector_res.fields]
+    if DISTRICT_ID_FIELD not in fields_names or \
+       DISTRICT_NAME_FIELD not in fields_names or \
+       DISTRICT_PARENT_ID_FIELD not in fields_names:
+        return []
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(dist_id=distr_id)  # TODO: Need remake to DISTRICT_NAME_FIELD
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    dbsession.close()
+    return feature.fields[DISTRICT_NAME_FIELD]
 
 
 def get_project_statuses():
