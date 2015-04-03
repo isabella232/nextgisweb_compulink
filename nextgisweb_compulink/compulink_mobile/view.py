@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+from pyramid.httpexceptions import HTTPForbidden
 
 from pyramid.response import Response
 from pyramid.view import view_config
+from sqlalchemy.orm import joinedload
 
 from nextgisweb import DBSession
 from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS
+from ..compulink_admin.view import get_region_name, get_district_name
 
 SYNC_LAYERS_TYPES = [
     'fosc',
@@ -25,6 +28,9 @@ def setup_pyramid(comp, config):
 
 @view_config(renderer='json')
 def get_user_focl_list(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     # TODO: Now - very simple variant. Linear alg.
     # TODO: Maybe need tree walking!!!
 
@@ -33,7 +39,7 @@ def get_user_focl_list(request):
     #parent_res = dbsession.query(Resource).get(0)
     #resources = parent_res.children
 
-    resources = dbsession.query(FoclStruct).filter(FoclStruct.status == PROJECT_STATUS_IN_PROGRESS).all()
+    resources = dbsession.query(FoclStruct).options(joinedload('children')).filter(FoclStruct.status == PROJECT_STATUS_IN_PROGRESS).all()
 
     focl_list = []
     for resource in resources:
@@ -44,8 +50,8 @@ def get_user_focl_list(request):
         focl = {
             'id': resource.id,
             'name': resource.display_name,
-            'region': resource.region,
-            'district': resource.district,
+            'region': get_region_name(resource.region),
+            'district': get_district_name(resource.district),
             'layers': []
         }
 
