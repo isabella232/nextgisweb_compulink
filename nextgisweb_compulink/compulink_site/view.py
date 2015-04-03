@@ -3,23 +3,23 @@ from __future__ import unicode_literals
 import json
 import codecs
 from os import path
+from shapely.wkt import loads
+from pyramid.httpexceptions import HTTPForbidden
 from pyramid.renderers import render_to_response
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload_all
 import sqlalchemy.sql as sql
-from nextgisweb import DBSession
-from nextgisweb import db
+from nextgisweb import DBSession, db
 from nextgisweb.resource import Resource, ResourceGroup
 from nextgisweb.vector_layer import VectorLayer, TableInfo
-from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
-import nextgisweb_compulink.compulink_admin
+from ..compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
-from shapely.wkt import loads
-from pyramid.httpexceptions import HTTPForbidden
+from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
+from .. import compulink_admin
 
 CURR_PATH = path.dirname(__file__)
-ADMIN_BASE_PATH = path.dirname(path.abspath(nextgisweb_compulink.compulink_admin.__file__))
+ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 
 
 def setup_pyramid(comp, config):
@@ -80,6 +80,8 @@ def get_child_resx_by_parent(request):
     child_resources_json = []
     for child_resource in children:
         if child_resource.identity in suitable_types:
+            if child_resource.identity == ResourceGroup.identity and child_resource.keyname == DICTIONARY_GROUP_KEYNAME:
+                continue
             is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
             has_children = child_resource.identity in (ResourceGroup.identity, FoclProject.identity) # TODO: add check for real children
             child_resources_json.append({
@@ -153,14 +155,13 @@ def get_focl_info(request):
         return Response('[]')
 
     dbsession = DBSession()
-    resources = dbsession.query(Resource).options(joinedload_all('parent.parent')).filter(Resource.id.in_(res_ids)).all()
-    #TODO: remove joinedload_all after real props was added
+    resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
 
     resp = []
     for res in resources:
-        par = res.parent
-        gr_par = par.parent
-        resp.append({'id': res.id, 'display_name': res.display_name, 'district': par.display_name, 'region': gr_par.display_name})
+        region = res.region      # TODO: change to dict value
+        district = res.district  # TODO: change to dict value
+        resp.append({'id': res.id, 'display_name': res.display_name, 'district': district, 'region': region})
 
     dbsession.close()
 
@@ -195,7 +196,7 @@ def get_focl_extent(request):
         return Response('[]')
 
     dbsession = DBSession()
-    resource = dbsession.query(Resource).filter(Resource.id==res_id).first()
+    resource = dbsession.query(Resource).filter(Resource.id == res_id).first()
 
     extent = None
     for res in resource.children:

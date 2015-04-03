@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 from nextgisweb import DBSession
 from nextgisweb.env import env
 from nextgisweb.resource import Widget, Resource
+from nextgisweb.vector_layer import VectorLayer
 
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, PROJECT_STATUS_FINISHED, \
     PROJECT_STATUS_IN_PROGRESS
-from nextgisweb.vector_layer import VectorLayer
+from .well_known_resource import REGIONS_ID_FIELD, REGIONS_NAME_FIELD, \
+    DISTRICT_ID_FIELD, DISTRICT_NAME_FIELD, DISTRICT_PARENT_ID_FIELD
 
 
 class FoclProjectWidget(Widget):
@@ -41,19 +43,21 @@ def get_regions_from_resource():
         return []
 
     dbsession = DBSession()
-
+    # get dictionary
     vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
     if not vector_res:
         return []
 
+    # check fields
     fields_names = [field.keyname for field in vector_res.fields]
-    if 'name' not in fields_names or 'reg_id' not in fields_names:
+    if REGIONS_ID_FIELD not in fields_names or REGIONS_NAME_FIELD not in fields_names:
         return []
 
+    # receive values
     query = vector_res.feature_query()
     features = []
     for f in query():
-        features.append({'name': f.fields['name'], 'id': f.fields['reg_id']})
+        features.append({'name': f.fields[REGIONS_NAME_FIELD], 'id': f.fields[REGIONS_ID_FIELD]})
 
     dbsession.close()
     return features
@@ -71,13 +75,19 @@ def get_districts_from_resource():
         return []
 
     fields_names = [field.keyname for field in vector_res.fields]
-    if 'name' not in fields_names or 'dist_id' not in fields_names or 'parent_id' not in fields_names:
+    if DISTRICT_ID_FIELD not in fields_names or \
+       DISTRICT_NAME_FIELD not in fields_names or \
+       DISTRICT_PARENT_ID_FIELD not in fields_names:
         return []
 
     query = vector_res.feature_query()
     features = []
     for f in query():
-        features.append({'name': f.fields['name'], 'id': f.fields['dist_id'], 'parent_id': f.fields['parent_id']})
+        features.append({
+            'name': f.fields[DISTRICT_NAME_FIELD],
+            'id': f.fields[DISTRICT_ID_FIELD],
+            'parent_id': f.fields[DISTRICT_PARENT_ID_FIELD]
+        })
 
     dbsession.close()
     return features

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os.path
+from os import path
+from nextgisweb.env import env
 
 from nextgisweb.component import Component
 
 from .model import Base, PROJECT_STATUS_PROJECT
-from nextgisweb_compulink.compulink_admin.ident import COMP_ID
-from nextgisweb_compulink.compulink_admin.view import get_regions_from_resource, get_districts_from_resource, \
-    get_project_statuses
+from .ident import COMP_ID
+from .view import get_regions_from_resource, get_districts_from_resource, get_project_statuses
 
+BASE_PATH = path.abspath(path.dirname(__file__))
 
 @Component.registry.register
 class CompulinkAdminComponent(Component):
@@ -19,6 +20,15 @@ class CompulinkAdminComponent(Component):
         pass
 
     def initialize_db(self):
+        #create group
+        #todo check and create
+        #"keyname": "dictionary_group", "display_name": "Справочники",
+
+        #load data
+        #todo
+
+        #load icons
+        env.marker_library.load_collection('nextgisweb_compulink', 'compulink_admin/layers_default_styles')
         pass
 
     def setup_pyramid(self, config):
