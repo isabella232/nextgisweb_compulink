@@ -1,14 +1,24 @@
 <map>
+   	<symbol>
+    	<type>pixmap</type>
+    	<name>pointb</name>
+    	<image>blue.png</image>
+    	<anchorpoint x="0.5" y="1" />
+  	</symbol>
+    <symbol>
+    	<type>pixmap</type>
+    	<name>pointa</name>
+    	<image>red.png</image>
+    	<anchorpoint x="0.5" y="1" />
+  	</symbol>
   <layer>
     <labelitem>name</labelitem>
     <classitem>type_endpoint</classitem>
     <class>
       <expression>"point_a"</expression>
       <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="51" green="160" blue="44"/>
-        <size>17.0078740157</size>
+        <symbol>pointa</symbol>
+        <size>17</size>
       </style>
       <style/>
     </class>
@@ -16,9 +26,8 @@
       <expression>"point_b"</expression>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="0" blue="0"/>
-        <size>17.0078740157</size>
+        <symbol>pointb</symbol>
+        <size>17</size>
       </style>
       <style/>
     </class>

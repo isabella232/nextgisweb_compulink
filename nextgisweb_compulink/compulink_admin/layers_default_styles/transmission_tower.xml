@@ -1,74 +1,12 @@
 <map>
   <layer>
-    <labelitem>name</labelitem>
-    <classitem>type_tower</classitem>
     <class>
-      <expression>"anchor"</expression>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
+        <symbol>std:rectangle</symbol>
         <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-      <style/>
-    </class>
-    <class>
-      <expression>"end"</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-      <style/>
-    </class>
-    <class>
-      <expression>"portal"</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-      <style/>
-    </class>
-    <class>
-      <expression>"solder"</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-      <style/>
-    </class>
-    <class>
-      <expression>"transitional"</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-    </class>
-    <class>
-      <expression>"transpositional"</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
-      </style>
-      <style/>
-    </class>
-    <class>
-      <expression>''</expression>
-      <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>14.1732283465</size>
+        <size>10</size>
       </style>
     </class>
   </layer>
-</map> 
+</map>
