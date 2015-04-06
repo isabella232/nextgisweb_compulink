@@ -893,26 +893,27 @@ define([
             );
         },
 
-        appendLayerToMap: function(layer_id, style_id) {
+        appendLayerToMap: function (layer_id, style_id, resourceType, layerType) {
             var data = {
-                "layerId": layer_id,        // Слой
-                "styleId": style_id,        // Стиль
-                "visibility": true,          // Вкл
-                "name": layer_id
-            };
-
-            var adapt = new Adapter({});
-            var lyr = adapt.createLayer(data);
+                    "layerId": layer_id,        // Слой
+                    "styleId": style_id,        // Стиль
+                    "visibility": true,          // Вкл
+                    "name": layer_id
+                },
+                adapt = new Adapter({}),
+                lyr = adapt.createLayer(data);
 
             lyr.name = layer_id;
             lyr.res_id = layer_id;
+            lyr.res_type = resourceType;
+            lyr.layer_type = layerType;
 
             this.map.addLayer(lyr);
 
             return lyr;
         },
 
-        removeLayerFromMap: function(layer) {
+        removeLayerFromMap: function (layer) {
             this.map.removeLayer(layer);
         }
     });
