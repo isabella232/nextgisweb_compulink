@@ -236,10 +236,10 @@ define([
                 layerType = layer.layer_type,
                 layerOrderConfig = this.LayersOrder[resourceType][layerType],
                 order = layerOrderConfig.order,
-                multiplier = 100,
+                multiplier = 1000,
                 countZIndexes = layerOrderConfig.zIndexes.length,
-                zIndexMin = order * multiplier + 9000,
-                zIndexMax = zIndexMin + multiplier + 9000,
+                zIndexMin = order * multiplier + 1000,
+                zIndexMax = zIndexMin + multiplier + 1000,
                 indexArray = 0,
                 currentZIndex;
 
