@@ -12,7 +12,7 @@
       <label>
         <type>truetype</type>
         <font>regular</font>
-        <size>15</size>
+        <size>11</size>
         <color blue="0" green="0" red="0"/>
         <outlinewidth>3</outlinewidth>
         <outlinecolor blue="255" green="255" red="255"/>
@@ -37,7 +37,7 @@
       <label>
         <type>truetype</type>
         <font>regular</font>
-        <size>15</size>
+        <size>11</size>
         <color blue="0" green="0" red="0"/>
         <outlinewidth>3</outlinewidth>
         <outlinecolor blue="255" green="255" red="255"/>
