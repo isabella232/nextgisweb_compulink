@@ -178,3 +178,7 @@
 #rightPanel i.sp_other_polygon_object {
     background: url('../img/layers-type-sprite.png') -32px 0;
 }
+
+#rightPanel i.special_transition {
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
