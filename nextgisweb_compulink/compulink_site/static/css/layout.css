@@ -182,3 +182,9 @@
 #rightPanel i.special_transition {
     background: url('../img/layers-type-sprite.png') -32px 0;
 }
+
+/* map styles */
+/* for identification popup */
+div.ngwPopup {
+    z-index: 999999 !important;
+}
