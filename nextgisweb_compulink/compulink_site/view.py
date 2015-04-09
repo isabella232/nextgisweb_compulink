@@ -177,6 +177,7 @@ def extent_union(extent, new_extent):
         extent[3] if extent[3] > new_extent[3] else new_extent[3],
     ]
 
+
 def extent_buff(extent, buff_size):
     if extent:
         return [
