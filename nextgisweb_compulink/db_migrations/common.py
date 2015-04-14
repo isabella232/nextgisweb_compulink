@@ -85,3 +85,21 @@ class VectorLayerUpdater(object):
         column_name = column.compile(dialect=engine.dialect)
         column_type = column.type.compile(engine.dialect)
         engine.execute('ALTER TABLE "vector_layer"."layer_%s" ADD COLUMN %s %s' % (table_uid, column_name, column_type))
+
+    @staticmethod
+    def drop_vector_layer_table(table_uid, make_transaction=False):
+        db_session = DBSession()
+
+        #start transaction
+        if make_transaction:
+            transaction.manager.begin()
+
+        engine = db_session.get_bind()
+        engine.execute('DROP TABLE "vector_layer"."layer_%s"' % table_uid)
+
+        #close transaction
+        if make_transaction:
+            transaction.manager.commit()
+        else:
+            db_session.flush()
+
