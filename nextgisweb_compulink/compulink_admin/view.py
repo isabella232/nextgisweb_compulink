@@ -8,7 +8,7 @@ from nextgisweb.vector_layer import VectorLayer
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, PROJECT_STATUS_FINISHED, \
     PROJECT_STATUS_IN_PROGRESS
 from .well_known_resource import REGIONS_ID_FIELD, REGIONS_NAME_FIELD, \
-    DISTRICT_ID_FIELD, DISTRICT_NAME_FIELD, DISTRICT_PARENT_ID_FIELD
+    DISTRICT_ID_FIELD, DISTRICT_NAME_FIELD, DISTRICT_PARENT_ID_FIELD, DISTRICT_KEYNAME, REGIONS_KEYNAME
 
 
 class FoclProjectWidget(Widget):
@@ -40,13 +40,10 @@ def setup_pyramid(comp, config):
 # TODO: NEED BIG REFACTORING!!!!
 
 def get_regions_from_resource():
-    reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
-    if not reg_res_id:
-        return []
 
     dbsession = DBSession()
     # get dictionary
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.keyname == REGIONS_KEYNAME).first()
     if not vector_res:
         return []
 
@@ -69,13 +66,9 @@ def get_region_name(reg_id):
     if not reg_id:
         return ''
 
-    reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
-    if not reg_res_id:
-        return ''
-
     dbsession = DBSession()
     # get dictionary
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.keyname == REGIONS_KEYNAME).first()
     if not vector_res:
         return ''
 
@@ -99,13 +92,9 @@ def get_region_name(reg_id):
 
 
 def get_districts_from_resource():
-    distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
-    if not distr_res_id:
-        return []
-
     dbsession = DBSession()
 
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.keyname == DISTRICT_KEYNAME).first()
     if not vector_res:
         return []
 
@@ -129,13 +118,10 @@ def get_districts_from_resource():
 
 
 def get_district_name(distr_id):
-    distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
-    if not distr_res_id:
-        return ''
 
     dbsession = DBSession()
 
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
+    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.keyname == DISTRICT_KEYNAME).first()
     if not vector_res:
         return ''
 
