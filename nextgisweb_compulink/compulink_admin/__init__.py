@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from os import path
-from sqlalchemy.orm.exc import NoResultFound
-from nextgisweb.auth import User
-from nextgisweb.auth import Group
-from nextgisweb.env import env
 
 from nextgisweb.component import Component
-
 from .model import Base, PROJECT_STATUS_PROJECT
 from .ident import COMP_ID
-from nextgisweb.resource import ResourceGroup, ACLRule
 from nextgisweb_compulink.init_data.command import DBInit
 from .view import get_regions_from_resource, get_districts_from_resource, get_project_statuses
 
@@ -38,8 +33,3 @@ class CompulinkAdminComponent(Component):
             statuses_dict=get_project_statuses(),
             def_status=PROJECT_STATUS_PROJECT
         )
-
-    settings_info = (
-        dict(key='regions_resouce_id', desc=u'Идентификатор ресурса, хранящего административные границы регионов'),
-        dict(key='districts_resouce_id', desc=u'Идентификатор ресурса, хранящего административные границы районов'),
-    )
