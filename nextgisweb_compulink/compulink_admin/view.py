@@ -80,7 +80,33 @@ def get_region_name(reg_id):
     for f in query():
         feature = f
 
-    return feature.fields[REGIONS_NAME_FIELD]
+    return feature.fields[REGIONS_NAME_FIELD] if feature else None
+
+
+def get_region_id(reg_short_name):
+    if not reg_short_name:
+        return None
+
+    # get dictionary
+    vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
+    if not vector_res:
+        return ''
+
+    # check fields
+    fields_names = [field.keyname for field in vector_res.fields]
+    if REGIONS_ID_FIELD not in fields_names or REGIONS_SHORT_NAME_FIELD not in fields_names:
+        return ''
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(name_short=reg_short_name)  # TODO: Need remake to REGIONS_ID_FIELD
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    return feature.fields[REGIONS_ID_FIELD] if feature else None
 
 
 def get_districts_from_resource():
@@ -128,7 +154,35 @@ def get_district_name(distr_id):
     for f in query():
         feature = f
 
-    return feature.fields[DISTRICT_NAME_FIELD]
+    return feature.fields[DISTRICT_NAME_FIELD] if feature else None
+
+
+def get_district_id(distr_short_name, parent_id):
+    if not distr_short_name:
+        return None
+
+    # get dictionary
+    vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
+    if not vector_res:
+        return ''
+
+    # check fields
+    fields_names = [field.keyname for field in vector_res.fields]
+    if DISTRICT_ID_FIELD not in fields_names or \
+       DISTRICT_SHORT_NAME_FIELD not in fields_names or \
+       DISTRICT_PARENT_ID_FIELD not in fields_names:
+        return ''
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(name_short=distr_short_name, parent_id=parent_id)  # TODO: Need remake
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    return feature.fields[DISTRICT_ID_FIELD] if feature else None
 
 
 def get_project_statuses():
