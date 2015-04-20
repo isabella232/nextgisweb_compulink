@@ -208,7 +208,7 @@ def get_focl_extent(request):
         tableinfo = TableInfo.from_layer(res)
         tableinfo.setup_metadata(tablename=res._tablename)
 
-        columns = [db.func.st_astext(db.func.st_envelope(db.text('geom')).label('box'))]
+        columns = [db.func.st_astext(db.func.st_extent(db.text('geom')).label('box'))]
         query = sql.select(columns=columns, from_obj=tableinfo.table)
         extent_str = dbsession.connection().scalar(query)
         if extent_str:
@@ -219,7 +219,7 @@ def get_focl_extent(request):
                 extent = extent_union(extent, new_extent)
 
     dbsession.close()
-    extent = extent_buff(extent, 3000)
+    extent = extent_buff(extent, 1000)
     resp = {'extent': extent}
     return Response(json.dumps(resp))
 

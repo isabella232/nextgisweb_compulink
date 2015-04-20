@@ -473,7 +473,7 @@ define([
 
             //events
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
-                 this.map.olMap.zoomToExtent(new_ext, true);
+                 this.map.olMap.zoomToExtent(new_ext, false);
             }));
 
         },
