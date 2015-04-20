@@ -123,7 +123,7 @@ class DBInit():
                     # try to drop old table
                     try:
                         VectorLayerUpdater.drop_vector_layer_table(vec_res.tbl_uuid)
-                    finally:
+                    except:
                         pass
                 else:
                     continue
