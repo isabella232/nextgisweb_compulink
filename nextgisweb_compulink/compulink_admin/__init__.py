@@ -20,7 +20,11 @@ class CompulinkAdminComponent(Component):
         pass
 
     def initialize_db(self):
-        DBInit.execute()
+        #TODO: fake! Need refactoring
+        args = self
+        args.action = 'all'
+
+        DBInit.execute(args)
 
     def setup_pyramid(self, config):
         from . import view
