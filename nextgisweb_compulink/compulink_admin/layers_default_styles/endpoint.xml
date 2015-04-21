@@ -2,13 +2,13 @@
    	<symbol>
     	<type>pixmap</type>
     	<name>pointb</name>
-    	<image>blue.png</image>
+    	<image>blue</image>
     	<anchorpoint x="0.5" y="1" />
   	</symbol>
     <symbol>
     	<type>pixmap</type>
     	<name>pointa</name>
-    	<image>red.png</image>
+    	<image>red</image>
     	<anchorpoint x="0.5" y="1" />
   	</symbol>
   <layer>
@@ -18,7 +18,7 @@
       <expression>"point_a"</expression>
       <style>
         <symbol>pointa</symbol>
-        <size>17</size>
+        <size>50</size>
       </style>
       <style/>
     </class>
@@ -27,7 +27,7 @@
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
         <symbol>pointb</symbol>
-        <size>17</size>
+        <size>50</size>
       </style>
       <style/>
     </class>
