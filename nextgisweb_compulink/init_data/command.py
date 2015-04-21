@@ -27,13 +27,17 @@ class DBInit():
     @classmethod
     def argparser_setup(cls, parser, env):
         parser.add_argument('--force', dest='force', action='store_true', default=False)
+        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts'], default='all')
 
 
     @classmethod
     def execute(cls, args, env):
-        cls.create_dict_group()
-        cls.load_shape_dicts(force=args.force)
-        cls.load_icons()
+        if args.action in ['all', 'dict_group']:
+            cls.create_dict_group()
+        if args.action in ['all', 'shape_dicts']:
+            cls.load_shape_dicts(force=args.force)
+        if args.action in ['all', 'icons']:
+            cls.load_icons()
 
     @classmethod
     def create_dict_group(cls):
@@ -219,7 +223,9 @@ class DBInit():
     @classmethod
     def load_icons(cls):
         print 'Loading style icons...'
+        transaction.manager.begin()
         env.marker_library.load_collection('nextgisweb_compulink', 'compulink_admin/layers_default_styles')
+        transaction.manager.commit()
 
 
 
