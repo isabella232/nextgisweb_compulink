@@ -34,6 +34,11 @@
     background-position: -48px, -2px;
 }
 
+#resourcesTree a.jstree-disabled i.jstree-themeicon-custom {
+    background-position: -64px, -2px;
+}
+
+
 #resourcesTree a.jstree-disabled {
     color: black;
 }
@@ -177,4 +182,23 @@
 
 #rightPanel i.sp_other_polygon_object {
     background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
+#rightPanel i.special_transition {
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
+/* map styles */
+/* for identification popup */
+div.ngwPopup {
+    z-index: 999999 !important;
+}
+
+#resourcesTree a.jstree-disabled i.jstree-checkbox,
+#resourcesTree a.jstree-disabled i.jstree-icon {
+    opacity: 0.7 !important;
+}
+
+#resourcesTree a.jstree-disabled .jstree-checkbox:hover {
+    background-position: -167px -7px;
 }

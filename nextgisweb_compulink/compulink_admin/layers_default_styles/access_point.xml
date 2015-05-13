@@ -2,12 +2,49 @@
   <layer>
     <labelitem>name</labelitem>
     <class>
+      <expression>('[status_built]'='project' or '[status_built]'='')</expression>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
         <symbol>std:circle</symbol>
         <color red="0" green="0" blue="0"/>
-        <size>14.1732283465</size>
+        <size>20</size>
       </style>
+      <label>
+        <type>truetype</type>
+        <font>regular</font>
+        <size>11</size>
+        <color blue="0" green="0" red="0"/>
+        <outlinewidth>3</outlinewidth>
+        <outlinecolor blue="255" green="255" red="255"/>
+        <position>ur</position>
+        <offset x='5' y='0' />
+        <maxscaledenom>140000</maxscaledenom>
+      </label>
+    </class>
+    <class>
+      <expression>('[status_built]'='built')</expression>
+      <style>
+        <symbol>std:circle</symbol>
+        <color red="134" green="245" blue="29"/>
+        <size>32</size>
+      </style>
+      <style>
+        <outlinecolor red="0" green="0" blue="0"/>
+        <symbol>std:circle</symbol>
+        <color red="0" green="0" blue="0"/>
+        <size>20</size>
+      </style>
+      <label>
+        <type>truetype</type>
+        <font>regular</font>
+        <size>11</size>
+        <color blue="0" green="0" red="0"/>
+        <outlinewidth>3</outlinewidth>
+        <outlinecolor blue="255" green="255" red="255"/>
+        <position>ur</position>
+        <offset x='5' y='0' />
+        <maxscaledenom>140000</maxscaledenom>
+      </label>
     </class>
   </layer>
 </map>

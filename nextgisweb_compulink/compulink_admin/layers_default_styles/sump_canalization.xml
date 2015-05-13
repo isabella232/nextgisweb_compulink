@@ -1,15 +1,41 @@
 <map>
+  <symbol>
+      <character>т</character>
+      <font>regular</font>
+      <type>truetype</type>
+      <name>tchar</name>
+    <anchorpoint x="1" y="0.5" />
+  </symbol>
+    
+  <symbol>
+      <character>к</character>
+      <font>regular</font>
+      <type>truetype</type>
+      <name>kchar</name>
+      <anchorpoint x="0" y="0.5" />
+  </symbol>
+    
   <layer>
-    <labelitem>name</labelitem>
     <class>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
         <symbol>std:circle</symbol>
         <color red="188" green="188" blue="188"/>
-        <size>14.1732283465</size>
+        <size>14</size>
       </style>
-      <style/>
-      <style/>
+
+      <style>
+        <color red="0" green="0" blue="0"/>
+        <symbol>tchar</symbol>
+        <size>8</size>
+      </style>
+      
+      <style>
+        <color red="0" green="0" blue="0"/>
+        <symbol>kchar</symbol>
+        <size>8</size>
+      </style>
+      
     </class>
   </layer>
 </map>

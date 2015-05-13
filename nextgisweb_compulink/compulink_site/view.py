@@ -114,10 +114,9 @@ def get_focl_layers_list():
     layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
 
     layers_for_jstree = []
-    layer_order = 0
+    layer_order = len(FOCL_LAYER_STRUCT) + len(SIT_PLAN_LAYER_STRUCT)
 
     for vl_name in reversed(FOCL_LAYER_STRUCT):
-        layer_order += 1
         with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
             json_layer_struct = json.load(json_file, encoding='utf-8')
             layers_for_jstree.append({
@@ -127,6 +126,7 @@ def get_focl_layers_list():
                 'icon': vl_name,
                 'order': layer_order
                 })
+        layer_order -= 1
     return layers_for_jstree
 
 
@@ -134,10 +134,9 @@ def get_sit_plan_layers_list():
     layers_template_path = path.join(ADMIN_BASE_PATH, 'situation_layers_templates/')
 
     layers = []
-    layer_order = len(FOCL_LAYER_STRUCT)
+    layer_order = len(SIT_PLAN_LAYER_STRUCT)
 
     for vl_name in reversed(SIT_PLAN_LAYER_STRUCT):
-        layer_order += 1
         with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
             json_layer_struct = json.load(json_file, encoding='utf-8')
             layers.append({
@@ -147,6 +146,7 @@ def get_sit_plan_layers_list():
                 'icon': vl_name,
                 'order': layer_order
             })
+        layer_order -= 1
     return layers
 
 @view_config(renderer='json')
@@ -176,6 +176,7 @@ def extent_union(extent, new_extent):
         extent[2] if extent[2] > new_extent[2] else new_extent[2],
         extent[3] if extent[3] > new_extent[3] else new_extent[3],
     ]
+
 
 def extent_buff(extent, buff_size):
     if extent:
@@ -207,7 +208,7 @@ def get_focl_extent(request):
         tableinfo = TableInfo.from_layer(res)
         tableinfo.setup_metadata(tablename=res._tablename)
 
-        columns = [db.func.st_astext(db.func.st_envelope(db.text('geom')).label('box'))]
+        columns = [db.func.st_astext(db.func.st_extent(db.text('geom')).label('box'))]
         query = sql.select(columns=columns, from_obj=tableinfo.table)
         extent_str = dbsession.connection().scalar(query)
         if extent_str:
@@ -218,7 +219,7 @@ def get_focl_extent(request):
                 extent = extent_union(extent, new_extent)
 
     dbsession.close()
-    extent = extent_buff(extent, 3000)
+    extent = extent_buff(extent, 1000)
     resp = {'extent': extent}
     return Response(json.dumps(resp))
 

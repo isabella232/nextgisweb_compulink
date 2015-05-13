@@ -26,7 +26,7 @@
                 "keyname": "length",
                 "datatype": "REAL",
                 "typemod": null,
-                "display_name": "Длина",
+                "display_name": "Длина кабеля, м",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -84,6 +84,14 @@
                 "datatype": "STRING",
                 "typemod": null,
                 "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "length_direct",
+                "datatype": "REAL",
+                "typemod": null,
+                "display_name": "Длина трассы, м",
                 "label_field": false,
                 "grid_visibility": true
             }

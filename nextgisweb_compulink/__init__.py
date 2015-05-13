@@ -2,6 +2,10 @@
 from __future__ import unicode_literals
 from .test_data_generator import command  # NOQA
 from .style_updater import command  # NOQA
+from .db_migrations import command  # NOQA
+from .init_data import command  # NOQA
+from .real_data_generator import command  # NOQA
+
 
 def pkginfo():
     return dict(

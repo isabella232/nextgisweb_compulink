@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from nextgisweb import DBSession
-from nextgisweb.env import env
 from nextgisweb.resource import Widget, Resource
 from nextgisweb.vector_layer import VectorLayer
 
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, PROJECT_STATUS_FINISHED, \
     PROJECT_STATUS_IN_PROGRESS
-from .well_known_resource import REGIONS_ID_FIELD, REGIONS_NAME_FIELD, \
-    DISTRICT_ID_FIELD, DISTRICT_NAME_FIELD, DISTRICT_PARENT_ID_FIELD
+from .well_known_resource import *
 
 
 class FoclProjectWidget(Widget):
@@ -40,13 +37,9 @@ def setup_pyramid(comp, config):
 # TODO: NEED BIG REFACTORING!!!!
 
 def get_regions_from_resource():
-    reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
-    if not reg_res_id:
-        return []
 
-    dbsession = DBSession()
     # get dictionary
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
+    vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
     if not vector_res:
         return []
 
@@ -61,7 +54,6 @@ def get_regions_from_resource():
     for f in query():
         features.append({'name': f.fields[REGIONS_NAME_FIELD], 'id': f.fields[REGIONS_ID_FIELD]})
 
-    dbsession.close()
     return features
 
 
@@ -69,13 +61,8 @@ def get_region_name(reg_id):
     if not reg_id:
         return ''
 
-    reg_res_id = env.compulink_admin.settings.get('regions_resouce_id')
-    if not reg_res_id:
-        return ''
-
-    dbsession = DBSession()
     # get dictionary
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == reg_res_id).first()
+    vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
     if not vector_res:
         return ''
 
@@ -93,19 +80,38 @@ def get_region_name(reg_id):
     for f in query():
         feature = f
 
-    dbsession.close()
-    return feature.fields[REGIONS_NAME_FIELD]
+    return feature.fields[REGIONS_NAME_FIELD] if feature else None
 
+
+def get_region_id(reg_short_name):
+    if not reg_short_name:
+        return None
+
+    # get dictionary
+    vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
+    if not vector_res:
+        return ''
+
+    # check fields
+    fields_names = [field.keyname for field in vector_res.fields]
+    if REGIONS_ID_FIELD not in fields_names or REGIONS_SHORT_NAME_FIELD not in fields_names:
+        return ''
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(name_short=reg_short_name)  # TODO: Need remake to REGIONS_ID_FIELD
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    return feature.fields[REGIONS_ID_FIELD] if feature else None
 
 
 def get_districts_from_resource():
-    distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
-    if not distr_res_id:
-        return []
 
-    dbsession = DBSession()
-
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
+    vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
     if not vector_res:
         return []
 
@@ -124,18 +130,12 @@ def get_districts_from_resource():
             'parent_id': f.fields[DISTRICT_PARENT_ID_FIELD]
         })
 
-    dbsession.close()
     return features
 
 
 def get_district_name(distr_id):
-    distr_res_id = env.compulink_admin.settings.get('districts_resouce_id')
-    if not distr_res_id:
-        return ''
 
-    dbsession = DBSession()
-
-    vector_res = dbsession.query(VectorLayer).filter(VectorLayer.id == distr_res_id).first()
+    vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
     if not vector_res:
         return ''
 
@@ -154,8 +154,35 @@ def get_district_name(distr_id):
     for f in query():
         feature = f
 
-    dbsession.close()
-    return feature.fields[DISTRICT_NAME_FIELD]
+    return feature.fields[DISTRICT_NAME_FIELD] if feature else None
+
+
+def get_district_id(distr_short_name, parent_id):
+    if not distr_short_name:
+        return None
+
+    # get dictionary
+    vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
+    if not vector_res:
+        return ''
+
+    # check fields
+    fields_names = [field.keyname for field in vector_res.fields]
+    if DISTRICT_ID_FIELD not in fields_names or \
+       DISTRICT_SHORT_NAME_FIELD not in fields_names or \
+       DISTRICT_PARENT_ID_FIELD not in fields_names:
+        return ''
+
+    # receive values
+    query = vector_res.feature_query()
+    query.filter_by(name_short=distr_short_name, parent_id=parent_id)  # TODO: Need remake
+    query.limit(1)
+
+    feature = None
+    for f in query():
+        feature = f
+
+    return feature.fields[DISTRICT_ID_FIELD] if feature else None
 
 
 def get_project_statuses():

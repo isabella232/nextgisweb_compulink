@@ -63,8 +63,22 @@ define([
 
             //set signals/slots
             this.regions_cmb.onChange = lang.hitch(this, function (selection) {
+
+                //set limit for data source
                 this.district_cmb.query.parent_id = this.regions_cmb.item.id;
-                //set value to district
+
+                //try to restore value for distr cmb
+                if (this.district_cmb.item !== undefined) {
+                    var old_item_id = this.district_cmb.item.id;
+                    var res = districts_ds.query({parent_id: this.regions_cmb.item.id, id: old_item_id});
+
+                    if (res.length > 0) {
+                        this.district_cmb.set("value", this.district_cmb.store.getIdentity(res[0]));
+                        return;
+                    }
+                }
+
+                //else set first
                 var res = districts_ds.query({parent_id: this.regions_cmb.item.id})
                 this.district_cmb.set("value", this.district_cmb.store.getIdentity(res[0]));
             });
@@ -81,10 +95,7 @@ define([
              if (data.focl_struct === undefined) {
                  data.focl_struct = {};
              }
-
          }
-
-        //deserializeInMixin: function (data) {}
 
     });
 });

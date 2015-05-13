@@ -6,8 +6,19 @@
         <outlinecolor red="0" green="0" blue="0"/>
         <symbol>std:circle</symbol>
         <color red="0" green="0" blue="0"/>
-        <size>2.83464566929</size>
+        <size>5</size>
       </style>
+      <label>
+        <type>truetype</type>
+        <font>regular</font>
+        <size>10</size>
+        <color blue="0" green="0" red="0"/>
+        <outlinewidth>3</outlinewidth>
+        <outlinecolor blue="255" green="255" red="255"/>
+        <position>uc</position>
+        <offset x='0' y='0' />
+        <maxscaledenom>140000</maxscaledenom>
+      </label>
     </class>
   </layer>
 </map>

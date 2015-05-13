@@ -309,7 +309,7 @@ define([
                     widget._mapSetup();
                     var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
                     resourcesTypeSelector.selectResourceType('vols');
-                    this.LayersSelector.selectLayers(['optical_cross', 'optical_cable', 'fosc', 'access_point', 'endpoint'], 'focl_struct');
+                    this.LayersSelector.selectLayers(['optical_cross', 'optical_cable', 'fosc', 'access_point'], 'focl_struct');
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
@@ -473,7 +473,7 @@ define([
 
             //events
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
-                 this.map.olMap.zoomToExtent(new_ext, true);
+                 this.map.olMap.zoomToExtent(new_ext, false);
             }));
 
         },
@@ -893,26 +893,27 @@ define([
             );
         },
 
-        appendLayerToMap: function(layer_id, style_id) {
+        appendLayerToMap: function (layer_id, style_id, resourceType, layerType) {
             var data = {
-                "layerId": layer_id,        // Слой
-                "styleId": style_id,        // Стиль
-                "visibility": true,          // Вкл
-                "name": layer_id
-            };
-
-            var adapt = new Adapter({});
-            var lyr = adapt.createLayer(data);
+                    "layerId": layer_id,        // Слой
+                    "styleId": style_id,        // Стиль
+                    "visibility": true,          // Вкл
+                    "name": layer_id
+                },
+                adapt = new Adapter({}),
+                lyr = adapt.createLayer(data);
 
             lyr.name = layer_id;
             lyr.res_id = layer_id;
+            lyr.res_type = resourceType;
+            lyr.layer_type = layerType;
 
             this.map.addLayer(lyr);
 
             return lyr;
         },
 
-        removeLayerFromMap: function(layer) {
+        removeLayerFromMap: function (layer) {
             this.map.removeLayer(layer);
         }
     });
