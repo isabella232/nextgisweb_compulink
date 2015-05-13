@@ -93,7 +93,7 @@ define([
 
             this.selectPane = new ContentPane({
                 region: "top", layoutPriority: 1,
-                style: "padding: 0px 4px;"
+                style: "padding: 0 2px 0 1px"
             });
 
             this.addChild(this.selectPane);
@@ -103,17 +103,12 @@ define([
                 options: this.selectOptions
             }).placeAt(this.selectPane);
 
-            // if (featureLayersettings.identify.attributes) {
-            //     this._fieldsDisplayWidget = new FieldsDisplayWidget({style: "padding: 2px;"});
-            //     this.container.addChild(this._fieldsDisplayWidget);
-            // }
-
             // создаем виждеты для всех расширений IFeatureLayer
             var deferreds = [];
             var widget = this;
 
             widget.extWidgetClasses = {};
-            
+
             array.forEach(Object.keys(featureLayersettings.extensions), function (key) {
                 var ext = featureLayersettings.extensions[key];
 
@@ -147,21 +142,23 @@ define([
 
         _displayFeature: function (feature) {
             var widget = this, lid = feature.layerId, fid = feature.id;
-            
+
             var iurl = route.feature_layer.feature.item({id: lid, fid: fid});
 
             xhr.get(iurl, {
                 method: "GET",
                 handleAs: "json"
             }).then(function (feature) {
-                widget.extWidgetClassesDeferred.then( function () {
+                widget.extWidgetClassesDeferred.then(function () {
+                    if (widget.featureContainer) {
+                        widget.featureContainer.destroyRecursive();
+                    }
 
                     widget.featureContainer = new BorderContainer({region: "center", gutters: false});
                     widget.addChild(widget.featureContainer);
 
                     widget.extContainer = new StackContainer({
-                        region: "center"
-                    });
+                        region: "center", style: "overflow-y: scroll"});
 
                     widget.featureContainer.addChild(widget.extContainer);
 
@@ -169,12 +166,27 @@ define([
                         region: "top", layoutPriority: 2,
                         containerId: widget.extContainer.id
                     });
+                    domClass.add(widget.extController.domNode, "ngwWebmapToolIdentify-controller");
 
                     widget.featureContainer.addChild(widget.extController);
 
+                    // Показываем виджет с атрибутами в том случае, если
+                    // это не отключено в настройках
+                    if (featureLayersettings.identify.attributes) {
+                        var fwidget = new FieldsDisplayWidget({
+                            resourceId: lid, featureId: fid, compact: true,
+                            title: "Атрибуты",
+                            aliases: true, grid_visibility: true});
+
+                        fwidget.renderValue(feature.fields);
+                        fwidget.placeAt(widget.extContainer);
+                    }
+
                     array.forEach(Object.keys(widget.extWidgetClasses), function (key) {
                         var cls = widget.extWidgetClasses[key],
-                            ewidget = new cls({resourceId: lid, featureId: fid, compact: true});
+                            ewidget = new cls({
+                                resourceId: lid, featureId: fid,
+                                compact: true});
 
                         ewidget.renderValue(feature.extensions[key]);
                         ewidget.placeAt(widget.extContainer);
@@ -190,14 +202,13 @@ define([
                             }));
                         }
                     }).placeAt(widget.extController, "last");
+                    domClass.add(widget.editButton.domNode, "no-label");
 
                     setTimeout(function () { widget.resize();}, 10);
 
                 });
             }).otherwise(console.error);
         }
-
-
     });
 
     return declare(Base, {
