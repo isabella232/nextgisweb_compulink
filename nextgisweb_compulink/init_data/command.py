@@ -7,8 +7,8 @@ from osgeo import ogr
 import shutil
 from sqlalchemy.orm.exc import NoResultFound
 import transaction
-from nextgisweb.auth import User, Group
 from nextgisweb import DBSession
+from nextgisweb.auth import User, Group
 from nextgisweb.command import Command
 from nextgisweb.resource import ResourceGroup, ACLRule
 from nextgisweb.env import env
@@ -17,6 +17,8 @@ from nextgisweb.vector_layer import VectorLayer
 from nextgisweb.vector_layer.model import _set_encoding, VE
 from nextgisweb_compulink.compulink_admin.well_known_resource import *
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater
+from default_dicts import DEFAULT_COMPULINK_DICTS
+from nextgisweb_lookuptable.model import LookupTable
 
 BASE_PATH = path.abspath(path.dirname(__file__))
 
@@ -27,25 +29,30 @@ class DBInit():
     @classmethod
     def argparser_setup(cls, parser, env):
         parser.add_argument('--force', dest='force', action='store_true', default=False)
-        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts'], default='all')
+        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts', 'dicts'], default='all')
 
 
     @classmethod
-    def execute(cls, args, env):
+    def execute(cls, args, env=None, make_transaction=True):
+        if make_transaction:
+            transaction.manager.begin()
+
         if args.action in ['all', 'dict_group']:
             cls.create_dict_group()
         if args.action in ['all', 'shape_dicts']:
             cls.load_shape_dicts(force=args.force)
         if args.action in ['all', 'icons']:
             cls.load_icons()
+        if args.action in ['all', 'dicts']:
+            cls.load_dicts()
+
+        if make_transaction:
+            transaction.manager.commit()
+
 
     @classmethod
     def create_dict_group(cls):
         print 'Create Dicts group resource...'
-
-        db_session = DBSession()
-
-        transaction.manager.begin()
 
         adminusr = User.filter_by(keyname='administrator').one()
         admingrp = Group.filter_by(keyname='administrators').one()
@@ -68,23 +75,18 @@ class DBInit():
 
             obj.acl.append(ACLRule(
                 principal=everyone,
-                scope='resource',
-                permission='delete',
-                action='deny',
-                propagate=False))
+                scope='data',
+                permission='read',
+                action='allow',
+                propagate=True))
 
             obj.persist()
 
-        transaction.manager.commit()
-        db_session.close()
 
 
     @classmethod
     def load_shape_dicts(cls, force=False):
         print 'Loading shapes...'
-
-        db_session = DBSession()
-        transaction.manager.begin()
 
         shape_dicts = {
             REGIONS_KEYNAME:    ('regions.zip',
@@ -112,7 +114,7 @@ class DBInit():
 
         # get root resource
         try:
-            root_res = ResourceGroup.filter_by(keyname='dictionary_group').one()
+            root_res = ResourceGroup.filter_by(keyname=DICTIONARY_GROUP_KEYNAME).one()
         except NoResultFound:
             raise Exception('Need dictionaries group resource!')
 
@@ -140,13 +142,6 @@ class DBInit():
                 vec_res.acl.append(ACLRule(
                     principal=admingrp,
                     action='allow'))
-
-                vec_res.acl.append(ACLRule(
-                    principal=everyone,
-                    scope='resource',
-                    permission='delete',
-                    action='deny',
-                    propagate=False))
 
 
             vec_res.srs = SRS.filter_by(id=3857).one()
@@ -217,17 +212,46 @@ class DBInit():
 
             vec_res.persist()
 
-        transaction.manager.commit()
-        db_session.close()
 
     @classmethod
     def load_icons(cls):
         print 'Loading style icons...'
-        transaction.manager.begin()
         env.marker_library.load_collection('nextgisweb_compulink', 'compulink_admin/layers_default_styles')
-        transaction.manager.commit()
+
+    @classmethod
+    def load_dicts(cls):
+        print 'Loading default dicts...'
+
+        # get principals
+        adminusr = User.filter_by(keyname='administrator').one()
+        admingrp = Group.filter_by(keyname='administrators').one()
+        everyone = User.filter_by(keyname='everyone').one()
+
+        # get root resource
+        try:
+            root_res = ResourceGroup.filter_by(keyname=DICTIONARY_GROUP_KEYNAME).one()
+        except NoResultFound:
+            raise Exception('Need dictionaries group resource!')
+
+        # upload dicts
+        for dict_keyname, dict_values in DEFAULT_COMPULINK_DICTS.iteritems():
+            try:
+                dict_res = LookupTable.filter_by(keyname=dict_keyname).one()
+                print '   Dictionary "%s" already exists' % dict_keyname
+                continue
+            except NoResultFound:
+                dict_res = LookupTable(owner_user=adminusr,
+                                      display_name=dict_values['display_name'],
+                                      keyname=dict_keyname,
+                                      parent=root_res)
+
+                dict_res.acl.append(ACLRule(
+                    principal=admingrp,
+                    action='allow'))
 
 
+                dict_res.val = dict_values['items']
+                dict_res.persist()
 
 
 

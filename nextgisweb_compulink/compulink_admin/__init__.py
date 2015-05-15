@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from os import path
 
-from nextgisweb.component import Component
+from nextgisweb.component import Component, require
 from .model import Base, PROJECT_STATUS_PROJECT
 from .ident import COMP_ID
 from nextgisweb_compulink.init_data.command import DBInit
@@ -16,16 +16,20 @@ class CompulinkAdminComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata
 
+    @require('lookup_table')
     def initialize(self):
         pass
 
+    @require('lookup_table')
     def initialize_db(self):
         #TODO: fake! Need refactoring
         args = self
         args.action = 'all'
+        args.force = False
 
-        DBInit.execute(args)
+        DBInit.execute(args, make_transaction=False)
 
+    @require('lookup_table')
     def setup_pyramid(self, config):
         from . import view
         view.setup_pyramid(self, config)

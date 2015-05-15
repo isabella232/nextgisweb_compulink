@@ -5,6 +5,7 @@ version = '0.1'
 requires = (
     'nextgisweb',
     'nextgisweb_rekod',
+    'nextgisweb_lookuptable',
     'lxml',
     'shapely'
 )
