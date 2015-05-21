@@ -11,6 +11,7 @@ define([
     "dojo/dom-class",
     "dojo/dom-style",
     "dojo/on",
+    "dijit/Dialog",
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane",
     "dijit/layout/StackContainer",
@@ -40,6 +41,7 @@ define([
     domClass,
     domStyle,
     on,
+    Dialog,
     BorderContainer,
     ContentPane,
     StackContainer,
@@ -212,11 +214,15 @@ define([
                                     fields: data.feature_layer.fields,
                                     title: "Объект #" + fid,
                                     iconClass: "iconDescription",
-                                    closable: true
+                                    closable: true,
+                                    style: "width: 400px; height: 500px"
                                 });
 
-                                widget.tool.display.tabContainer.addChild(pane);
-                                widget.tool.display.tabContainer.selectChild(pane);
+                                var FeatureEditorDialog = new Dialog({
+                                    title: "Объект #" + fid,
+                                    content: pane
+                                });
+                                FeatureEditorDialog.show();
 
                                 pane.startup();
                                 pane.load();
