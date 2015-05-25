@@ -7,7 +7,10 @@ requires = (
     'nextgisweb_rekod',
     'nextgisweb_lookuptable',
     'lxml',
-    'shapely'
+    'shapely',
+    'transaction',
+    'sqlalchemy',
+    'pymssql'
 )
 
 entry_points = {
@@ -36,5 +39,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
-    entry_points=entry_points, requires=['transaction']
+    entry_points=entry_points, requires=requires
 )

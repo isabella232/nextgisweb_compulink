@@ -162,7 +162,16 @@ def get_focl_info(request):
     for res in resources:
         region = get_region_name(res.region)
         district = get_district_name(res.district)
-        resp.append({'id': res.id, 'display_name': res.display_name, 'district': district, 'region': region})
+        external_id = res.external_id if res.identity == FoclStruct.identity else ''
+        resp.append(
+            {
+                'id': res.id,
+                'display_name': res.display_name,
+                'district': district,
+                'region': region,
+                'external_id': external_id
+            }
+        )
 
     dbsession.close()
 

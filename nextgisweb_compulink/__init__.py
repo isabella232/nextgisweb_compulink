@@ -13,7 +13,7 @@ def pkginfo():
             compulink_admin='nextgisweb_compulink.compulink_admin',
             compulink_site='nextgisweb_compulink.compulink_site',
             compulink_mobile='nextgisweb_compulink.compulink_mobile',
-
+            compulink_mssql_bridge='nextgisweb_compulink.compulink_mssql_bridge',
         )
     )
 

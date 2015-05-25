@@ -19,22 +19,22 @@ define([
                 district: 'Муниципальный район',
                 settlement: 'Нас. пункт',
                 access_point_count: 'Кол-во точек доступа',
-                deadline_contract: 'Срок сдачи по договору',
-                project_manager: 'Рук. проекта',
-                focl_length_order: 'Протяж. ВОЛС по заказу',
-                focl_length_project: 'Протяж. ВОЛС по проекту',
-                focl_length_fact: 'Протяж. ВОЛС фактическая',
-                length_on_ol: 'Протяж. по ВЛ',
-                length_in_ground: 'Протяж. в грунте',
-                length_in_canalization: 'Протяж. в каб. канализации',
-                customer: 'Заказчик строительства',
-                planned_start_date: 'План. дата начала СМР',
-                planned_finish_date: 'План. дата окончания СМР',
-                subcontr: 'Суб-чик СМР ВОЛС'
+                need_construct: 'Требуется строительство',
+                point_a: 'Точка А',
+                point_b: 'Точка Б',
+                focl_length: 'Протяженность ВОЛС',
+                start_build_time: 'Строительство ВОЛС (начало)',
+                end_build_time: 'Строительство ВОЛС (окончание)',
+                start_exp_time: 'Сдача ВОЛС в эксплуатацию (начало)',
+                end_exp_time: 'Сдача ВОЛС в эксплуатацию (окончание)',
+                subcontr: 'Субподрядчик СМР ВОЛС'
         },
 
         _get_focl_info_url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
         _get_extent_url: ngwConfig.applicationUrl + '/compulink/resources/focl_extent',
+
+        _get_ext_focl_info_url: ngwConfig.applicationUrl + '/compulink/mssql/get_focl_info',
+
 
         constructor: function (domId) {
             this._store = Memory({data: []});
@@ -80,6 +80,28 @@ define([
             xhr.post(this._get_focl_info_url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
                 this._store.data = data;
                 this._grid.refresh();
+
+                //update extra fields
+                ext_ids_num = [];
+                for(var i=0; i<this._store.data.length; i++)
+                {
+                    if(this._store.data[i]['external_id']!=null)
+                        ext_ids_num.push(this._store.data[i]['external_id']);
+                };
+                xhr.post(this._get_ext_focl_info_url, {handleAs: 'json', data: {ids: ext_ids_num}}).then(lang.hitch(this, function (data) {
+                    for(var i=0; i<data.length; i++) {
+                        ext_id = data[i]['external_id'];
+                        for(var j=0; j<this._store.data.length; j++)
+                        {
+                            if(ext_id==this._store.data[j]['external_id']) {
+                                lang.mixin(this._store.data[j], data[i])
+                                break;
+                            }
+                        }
+                    };
+                    this._grid.refresh();
+                }));
+
             }));
         }
     });
