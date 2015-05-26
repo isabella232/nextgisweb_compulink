@@ -18,6 +18,7 @@ define([
     "dijit/layout/StackController",
     "dijit/form/Select",
     "dijit/form/Button",
+    "dijit/layout/TabContainer",
     "put-selector/put",
     "ngw/route",
     "ngw/openlayers",
@@ -27,10 +28,8 @@ define([
     // settings
     "ngw/settings!feature_layer",
     "ngw/settings!webmap",
-    "ngw/settings!compulink_site",
     // css
     "xstyle/css!./resource/Identify.css"
-
 ], function (
     declare,
     Base,
@@ -50,6 +49,7 @@ define([
     StackController,
     Select,
     Button,
+    TabContainer,
     put,
     route,
     openlayers,
@@ -57,10 +57,8 @@ define([
     FieldsDisplayWidget,
     FeatureEditorWidget,
     featureLayersettings,
-    webmapSettings,
-    siteSettings
+    webmapSettings
 ) {
-    all_dicts = siteSettings.dicts; //BAD!!
     var Control = OpenLayers.Class(OpenLayers.Control, {
         initialize: function (options) {
             OpenLayers.Control.prototype.initialize.apply(this, [options]);
@@ -164,18 +162,18 @@ define([
                     widget.featureContainer = new BorderContainer({region: "center", gutters: false});
                     widget.addChild(widget.featureContainer);
 
-                    widget.extContainer = new StackContainer({
+                    widget.extContainer = new TabContainer({
                         region: "center", style: "overflow-y: scroll"});
 
                     widget.featureContainer.addChild(widget.extContainer);
 
-                    widget.extController = new StackController({
-                        region: "top", layoutPriority: 2,
-                        containerId: widget.extContainer.id
-                    });
-                    domClass.add(widget.extController.domNode, "ngwWebmapToolIdentify-controller");
+                    //widget.extController = new StackController({
+                    //    region: "top", layoutPriority: 2,
+                    //    containerId: widget.extContainer.id
+                    //});
+                    //domClass.add(widget.extController.domNode, "ngwWebmapToolIdentify-controller");
 
-                    widget.featureContainer.addChild(widget.extController);
+                    //widget.featureContainer.addChild(widget.extController);
 
                     // Показываем виджет с атрибутами в том случае, если
                     // это не отключено в настройках
@@ -199,44 +197,44 @@ define([
                         ewidget.placeAt(widget.extContainer);
                     });
 
-                    widget.editButton = new Button({
-                        iconClass: "dijitIconEdit",
-                        showLabel: true,
-                        onClick: function () {
-                            xhr(route.resource.item({id: lid}), {
-                                method: "GET",
-                                handleAs: "json"
-                            }).then(function (data) {
-                                var fieldmap = {};
-                                array.forEach(data.feature_layer.fields, function (itm) {
-                                    fieldmap[itm.keyname] = itm;
-                                });
-
-                                var pane = new FeatureEditorWidget({
-                                    resource: lid, feature: fid,
-                                    fields: data.feature_layer.fields,
-                                    title: "Объект #" + fid,
-                                    iconClass: "iconDescription",
-                                    closable: true,
-                                    style: "width: 400px; height: 500px"
-                                });
-
-                                var FeatureEditorDialog = new Dialog({
-                                    title: "Объект #" + fid,
-                                    content: pane
-                                });
-                                FeatureEditorDialog.show();
-
-                                pane.startup();
-                                pane.load();
-                            }).otherwise(console.error);
-                        }
-                    }).placeAt(widget.extController, "last");
-                    domClass.add(widget.editButton.domNode, "no-label");
+                    //widget.editButton = new Button({
+                    //    iconClass: "dijitIconEdit",
+                    //    showLabel: true,
+                    //    onClick: function () {
+                    //        xhr(route.resource.item({id: lid}), {
+                    //            method: "GET",
+                    //            handleAs: "json"
+                    //        }).then(function (data) {
+                    //            var fieldmap = {};
+                    //            array.forEach(data.feature_layer.fields, function (itm) {
+                    //                fieldmap[itm.keyname] = itm;
+                    //            });
+                    //
+                    //            var pane = new FeatureEditorWidget({
+                    //                resource: lid, feature: fid,
+                    //                fields: data.feature_layer.fields,
+                    //                title: "Объект #" + fid,
+                    //                iconClass: "iconDescription",
+                    //                closable: true,
+                    //                style: "width: 400px; height: 500px"
+                    //            });
+                    //
+                    //            var FeatureEditorDialog = new Dialog({
+                    //                title: "Объект #" + fid,
+                    //                content: pane
+                    //            });
+                    //            FeatureEditorDialog.show();
+                    //
+                    //            pane.startup();
+                    //            pane.load();
+                    //        }).otherwise(console.error);
+                    //    }
+                    //}).placeAt(widget.extController, "last");
+                    //domClass.add(widget.editButton.domNode, "no-label");
 
                     setTimeout(function () { widget.resize();}, 10);
 
-                });
+                }).otherwise(console.error);
             }).otherwise(console.error);
         }
     });

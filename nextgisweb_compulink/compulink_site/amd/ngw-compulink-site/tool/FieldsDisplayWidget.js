@@ -8,6 +8,8 @@ define([
     "put-selector/put",
     "ngw/route",
     "./DisplayWidget",
+    // settings
+    "ngw/settings!compulink_site",
     // css
     "xstyle/css!./resource/FieldsDisplayWidget.css"
 ], function (
@@ -19,7 +21,8 @@ define([
     domClass,
     put,
     route,
-    DisplayWidget
+    DisplayWidget,
+    siteSettings
 ) {
     var fieldsCache = {};
 
@@ -67,13 +70,17 @@ define([
 
                 if (this.compact && !fieldmap[k].grid_visibility) { continue; }
 
-                //BAD
+
+                var all_dicts = siteSettings.dicts;
+
                 if (all_dicts.hasOwnProperty(field.keyname)) {
-                    replace_dict = all_dicts[field.keyname];
+                    var replace_dict = all_dicts[field.keyname];
                     if(replace_dict.hasOwnProperty(val)) val = replace_dict[val];
                 }
 
-                if (field.datatype == "DATE") {
+                if (val === null) {
+                    // pass
+                } else if (field.datatype == "DATE") {
                     val = locale.format(new Date(val.year, val.month, val.day), {
                         selector: "date",
                         formatLength: "medium"
@@ -89,7 +96,11 @@ define([
                     });
                 }
 
-                put(tbody, "tr th.display_name $ < td.value $", fieldmap[k].display_name, val);
+                if (val !== null) {
+                    put(tbody, "tr th.display_name $ < td.value $", fieldmap[k].display_name, val);
+                } else {
+                    put(tbody, "tr th.display_name $ < td.value span.null $", fieldmap[k].display_name, "Н/Д");
+                }
             }
         }
     });
