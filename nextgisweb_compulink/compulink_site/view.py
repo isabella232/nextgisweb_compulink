@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import copy
 import json
 import codecs
 from os import path
@@ -18,6 +19,7 @@ from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name
+from nextgisweb_lookuptable.model import LookupTable
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
@@ -279,3 +281,15 @@ def _get_layer_type_by_name(layers_types, name):
         if name.startswith(layer_type):
             return layer_type
     return None
+
+def get_all_dicts():
+    dbsession = DBSession()
+    dicts_resources = dbsession.query(LookupTable).all()
+
+    dicts = {}
+    for dict_res in dicts_resources:
+        dicts[dict_res.keyname] = dict_res.val
+
+    dbsession.close()
+
+    return dicts

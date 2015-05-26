@@ -22,13 +22,15 @@ define([
     "ngw/route",
     "ngw/openlayers",
     "ngw/openlayers/Popup",
-    "ngw-feature-layer/FieldsDisplayWidget",
-    "ngw-feature-layer/FeatureEditorWidget",
+    "./FieldsDisplayWidget",
+    "./FeatureEditorWidget",
     // settings
     "ngw/settings!feature_layer",
     "ngw/settings!webmap",
+    "ngw/settings!compulink_site",
     // css
-    "xstyle/css!./resources/Identify.css"
+    "xstyle/css!./resource/Identify.css"
+
 ], function (
     declare,
     Base,
@@ -55,9 +57,10 @@ define([
     FieldsDisplayWidget,
     FeatureEditorWidget,
     featureLayersettings,
-    webmapSettings
+    webmapSettings,
+    siteSettings
 ) {
-
+    all_dicts = siteSettings.dicts; //BAD!!
     var Control = OpenLayers.Class(OpenLayers.Control, {
         initialize: function (options) {
             OpenLayers.Control.prototype.initialize.apply(this, [options]);

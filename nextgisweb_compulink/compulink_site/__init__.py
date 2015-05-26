@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os.path
 from nextgisweb import Base
 
 from nextgisweb.component import Component
 
-from ident import COMP_ID
+from .ident import COMP_ID
+from .view import get_all_dicts
 
 
 @Component.registry.register
@@ -24,3 +24,8 @@ class CompulinkSiteComponent(Component):
 
     settings_info = (
     )
+
+    def client_settings(self, request):
+        return dict(
+            dicts=get_all_dicts()
+        )
