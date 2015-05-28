@@ -19,6 +19,7 @@ define([
     "dijit/form/Select",
     "dijit/form/Button",
     "dijit/layout/TabContainer",
+    "dijit/registry",
     "put-selector/put",
     "ngw/route",
     "ngw/openlayers",
@@ -50,6 +51,7 @@ define([
     Select,
     Button,
     TabContainer,
+    registry,
     put,
     route,
     openlayers,
@@ -87,7 +89,7 @@ define([
                 var idx = 0;
                 array.forEach(layerResponse.features, function (feature) {
                     var label = put("div[style=\"overflow: hidden; display: inline-block; text-align: left;\"] $ span[style=\"color: gray\"] $ <", (feature.label || "#" + feature.id), " (" + feature.parent + ")");
-                    domStyle.set(label, "width", (this.popupSize[0] - 35) + "px");
+                    domStyle.set(label, "width", (this.popupSize[0] - 65) + "px");
                     this.selectOptions.push({
                         label: label.outerHTML,
                         value: layerId + "/" + idx
@@ -96,17 +98,59 @@ define([
                 }, this);
             }, this);
 
-            this.selectPane = new ContentPane({
+            this.selectPane = new BorderContainer({
                 region: "top", layoutPriority: 1,
-                style: "padding: 0 2px 0 1px"
+                design: "sidebar",
+                style: "padding: 0; height: 20px; margin: 1px"
             });
-
-            this.addChild(this.selectPane);
+            this.addChild(this.selectPane, "ngwWebmapToolIdentify-controller");
 
             this.select = new Select({
+                options: this.selectOptions,
+                id: "featureSelector",
                 style: "width: 100%",
-                options: this.selectOptions
+                region: "center"
             }).placeAt(this.selectPane);
+
+
+            this.editButton = new Button({
+                        region: "right",
+                        iconClass: "dijitIconEdit",
+                        style: "height: 20px;",
+                        showLabel: true,
+                        onClick: function () {
+                            xhr(route.resource.item({id: ident_lid}), {
+                                method: "GET",
+                                handleAs: "json"
+                            }).then(function (data) {
+                                var fieldmap = {};
+                                array.forEach(data.feature_layer.fields, function (itm) {
+                                    fieldmap[itm.keyname] = itm;
+                                });
+
+                                var label = registry.byId("featureSelector").get("displayedValue");
+
+                                var pane = new FeatureEditorWidget({
+                                    resource: ident_lid, feature: ident_fid,
+                                    fields: data.feature_layer.fields,
+                                    title: label,
+                                    iconClass: "iconDescription",
+                                    closable: true,
+                                    style: "width: 400px; height: 500px"
+                                });
+
+                                var FeatureEditorDialog = new Dialog({
+                                    title: label,
+                                    content: pane
+                                });
+                                FeatureEditorDialog.show();
+
+                                pane.startup();
+                                pane.load();
+                            }).otherwise(console.error);
+                        }
+                    }).placeAt(this.selectPane);
+            domClass.add(this.editButton.domNode, "no-label");
 
             // создаем виждеты для всех расширений IFeatureLayer
             var deferreds = [];
@@ -146,9 +190,11 @@ define([
         },
 
         _displayFeature: function (feature) {
-            var widget = this, lid = feature.layerId, fid = feature.id;
+            var widget = this;
+            ident_lid = feature.layerId;
+            ident_fid = feature.id;
 
-            var iurl = route.feature_layer.feature.item({id: lid, fid: fid});
+            var iurl = route.feature_layer.feature.item({id: ident_lid, fid: ident_fid});
 
             xhr.get(iurl, {
                 method: "GET",
@@ -163,7 +209,7 @@ define([
                     widget.addChild(widget.featureContainer);
 
                     widget.extContainer = new TabContainer({
-                        region: "center", style: "overflow-y: scroll"});
+                        region: "center", class: "ngwWebmapToolIdentify-tabContainer"});
 
                     widget.featureContainer.addChild(widget.extContainer);
 
@@ -179,7 +225,7 @@ define([
                     // это не отключено в настройках
                     if (featureLayersettings.identify.attributes) {
                         var fwidget = new FieldsDisplayWidget({
-                            resourceId: lid, featureId: fid, compact: true,
+                            resourceId: ident_lid, featureId: ident_fid, compact: true,
                             title: "Атрибуты",
                             aliases: true, grid_visibility: true});
 
@@ -188,10 +234,10 @@ define([
                     }
 
                     array.forEach(Object.keys(widget.extWidgetClasses), function (key) {
-                        var cls = widget.extWidgetClasses[key],
-                            ewidget = new cls({
-                                resourceId: lid, featureId: fid,
-                                compact: true});
+                        var cls = widget.extWidgetClasses[key];
+                        var ewidget = new cls({
+                            resourceId: ident_lid, featureId: ident_fid,
+                            compact: true});
 
                         ewidget.renderValue(feature.extensions[key]);
                         ewidget.placeAt(widget.extContainer);
@@ -240,7 +286,7 @@ define([
     });
 
     return declare(Base, {
-        label: "Идентификация",
+        label: "Информация об объекте",
         iconClass: "iconIdentify",
 
         // Радиус для поиска объектов в пикселях
@@ -331,7 +377,7 @@ define([
             this._removePopup();
 
             this._popup = new Popup({
-                title: "Идентификация",
+                title: "Информация об объекте",
                 point: point,
                 size: [this.popupWidth, this.popupHeight]
             });
