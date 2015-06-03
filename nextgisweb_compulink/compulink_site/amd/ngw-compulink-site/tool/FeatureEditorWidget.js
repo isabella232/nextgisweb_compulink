@@ -19,6 +19,8 @@ define([
     "dijit/layout/BorderContainer",
     "dijit/layout/TabContainer",
     "dojox/layout/TableContainer",
+    "dijit/registry",
+    "dojo/Evented",
     "ngw/route",
     "./loader!",
     "xstyle/css!./resource/FeatureEditorWidget.css"
@@ -43,10 +45,12 @@ define([
     BorderContainer,
     TabContainer,
     TableContainer,
+    registry,
+    Evented,
     route,
     loader
 ) {
-    var MultiBox = declare([_WidgetBase], {
+    var MultiBox = declare([_WidgetBase, Evented], {
         datatype: "STRING",
 
         buildRendering: function () {
@@ -243,6 +247,12 @@ define([
                 iconClass: "dijitIconSave",
                 onClick: lang.hitch(this, this.save)
             }).placeAt(this._btnPane);
+
+            new Button({
+                label: "Отмена",
+                iconClass: "dijitIconDelete",
+                onClick: lang.hitch(this, this.emitCloseWindow)
+            }).placeAt(this._btnPane);
         },
 
         iurl: function () {
@@ -282,8 +292,13 @@ define([
                 handleAs: "json",
                 data: json.stringify(data)
             }).then(function () {
-                widget.load();
+                widget.emitCloseWindow();
             });
+        },
+
+        emitCloseWindow: function () {
+            console.log('fire close');
+            this.emit("closeContainer", {});
         }
     });
 })

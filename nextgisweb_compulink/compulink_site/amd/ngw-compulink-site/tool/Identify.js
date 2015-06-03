@@ -101,14 +101,14 @@ define([
             this.selectPane = new BorderContainer({
                 region: "top", layoutPriority: 1,
                 design: "sidebar",
-                style: "padding: 0; height: 20px; margin: 1px"
+                style: "padding: 0; height: 26px; margin: 1px;"
             });
             this.addChild(this.selectPane, "ngwWebmapToolIdentify-controller");
 
             this.select = new Select({
                 options: this.selectOptions,
                 id: "featureSelector",
-                style: "width: 100%",
+                style: "width: 100%; height: 24px;",
                 region: "center"
             }).placeAt(this.selectPane);
 
@@ -116,7 +116,7 @@ define([
             this.editButton = new Button({
                         region: "right",
                         iconClass: "dijitIconEdit",
-                        style: "height: 20px;",
+                        style: "height: 26px; border: 0px; margin: 1px;",
                         showLabel: true,
                         onClick: function () {
                             xhr(route.resource.item({id: ident_lid}), {
@@ -130,19 +130,26 @@ define([
 
                                 var label = registry.byId("featureSelector").get("displayedValue");
 
+                                var FeatureEditorDialog = new Dialog({
+                                    title: label
+                                });
+
                                 var pane = new FeatureEditorWidget({
                                     resource: ident_lid, feature: ident_fid,
                                     fields: data.feature_layer.fields,
                                     title: label,
                                     iconClass: "iconDescription",
                                     closable: true,
-                                    style: "width: 400px; height: 500px"
+                                    style: "width: 400px; height: 500px",
+                                    oncloseContainer: function(){
+                                        console.log("Get it!");
+                                        FeatureEditorDialog.hide();
+                                        //this._displayFeature(this._featureResponse(this.select.get("value"))); //update
+                                        //widget.close();
+                                    }
                                 });
 
-                                var FeatureEditorDialog = new Dialog({
-                                    title: label,
-                                    content: pane
-                                });
+                                FeatureEditorDialog.set("content", pane);
                                 FeatureEditorDialog.show();
 
                                 pane.startup();
@@ -243,40 +250,6 @@ define([
                         ewidget.placeAt(widget.extContainer);
                     });
 
-                    //widget.editButton = new Button({
-                    //    iconClass: "dijitIconEdit",
-                    //    showLabel: true,
-                    //    onClick: function () {
-                    //        xhr(route.resource.item({id: lid}), {
-                    //            method: "GET",
-                    //            handleAs: "json"
-                    //        }).then(function (data) {
-                    //            var fieldmap = {};
-                    //            array.forEach(data.feature_layer.fields, function (itm) {
-                    //                fieldmap[itm.keyname] = itm;
-                    //            });
-                    //
-                    //            var pane = new FeatureEditorWidget({
-                    //                resource: lid, feature: fid,
-                    //                fields: data.feature_layer.fields,
-                    //                title: "Объект #" + fid,
-                    //                iconClass: "iconDescription",
-                    //                closable: true,
-                    //                style: "width: 400px; height: 500px"
-                    //            });
-                    //
-                    //            var FeatureEditorDialog = new Dialog({
-                    //                title: "Объект #" + fid,
-                    //                content: pane
-                    //            });
-                    //            FeatureEditorDialog.show();
-                    //
-                    //            pane.startup();
-                    //            pane.load();
-                    //        }).otherwise(console.error);
-                    //    }
-                    //}).placeAt(widget.extController, "last");
-                    //domClass.add(widget.editButton.domNode, "no-label");
 
                     setTimeout(function () { widget.resize();}, 10);
 
