@@ -178,7 +178,7 @@ define([
 
     var FieldsWidget = declare([TableContainer], {
         title: "Атрибуты",
-        style: "padding: 1ex; height: 100%;",
+        style: "padding: 1ex; height: 100%; overflow: auto;",
         labelWidth: "20%",
 
         buildRendering: function () {
