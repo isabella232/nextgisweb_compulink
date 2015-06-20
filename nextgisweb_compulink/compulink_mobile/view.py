@@ -64,7 +64,7 @@ def get_user_focl_list(request):
 
         for child in resource.children:
             for layer_type in SYNC_LAYERS_TYPES:
-                if child.keyname and layer_type in child.keyname:
+                if child.keyname and child.keyname.startswith(layer_type):
                     suitable_layer = {
                         'id': child.id,
                         'name': child.display_name,
