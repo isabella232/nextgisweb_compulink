@@ -1,0 +1,67 @@
+{
+    "resource": {
+        "permissions": [],
+        "keyname": null,
+        "display_name": "Расположение точек доступа",
+        "description": null
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "built_date",
+                "datatype": "DATE",
+                "typemod": null,
+                "display_name": "Дата завершения строительства",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Описание",
+                "label_field": false,
+                "grid_visibility": true
+            },
+
+            {
+                "keyname": "is_deviation",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Наличие отклонения",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "deviation_distance",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Отклонение в метрах",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "deviation_approved",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Отклонение утверждено",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "approval_comment",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Комментарий по отклонению",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}

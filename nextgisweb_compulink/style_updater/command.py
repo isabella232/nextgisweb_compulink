@@ -43,16 +43,19 @@ class UpdateStylesCommand():
 
         for ms_style_res in ms_styles_resources:
             vector_layer_key = ms_style_res.parent.keyname
+            if not vector_layer_key:
+                print "!!!! %s was not updated! No parent keyname!" % (ms_style_res.display_name)
+                continue
             updated = False
             for style_name in new_styles.keys():
                 if style_name in vector_layer_key:
                     ms_style_res.xml = new_styles[style_name]
                     ms_style_res.persist()
-                    print "%s was updated!" % vector_layer_key
+                    print "!!!! %s was updated!" % vector_layer_key
                     updated = True
                     break
             if not updated:
-                print "%s for %s was not updated!" % (ms_style_res.display_name, vector_layer_key)
+                print "%s for %s was not updated! Style not found!" % (ms_style_res.display_name, vector_layer_key)
         transaction.manager.commit()
         dbsession.close()
 

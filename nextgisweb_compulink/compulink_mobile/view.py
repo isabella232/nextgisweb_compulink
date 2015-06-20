@@ -12,11 +12,18 @@ from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS
 from ..compulink_admin.view import get_region_name, get_district_name
 
 SYNC_LAYERS_TYPES = [
+    #projected
     'fosc',
     'optical_cable',
     'optical_cross',
     'access_point',
     'endpoint',
+    #real
+    'real_special_transition_point'
+    'real_optical_cable_point',
+    'real_fosc',
+    'real_optical_cross',
+    'real_access_point',
 ]
 
 

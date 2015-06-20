@@ -1,0 +1,12 @@
+<map>
+  <layer>
+    <class>
+      <style>
+        <linecap>round</linecap>
+        <linejoin>round</linejoin>
+        <color red="223" green="86" blue="223" />
+        <width>10.0</width>
+      </style>
+    </class>
+  </layer>
+</map> 

@@ -1,14 +1,18 @@
 <map>
   <layer>
-    <labelitem>name</labelitem>
 
     <class>
       <expression>( '[laying_method]'='ground' )</expression>
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="156" green="121" blue="0" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
@@ -18,8 +22,13 @@
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="90" green="219" blue="238" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
@@ -29,8 +38,13 @@
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="0" green="0" blue="0" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
@@ -40,8 +54,13 @@
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="255" green="139" blue="0" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
@@ -51,8 +70,13 @@
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="118" green="0" blue="236" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
@@ -62,12 +86,16 @@
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
+        <color red="134" green="245" blue="29" />
+        <width>6.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="29" green="66" blue="201" />
-        <pattern>5.0 6.0</pattern>
         <width>3.0</width>
       </style>
     </class>
-
 
   </layer>
 </map> 

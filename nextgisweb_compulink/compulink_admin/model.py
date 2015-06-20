@@ -19,7 +19,7 @@ from nextgisweb_mapserver import qml
 from nextgisweb_mapserver.model import MapserverStyle
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
-    PROJECT_LAYER_STRUCT
+    PROJECT_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT
 
 from nextgisweb.resource import SerializedProperty as SP, SerializedRelationship as SR
 
@@ -141,6 +141,15 @@ class FoclStructSerializer(Serializer):
 
         web_map.persist()
         web_map.root_item.persist()
+
+        # add real layers
+        real_layers_template_path = os.path.join(BASE_PATH, 'real_layers_templates/')
+        for vl_name in FOCL_REAL_LAYER_STRUCT:
+            with codecs.open(os.path.join(real_layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
+                mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+
 
 
 class SituationPlan(Base, ResourceGroup):
