@@ -19,7 +19,7 @@ SYNC_LAYERS_TYPES = [
     'access_point',
     'endpoint',
     #real
-    'real_special_transition_point'
+    'real_special_transition_point',
     'real_optical_cable_point',
     'real_fosc',
     'real_optical_cross',
