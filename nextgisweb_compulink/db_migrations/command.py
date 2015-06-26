@@ -22,7 +22,7 @@ class DBMigrates():
 
     @classmethod
     def argparser_setup(cls, parser, env):
-        parser.add_argument('--migration', required=True, choices=['append_focl_direct_length', 'append_real_layers'])
+        parser.add_argument('--migration', required=True, choices=['append_focl_direct_length', 'append_real_layers', 'update_real_lyr_names'])
 
     @classmethod
     def execute(cls, args, env):
@@ -30,6 +30,8 @@ class DBMigrates():
             cls.append_focl_direct_length()
         if args.migration == 'append_real_layers':
             cls.append_real_layers()
+        if args.migration == 'update_real_lyr_names':
+            cls.update_names_of_reals_layers()
 
     @classmethod
     def append_real_layers(cls):
@@ -80,6 +82,62 @@ class DBMigrates():
                 print "display_name for 'length' field of %s was updated!" % vec_layer.keyname
             except Exception, ex:
                 print "Error on update display_name %s: %s" % (vec_layer.keyname, ex.message)
+
+        transaction.manager.commit()
+        db_session.close()
+
+    @classmethod
+    def update_names_of_reals_layers(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        # what update
+        upd_project_layers = ['access_point', 'fosc', 'optical_cable', 'optical_cross', 'special_transition']
+
+        upd_real_layers = ['real_access_point', 'real_fosc', 'real_optical_cable', 'real_optical_cable_point',
+                              'real_optical_cross', 'real_special_transition', 'real_special_transition_point']
+
+        upd_project_lyr_names = {}
+        upd_real_lyr_names = {}
+
+        # new names
+        proj_layers_template_path = os.path.join(BASE_PATH, 'layers_templates/')
+
+        for up_lyr_name in upd_project_layers:
+            with codecs.open(os.path.join(proj_layers_template_path, up_lyr_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                new_name = json_layer_struct['resource']['display_name']
+                upd_project_lyr_names[up_lyr_name] = new_name
+
+        real_layers_template_path = os.path.join(BASE_PATH, 'real_layers_templates/')
+        for up_lyr_name in upd_real_layers:
+            with codecs.open(os.path.join(real_layers_template_path, up_lyr_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                new_name = json_layer_struct['resource']['display_name']
+                upd_real_lyr_names[up_lyr_name] = new_name
+
+        # update now
+        resources = db_session.query(VectorLayer).all()
+
+        for vec_layer in resources:
+            lyr_name = vec_layer.keyname
+            if not lyr_name:
+                continue
+
+            for up_lyr_name in upd_project_lyr_names.keys():
+                if lyr_name.startswith(up_lyr_name) and not lyr_name.startswith(up_lyr_name + '_point'):  # ugly!
+                    vec_layer.display_name = upd_project_lyr_names[up_lyr_name]
+                    #vec_layer.persist()
+                    print '%s updated' % lyr_name
+                    break
+
+            for up_lyr_name in upd_real_lyr_names.keys():
+                if lyr_name.startswith(up_lyr_name) and not lyr_name.startswith(up_lyr_name + '_point'):  # ugly!
+                    vec_layer.display_name = upd_real_lyr_names[up_lyr_name]
+                    #vec_layer.persist()
+                    print '%s updated' % lyr_name
+                    break
 
         transaction.manager.commit()
         db_session.close()
