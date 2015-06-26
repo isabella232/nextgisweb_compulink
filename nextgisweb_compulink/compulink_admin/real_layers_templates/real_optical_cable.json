@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Расположение трассы ОК",
+        "display_name": "Трасса оптического кабеля (факт)",
         "description": null
     },
     "feature_layer": {

@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Точки доступа",
+        "display_name": "Точки доступа (проект)",
         "description": null
     },
     "feature_layer": {

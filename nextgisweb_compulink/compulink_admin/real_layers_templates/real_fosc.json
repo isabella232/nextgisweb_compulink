@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Расположение оптических муфт",
+        "display_name": "Оптические муфты (факт)",
         "description": null
     },
     "feature_layer": {

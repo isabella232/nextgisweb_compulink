@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Расположение оптических кроссов",
+        "display_name": "Оптические кроссы (факт)",
         "description": null
     },
     "feature_layer": {
