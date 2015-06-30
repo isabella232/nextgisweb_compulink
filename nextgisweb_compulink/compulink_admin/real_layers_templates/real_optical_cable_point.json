@@ -31,6 +31,15 @@
                 "label_field": false,
                 "grid_visibility": true
             },
+            {
+                "keyname": "start_point",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Начальная точка",
+                "label_field": false,
+                "grid_visibility": true
+            },
+
 
             {
                 "keyname": "is_deviation",
