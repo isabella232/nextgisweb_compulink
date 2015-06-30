@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload
 from nextgisweb import DBSession
 from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS
 from ..compulink_admin.view import get_region_name, get_district_name
+from nextgisweb_lookuptable.model import LookupTable
 
 SYNC_LAYERS_TYPES = [
     #projected
@@ -31,6 +32,9 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.mobile.focl_list',
         '/compulink/mobile/user_focl_list').add_view(get_user_focl_list)
+    config.add_route(
+        'compulink.mobile.all_dicts',
+        '/compulink/mobile/all_dicts').add_view(get_all_dicts)
 
 
 @view_config(renderer='json')
@@ -77,3 +81,19 @@ def get_user_focl_list(request):
 
     dbsession.close()
     return Response(json.dumps(focl_list))
+
+@view_config(renderer='json')
+def get_all_dicts(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    dbsession = DBSession()
+    dicts_resources = dbsession.query(LookupTable).all()
+
+    dicts = {}
+    for dict_res in dicts_resources:
+        dicts[dict_res.keyname] = dict_res.val
+
+    dbsession.close()
+
+    return Response(json.dumps(dicts))
