@@ -4,7 +4,7 @@ from nextgisweb.resource import Widget, Resource
 from nextgisweb.vector_layer import VectorLayer
 
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, PROJECT_STATUS_FINISHED, \
-    PROJECT_STATUS_IN_PROGRESS
+    PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED
 from .well_known_resource import *
 
 
@@ -189,6 +189,8 @@ def get_project_statuses():
     return [
         {'name': 'Проект', 'id': PROJECT_STATUS_PROJECT},
         {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
-        {'name': 'Построен', 'id': PROJECT_STATUS_FINISHED}
+        {'name': 'Построен по данным строителей', 'id': PROJECT_STATUS_BUILT},
+        {'name': 'Сдан заказчику', 'id': PROJECT_STATUS_DELIVERED},
+        {'name': 'Завершен', 'id': PROJECT_STATUS_FINISHED},
     ]
     return []
