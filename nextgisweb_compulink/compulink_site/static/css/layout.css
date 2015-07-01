@@ -188,6 +188,26 @@
     background: url('../img/layers-type-sprite.png') -32px 0;
 }
 
+/* temporary */
+#rightPanel i.real_special_transition,
+#rightPanel i.real_fosc{
+    background: url('../img/layers-type-sprite.png') 0 0;
+}
+
+#rightPanel i.real_special_transition_point,
+#rightPanel i.real_optical_cross{
+    background: url('../img/layers-type-sprite.png') -16px 0;
+}
+
+#rightPanel i.real_optical_cable,
+#rightPanel i.real_access_point{
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
+#rightPanel i.real_optical_cable_point {
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
 /* map styles */
 /* for identification popup */
 div.ngwPopup {
