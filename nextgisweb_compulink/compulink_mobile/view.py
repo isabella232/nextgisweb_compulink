@@ -8,7 +8,7 @@ from pyramid.view import view_config
 from sqlalchemy.orm import joinedload
 
 from nextgisweb import DBSession
-from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT
+from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT, PROJECT_STATUS_BUILT
 from ..compulink_admin.view import get_region_name, get_district_name
 from nextgisweb.resource import DataScope
 from nextgisweb_lookuptable.model import LookupTable
@@ -61,6 +61,7 @@ def get_user_focl_list(request):
             'name': resource.display_name,
             'region': get_region_name(resource.region),
             'district': get_district_name(resource.district),
+            'status': resource.status,
             'layers': []
         }
 
@@ -91,6 +92,14 @@ def get_all_dicts(request):
     dicts = {}
     for dict_res in dicts_resources:
         dicts[dict_res.keyname] = dict_res.val
+
+    # add project statuses dict
+    proj_statuses = {
+        PROJECT_STATUS_PROJECT: 'Строительство не начато',
+        PROJECT_STATUS_IN_PROGRESS: 'Идет строительство',
+        PROJECT_STATUS_BUILT: 'Построен'
+    }
+    dicts['proj_statuses'] = proj_statuses
 
     dbsession.close()
 
