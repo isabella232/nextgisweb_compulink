@@ -22,6 +22,10 @@ def get_focl_info(request):
     if not res_ids:
         return Response('[]')
 
+    enabling = request.env.compulink_mssql_bridge.settings.get('enable', False)
+    if not enabling:
+        return Response('[]')
+
     constructs = DBSession.query(ConstructObjects).filter(ConstructObjects.ObjectID.in_(res_ids)).options(joinedload_all(ConstructObjects.Work3), joinedload(ConstructObjects.Work4), ).all()
 
     focl_info_list = []

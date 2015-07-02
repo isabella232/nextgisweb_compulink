@@ -37,4 +37,5 @@ class CompulinkMssqlBridgeComponent(Component):
 
     settings_info = (
         dict(key='conn_str', desc=u"Строка соединения с MS SQL Server"),
+        dict(key='enable', desc=u"Включить интеграцию с MS SQL Server"),
     )
