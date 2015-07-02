@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
+
 import codecs
 import os
-from sqlalchemy import Float
 from sqlalchemy.orm import joinedload_all
 import transaction
+
 from nextgisweb.feature_layer import FIELD_TYPE
 from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT
-from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH
+from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater
-from nextgisweb_mapserver.model import MapserverStyle
-from os import path, listdir
 from nextgisweb import DBSession
 from nextgisweb.command import Command
 
@@ -22,7 +21,14 @@ class DBMigrates():
 
     @classmethod
     def argparser_setup(cls, parser, env):
-        parser.add_argument('--migration', required=True, choices=['append_focl_direct_length', 'append_real_layers', 'update_real_lyr_names'])
+        parser.add_argument('--migration',
+                            required=True,
+                            choices=[
+                                'append_focl_direct_length',
+                                'append_real_layers',
+                                'update_real_lyr_names',
+                                'check_focl_status'
+                            ])
 
     @classmethod
     def execute(cls, args, env):
@@ -32,6 +38,8 @@ class DBMigrates():
             cls.append_real_layers()
         if args.migration == 'update_real_lyr_names':
             cls.update_names_of_reals_layers()
+        if args.migration == 'check_focl_status':
+            cls.check_focl_status()
 
     @classmethod
     def append_real_layers(cls):
@@ -138,6 +146,22 @@ class DBMigrates():
                     #vec_layer.persist()
                     print '%s updated' % lyr_name
                     break
+
+        transaction.manager.commit()
+        db_session.close()
+
+    @classmethod
+    def check_focl_status(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        # check and update
+        resources = db_session.query(FoclStruct).filter(FoclStruct.status == _PROJECT_STATUS_FINISHED).all()
+
+        for focl_struct in resources:
+            focl_struct.status = PROJECT_STATUS_PROJECT
+            print 'Status changed for ' + focl_struct.display_name
 
         transaction.manager.commit()
         db_session.close()

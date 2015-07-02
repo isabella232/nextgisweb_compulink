@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from nextgisweb.resource import Widget, Resource
 from nextgisweb.vector_layer import VectorLayer
 
-from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, PROJECT_STATUS_FINISHED, \
+from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED
 from .well_known_resource import *
 
@@ -187,10 +187,9 @@ def get_district_id(distr_short_name, parent_id):
 
 def get_project_statuses():
     return [
-        {'name': 'Проект', 'id': PROJECT_STATUS_PROJECT},
+        {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
         {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
-        {'name': 'Построен по данным строителей', 'id': PROJECT_STATUS_BUILT},
+        {'name': 'Построен', 'id': PROJECT_STATUS_BUILT},
         {'name': 'Сдан заказчику', 'id': PROJECT_STATUS_DELIVERED},
-        {'name': 'Завершен', 'id': PROJECT_STATUS_FINISHED},
     ]
     return []
