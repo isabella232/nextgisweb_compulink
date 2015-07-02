@@ -12,7 +12,7 @@ from pyramid.view import view_config
 from sqlalchemy.orm import joinedload_all
 import sqlalchemy.sql as sql
 from nextgisweb import DBSession, db
-from nextgisweb.resource import Resource, ResourceGroup
+from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
@@ -68,7 +68,6 @@ def get_child_resx_by_parent(request):
 
     parent_resource = dbsession.query(Resource).get(parent_resource_id)
     children = parent_resource.children
-    dbsession.close()
 
     suitable_types = [
         ResourceGroup.identity,
@@ -83,7 +82,12 @@ def get_child_resx_by_parent(request):
     child_resources_json = []
     for child_resource in children:
         if child_resource.identity in suitable_types:
+            # remove system folders
             if child_resource.identity == ResourceGroup.identity and child_resource.keyname == DICTIONARY_GROUP_KEYNAME:
+                continue
+            # check permissions
+            if (child_resource.identity in (FoclStruct.identity, SituationPlan.identity)) \
+                    and not (child_resource.has_permission(DataScope.write, request.user)):
                 continue
             is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
             has_children = child_resource.identity in (ResourceGroup.identity, FoclProject.identity) # TODO: add check for real children
@@ -99,6 +103,9 @@ def get_child_resx_by_parent(request):
 
             if not is_need_checkbox:
                 child_resources_json[-1]['state'] = {'disabled': True}
+
+    dbsession.close()
+
     return Response(json.dumps(child_resources_json))
 
 
@@ -178,6 +185,8 @@ def get_focl_info(request):
 
     resp = []
     for res in resources:
+        if res.identity not in (FoclStruct.identity, SituationPlan.identity):
+            continue
         region = get_region_name(res.region)
         district = get_district_name(res.district)
         external_id = res.external_id if res.identity == FoclStruct.identity else ''
