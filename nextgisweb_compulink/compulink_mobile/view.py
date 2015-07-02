@@ -8,8 +8,9 @@ from pyramid.view import view_config
 from sqlalchemy.orm import joinedload
 
 from nextgisweb import DBSession
-from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS
+from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT
 from ..compulink_admin.view import get_region_name, get_district_name
+from nextgisweb.resource import DataScope
 from nextgisweb_lookuptable.model import LookupTable
 
 SYNC_LAYERS_TYPES = [
@@ -47,16 +48,13 @@ def get_user_focl_list(request):
 
     dbsession = DBSession()
 
-    #parent_res = dbsession.query(Resource).get(0)
-    #resources = parent_res.children
-
-    resources = dbsession.query(FoclStruct).options(joinedload('children')).filter(FoclStruct.status == PROJECT_STATUS_IN_PROGRESS).all()
+    resources = dbsession.query(FoclStruct).options(joinedload('children'))\
+        .filter(FoclStruct.status.in_([PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT])).all()
 
     focl_list = []
     for resource in resources:
-        # TODO: permission check
-        #if not resource.has_permission(???):
-        #   continue
+        if not resource.has_permission(DataScope.write, request.user):
+            continue
 
         focl = {
             'id': resource.id,

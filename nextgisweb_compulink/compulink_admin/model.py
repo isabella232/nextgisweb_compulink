@@ -73,6 +73,8 @@ class FoclProjectSerializer(Serializer):
 
 
 class FoclStruct(Base, ResourceGroup):
+    __scope__ = DataScope
+
     identity = 'focl_struct'
     cls_display_name = "Объект строительства"
 
