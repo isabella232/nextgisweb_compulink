@@ -3,16 +3,20 @@ import json
 
 import codecs
 import os
+from sqlalchemy import Table
+
 from sqlalchemy.orm import joinedload_all
 import transaction
 
 from nextgisweb.feature_layer import FIELD_TYPE
+from nextgisweb.resource import Base
 from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT
-from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater
-from nextgisweb import DBSession
+from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
+from nextgisweb import DBSession, db
 from nextgisweb.command import Command
+
 
 
 @Command.registry.register
@@ -27,7 +31,8 @@ class DBMigrates():
                                 'append_focl_direct_length',
                                 'append_real_layers',
                                 'update_real_lyr_names',
-                                'check_focl_status'
+                                'check_focl_status',
+                                'append_status_dt'
                             ])
 
     @classmethod
@@ -40,6 +45,8 @@ class DBMigrates():
             cls.update_names_of_reals_layers()
         if args.migration == 'check_focl_status':
             cls.check_focl_status()
+        if args.migration == 'append_status_dt':
+            cls.append_status_dt()
 
     @classmethod
     def append_real_layers(cls):
@@ -162,6 +169,25 @@ class DBMigrates():
         for focl_struct in resources:
             focl_struct.status = PROJECT_STATUS_PROJECT
             print 'Status changed for ' + focl_struct.display_name
+
+        transaction.manager.commit()
+        db_session.close()
+
+
+    @classmethod
+    def append_status_dt(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        eng = db_session.get_bind()
+        meta_data = Base.metadata
+        real_table = Table(FoclStruct.__table__.name, meta_data, autoload=True, autoload_with=eng)
+
+        if not FoclStruct.status_upd_dt.key in real_table.columns:
+            StructUpdater.create_column(real_table, FoclStruct.status_upd_dt.key, FoclStruct.status_upd_dt.type)
+
+        print 'Status DT column added for ' + real_table.name
 
         transaction.manager.commit()
         db_session.close()

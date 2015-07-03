@@ -83,6 +83,8 @@ class FoclStruct(Base, ResourceGroup):
     external_id = db.Column(db.Unicode, nullable=True)  # Внешний идентификатор
     status = db.Column(db.Enum(PROJECT_STATUSES, native_enum=False), default=PROJECT_STATUS_PROJECT, nullable=True)  # Статус (проект, идет строительство, построена)
     status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
+    status_upd_dt = db.Column(db.DateTime, nullable=True)
+
 
     @classmethod
     def check_parent(cls, parent):

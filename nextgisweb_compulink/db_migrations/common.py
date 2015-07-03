@@ -103,3 +103,15 @@ class VectorLayerUpdater(object):
         else:
             db_session.flush()
 
+
+class StructUpdater:
+
+    @classmethod
+    def create_column(cls, table_object, field_name, field_type):
+        db_session = DBSession()
+        engine = db_session.get_bind()
+
+        column = Column(field_name, field_type)
+        column_name = column.compile(dialect=engine.dialect)
+        column_type = column.type.compile(engine.dialect)
+        engine.execute('ALTER TABLE "%s"."%s" ADD COLUMN %s %s' % (table_object.schema or 'public', table_object.name, column_name, column_type))
