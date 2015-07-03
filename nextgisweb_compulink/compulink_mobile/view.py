@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from pyramid.httpexceptions import HTTPForbidden
+from datetime import datetime
+from pyramid.httpexceptions import HTTPForbidden, HTTPMethodNotAllowed, HTTPBadRequest
 
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload
 
 from nextgisweb import DBSession
-from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT, PROJECT_STATUS_BUILT
+from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT, PROJECT_STATUS_BUILT, \
+    PROJECT_STATUSES
 from ..compulink_admin.view import get_region_name, get_district_name
 from nextgisweb.resource import DataScope
 from nextgisweb_lookuptable.model import LookupTable
@@ -28,6 +30,11 @@ SYNC_LAYERS_TYPES = [
     'real_access_point',
 ]
 
+MOBILE_PROJECT_STATYSES = {
+    PROJECT_STATUS_PROJECT: 'Строительство не начато',
+    PROJECT_STATUS_IN_PROGRESS: 'Идет строительство',
+    PROJECT_STATUS_BUILT: 'Построен'
+}
 
 def setup_pyramid(comp, config):
     config.add_route(
@@ -36,6 +43,9 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.mobile.all_dicts',
         '/compulink/mobile/all_dicts').add_view(get_all_dicts)
+    config.add_route(
+        'compulink.mobile.set_focl_status',
+        '/compulink/mobile/set_focl_status').add_view(set_focl_status)
 
 
 @view_config(renderer='json')
@@ -94,13 +104,45 @@ def get_all_dicts(request):
         dicts[dict_res.keyname] = dict_res.val
 
     # add project statuses dict
-    proj_statuses = {
-        PROJECT_STATUS_PROJECT: 'Строительство не начато',
-        PROJECT_STATUS_IN_PROGRESS: 'Идет строительство',
-        PROJECT_STATUS_BUILT: 'Построен'
-    }
-    dicts['proj_statuses'] = proj_statuses
+    dicts['proj_statuses'] = MOBILE_PROJECT_STATYSES
 
     dbsession.close()
 
     return Response(json.dumps(dicts))
+
+
+
+@view_config(renderer='json')
+def set_focl_status(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    if request.method != 'PUT':
+        raise HTTPMethodNotAllowed()
+
+    params = request.json_body
+
+    if not params \
+            or 'id' not in params.keys() \
+            or 'status' not in params.keys() \
+            or 'update_dt' not in params.keys()\
+            or not params['id']\
+            or params['status'] not in MOBILE_PROJECT_STATYSES:
+        raise HTTPBadRequest()
+
+    dbsession = DBSession()
+
+    resource = dbsession.query(FoclStruct).filter(FoclStruct.id == params['id']).all()[0]
+    if not resource:
+        raise HTTPBadRequest('No FoclStruct with such id!')
+
+    if not resource.has_permission(DataScope.write, request.user):
+        raise HTTPForbidden()
+
+    resource.status = params['status']
+    resource.status_upd_dt = datetime.utcfromtimestamp(params['update_dt'])
+    #resource.persist()
+    #dbsession.flush()
+    dbsession.close()
+
+    return Response('')
