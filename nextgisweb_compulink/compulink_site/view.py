@@ -14,7 +14,8 @@ import sqlalchemy.sql as sql
 from nextgisweb import DBSession, db
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.vector_layer import VectorLayer, TableInfo
-from ..compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT
+from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
+    OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
@@ -113,22 +114,29 @@ def show_map(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    focl_layers_type = get_focl_layers_list()
+    focl_layers = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
-    values = dict(custom_layout=True, focl_layers_type=focl_layers_type, sit_plan_layers_type=sit_plan_layers_type)
-    return render_to_response('nextgisweb_compulink:compulink_site/templates/monitoring_webmap/display.mako', values, request=request)
+    values = dict(
+        custom_layout=True,
+        focl_layers_type=focl_layers['focl'],
+        objects_layers_type=focl_layers['objects'],
+        real_layers_type=focl_layers['real'],
+        sit_plan_layers_type=sit_plan_layers_type
+    )
+    return render_to_response('nextgisweb_compulink:compulink_site/templates/monitoring_webmap/display.mako', values,
+                              request=request)
 
 
 def get_focl_layers_list():
+    layer_order = len(FOCL_LAYER_STRUCT) + len(OBJECTS_LAYER_STRUCT) + len(FOCL_REAL_LAYER_STRUCT) +\
+                  len(SIT_PLAN_LAYER_STRUCT)
+
+    focl_layers_for_jstree = []
     layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
-
-    layers_for_jstree = []
-    layer_order = len(FOCL_LAYER_STRUCT) + len(FOCL_REAL_LAYER_STRUCT) + len(SIT_PLAN_LAYER_STRUCT)
-
     for vl_name in reversed(FOCL_LAYER_STRUCT):
         with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
             json_layer_struct = json.load(json_file, encoding='utf-8')
-            layers_for_jstree.append({
+            focl_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
                 'id': vl_name,
                 'children': False,
@@ -137,13 +145,26 @@ def get_focl_layers_list():
                 })
         layer_order -= 1
 
-        layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
+    objects_layers_for_jstree = []
+    layers_template_path = path.join(ADMIN_BASE_PATH, 'layers_templates/')
+    for vl_name in reversed(OBJECTS_LAYER_STRUCT):
+        with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+            json_layer_struct = json.load(json_file, encoding='utf-8')
+            objects_layers_for_jstree.append({
+                'text': json_layer_struct['resource']['display_name'],
+                'id': vl_name,
+                'children': False,
+                'icon': vl_name,
+                'order': layer_order
+                })
+        layer_order -= 1
 
+    real_layers_for_jstree = []
     layers_template_path = path.join(ADMIN_BASE_PATH, 'real_layers_templates/')
     for vl_name in reversed(FOCL_REAL_LAYER_STRUCT):
         with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
             json_layer_struct = json.load(json_file, encoding='utf-8')
-            layers_for_jstree.append({
+            real_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
                 'id': vl_name,
                 'children': False,
@@ -152,7 +173,11 @@ def get_focl_layers_list():
                 })
         layer_order -= 1
 
-    return layers_for_jstree
+    return {
+        'focl': focl_layers_for_jstree,
+        'objects': objects_layers_for_jstree,
+        'real': real_layers_for_jstree
+    }
 
 
 def get_sit_plan_layers_list():
@@ -167,7 +192,7 @@ def get_sit_plan_layers_list():
             layers.append({
                 'text': json_layer_struct['resource']['display_name'],
                 'id': vl_name,
-                'children': False,
+                'children': [],
                 'icon': vl_name,
                 'order': layer_order
             })

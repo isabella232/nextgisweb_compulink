@@ -55,6 +55,7 @@ define([
 
             $tree.jstree({
                 'core': {
+                    'dblclick_toggle': false,
                     'themes': {
                         'variant': 'small',
                         'dots': false,
