@@ -44,7 +44,7 @@ class DBInit():
         if args.action in ['all', 'icons']:
             cls.load_icons()
         if args.action in ['all', 'dicts']:
-            cls.load_dicts()
+            cls.load_dicts(force=args.force)
 
         if make_transaction:
             transaction.manager.commit()
@@ -81,8 +81,6 @@ class DBInit():
                 propagate=True))
 
             obj.persist()
-
-
 
     @classmethod
     def load_shape_dicts(cls, force=False):
@@ -193,7 +191,6 @@ class DBInit():
                         raise VE("Объект %d не содержит геометрии." % feat.GetFID())
                     feat = ogrlayer.GetNextFeature()
 
-
                 ogrlayer.ResetReading()
 
                 vec_res.tbl_uuid = uuid.uuid4().hex
@@ -219,7 +216,7 @@ class DBInit():
         env.marker_library.load_collection('nextgisweb_compulink', 'compulink_admin/layers_default_styles')
 
     @classmethod
-    def load_dicts(cls):
+    def load_dicts(cls, force=False):
         print 'Loading default dicts...'
 
         # get principals
@@ -237,21 +234,23 @@ class DBInit():
         for dict_keyname, dict_values in DEFAULT_COMPULINK_DICTS.iteritems():
             try:
                 dict_res = LookupTable.filter_by(keyname=dict_keyname).one()
-                print '   Dictionary "%s" already exists' % dict_keyname
-                continue
+                if not force:
+                    print '   Dictionary "%s" already exists' % dict_keyname
+                    continue
+                else:
+                    print '   Dictionary "%s" already exists and will be recreated' % dict_keyname
             except NoResultFound:
                 dict_res = LookupTable(owner_user=adminusr,
-                                      display_name=dict_values['display_name'],
-                                      keyname=dict_keyname,
-                                      parent=root_res)
+                                  display_name=dict_values['display_name'],
+                                  keyname=dict_keyname,
+                                  parent=root_res)
 
                 dict_res.acl.append(ACLRule(
                     principal=admingrp,
                     action='allow'))
 
-
-                dict_res.val = dict_values['items']
-                dict_res.persist()
+            dict_res.val = dict_values['items']
+            dict_res.persist()
 
 
 

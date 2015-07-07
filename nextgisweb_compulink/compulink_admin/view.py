@@ -189,7 +189,7 @@ def get_project_statuses():
     return [
         {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
         {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
-        {'name': 'Построен', 'id': PROJECT_STATUS_BUILT},
-        {'name': 'Сдан заказчику', 'id': PROJECT_STATUS_DELIVERED},
+        {'name': 'Построено', 'id': PROJECT_STATUS_BUILT},
+        {'name': 'Сдано заказчику', 'id': PROJECT_STATUS_DELIVERED},
     ]
     return []

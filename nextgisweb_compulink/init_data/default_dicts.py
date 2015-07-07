@@ -19,12 +19,11 @@ DEFAULT_COMPULINK_DICTS = {
     'laying_method': {
         'display_name': 'Способ прокладки',
         'items': {
-            'transmission_towers': 'По ВЛ',
-            'air_link': 'По ВЛС',
+            'transmission_towers': 'На опоре ЛЭП',
             'ground': 'В грунте',
             'canalization': 'В кабельной канализации',
-            'sewer': 'В коллекторе',
-            'building': 'building'
+            'building': 'В здании',
+            'other': 'Прочее'
         }
     },
     'special_laying_method': {
@@ -35,15 +34,21 @@ DEFAULT_COMPULINK_DICTS = {
             'bottom': 'По дну водоема'
         }
     },
+    'special_laying_number': {
+        'display_name': 'Точка входа/выхода',
+        'items': {
+            'entrance': 'Вход',
+            'exit': 'Выход'
+        }
+    },
     'fosc_placement': {
         'display_name': 'Места размещения оптических муфт',
         'items': {
-            'room': 'Помещение',
-            'cabinet': 'Шкаф',
-            'well': 'Колодец',
-            'ground': 'Грунт',
-            'pylon': 'Опора',
-            'other': 'Другое'
+            'room': 'В здании',
+            'well': 'В кабельной канализации',
+            'ground': 'В грунте',
+            'pylon': 'На столбе, опоре',
+            'other': 'Прочее'
         }
     },
     'voltage': {

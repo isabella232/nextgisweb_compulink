@@ -33,7 +33,7 @@ SYNC_LAYERS_TYPES = [
 MOBILE_PROJECT_STATYSES = {
     PROJECT_STATUS_PROJECT: 'Строительство не начато',
     PROJECT_STATUS_IN_PROGRESS: 'Идет строительство',
-    PROJECT_STATUS_BUILT: 'Построен'
+    PROJECT_STATUS_BUILT: 'Построено'
 }
 
 def setup_pyramid(comp, config):
