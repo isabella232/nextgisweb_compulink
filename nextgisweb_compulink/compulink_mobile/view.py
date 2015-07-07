@@ -36,6 +36,21 @@ MOBILE_PROJECT_STATYSES = {
     PROJECT_STATUS_BUILT: 'Построено'
 }
 
+#name shorter
+regions_shortcuts = [
+    [u'область', u'обл.'],
+    [u'автономный округ', u'а.о.'],
+    [u'Республика', u'респ.'],
+    [u'республика', u'респ.']
+]
+
+district_shortcuts = [
+    [u'район', u'р.'],
+    [u'городской округ', u'г.о.'],
+    [u'муниципальный район', u'м.р.'],
+]
+
+
 def setup_pyramid(comp, config):
     config.add_route(
         'compulink.mobile.focl_list',
@@ -66,11 +81,22 @@ def get_user_focl_list(request):
         if not resource.has_permission(DataScope.write, request.user):
             continue
 
+        #name shorter
+        region_name = get_region_name(resource.region)
+        if region_name:
+            for shortcut in regions_shortcuts:
+                region_name = region_name.replace(shortcut[0], shortcut[1])
+
+        dist_name = get_district_name(resource.district)
+        if dist_name:
+            for shortcut in district_shortcuts:
+                dist_name = dist_name.replace(shortcut[0], shortcut[1])
+
         focl = {
             'id': resource.id,
             'name': resource.display_name,
-            'region': get_region_name(resource.region),
-            'district': get_district_name(resource.district),
+            'region': region_name,
+            'district': dist_name,
             'status': resource.status,
             'layers': []
         }
