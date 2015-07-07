@@ -142,7 +142,7 @@ def set_focl_status(request):
     resource.status = params['status']
     resource.status_upd_dt = datetime.utcfromtimestamp(params['update_dt'])
     #resource.persist()
-    #dbsession.flush()
-    dbsession.close()
+    dbsession.flush()
+    #dbsession.close()
 
     return Response('')
