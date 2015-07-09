@@ -1,12 +1,10 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/topic',
-    'dojo/Deferred',
-    'dojo/request/xhr',
     'ngw-compulink-libs/jstree-3.0.9/jstree'
-], function (declare, lang, topic, Deferred, xhr,
-             jstree) {
+], function (declare, lang, array, topic, jstree) {
 
     return declare('LayersSelector', [], {
         settings: {
@@ -89,7 +87,7 @@ define([
                         return true;
                         break;
                     case 'deselect_node':
-                        deleted.push(node.id);
+                        deleted = this._getInsertedDeletedNodes($tree, node, 'deselect_node', resourceType).deleted;
                         break;
                     case 'deselect_all':
                         deleted = changed.old_selection;
@@ -101,12 +99,13 @@ define([
         },
 
         _selectLayersNodeHandler: function ($tree, resourceType, selected_node) {
-            var validated = this._validate('LimitLayersValidator');
+            var validated = this._validate('LimitLayersValidator'),
+                insertedNodes = this._getInsertedDeletedNodes($tree, selected_node, 'select_node', resourceType);
             if (validated) {
                 validated.then(lang.hitch(this, function (result) {
                     if (result) {
                         this._saveTreeState($tree, resourceType);
-                        topic.publish('layers/type/changed', [selected_node.id], [], resourceType);
+                        topic.publish('layers/type/changed', insertedNodes.inserted, [], resourceType);
                     } else {
                         this._setCurrentState($tree, resourceType);
                     }
@@ -114,6 +113,48 @@ define([
             } else {
                 topic.publish('layers/type/changed', [selected_node.id], [], resourceType);
             }
+        },
+
+        _getInsertedDeletedNodes: function ($tree, node, action, resourceType) {
+            var result = {
+                    bottom_selected: $tree.jstree().get_bottom_selected(),
+                    inserted: [],
+                    deleted: []
+                },
+                hasChildren = (node.children && node.children.length > 0);
+            switch (action) {
+                case 'select_node':
+                    if (hasChildren) {
+                        bottom_selected_dict = {};
+                        array.forEach(this._statesStorage[resourceType].core.selected, function (node_id) {
+                            bottom_selected_dict[node_id] = true;
+                        }, this);
+                        array.forEach(node.children, function (node_id) {
+                            if (!bottom_selected_dict.hasOwnProperty(node_id)) {
+                                result.inserted.push(node_id);
+                            }
+                        });
+                    } else {
+                        result.inserted = [node.id];
+                    }
+                    break;
+                case 'deselect_node':
+                    if (hasChildren) {
+                        bottom_selected_dict = {};
+                        array.forEach(this._statesStorage[resourceType].core.selected, function (node_id) {
+                            bottom_selected_dict[node_id] = true;
+                        }, this);
+                        array.forEach(node.children, function (node_id) {
+                            if (bottom_selected_dict.hasOwnProperty(node_id)) {
+                                result.deleted.push(node_id);
+                            }
+                        });
+                    } else {
+                        result.deleted = [node.id];
+                    }
+                    break;
+            }
+            return result;
         },
 
         bindEvents: function () {
