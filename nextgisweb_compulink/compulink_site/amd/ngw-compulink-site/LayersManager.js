@@ -41,7 +41,11 @@ define([
             };
 
             array.forEach(this.Display.config.focl_layers_type, function (layerConfig) {
-                this.LayersOrder.focl_struct[layerConfig.id] = {order: layerConfig.order, zIndexes: []};
+                if (layerConfig.children && layerConfig.children.length > 0) {
+                    array.forEach(layerConfig.children, function (layerConfigChild) {
+                        this.LayersOrder.focl_struct[layerConfigChild.id] = {order: layerConfigChild.order, zIndexes: []};
+                    }, this);
+                }
             }, this);
             array.forEach(this.Display.config.sit_plan_layers_type, function (layerConfig) {
                 this.LayersOrder.situation_plan[layerConfig.id] = {order: layerConfig.order, zIndexes: []};
