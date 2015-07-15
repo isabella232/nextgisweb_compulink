@@ -32,7 +32,8 @@ class DBMigrates():
                                 'append_real_layers',
                                 'update_real_lyr_names',
                                 'check_focl_status',
-                                'append_status_dt'
+                                'append_status_dt',
+                                'append_start_point_field',
                             ])
 
     @classmethod
@@ -47,6 +48,8 @@ class DBMigrates():
             cls.check_focl_status()
         if args.migration == 'append_status_dt':
             cls.append_status_dt()
+        if args.migration == 'append_start_point_field':
+            cls.append_start_point_field()
 
     @classmethod
     def append_real_layers(cls):
@@ -97,6 +100,26 @@ class DBMigrates():
                 print "display_name for 'length' field of %s was updated!" % vec_layer.keyname
             except Exception, ex:
                 print "Error on update display_name %s: %s" % (vec_layer.keyname, ex.message)
+
+        transaction.manager.commit()
+        db_session.close()
+
+    @classmethod
+    def append_start_point_field(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        resources = db_session.query(VectorLayer).options(joinedload_all('fields')).filter(VectorLayer.keyname.like('real_optical_cable_point_%')).all()
+
+        for vec_layer in resources:
+            try:
+                VectorLayerUpdater.append_field(vec_layer, 'start_point', FIELD_TYPE.INTEGER, 'Начальная точка')
+                print "Fields of %s was updated!" % vec_layer.keyname
+
+            except Exception, ex:
+                print "Error on update fields struct %s: %s" % (vec_layer.keyname, ex.message)
+
 
         transaction.manager.commit()
         db_session.close()
