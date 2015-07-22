@@ -9,7 +9,7 @@
         "fields": [
             {
                 "keyname": "built_date",
-                "datatype": "DATE",
+                "datatype": "DATETIME",
                 "typemod": null,
                 "display_name": "Дата завершения строительства",
                 "label_field": false,
