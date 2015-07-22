@@ -34,6 +34,7 @@ class DBMigrates():
                                 'check_focl_status',
                                 'append_status_dt',
                                 'append_start_point_field',
+                                'real_layers_date_to_dt',
                             ])
 
     @classmethod
@@ -50,6 +51,8 @@ class DBMigrates():
             cls.append_status_dt()
         if args.migration == 'append_start_point_field':
             cls.append_start_point_field()
+        if args.migration == 'real_layers_date_to_dt':
+            cls.real_layers_date_to_dt()
 
     @classmethod
     def append_real_layers(cls):
@@ -211,6 +214,30 @@ class DBMigrates():
             StructUpdater.create_column(real_table, FoclStruct.status_upd_dt.key, FoclStruct.status_upd_dt.type)
 
         print 'Status DT column added for ' + real_table.name
+
+        transaction.manager.commit()
+        db_session.close()
+
+
+    @classmethod
+    def real_layers_date_to_dt(cls):
+        '''
+        Изменение типа поля built_date c date на datetime
+        :return:
+        '''
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        resources = db_session.query(VectorLayer).options(joinedload_all('fields')).filter(VectorLayer.keyname.like('real_%')).all()
+
+        for vec_layer in resources:
+            try:
+                VectorLayerUpdater.change_field_datatype(vec_layer, 'built_date', FIELD_TYPE.DATETIME)
+                print "Field of %s was updated!" % vec_layer.keyname
+
+            except Exception, ex:
+                print "Error on update field type %s: %s" % (vec_layer.keyname, ex.message)
+
 
         transaction.manager.commit()
         db_session.close()

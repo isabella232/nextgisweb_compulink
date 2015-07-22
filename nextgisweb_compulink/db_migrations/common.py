@@ -1,3 +1,4 @@
+# coding=utf-8
 import uuid
 from sqlalchemy import Column
 import transaction
@@ -74,6 +75,44 @@ class VectorLayerUpdater(object):
             db_session = DBSession()
             db_session.flush()
 
+    @staticmethod
+    def change_field_datatype(resource, field_keyname, new_field_type, make_transaction=False):
+
+        if not isinstance(resource, VectorLayer):
+            raise Exception('Unsupported resource type!')
+
+        if new_field_type not in FIELD_TYPE.enum:
+            raise Exception('Unsupported field type!')
+
+        target_field = filter(lambda field: field.keyname == field_keyname, resource.fields)
+
+        if not target_field:
+            raise Exception('Field not found in the table!')
+        else:
+            target_field = target_field[0]
+
+        if new_field_type == target_field.datatype:
+            print 'Field already has such type!'
+            return
+
+        #start transaction
+        if make_transaction:
+            transaction.manager.begin()
+
+        # change data type physic
+        VectorLayerUpdater.__change_column_datatype(resource.tbl_uuid, target_field.fld_uuid, _FIELD_TYPE_2_DB[new_field_type])
+
+        # set new type in field registry
+        target_field.datatype = new_field_type
+        target_field.persist()
+
+
+        #close transaction
+        if make_transaction:
+            transaction.manager.commit()
+        else:
+            db_session = DBSession()
+            db_session.flush()
 
 
     @staticmethod
@@ -85,6 +124,27 @@ class VectorLayerUpdater(object):
         column_name = column.compile(dialect=engine.dialect)
         column_type = column.type.compile(engine.dialect)
         engine.execute('ALTER TABLE "vector_layer"."layer_%s" ADD COLUMN %s %s' % (table_uid, column_name, column_type))
+
+    @staticmethod
+    def __drop_column(table_uid, field_uid):
+        # еще не юзал!
+        db_session = DBSession()
+        engine = db_session.get_bind()
+
+        column = Column('fld_%s' % field_uid)
+        column_name = column.compile(dialect=engine.dialect)
+        engine.execute('ALTER TABLE "vector_layer"."layer_%s" DROP COLUMN %s' % (table_uid, column_name))
+
+    @staticmethod
+    def __change_column_datatype(table_uid, field_uid, new_column_type):
+        db_session = DBSession()
+        engine = db_session.get_bind()
+
+        column = Column('fld_%s' % field_uid, new_column_type)
+        column_name = column.compile(dialect=engine.dialect)
+        column_type = column.type.compile(engine.dialect)
+        engine.execute('ALTER TABLE "vector_layer"."layer_%s" ALTER COLUMN %s TYPE %s' % (table_uid, column_name, column_type))
+
 
     @staticmethod
     def drop_vector_layer_table(table_uid, make_transaction=False):
