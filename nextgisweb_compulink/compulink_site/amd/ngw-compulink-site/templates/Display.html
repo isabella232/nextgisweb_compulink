@@ -194,11 +194,22 @@
 
                     </div>
 
+
                     <!-- Панель для размещения переключателя подложки -->
                     <div data-dojo-attach-point="basemapPane"
                          data-dojo-type="dijit/layout/ContentPane"
                          data-dojo-props="region: 'bottom', border: false"
                          style="padding-left: 5px; padding-right: 2px;">
+
+                        <input id="pkkCheck" name="pkkCheck"
+                               data-dojo-type="dijit/form/CheckBox"
+                               data-dojo-attach-point="pkkCheck"
+                               value="pkkEnabled"
+                               chceked="false"
+                               style="margin-bottom: 8px;"
+                               />
+                        <label for="pkkCheck" style="width: 100%; margin-bottom: 8px;">Отображать кадастровое деление</label>
+
 
                         <select data-dojo-attach-point="basemapSelect"
                                 data-dojo-type="dijit/form/Select"

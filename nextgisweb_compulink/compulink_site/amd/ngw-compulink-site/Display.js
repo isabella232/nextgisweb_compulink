@@ -44,6 +44,7 @@ define([
     "ngw-compulink-site/ResourcesTypeSelector",
     "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
+    "ngw-compulink-site/CadastreOverlay",
     "webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -60,6 +61,7 @@ define([
     "dijit/Dialog",
     "dijit/form/TextBox",
     "dijit/form/NumberTextBox",
+    "dijit/form/CheckBox",
     // css
     "xstyle/css!" + ngwConfig.amdUrl + "cbtree/themes/claro/claro.css"
 ], function (
@@ -106,6 +108,7 @@ define([
     ResourcesTypeSelector,
     LayersManager,
     SelectedResourcesTable,
+    CadastreOverlay,
     Adapter,
     clientSettings
 ) {
@@ -702,6 +705,9 @@ define([
                 widget._zoomToInitialExtent();
             });
 
+            this.cadastre = CadastreOverlay(this.map);
+            widget.pkkCheck.on("change",  lang.hitch(this.cadastre, this.cadastre.switchLayer) );
+
             this._zoomToInitialExtent();
 
             this._mapDeferred.resolve();
@@ -916,5 +922,6 @@ define([
         removeLayerFromMap: function (layer) {
             this.map.removeLayer(layer);
         }
+
     });
 });
