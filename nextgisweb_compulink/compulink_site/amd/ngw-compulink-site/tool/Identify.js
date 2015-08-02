@@ -92,7 +92,10 @@ define([
                 idx = 0;
 
                 array.forEach(layerResponse.features, function (feature) {
-                    var label = put("div[style=\"overflow: hidden; display: inline-block; text-align: left;\"] $ span[style=\"color: gray\"] $ <", (feature.label || "#" + feature.id), " (" + feature.parent + ")");
+                    var label = put("div[style=\"overflow: hidden; display: inline-block; text-align: left;\"] $ span[style=\"color: gray\"] $ <",
+                        layerOrderedItem.layerName + ': ',
+                        (feature.label || "#" + feature.id),
+                        " (" + feature.parent + ")");
                     domStyle.set(label, "width", (this.popupSize[0] - 65) + "px");
                     this.selectOptions.push({
                         label: label.outerHTML,
