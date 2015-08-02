@@ -84,12 +84,12 @@ define([
 
                     var layersByTypes = this.LayersByTypes[resourceType][deleted[i]];
 
-                    for (var uniqueLayerId in layersByTypes) {
+                    for (var vector_id in layersByTypes) {
                         layersStackChanged = true;
-                        var layer = this.Layers[uniqueLayerId];
+                        var layer = this.Layers[vector_id];
 
-                        delete this.LayersByResources[resourceType][layer._res_id][uniqueLayerId];
-                        delete this.Layers[uniqueLayerId];
+                        delete this.LayersByResources[resourceType][layer._res_id][vector_id];
+                        delete this.Layers[vector_id];
 
                         Display.removeLayerFromMap(layer);
                         this.removeZIndex(layer);
@@ -136,11 +136,11 @@ define([
 
                     layersByResources = this.LayersByResources[res_type][resId.replace('res_', '')];
 
-                    for (var uniqueLayerId in layersByResources) {
-                        layer = this.Layers[uniqueLayerId];
+                    for (var vector_id in layersByResources) {
+                        layer = this.Layers[vector_id];
 
-                        delete this.Layers[uniqueLayerId];
-                        delete this.LayersByTypes[res_type][layer._layer_type][uniqueLayerId];
+                        delete this.Layers[vector_id];
+                        delete this.LayersByTypes[res_type][layer._layer_type][vector_id];
 
                         Display.removeLayerFromMap(layer);
                         this.removeZIndex(layer);
@@ -160,13 +160,11 @@ define([
             var layerData,
                 layer,
                 layerByType,
-                layerByResource,
-                uniqueIdLayer;
+                layerByResource;
 
             for (var i = 0, layersCount = layers.length; i < layersCount; i++) {
                 layerData = layers[i];
                 layer = this.Display.appendLayerToMap(layerData.vector_id, layerData.style_id, layerData.res_type, layerData.type);
-                uniqueIdLayer = layerData.vector_id + '-' + layerData.style_id;
 
                 layerByType = this.LayersByTypes[layerData.res_type][layerData.type];
                 if (!layerByType) {
@@ -174,7 +172,7 @@ define([
                     layerByType = this.LayersByTypes[layerData.res_type][layerData.type];
                 }
 
-                layerByType[uniqueIdLayer] = true;
+                layerByType[layerData.vector_id] = true;
 
                 layerByResource = this.LayersByResources[layerData.res_type][layerData.res_id];
                 if (!layerByResource) {
@@ -182,11 +180,11 @@ define([
                     layerByResource = this.LayersByResources[layerData.res_type][layerData.res_id];
                 }
 
-                layerByResource[uniqueIdLayer] = true;
+                layerByResource[layerData.vector_id] = true;
 
                 layer._res_id = layerData.res_id;
                 layer._layer_type = layerData.type;
-                this.Layers[uniqueIdLayer] = layer;
+                this.Layers[layerData.vector_id] = layer;
                 this.setZIndex(layer);
             }
             this._applyZIndexes();
