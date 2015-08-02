@@ -17,7 +17,7 @@
 }
 
 /*#resourcesTree a[chb="false"] i.jstree-checkbox {*/
-    /*display: none;*/
+/*display: none;*/
 /*}*/
 
 #resourcesTree i.jstree-themeicon-custom {
@@ -38,27 +38,26 @@
     background-position: -64px, -2px;
 }
 
-
 #resourcesTree a.jstree-disabled {
     color: black;
 }
 
 #resourcesTree a.jstree-disabled > i.jstree-icon {
-   opacity: 1;
-  /* Firefox 10+ */
-  filter: none;
-  /* IE6-9 */
-   -webkit-filter: none;
-  /* Chrome 19+ & Safari 6+ */
+    opacity: 1;
+    /* Firefox 10+ */
+    filter: none;
+    /* IE6-9 */
+    -webkit-filter: none;
+    /* Chrome 19+ & Safari 6+ */
 }
 
 /* right panel trees */
 
 /*#foclLayersTree .jstree-icon.jstree-themeicon,*/
 /*#spLayersTree .jstree-icon.jstree-themeicon {*/
-    /*background: url(../img/compulink-sprite.png) -16px, 0;*/
-    /*width: 16px;*/
-    /*height: 21px; *//* todo: for centering icon by text, need implement this by background-position */
+/*background: url(../img/compulink-sprite.png) -16px, 0;*/
+/*width: 16px;*/
+/*height: 21px; *//* todo: for centering icon by text, need implement this by background-position */
 /*}*/
 
 #rightPanel div.dijitContentPane {
@@ -97,7 +96,7 @@
 
 /*#rightPanel[data-resource-type-filter=vols] div.sit div.tree-overlay,*/
 /*#rightPanel[data-resource-type-filter=sit] div.vols div.tree-overlay {*/
-    /*display: block;*/
+/*display: block;*/
 /*}*/
 
 #rightPanel[data-resource-type-filter=vols] div.sit div.tree-wrapper,
@@ -138,7 +137,7 @@
 }
 
 #rightPanel i.access_point,
-#rightPanel i.sp_access_point{
+#rightPanel i.sp_access_point {
     background: url('../img/layers-type-sprite.png') -64px 0;
 }
 
@@ -147,12 +146,12 @@
 }
 
 #rightPanel i.sump_canalization,
-#rightPanel i.sp_sump_canalization{
+#rightPanel i.sp_sump_canalization {
     background: url('../img/layers-type-sprite.png') -96px 0;
 }
 
 #rightPanel i.note,
-#rightPanel i.sp_note{
+#rightPanel i.sp_note {
     background: url('../img/layers-type-sprite.png') -112px 0;
 }
 
@@ -190,17 +189,17 @@
 
 /* temporary */
 #rightPanel i.real_special_transition,
-#rightPanel i.real_fosc{
+#rightPanel i.real_fosc {
     background: url('../img/layers-type-sprite.png') 0 0;
 }
 
 #rightPanel i.real_special_transition_point,
-#rightPanel i.real_optical_cross{
+#rightPanel i.real_optical_cross {
     background: url('../img/layers-type-sprite.png') -16px 0;
 }
 
 #rightPanel i.real_optical_cable,
-#rightPanel i.real_access_point{
+#rightPanel i.real_access_point {
     background: url('../img/layers-type-sprite.png') -32px 0;
 }
 
@@ -221,4 +220,46 @@ div.ngwPopup {
 
 #resourcesTree a.jstree-disabled .jstree-checkbox.jstree-undetermined:hover {
     background-position: -199px -7px;
+}
+
+#identifyStatus {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    z-index: 5555;
+    color: rgb(62, 88, 163);
+    font-weight: bold;
+    font-size: 12px;
+}
+
+#identifyStatus.active {
+    display: block;
+}
+
+#identifyStatus span.loader {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    background: url('../img/loader.GIF') no-repeat;
+}
+
+#identifyStatus span.text {
+    margin-top: -18px;
+    margin-left: 27px;
+    display: block;
+}
+
+#identifyStatus.active.error span.loader,
+#identifyStatus.active.error span.text{
+    display: none;
+}
+
+#identifyStatus span.text-error{
+    display: none;
+    color: indianred;
+}
+
+#identifyStatus.active.error span.text-error{
+    display: inline-block;
 }

@@ -8,6 +8,7 @@ define([
     "dojo/promise/all",
     "dojo/json",
     "dojo/request/xhr",
+    "dojo/dom",
     "dojo/dom-class",
     "dojo/dom-style",
     "dojo/on",
@@ -39,6 +40,7 @@ define([
              all,
              json,
              xhr,
+             dom,
              domClass,
              domStyle,
              on,
@@ -310,6 +312,8 @@ define([
     parseLayersInfo(focl_layers_type);
     parseLayersInfo(sit_plan_layers_type);
 
+    var identifyStatusDiv = dom.byId("identifyStatus");
+
     return declare(Base, {
         label: "Информация об объекте",
         iconClass: "iconIdentify",
@@ -367,15 +371,22 @@ define([
                 layerLabels[i] = i;
             }, this);
 
+            domClass.add(identifyStatusDiv, 'active');
+
             // XHR-запрос к сервису
             xhr.post(route("feature_layer.identify"), {
                 handleAs: "json",
                 data: json.stringify(request)
             }).then(function (response) {
+                domClass.remove(identifyStatusDiv);
                 tool._responsePopup(response, point, layerLabels);
+            }, function (err) {
+                console.log(err);
+                domClass.add(identifyStatusDiv, 'error');
+                setTimeout(function () {
+                    domClass.remove(identifyStatusDiv);
+                }, 3000)
             });
-
-
         },
 
         // WKT-строка геометрии поиска объектов для точки pixel
