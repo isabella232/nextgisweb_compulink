@@ -219,6 +219,6 @@ div.ngwPopup {
     opacity: 0.7 !important;
 }
 
-#resourcesTree a.jstree-disabled .jstree-checkbox:hover {
+#resourcesTree a.jstree-disabled .jstree-checkbox.jstree-undetermined:hover {
     background-position: -199px -7px;
 }
