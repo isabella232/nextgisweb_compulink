@@ -31,36 +31,34 @@ define([
     "ngw/settings!webmap",
     // css
     "xstyle/css!./resource/Identify.css"
-], function (
-    declare,
-    Base,
-    lang,
-    array,
-    Deferred,
-    all,
-    json,
-    xhr,
-    domClass,
-    domStyle,
-    on,
-    Dialog,
-    BorderContainer,
-    ContentPane,
-    StackContainer,
-    StackController,
-    Select,
-    Button,
-    TabContainer,
-    registry,
-    put,
-    route,
-    openlayers,
-    Popup,
-    FieldsDisplayWidget,
-    FeatureEditorWidget,
-    featureLayersettings,
-    webmapSettings
-) {
+], function (declare,
+             Base,
+             lang,
+             array,
+             Deferred,
+             all,
+             json,
+             xhr,
+             domClass,
+             domStyle,
+             on,
+             Dialog,
+             BorderContainer,
+             ContentPane,
+             StackContainer,
+             StackController,
+             Select,
+             Button,
+             TabContainer,
+             registry,
+             put,
+             route,
+             openlayers,
+             Popup,
+             FieldsDisplayWidget,
+             FeatureEditorWidget,
+             featureLayersettings,
+             webmapSettings) {
     var Control = OpenLayers.Class(OpenLayers.Control, {
         initialize: function (options) {
             OpenLayers.Control.prototype.initialize.apply(this, [options]);
@@ -84,9 +82,15 @@ define([
 
             this.selectOptions = [];
 
-            array.forEach(Object.keys(this.response), function (layerId) {
-                var layerResponse = this.response[layerId];
-                var idx = 0;
+            var layersOrdered = this._getLayersOrdered(),
+                layerId, layerOrderedItem, layerResponse, idx;
+
+            for (var i = 0, layersCount = layersOrdered.length; i < layersCount; i++) {
+                layerOrderedItem = layersOrdered[i];
+                layerId = layerOrderedItem.id;
+                layerResponse = this.response[layerId];
+                idx = 0;
+
                 array.forEach(layerResponse.features, function (feature) {
                     var label = put("div[style=\"overflow: hidden; display: inline-block; text-align: left;\"] $ span[style=\"color: gray\"] $ <", (feature.label || "#" + feature.id), " (" + feature.parent + ")");
                     domStyle.set(label, "width", (this.popupSize[0] - 65) + "px");
@@ -96,7 +100,7 @@ define([
                     });
                     idx++;
                 }, this);
-            }, this);
+            }
 
             this.selectPane = new BorderContainer({
                 region: "top", layoutPriority: 1,
@@ -114,49 +118,49 @@ define([
 
 
             this.editButton = new Button({
-                        region: "right",
-                        iconClass: "dijitIconEdit",
-                        style: "height: 26px; border: 0px; margin: 1px;",
-                        showLabel: true,
-                        onClick: function () {
-                            xhr(route.resource.item({id: ident_lid}), {
-                                method: "GET",
-                                handleAs: "json"
-                            }).then(function (data) {
-                                var fieldmap = {};
-                                array.forEach(data.feature_layer.fields, function (itm) {
-                                    fieldmap[itm.keyname] = itm;
-                                });
+                region: "right",
+                iconClass: "dijitIconEdit",
+                style: "height: 26px; border: 0px; margin: 1px;",
+                showLabel: true,
+                onClick: function () {
+                    xhr(route.resource.item({id: ident_lid}), {
+                        method: "GET",
+                        handleAs: "json"
+                    }).then(function (data) {
+                        var fieldmap = {};
+                        array.forEach(data.feature_layer.fields, function (itm) {
+                            fieldmap[itm.keyname] = itm;
+                        });
 
-                                var label = registry.byId("featureSelector").get("displayedValue");
+                        var label = registry.byId("featureSelector").get("displayedValue");
 
-                                var FeatureEditorDialog = new Dialog({
-                                    title: label
-                                });
+                        var FeatureEditorDialog = new Dialog({
+                            title: label
+                        });
 
-                                var pane = new FeatureEditorWidget({
-                                    resource: ident_lid, feature: ident_fid,
-                                    fields: data.feature_layer.fields,
-                                    title: label,
-                                    iconClass: "iconDescription",
-                                    closable: true,
-                                    style: "width: 400px; height: 500px",
-                                    oncloseContainer: function(){
-                                        console.log("Get it!");
-                                        FeatureEditorDialog.hide();
-                                        //this._displayFeature(this._featureResponse(this.select.get("value"))); //update
-                                        //widget.close();
-                                    }
-                                });
+                        var pane = new FeatureEditorWidget({
+                            resource: ident_lid, feature: ident_fid,
+                            fields: data.feature_layer.fields,
+                            title: label,
+                            iconClass: "iconDescription",
+                            closable: true,
+                            style: "width: 400px; height: 500px",
+                            oncloseContainer: function () {
+                                console.log("Get it!");
+                                FeatureEditorDialog.hide();
+                                //this._displayFeature(this._featureResponse(this.select.get("value"))); //update
+                                //widget.close();
+                            }
+                        });
 
-                                FeatureEditorDialog.set("content", pane);
-                                FeatureEditorDialog.show();
+                        FeatureEditorDialog.set("content", pane);
+                        FeatureEditorDialog.show();
 
-                                pane.startup();
-                                pane.load();
-                            }).otherwise(console.error);
-                        }
-                    }).placeAt(this.selectPane);
+                        pane.startup();
+                        pane.load();
+                    }).otherwise(console.error);
+                }
+            }).placeAt(this.selectPane);
             domClass.add(this.editButton.domNode, "no-label");
 
             // создаем виждеты для всех расширений IFeatureLayer
@@ -178,6 +182,32 @@ define([
             }, this);
 
             this.extWidgetClassesDeferred = all(deferreds);
+        },
+
+        _getLayersOrdered: function () {
+            var layersOrdered = [],
+                layersActivatedInfo = this.layersManager.Layers,
+                layerInfo, vector_id, layer_type, order;
+
+            for (vector_id in layersActivatedInfo) {
+                if (layersActivatedInfo.hasOwnProperty(vector_id)) {
+                    layerInfo = layersActivatedInfo[vector_id];
+                    layer_type = layerInfo.layer_type;
+                    order = layersTypesById[layer_type].order;
+                    layersOrdered.push({
+                        id: vector_id,
+                        z: order,
+                        lt: layer_type,
+                        layerName: layersTypesById[layer_type].text
+                    });
+                }
+            }
+
+            layersOrdered.sort(function (a, b) {
+                return b.z - a.z;
+            });
+
+            return layersOrdered;
         },
 
         startup: function () {
@@ -216,7 +246,8 @@ define([
                     widget.addChild(widget.featureContainer);
 
                     widget.extContainer = new TabContainer({
-                        region: "center", class: "ngwWebmapToolIdentify-tabContainer"});
+                        region: "center", class: "ngwWebmapToolIdentify-tabContainer"
+                    });
 
                     widget.featureContainer.addChild(widget.extContainer);
 
@@ -234,7 +265,8 @@ define([
                         var fwidget = new FieldsDisplayWidget({
                             resourceId: ident_lid, featureId: ident_fid, compact: true,
                             title: "Атрибуты",
-                            aliases: true, grid_visibility: true});
+                            aliases: true, grid_visibility: true
+                        });
 
                         fwidget.renderValue(feature.fields);
                         fwidget.placeAt(widget.extContainer);
@@ -244,19 +276,36 @@ define([
                         var cls = widget.extWidgetClasses[key];
                         var ewidget = new cls({
                             resourceId: ident_lid, featureId: ident_fid,
-                            compact: true});
+                            compact: true
+                        });
 
                         ewidget.renderValue(feature.extensions[key]);
                         ewidget.placeAt(widget.extContainer);
                     });
 
 
-                    setTimeout(function () { widget.resize();}, 10);
+                    setTimeout(function () {
+                        widget.resize();
+                    }, 10);
 
                 }).otherwise(console.error);
             }).otherwise(console.error);
         }
     });
+
+    var layersTypesById = {};
+    function parseLayersInfo (layersInfo) {
+        if (layersInfo.constructor !== Array) return false;
+        array.forEach(layersInfo, function (layersInfoItem) {
+            if (layersInfoItem.children) {
+                parseLayersInfo(layersInfoItem.children)
+            } else {
+                layersTypesById[layersInfoItem.id] = layersInfoItem;
+            }
+        });
+    }
+    parseLayersInfo(focl_layers_type);
+    parseLayersInfo(sit_plan_layers_type);
 
     return declare(Base, {
         label: "Информация об объекте",
@@ -273,6 +322,7 @@ define([
 
         constructor: function () {
             this.map = this.display.map;
+            this.layersManager = this.display.LayersManager;
 
             this.control = new Control({tool: this});
             this.display.map.olMap.addControl(this.control);
@@ -304,21 +354,23 @@ define([
 
             for (var lyr_name in this.display.map.layers) {
                 var lyr = this.display.map.layers[lyr_name];
-                if (lyr.res_id) {  request.layers.push(lyr.res_id); }
+                if (lyr.res_id) {
+                    request.layers.push(lyr.res_id);
+                }
             }
 
             var layerLabels = {};
-                    array.forEach(request.layers, function (i) {
-                        layerLabels[i] = i;
-                    }, this);
+            array.forEach(request.layers, function (i) {
+                layerLabels[i] = i;
+            }, this);
 
-                    // XHR-запрос к сервису
-                    xhr.post(route("feature_layer.identify"), {
-                        handleAs: "json",
-                        data: json.stringify(request)
-                    }).then(function (response) {
-                        tool._responsePopup(response, point, layerLabels);
-                    });
+            // XHR-запрос к сервису
+            xhr.post(route("feature_layer.identify"), {
+                handleAs: "json",
+                data: json.stringify(request)
+            }).then(function (response) {
+                tool._responsePopup(response, point, layerLabels);
+            });
 
 
         },
@@ -357,6 +409,7 @@ define([
 
             var widget = new Widget({
                 response: response,
+                layersManager: this.layersManager,
                 tool: this,
                 layerLabels: layerLabels,
                 popupSize: [this.popupWidth, this.popupHeight]
