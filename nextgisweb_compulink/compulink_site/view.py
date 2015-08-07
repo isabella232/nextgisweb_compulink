@@ -16,6 +16,7 @@ from pyramid.response import Response, FileResponse
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload_all
 import sqlalchemy.sql as sql
+import subprocess
 from nextgisweb import DBSession, db
 from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
@@ -364,9 +365,7 @@ def export_focl_struct(request):
         raise HTTPNotFound()
 
     #create temporary dir
-    temp_dir = tempfile.mkdtemp()
-    zip_dir = path.join(temp_dir, focl_resource.display_name)
-    mkdir(zip_dir)
+    zip_dir = tempfile.mkdtemp()
 
     # save layers to geojson (FROM FEATURE_LAYER)
     for layer in focl_resource.children:
@@ -418,18 +417,11 @@ def _save_resource_to_file(vector_resource, file_path):
     result = CRSProxy(query())
 
     gj = geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder)
-    with codecs.open(file_path, 'w', encoding='utf-8') as f:
+    with codecs.open(file_path.encode('utf-8'), 'w', encoding='utf-8') as f:
         f.write(gj)
 
 
-def _json_to_kml(in_file_path, out_file_path, layer_name='test'):
-    json_ds = ogr.Open(in_file_path)
-    json_lyr = json_ds[0]
-
-    kml_drv = ogr.GetDriverByName('KML')
-
-    kml_ds = kml_drv.CreateDataSource(out_file_path)
-    kml_ds.CopyLayer(json_lyr, layer_name)
-
+def _json_to_kml(in_file_path, out_file_path):
+    subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path, in_file_path])
 
 
