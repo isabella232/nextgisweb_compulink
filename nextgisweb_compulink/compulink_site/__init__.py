@@ -5,6 +5,7 @@ from nextgisweb import Base
 from nextgisweb.component import Component
 
 from .ident import COMP_ID
+from nextgisweb_compulink.compulink_admin.well_known_resource import BOOL_FIELDS
 from .view import get_all_dicts
 
 
@@ -27,5 +28,6 @@ class CompulinkSiteComponent(Component):
 
     def client_settings(self, request):
         return dict(
-            dicts=get_all_dicts()
+            dicts=get_all_dicts(),
+            bool_fields=BOOL_FIELDS
         )

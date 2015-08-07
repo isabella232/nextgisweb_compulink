@@ -72,10 +72,18 @@ define([
 
 
                 var all_dicts = siteSettings.dicts;
+                var bool_fields = siteSettings.bool_fields;
 
                 if (all_dicts.hasOwnProperty(field.keyname)) {
                     var replace_dict = all_dicts[field.keyname];
                     if(replace_dict.hasOwnProperty(val)) val = replace_dict[val];
+                }
+
+                if (bool_fields.indexOf(field.keyname) >= 0) {
+                    if (val==0)
+                        val = "Нет";
+                    else
+                        val = "Да";
                 }
 
                 if (val === null) {

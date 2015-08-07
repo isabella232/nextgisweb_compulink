@@ -18,3 +18,10 @@ DISTRICT_NAME_FIELD = 'name'
 DISTRICT_PARENT_ID_FIELD = 'parent_id'
 DISTRICT_SHORT_NAME_FIELD = 'name_short'
 
+# bool fields (ugly!) typemod???
+BOOL_FIELDS = [
+    'is_deviation',
+    'deviation_approved',
+    'start_point'
+]
+
