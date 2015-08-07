@@ -381,7 +381,8 @@ def export_focl_struct(request):
         zip_subpath = focl_resource.display_name + '/'
 
         for file_name in os.listdir(zip_dir):
-            zip_file.write(path.join(zip_dir, file_name), (zip_subpath+file_name).encode('cp866'))
+            src_file = path.join(zip_dir, file_name)
+            zip_file.write(src_file, (zip_subpath+unicode(file_name,'utf-8')).encode('cp866'))
         zip_file.close()
 
         # remove temporary dir
@@ -422,6 +423,6 @@ def _save_resource_to_file(vector_resource, file_path):
 
 
 def _json_to_kml(in_file_path, out_file_path):
-    subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path, in_file_path])
+    subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path.encode('utf-8'), in_file_path.encode('utf-8')])
 
 
