@@ -9,8 +9,10 @@ define([
     'dgrid/OnDemandGrid',
     'dgrid/extensions/ColumnResizer',
     "dojo/store/Memory",
-    "dgrid/Selection"
-], function (declare, lang, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection) {
+    "dgrid/Selection",
+    "dijit/Menu",
+    "dijit/MenuItem"
+], function (declare, lang, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem) {
     return declare(null, {
 
         _columns: {
@@ -39,6 +41,7 @@ define([
         constructor: function (domId) {
             this._store = Memory({data: []});
 
+            //grid
             this._grid = new (declare([OnDemandGrid, ColumnResizer, Selection]))(
                 {
                     store: this._store,
@@ -47,6 +50,24 @@ define([
                     loadingMessage: 'Загрузка данных...',
                     noDataMessage: 'Нет выбранных элементов'
                 }, domId);
+
+            //context menu
+            this._menu = new Menu({
+                targetNodeIds: [this._grid.domNode],
+                selector: "div.dgrid-row"
+
+            });
+
+            this._menu.addChild(new MenuItem({
+                label: "Экспорт в KML",
+                onClick: lang.hitch(this, function(evt) {
+                    evt.preventDefault();
+                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var exportUrl = ngwConfig.applicationUrl + "/compulink/resources/" + item + "/export_kml";
+                    var win = window.open(exportUrl, '_blank');
+                })
+            }));
+
 
             //this._grid.startup();
 
@@ -61,6 +82,7 @@ define([
             this._grid.on(".dgrid-row:dblclick", lang.hitch(this, function (evt) {
                 this.zoomToResource(evt);
             }));
+
         },
 
         zoomToResource: function(evt) {

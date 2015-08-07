@@ -1,17 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import copy
 import json
+import os
+from os import path, mkdir
+from shutil import rmtree
+import tempfile
+from zipfile import ZipFile, ZIP_DEFLATED
 import codecs
-from os import path
+import geojson
+from osgeo import ogr
 from shapely.wkt import loads
-from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound
 from pyramid.renderers import render_to_response
-from pyramid.response import Response
+from pyramid.response import Response, FileResponse
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload_all
 import sqlalchemy.sql as sql
 from nextgisweb import DBSession, db
+from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
@@ -47,10 +53,14 @@ def setup_pyramid(comp, config):
         'compulink.site.layers_by_type',
         '/compulink/resources/layers_by_type').add_view(get_layers_by_type)
 
-
     config.add_static_view(
         name='compulink/static',
         path='nextgisweb_compulink:compulink_site/static', cache_max_age=3600)
+
+    config.add_route(
+        'compulink.site.export_kml',
+        '/compulink/resources/{id:\d+}/export_kml', client=('id',)) \
+        .add_view(export_focl_struct)
 
 
 @view_config(renderer='json')
@@ -343,3 +353,83 @@ def get_all_dicts():
     dbsession.close()
 
     return dicts
+
+def export_focl_struct(request):
+    dbsession = DBSession()
+    res_id = request.matchdict['id']
+
+    try:
+        focl_resource = dbsession.query(FoclStruct).get(res_id)
+    except:
+        raise HTTPNotFound()
+
+    #create temporary dir
+    temp_dir = tempfile.mkdtemp()
+    zip_dir = path.join(temp_dir, focl_resource.display_name)
+    mkdir(zip_dir)
+
+    # save layers to geojson (FROM FEATURE_LAYER)
+    for layer in focl_resource.children:
+        if layer.identity == VectorLayer.identity:
+            json_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'json'))
+            kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
+            _save_resource_to_file(layer, json_path)
+            _json_to_kml(json_path, kml_path)
+
+    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        # write archive
+        zip_file = ZipFile(temp_file, mode="w", compression=ZIP_DEFLATED)
+        zip_subpath = focl_resource.display_name + '/'
+
+        for file_name in os.listdir(zip_dir):
+            zip_file.write(path.join(zip_dir, file_name), (zip_subpath+file_name).encode('cp866'))
+        zip_file.close()
+
+        # remove temporary dir
+        #rmtree(temp_dir)
+
+        # send
+        temp_file.seek(0, 0)
+        response = FileResponse(
+            path.abspath(temp_file.name),
+            content_type=bytes('application/zip'),
+            request=request
+        )
+        # response.content_disposition = 'attachment; filename="%s"' % focl_resource.display_name.encode('utf-8')
+        return response
+
+
+def _save_resource_to_file(vector_resource, file_path):
+    #resource_permission(PD_READ)
+
+    class CRSProxy(object):
+        def __init__(self, query):
+            self.query = query
+
+        @property
+        def __geo_interface__(self):
+            result = self.query.__geo_interface__
+            result['crs'] = dict(type='name', properties=dict(
+                name='EPSG:3857'))
+            return result
+
+    query = vector_resource.feature_query()
+    query.geom()
+    result = CRSProxy(query())
+
+    gj = geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder)
+    with codecs.open(file_path, 'w', encoding='utf-8') as f:
+        f.write(gj)
+
+
+def _json_to_kml(in_file_path, out_file_path, layer_name='test'):
+    json_ds = ogr.Open(in_file_path)
+    json_lyr = json_ds[0]
+
+    kml_drv = ogr.GetDriverByName('KML')
+
+    kml_ds = kml_drv.CreateDataSource(out_file_path)
+    kml_ds.CopyLayer(json_lyr, layer_name)
+
+
+
