@@ -35,7 +35,7 @@
                 "keyname": "status_measure_ch",
                 "datatype": "DATE",
                 "typemod": null,
-                "display_name": "Дата изменение статуса",
+                "display_name": "Дата измерения",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -51,7 +51,7 @@
                 "keyname": "status_check_ch",
                 "datatype": "DATE",
                 "typemod": null,
-                "display_name": "Дата изменение статуса проверки",
+                "display_name": "Дата проверки",
                 "label_field": false,
                 "grid_visibility": true
             },

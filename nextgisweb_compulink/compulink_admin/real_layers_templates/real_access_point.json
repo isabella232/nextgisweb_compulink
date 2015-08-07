@@ -11,7 +11,7 @@
                 "keyname": "built_date",
                 "datatype": "DATETIME",
                 "typemod": null,
-                "display_name": "Дата завершения строительства",
+                "display_name": "Дата строительства",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -28,7 +28,7 @@
                 "keyname": "is_deviation",
                 "datatype": "INTEGER",
                 "typemod": null,
-                "display_name": "Наличие отклонения от проекта",
+                "display_name": "Есть отклонение от проекта",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -36,7 +36,7 @@
                 "keyname": "deviation_distance",
                 "datatype": "INTEGER",
                 "typemod": null,
-                "display_name": "Отклонение от проекта в метрах",
+                "display_name": "Отклонение от проекта, м",
                 "label_field": false,
                 "grid_visibility": true
             },

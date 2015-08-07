@@ -35,6 +35,7 @@ class DBMigrates():
                                 'append_status_dt',
                                 'append_start_point_field',
                                 'real_layers_date_to_dt',
+                                'update_aliases_01_08',
                             ])
 
     @classmethod
@@ -53,6 +54,8 @@ class DBMigrates():
             cls.append_start_point_field()
         if args.migration == 'real_layers_date_to_dt':
             cls.real_layers_date_to_dt()
+        if args.migration == 'update_aliases_01_08':    # 01.08.2015
+            cls.update_aliases_01_08()
 
     @classmethod
     def append_real_layers(cls):
@@ -242,16 +245,60 @@ class DBMigrates():
         transaction.manager.commit()
         db_session.close()
 
+    @classmethod
+    def update_aliases_01_08(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        # real layers
+        resources = db_session.query(VectorLayer).options(joinedload_all('fields')).filter(VectorLayer.keyname.like('real_%')).all()
+
+        for vec_layer in resources:
+            try:
+                VectorLayerUpdater.change_field_display_name(vec_layer, 'built_date', 'Дата строительства')
+                print "display_name for 'built_date' field of %s was updated!" % vec_layer.keyname
+
+                VectorLayerUpdater.change_field_display_name(vec_layer, 'is_deviation', 'Есть отклонение от проекта')
+                print "display_name for 'is_deviation' field of %s was updated!" % vec_layer.keyname
+
+                VectorLayerUpdater.change_field_display_name(vec_layer, 'deviation_distance', 'Отклонение от проекта, м')
+                print "display_name for 'deviation_distance' field of %s was updated!" % vec_layer.keyname
+
+            except Exception, ex:
+                print "Error on update fields %s: %s" % (vec_layer.keyname, ex.message)
+                return
+
+        # project layers
+        resources = db_session.query(VectorLayer).options(joinedload_all('fields')).all()
+        layers_names = ['access_point', 'fosc', 'optical_cable', 'optical_cross', 'pole', 'telecom_cabinet', 'endpoint']
+
+        for vec_layer in resources:
+
+            if not vec_layer.keyname:
+                continue
+
+            accept = False
+            for lyr_name in layers_names:
+                if vec_layer.keyname.startswith(lyr_name):
+                    accept = True
+                    break
+            if not accept:
+                continue
+
+            try:
+                if not vec_layer.keyname.startswith('endpoint'):
+                    VectorLayerUpdater.change_field_display_name(vec_layer, 'status_built_ch', 'Дата завершения строительства')
+                    print "display_name for 'status_built_ch' field of %s was updated!" % vec_layer.keyname
+
+                VectorLayerUpdater.change_field_display_name(vec_layer, 'status_check_ch', 'Дата проверки')
+                print "display_name for 'status_check_ch' field of %s was updated!" % vec_layer.keyname
+
+            except Exception, ex:
+                print "Error on update fields%s: %s" % (vec_layer.keyname, ex.message)
+                return
 
 
 
-
-
-
-
-
-
-
-
-
-
+        transaction.manager.commit()
+        db_session.close()

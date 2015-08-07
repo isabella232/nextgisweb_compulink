@@ -50,7 +50,7 @@
                 "keyname": "status_built_ch",
                 "datatype": "DATE",
                 "typemod": null,
-                "display_name": "Изменение статуса",
+                "display_name": "Дата завершения строительства",
                 "label_field": false,
                 "grid_visibility": true
             },
@@ -66,7 +66,7 @@
                 "keyname": "status_check_ch",
                 "datatype": "DATE",
                 "typemod": null,
-                "display_name": "Изменение статуса проверки",
+                "display_name": "Дата проверки",
                 "label_field": false,
                 "grid_visibility": true
             },
