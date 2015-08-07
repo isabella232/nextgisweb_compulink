@@ -31,7 +31,9 @@ define([
     "ngw/settings!feature_layer",
     "ngw/settings!webmap",
     // css
-    "xstyle/css!./resource/Identify.css"
+    "xstyle/css!./resource/Identify.css",
+    "ngw-compulink-site/tool/attachments/FotoDisplayWidget",
+    "ngw-compulink-site/tool/attachments/DocDisplayWidget"
 ], function (declare,
              Base,
              lang,
@@ -195,6 +197,7 @@ define([
                         widget.extWidgetClasses["doc_attache"] = cls;
                         deferred.resolve(widget);
                     });
+
                 }
                 else {
                     var deferred = new Deferred();
