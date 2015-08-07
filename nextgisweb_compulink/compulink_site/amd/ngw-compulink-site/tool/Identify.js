@@ -177,13 +177,34 @@ define([
             array.forEach(Object.keys(featureLayersettings.extensions), function (key) {
                 var ext = featureLayersettings.extensions[key];
 
-                var deferred = new Deferred();
-                deferreds.push(deferred);
+                if (key == "attachment") {
+                    ext = "ngw-compulink-site/tool/attachments/FotoDisplayWidget";
+                    var deferred = new Deferred();
+                    deferreds.push(deferred);
 
-                require([ext], function (cls) {
-                    widget.extWidgetClasses[key] = cls;
-                    deferred.resolve(widget);
-                });
+                    require([ext], function (cls) {
+                        widget.extWidgetClasses["foto_attache"] = cls;
+                        deferred.resolve(widget);
+                    });
+
+                    ext = "ngw-compulink-site/tool/attachments/DocDisplayWidget";
+                    deferred = new Deferred();
+                    deferreds.push(deferred);
+
+                    require([ext], function (cls) {
+                        widget.extWidgetClasses["doc_attache"] = cls;
+                        deferred.resolve(widget);
+                    });
+                }
+                else {
+                    var deferred = new Deferred();
+                    deferreds.push(deferred);
+
+                    require([ext], function (cls) {
+                        widget.extWidgetClasses[key] = cls;
+                        deferred.resolve(widget);
+                    });
+                }
             }, this);
 
             this.extWidgetClassesDeferred = all(deferreds);
@@ -278,13 +299,18 @@ define([
                     }
 
                     array.forEach(Object.keys(widget.extWidgetClasses), function (key) {
+
+                        ext_key = key;
+                        if (key == "foto_attache" || key == "doc_attache") {
+                            ext_key = "attachment";
+                        }
                         var cls = widget.extWidgetClasses[key];
                         var ewidget = new cls({
                             resourceId: ident_lid, featureId: ident_fid,
                             compact: true
                         });
 
-                        ewidget.renderValue(feature.extensions[key]);
+                        ewidget.renderValue(feature.extensions[ext_key]);
                         ewidget.placeAt(widget.extContainer);
                     });
 
