@@ -380,6 +380,9 @@ def export_focl_struct(request, export_type):
     except:
         raise HTTPNotFound()
 
+    if not focl_resource.has_permission(DataScope.read, request.user):
+        raise HTTPForbidden()
+
     LogEntry.info('Export resource %s to %s' % (res_id, export_type), component=COMP_ID)
 
     #create temporary dir
