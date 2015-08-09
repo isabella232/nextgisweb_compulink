@@ -68,6 +68,16 @@ define([
                 })
             }));
 
+            this._menu.addChild(new MenuItem({
+                label: "Экспорт в GeoJSON",
+                onClick: lang.hitch(this, function(evt) {
+                    evt.preventDefault();
+                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var exportUrl = ngwConfig.applicationUrl + "/compulink/resources/" + item + "/export_geojson";
+                    var win = window.open(exportUrl, '_blank');
+                })
+            }));
+
 
             //this._grid.startup();
 

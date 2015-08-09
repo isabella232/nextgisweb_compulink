@@ -63,6 +63,11 @@ def setup_pyramid(comp, config):
         '/compulink/resources/{id:\d+}/export_kml', client=('id',)) \
         .add_view(export_focl_struct)
 
+    config.add_route(
+        'compulink.site.export_geojson',
+        '/compulink/resources/{id:\d+}/export_geojson', client=('id',)) \
+        .add_view(export_focl_struct)
+
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
@@ -355,7 +360,15 @@ def get_all_dicts():
 
     return dicts
 
-def export_focl_struct(request):
+def export_focl_to_kml(request):
+    return export_focl_struct(request, 'kml')
+
+def export_focl_to_geojson(request):
+    return export_focl_struct(request, 'geojson')
+
+
+
+def export_focl_struct(request, type='kml'):
     dbsession = DBSession()
     res_id = request.matchdict['id']
 
@@ -369,11 +382,15 @@ def export_focl_struct(request):
 
     # save layers to geojson (FROM FEATURE_LAYER)
     for layer in focl_resource.children:
-        if layer.identity == VectorLayer.identity:
+        if layer.identity == VectorLayer.identity and  layer.feature_query()().total_count > 0:
             json_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'json'))
             kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
             _save_resource_to_file(layer, json_path)
-            _json_to_kml(json_path, kml_path)
+            if type == 'kml':
+                _json_to_kml(json_path, kml_path)
+                # remove json
+                os.remove(json_path)
+
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         # write archive
@@ -386,7 +403,7 @@ def export_focl_struct(request):
         zip_file.close()
 
         # remove temporary dir
-        #rmtree(temp_dir)
+        rmtree(zip_dir)
 
         # send
         temp_file.seek(0, 0)
