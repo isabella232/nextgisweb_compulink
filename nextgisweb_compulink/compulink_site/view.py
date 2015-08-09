@@ -27,6 +27,8 @@ from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name
+from nextgisweb_compulink.compulink_site import COMP_ID
+from nextgisweb_log.model import LogEntry, LogLevels
 from nextgisweb_lookuptable.model import LookupTable
 
 CURR_PATH = path.dirname(__file__)
@@ -61,12 +63,12 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.site.export_kml',
         '/compulink/resources/{id:\d+}/export_kml', client=('id',)) \
-        .add_view(export_focl_struct)
+        .add_view(export_focl_to_kml)
 
     config.add_route(
         'compulink.site.export_geojson',
         '/compulink/resources/{id:\d+}/export_geojson', client=('id',)) \
-        .add_view(export_focl_struct)
+        .add_view(export_focl_to_geojson)
 
 
 @view_config(renderer='json')
@@ -360,33 +362,36 @@ def get_all_dicts():
 
     return dicts
 
+
 def export_focl_to_kml(request):
     return export_focl_struct(request, 'kml')
+
 
 def export_focl_to_geojson(request):
     return export_focl_struct(request, 'geojson')
 
 
-
-def export_focl_struct(request, type='kml'):
-    dbsession = DBSession()
+def export_focl_struct(request, export_type):
     res_id = request.matchdict['id']
+    dbsession = DBSession()
 
     try:
         focl_resource = dbsession.query(FoclStruct).get(res_id)
     except:
         raise HTTPNotFound()
 
+    LogEntry.info('Export resource %s to %s' % (res_id, export_type), component=COMP_ID)
+
     #create temporary dir
     zip_dir = tempfile.mkdtemp()
 
     # save layers to geojson (FROM FEATURE_LAYER)
     for layer in focl_resource.children:
-        if layer.identity == VectorLayer.identity and  layer.feature_query()().total_count > 0:
+        if layer.identity == VectorLayer.identity and layer.feature_query()().total_count > 0:
             json_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'json'))
             kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
             _save_resource_to_file(layer, json_path)
-            if type == 'kml':
+            if export_type == 'kml':
                 _json_to_kml(json_path, kml_path)
                 # remove json
                 os.remove(json_path)
