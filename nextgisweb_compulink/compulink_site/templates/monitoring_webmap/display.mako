@@ -1,4 +1,4 @@
-<%inherit file='nextgisweb:templates/base.mako' />
+<%inherit file='nextgisweb_compulink:compulink_site/templates/base_site.mako' />
 
 
 <%def name="title()">

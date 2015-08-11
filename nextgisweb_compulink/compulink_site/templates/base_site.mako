@@ -30,10 +30,6 @@
     <link href="${request.route_url('amd_package', subpath='dijit/themes/claro/claro.css')}"
         rel="stylesheet" media="screen"/>
 
-    <script type="application/javascript" src="${request.static_url('nextgisweb:static/js/jquery-1.11.2/jquery.js')}"></script>
-    <script type="application/javascript" src="${request.static_url('nextgisweb:static/js/jstree-3.0.9/jstree.js')}"></script>
-    <script type="application/javascript" src="${request.static_url('nextgisweb:static/js/mustache/mustache.js')}"></script>
-
     <script type="text/javascript">
         var ngwConfig = {
             applicationUrl: ${request.application_url | json.dumps, n},
@@ -155,7 +151,7 @@
 
     %else:
 
-
+        ${next.body()}
 
     %endif
 
