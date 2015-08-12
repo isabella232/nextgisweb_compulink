@@ -59,8 +59,9 @@
 <body class="claro">
 
     %if show_header==True:
+    <div id="page_pane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters: false" style="width: 100%; height: 100%;">
 
-        <div id="header" class="header">
+        <div id="header" class="header" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'top', gutters: false" style="padding: 0; margin: 0">
             <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
 
                 <% settings = request.env.pyramid.settings %>
@@ -90,7 +91,10 @@
             </div>
         </div>
 
-        ${next.body()}
+        <div id="content_pane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center', gutters: false" style="width: 100%; height: 100%; padding: 0; margin: 0">
+            ${next.body()}
+        </div>
+    </div>
     %else:
         ${next.body()}
     %endif
