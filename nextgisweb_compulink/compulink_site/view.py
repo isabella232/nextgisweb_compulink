@@ -135,7 +135,7 @@ def show_map(request):
     focl_layers = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
     values = dict(
-        custom_layout=True,
+        show_header=True,
         focl_layers_type=focl_layers['focl'],
         objects_layers_type=focl_layers['objects'],
         real_layers_type=focl_layers['real'],

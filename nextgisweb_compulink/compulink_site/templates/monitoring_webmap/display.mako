@@ -106,35 +106,6 @@
     </style>
 </%def>
 
-<div id="header" class="header">
-            <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
-
-                <% settings = request.env.pyramid.settings %>
-                %if 'logo' in settings and os.path.isfile(settings['logo']):
-                    <img class="logo" src="${request.route_url('pyramid.logo')}"/>
-                %endif
-
-                <img class="logo" style="" src="${request.static_url('nextgisweb_compulink:compulink_site/static/img/cl_logo.png')}">
-
-                <a class="pure-menu-heading" href="${request.application_url}">
-                    ${request.env.core.settings['system.full_name']}
-                </a>
-
-                <ul>
-                    %if request.user.is_administrator:
-                        <li><a href="${request.route_url('resource.root')}">Панель управления</a></li>
-                    %endif
-
-                    %if request.user.keyname == 'guest':
-                        <li><a href="${request.route_url('auth.login')}">Вход</a></li>
-                    %else:
-                        <li class="user">${request.user}</li>
-                        <li><a href="${request.route_url('auth.logout')}">Выход</a></li>
-                    %endif
-                </ul>
-            </div>
-
-        </div>
 
 <div data-dojo-id="display"
      data-dojo-type="ngw-compulink-site/Display"
