@@ -1,11 +1,15 @@
 <map>
+  <symbol>
+  	<type>pixmap</type>
+    <name>ap_proj</name>
+    <image>ap_proj</image>
+    <anchorpoint x="0.5" y="0.5" />
+  </symbol>
   <layer>
     <labelitem>name</labelitem>
     <class>
       <style>
-        <outlinecolor red="255" green="255" blue="255"/>
-        <symbol>std:circle</symbol>
-        <color red="0" green="0" blue="0"/>
+		<symbol>ap_proj</symbol>
         <size>20</size>
       </style>
       <label>

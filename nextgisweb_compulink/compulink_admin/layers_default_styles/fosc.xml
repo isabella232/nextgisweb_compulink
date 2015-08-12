@@ -1,13 +1,16 @@
 <map>
+  <symbol>
+  	<type>pixmap</type>
+    <name>fosc_proj</name>
+    <image>fosc_proj</image>
+    <anchorpoint x="0.5" y="0.5" />
+  </symbol>
   <layer>
     <labelitem>name</labelitem>
     <class>
       <style>
-        <outlinecolor red="0" green="0" blue="0"/>
-        <width>1</width>
-        <symbol>std:circle</symbol>
-        <color red="255" green="255" blue="255"/>
-        <size>13</size>
+        <symbol>fosc_proj</symbol>
+        <size>15</size>
         <maxscaledenom>400000</maxscaledenom>
       </style>
       <label>
