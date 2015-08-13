@@ -47,7 +47,9 @@ class UpdateStylesCommand():
                 print "!!!! %s was not updated! No parent keyname!" % (ms_style_res.display_name)
                 continue
             updated = False
-            for style_name in new_styles.keys():
+            new_styles_keys = new_styles.keys()
+            new_styles_keys.sort(reverse=True)
+            for style_name in new_styles_keys:
                 if style_name in vector_layer_key:
                     ms_style_res.xml = new_styles[style_name]
                     ms_style_res.persist()
