@@ -2,11 +2,12 @@
   <layer>
     <class>
       <style>
-        <linecap>round</linecap>
-        <linejoin>round</linejoin>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
         <color red="223" green="86" blue="223" />
-        <width>10.0</width>
+        <width>8.0</width>
+       	<pattern>10.0 12.0</pattern>
       </style>
     </class>
   </layer>
-</map> 
+</map>
