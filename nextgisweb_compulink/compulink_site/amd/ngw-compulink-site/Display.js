@@ -45,6 +45,7 @@ define([
     "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
     "ngw-compulink-site/CadastreOverlay",
+    "ngw-compulink-site/DisplayHeader",
     "webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -109,6 +110,7 @@ define([
     LayersManager,
     SelectedResourcesTable,
     CadastreOverlay,
+    DisplayHeader,
     Adapter,
     clientSettings
 ) {
