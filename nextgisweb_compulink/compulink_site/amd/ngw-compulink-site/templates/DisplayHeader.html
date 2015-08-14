@@ -1,0 +1,22 @@
+<div id="header" class="header" style="padding: 0; margin: 0">
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+        <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
+
+        <a class="pure-menu-heading" href="{{ headerData.appUrl }}">
+            {{ headerData.fullName }}
+        </a>
+
+        <ul>
+            {% if headerData.isAdm %}
+                <li><a href="{{ headerData.rootPan }}">Панель управления</a></li>
+            {% endif %}
+
+            {% if headerData.isGuest %}
+                <li><a href="{{ headerData.loginUrl }}">Вход</a></li>
+            {% else %}
+                <li class="user">{{ headerData.userName }}</li>
+                <li><a href="{{ headerData.logoutUrl }}">Выход</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
