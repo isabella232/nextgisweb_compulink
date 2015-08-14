@@ -1,4 +1,4 @@
-<div data-dojo-type="${baseClass}"
+<div data-dojo-type="{{ baseClass }}"
      data-dojo-attach-point="focusNode"
      style="width: 100%; height: 100%">
 
@@ -17,7 +17,16 @@
             <div id="mainContainer"
                  data-dojo-type="dijit/layout/BorderContainer"
                  data-dojo-props="gutters: false"
-                 style="width: 100%; height: 100%;">
+                 style="width: 100%;">
+
+                <div data-dojo-attach-point="mapToolbar2"
+                     data-dojo-type="dijit/Toolbar"
+                     data-dojo-props="region: 'top'">
+                    <div data-dojo-id="displayHeader"
+                         data-dojo-type="ngw-compulink-site/DisplayHeader"
+                         data-dojo-props="">
+                    </div>
+                </div>
 
                 <!-- Панель для размещения OL карты -->
                 <div id="centerContainer"
@@ -64,24 +73,24 @@
                                 <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols: 1">
 
                                     <div data-dojo-attach-point="moveToLat"
-                                        data-dojo-type="dijit/form/NumberTextBox"
-                                        data-dojo-props="constraints: {min: -180, max: +180}, trim: true"
-                                        title="Широта, град."
-                                        style="width: 100%">
+                                         data-dojo-type="dijit/form/NumberTextBox"
+                                         data-dojo-props="constraints: {min: -180, max: +180}, trim: true"
+                                         title="Широта, град."
+                                         style="width: 100%">
                                     </div>
 
                                     <div data-dojo-attach-point="moveToLon"
-                                        data-dojo-type="dijit/form/NumberTextBox"
-                                        data-dojo-props="constraints: {min: -180, max: +180}, trim: true"
-                                        title="Долгота, град."
-                                        style="width: 100%">
+                                         data-dojo-type="dijit/form/NumberTextBox"
+                                         data-dojo-props="constraints: {min: -180, max: +180}, trim: true"
+                                         title="Долгота, град."
+                                         style="width: 100%">
                                     </div>
 
                                 </div>
 
                                 <div data-dojo-attach-point="moveToCoordinatesButton"
-                                    data-dojo-type="dijit/form/Button"
-                                    data-dojo-props="label: 'OK'">
+                                     data-dojo-type="dijit/form/Button"
+                                     data-dojo-props="label: 'OK'">
                                 </div>
                             </div>
                         </div>
@@ -141,7 +150,7 @@
 
                             <div style="position: absolute; top: 0; right: 0; z-index: 2000; margin: 4px; background-color: rgba(255, 255, 255, 0.5)">
                                 <a href="http://nextgis.ru/nextgis-web/" target="_blank"><img
-                                        src="${assetUrl}img/nextgis.png"/></a>
+                                        src="{{ assetUrl }}img/nextgis.png"/></a>
                             </div>
                             <a id="permalink" data-dojo-attach-event="onclick:_getPermalink" href="#"
                                style="position: absolute; bottom: 20px; right: 0; z-index: 2000; margin: 4px; font-size: smaller;">Ссылка</a>
@@ -211,8 +220,9 @@
                                value="pkkEnabled"
                                chceked="false"
                                style="margin-bottom: 8px;"
-                               />
-                        <label for="pkkCheck" style="width: 100%; margin-bottom: 8px;">Отображать кадастровое деление</label>
+                                />
+                        <label for="pkkCheck" style="width: 100%; margin-bottom: 8px;">Отображать кадастровое
+                            деление</label>
 
 
                         <select data-dojo-attach-point="basemapSelect"
@@ -226,7 +236,7 @@
 
                 <!-- Правая панель -->
                 <div id='rightPanel'
-                     data-resource-type-filter="",
+                     data-resource-type-filter="" ,
                      data-dojo-type="dijit/layout/BorderContainer"
                      data-dojo-props="region: 'right', splitter: true, gutters: false"
                      style="width: 250px; padding: 0;">
