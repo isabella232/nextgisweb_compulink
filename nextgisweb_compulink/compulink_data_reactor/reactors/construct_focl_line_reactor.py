@@ -52,8 +52,6 @@ class ConstructFoclLineReactor(AbstractReactor):
 
             #get clusters
             clusters = cls.get_clusters(features)
-            print 'New cluster: '
-            pprint(clusters)
 
             #merge points in clusters
             for cluster in clusters:
@@ -64,15 +62,15 @@ class ConstructFoclLineReactor(AbstractReactor):
                     # construct segment
                     points = tuple(feat.geom[0].coords[0] for feat in cluster)
                     # write segment
-                    cls.write_segment(lines_lyr, points, cluster)
-                    print 'segment line!'
+                    info = cls.get_segment_info(points, cluster)
+                    cls.write_segment(lines_lyr, points, cluster, info)
                 if len(cluster) > 2:
                     line = cls.make_line(cluster)
                     # write segments
                     for i in range(len(line[0])-1):
                         points = (line[0][i], line[0][i+1])
-                        cls.write_segment(lines_lyr, points, cluster)
-                    print line
+                        info = cls.get_segment_info(points, cluster)
+                        cls.write_segment(lines_lyr, points, cluster, info)
 
             db_session.flush()
 
@@ -97,7 +95,7 @@ class ConstructFoclLineReactor(AbstractReactor):
                 for feat in cluster:
                     geom_1 = feat.geom
                     geom_2 = new_feat.geom
-                    if geom_1.distance(geom_2) <= 300:
+                    if geom_1.distance(geom_2) <= 550:  # TODO: need transform + elipsoid dist!
                         cluster.append(new_feat)
                         return True
             return False
@@ -154,10 +152,35 @@ class ConstructFoclLineReactor(AbstractReactor):
         DBSession.query(tableinfo.model).delete()
 
     @classmethod
-    def write_segment(cls, layer, segment_points, cluster):
+    def write_segment(cls, layer, segment_points, cluster, info):
         print 'Write segmet: %s' % str(segment_points)
-        feature_dict = []
-        feature = Feature(fields=feature_dict, geom=MultiLineString([segment_points]))
+        feature = Feature(fields=info, geom=MultiLineString([segment_points]))
         feature_id = layer.feature_create(feature)
 
 
+    @classmethod
+    def get_segment_info(cls, segment_points, cluster):
+        print 'Get segmet info: %s' % str(segment_points)
+
+        # get features by coord
+        feature_points = []
+        for segment_point in segment_points:
+            for feature in cluster:
+                feat_coords = feature.geom[0].coords[0]
+                if segment_point[0] == feat_coords[0] and segment_point[1] == feat_coords[1]:
+                    feature_points.append(feature)
+
+        # get laying_method
+        laying_methods = []
+        for feat in feature_points:
+            if feat.fields['laying_method'] and feat.fields['laying_method'] not in laying_methods:
+                laying_methods.append(feat.fields['laying_method'])
+        laying_method = laying_methods[0] if laying_methods else None  # TODO: Need rules!!!
+
+        # get built_date
+        built_date = feature_points[0].fields['built_date']
+        for feat in feature_points:
+            if feat.fields['built_date'] > built_date:
+                built_date = feat.fields['built_date']
+
+        return {'laying_method': laying_method, 'built_date': built_date}
