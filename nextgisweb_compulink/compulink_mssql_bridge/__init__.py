@@ -15,7 +15,7 @@ Base = declarative_base()
 @Component.registry.register
 class CompulinkMssqlBridgeComponent(Component):
     identity = COMP_ID
-    metadata = Base.metadata
+    #metadata = Base.metadata
 
     def initialize(self):
         super(CompulinkMssqlBridgeComponent, self).initialize()
