@@ -24,16 +24,21 @@ class CompulinkMssqlBridgeComponent(Component):
 
         conn_str = self._settings.get('conn_str', 'no')
 
-        self.engine = create_engine(conn_str)
-
-        DBSession.configure(bind=self.engine)
-        Base.metadata.bind = self.engine
+        CompulinkMssqlBridgeComponent.configure_db_conn(conn_str)
 
         self.DBSession = DBSession
         self.Base = Base
 
         from . import view
         view.setup_pyramid(self, config)
+
+    @classmethod
+    def configure_db_conn(cls, conn_str):
+        cls.engine = create_engine(conn_str)
+
+        DBSession.configure(bind=cls.engine)
+        Base.metadata.bind = cls.engine
+
 
     settings_info = (
         dict(key='conn_str', desc=u"Строка соединения с MS SQL Server"),

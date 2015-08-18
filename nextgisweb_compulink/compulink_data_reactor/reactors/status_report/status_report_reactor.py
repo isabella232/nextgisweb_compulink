@@ -1,7 +1,6 @@
 from nextgisweb import DBSession as NgwSession
-from datetime import datetime
-from nextgisweb_compulink.compulink_mssql_bridge import DBSession as MsSqlSession
-
+from datetime import datetime, date
+from nextgisweb_compulink.compulink_mssql_bridge import CompulinkMssqlBridgeComponent, DBSession as MsSqlSession
 import transaction
 from sqlalchemy.orm import joinedload_all
 
@@ -34,18 +33,20 @@ class StatusReportReactor(AbstractReactor):
         ngw_session.flush()
 
         # fix now dt
-        now_dt = datetime.utcnow()
+        now_dt = date.today()
 
         # get mssql info
         mssql_enable = env.compulink_mssql_bridge.settings.get('enable', False)
 
         ms_info = dict()
         if mssql_enable:
+            CompulinkMssqlBridgeComponent.configure_db_conn(env.compulink_mssql_bridge.settings.get('conn_str', 'no'))
+
             fs_external_ids = ngw_session.query(FoclStruct.external_id).all()
             ms_rows = ms_session.query(ConstructObjects).filter(ConstructObjects.ObjectID.in_(fs_external_ids)).options(joinedload_all(ConstructObjects.Work3)).all()
             for row in ms_rows:
                 if row.ObjectID not in ms_info.keys():
-                    ms_info[row.ObjectID] = row
+                    ms_info[str(row.ObjectID)] = row
 
         # get all focls
         fs_resources = ngw_session.query(FoclStruct).all()
@@ -65,9 +66,9 @@ class StatusReportReactor(AbstractReactor):
             # save info from mssql
             if report_line.external_id and report_line.external_id in ms_info.keys():
                 ms_row = ms_info[report_line.external_id]
-                report_line.subcontr_name = ms_row.work3.SubContractor.ContractorName if ms_row.work3 else None
-                report_line.start_build_time = ms_row.work3.AgreementStartDateWork if ms_row.work3 else None
-                report_line.end_build_time = ms_row.work3.AgreementFinishDateWork if ms_row.work3 else None
+                report_line.subcontr_name = ms_row.Work3.SubContractor.ContractorName if ms_row.Work3 and ms_row.Work3.SubContractor else None
+                report_line.start_build_time = ms_row.Work3.AgreementStartDateWork if ms_row.Work3 else None
+                report_line.end_build_time = ms_row.Work3.AgreementFinishDateWork if ms_row.Work3 else None
             else:
                 LogEntry.warning('Not found mssql info for resource %s (external_id is %s)' % (report_line.id, report_line.external_id),
                               component=COMP_ID,
@@ -168,13 +169,13 @@ class StatusReportReactor(AbstractReactor):
         query.geom()
         result = query()
 
-        if result.total_count > 0:
+        if result.total_count < 1:
             return 0  # or None?
         else:
             total_length = 0
             for feat in result:
                 geom = feat.geom
-                total_length += geom.length()  # TODO: need transform + elipsoid len!
+                total_length += geom.length  # TODO: need transform + elipsoid len!
             return total_length
 
 
