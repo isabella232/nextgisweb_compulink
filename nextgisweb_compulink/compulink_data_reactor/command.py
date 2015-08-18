@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from nextgisweb_compulink.compulink_data_reactor.reactors.abstract_reactor import AbstractReactor
+from .reactors.abstract_reactor import AbstractReactor
 from nextgisweb.command import Command
 
-from .reactors.construct_focl_line_reactor import ConstructFoclLineReactor  # NOQA
-from .reactors.test2 import Reactor2  # NOQA
+from .reactors.construct_focl_line.construct_focl_line_reactor import ConstructFoclLineReactor  # NOQA
+from .reactors.status_report.status_report_reactor import StatusReportReactor # NOQA
 
 
 @Command.registry.register

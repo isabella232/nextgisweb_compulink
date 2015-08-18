@@ -5,7 +5,7 @@ from .style_updater import command  # NOQA
 from .db_migrations import command  # NOQA
 from .init_data import command  # NOQA
 from .real_data_generator import command  # NOQA
-from compulink_data_reactor import command  # NOQA
+from .compulink_data_reactor import command  # NOQA
 
 
 def pkginfo():
@@ -15,6 +15,8 @@ def pkginfo():
             compulink_site='nextgisweb_compulink.compulink_site',
             compulink_mobile='nextgisweb_compulink.compulink_mobile',
             compulink_mssql_bridge='nextgisweb_compulink.compulink_mssql_bridge',
+            compulink_reporting='nextgisweb_compulink.compulink_reporting',
+            compulink_data_reactor='nextgisweb_compulink.compulink_data_reactor',
         )
     )
 

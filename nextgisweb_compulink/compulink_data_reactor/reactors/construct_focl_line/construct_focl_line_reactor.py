@@ -1,10 +1,11 @@
-from pprint import pprint
-import numpy as np
-from shapely.geometry import Point, LineString, MultiLineString
-import transaction
-from .abstract_reactor import AbstractReactor
 from nextgisweb import DBSession
-from .. import COMP_ID
+
+import numpy as np
+from shapely.geometry import MultiLineString
+import transaction
+
+from nextgisweb_compulink.compulink_data_reactor.reactors.abstract_reactor import AbstractReactor
+from nextgisweb_compulink.compulink_data_reactor import COMP_ID
 from nextgisweb.feature_layer import Feature
 from nextgisweb.vector_layer import TableInfo
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
@@ -76,6 +77,8 @@ class ConstructFoclLineReactor(AbstractReactor):
 
 
         transaction.manager.commit()
+        LogEntry.info('ConstructFoclLineReactor finished!', component=COMP_ID, group=ConstructFoclLineReactor.identity)
+
 
 
     @classmethod
