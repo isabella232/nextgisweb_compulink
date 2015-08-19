@@ -9,6 +9,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 import codecs
 import geojson
 from osgeo import ogr
+from shapely.geometry import shape, mapping
 from shapely.wkt import loads
 from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound
 from pyramid.renderers import render_to_response
@@ -69,6 +70,10 @@ def setup_pyramid(comp, config):
         'compulink.site.export_geojson',
         '/compulink/resources/{id:\d+}/export_geojson', client=('id',)) \
         .add_view(export_focl_to_geojson)
+    config.add_route(
+        'compulink.site.export_csv',
+        '/compulink/resources/{id:\d+}/export_csv', client=('id',)) \
+        .add_view(export_focl_to_csv)
 
 
 @view_config(renderer='json')
@@ -370,6 +375,9 @@ def export_focl_to_kml(request):
 def export_focl_to_geojson(request):
     return export_focl_struct(request, 'geojson')
 
+def export_focl_to_csv(request):
+    return export_focl_struct(request, 'csv')
+
 
 def export_focl_struct(request, export_type):
     res_id = request.matchdict['id']
@@ -392,12 +400,17 @@ def export_focl_struct(request, export_type):
     for layer in focl_resource.children:
         if layer.identity == VectorLayer.identity and layer.feature_query()().total_count > 0:
             json_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'json'))
-            kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
-            _save_resource_to_file(layer, json_path)
+            _save_resource_to_file(layer, json_path, single_geom=export_type == 'csv')
             if export_type == 'kml':
+                kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
                 _json_to_kml(json_path, kml_path)
                 # remove json
                 os.remove(json_path)
+            if export_type == 'csv':
+                csv_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'csv'))
+                _json_to_csv(json_path, csv_path)
+                # remove json
+                #os.remove(json_path)
 
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
@@ -407,11 +420,11 @@ def export_focl_struct(request, export_type):
 
         for file_name in os.listdir(zip_dir):
             src_file = path.join(zip_dir, file_name)
-            zip_file.write(src_file, (zip_subpath+unicode(file_name,'utf-8')).encode('cp866'))
+            zip_file.write(src_file, (zip_subpath+unicode(file_name, 'utf-8')).encode('cp866'))
         zip_file.close()
 
         # remove temporary dir
-        rmtree(zip_dir)
+        #rmtree(zip_dir)
 
         # send
         temp_file.seek(0, 0)
@@ -424,7 +437,7 @@ def export_focl_struct(request, export_type):
         return response
 
 
-def _save_resource_to_file(vector_resource, file_path):
+def _save_resource_to_file(vector_resource, file_path, single_geom=False):
     #resource_permission(PD_READ)
 
     class CRSProxy(object):
@@ -440,6 +453,8 @@ def _save_resource_to_file(vector_resource, file_path):
 
     query = vector_resource.feature_query()
     query.geom()
+    if single_geom:
+        query.single_part_geom()
     result = CRSProxy(query())
 
     gj = geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder)
@@ -450,4 +465,12 @@ def _save_resource_to_file(vector_resource, file_path):
 def _json_to_kml(in_file_path, out_file_path):
     subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path.encode('utf-8'), in_file_path.encode('utf-8')])
 
+def _json_to_csv(in_file_path, out_file_path):
+    subprocess.check_call(['ogr2ogr',
+                           '-f', 'CSV',
+                           out_file_path.encode('utf-8'),
+                           in_file_path.encode('utf-8'),
+                           '-lco', 'GEOMETRY=AS_XY',
+                           '-s_srs', 'EPSG:3857',
+                           '-t_srs', 'EPSG:4326'])
 
