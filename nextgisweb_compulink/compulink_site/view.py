@@ -410,7 +410,7 @@ def export_focl_struct(request, export_type):
                 csv_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'csv'))
                 _json_to_csv(json_path, csv_path)
                 # remove json
-                #os.remove(json_path)
+                os.remove(json_path)
 
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
@@ -424,7 +424,7 @@ def export_focl_struct(request, export_type):
         zip_file.close()
 
         # remove temporary dir
-        #rmtree(zip_dir)
+        rmtree(zip_dir)
 
         # send
         temp_file.seek(0, 0)
