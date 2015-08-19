@@ -463,9 +463,7 @@ def _save_resource_to_file(vector_resource, file_path, single_geom=False):
             return result
 
     query = vector_resource.feature_query()
-    query.geom()
-    if single_geom:
-        query.single_part_geom()
+    query.geom(single_part=single_geom)
     result = CRSProxy(query())
 
     gj = geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder)
