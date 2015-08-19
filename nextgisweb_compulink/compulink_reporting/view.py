@@ -6,7 +6,11 @@ from pyramid.view import view_config
 
 
 from nextgisweb import DBSession
+from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport
+from nextgisweb.resource import DataScope, ResourceGroup
+from nextgisweb.resource.model import ResourceACLRule
+from nextgisweb_compulink.compulink_admin.model import FoclStruct, FoclProject
 
 
 def setup_pyramid(comp, config):
@@ -37,17 +41,26 @@ def get_status_report(request):
     if status_filter:
         report_query = report_query.filter(ConstructionStatusReport.status.in_(status_filter))
 
+    if not request.user.is_administrator:
+        allowed_res_ids = get_user_writable_focls(request.user)
+        report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+
 
     json_report = []
     num_line = 1
     for row in report_query.all():
 
-        if not request.user.is_administrator:
-            #TODO: check user perms for resource
-            return Response('[]')  # temporary
+        # if not request.user.is_administrator:
+        #     try:
+        #         resource = DBSession.query(FoclStruct).get(row.focl_res_id)
+        #     except:
+        #         continue    # not found
+        #     if not resource.has_permission(DataScope.write, request.user):
+        #         continue   # hasn't perm
+
 
         json_row = {
-            'num_line': num_line,
+            'num_line':         num_line,
             'focl_name':        row.focl_name,
             'region':           row.region,     #todo: from dict!
             'district':         row.district,   #todo: from dict!
@@ -79,3 +92,29 @@ def get_status_report(request):
     # todo?
 
     return Response(json.dumps(json_report))
+
+
+def get_user_writable_focls(user):
+    # get explicit rules
+    rules_query = DBSession.query(ResourceACLRule)\
+        .filter(ResourceACLRule.principal_id==user.principal_id)\
+        .filter(ResourceACLRule.scope==DataScope.identity)\
+        .options(joinedload_all(ResourceACLRule.resource))
+
+    #todo: user groups explicit rules???
+
+    # get permission for resource and children
+    allowed_res_ids = []
+
+    def get_perms_recursive(resource):
+        if resource.has_permission(DataScope.write, user):
+            allowed_res_ids.append(resource.id)
+        if resource.identity in [ResourceGroup.identity, FoclProject.identity]:
+            for child in resource.children:
+                get_perms_recursive(child)
+
+    for rule in rules_query.all():
+        get_perms_recursive(rule.resource)
+
+    return allowed_res_ids
+
