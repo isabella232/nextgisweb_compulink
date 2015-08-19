@@ -11,7 +11,7 @@ import geojson
 from osgeo import ogr
 from shapely.geometry import shape, mapping
 from shapely.wkt import loads
-from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound
+from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPBadRequest
 from pyramid.renderers import render_to_response
 from pyramid.response import Response, FileResponse
 from pyramid.view import view_config
@@ -78,13 +78,17 @@ def setup_pyramid(comp, config):
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
-    parent_resource_id = request.params['id'].replace('res_', '')
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    parent_resource_id = request.params.get('id', None)
+    if parent_resource_id is None:
+        raise HTTPBadRequest('Set "id" param!')
+    else:
+        parent_resource_id = parent_resource_id.replace('res_', '')
     is_root_node_requsted = parent_resource_id == '#'
 
-    if 'type' in request.params:
-        type_filter = request.params['type']
-    else:
-        type_filter = None
+    type_filter = request.params.get('type', None)
 
     dbsession = DBSession()
     if is_root_node_requsted:
@@ -224,6 +228,9 @@ def get_sit_plan_layers_list():
 
 @view_config(renderer='json')
 def get_focl_info(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     res_ids = request.POST.getall('ids')
     if not res_ids:
         return Response('[]')
@@ -275,10 +282,11 @@ def extent_buff(extent, buff_size):
 
 @view_config(renderer='json')
 def get_focl_extent(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
 
-    if 'id' in request.params:
-        res_id = request.params['id']
-    else:
+    res_id = request.params.get('id', None)
+    if res_id is None:
         return Response('[]')
 
     dbsession = DBSession()
@@ -311,6 +319,9 @@ def get_focl_extent(request):
 
 @view_config(renderer='json')
 def get_layers_by_type(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     # TODO: optimize this!!!
     group_res_ids = request.POST.getall('resources')
     layer_types = request.POST.getall('types')
