@@ -66,6 +66,8 @@ class StatusReportReactor(AbstractReactor):
             # save info from mssql
             if report_line.external_id and report_line.external_id in ms_info.keys():
                 ms_row = ms_info[report_line.external_id]
+                report_line.cabling_plan = ms_row.PreliminaryLineLength     #new requ TODO: check!
+                report_line.ap_plan = ms_row.AccessPointAmount              #new requ
                 report_line.subcontr_name = ms_row.Work3.SubContractor.ContractorName if ms_row.Work3 and ms_row.Work3.SubContractor else None
                 report_line.start_build_time = ms_row.Work3.AgreementStartDateWork if ms_row.Work3 else None
                 report_line.end_build_time = ms_row.Work3.AgreementFinishDateWork if ms_row.Work3 else None
@@ -77,9 +79,23 @@ class StatusReportReactor(AbstractReactor):
 
             # save statistics
             # --- cabling
-            plan, fact, percent = cls.get_plan_fact_length(fs, 'optical_cable', 'real_optical_cable')
-            report_line.cabling_plan = plan
-            report_line.cabling_fact = fact
+            # --- plan already set from mssql!
+            # --- get fact
+            fact_lyr = cls.get_layer_by_type(fs, 'real_optical_cable')
+            if fact_lyr:
+                fact_len = cls.get_feat_length(fact_lyr)
+            else:
+                fact_len = None
+            report_line.cabling_fact = fact_len
+            # --- get percenatage
+            if not report_line.cabling_plan:
+                report_line.cabling_plan = None
+            if report_line.cabling_plan is None or report_line.cabling_fact is None:
+                percent = None
+            elif report_line.cabling_plan == 0:
+                percent = 0
+            else:
+                percent = report_line.cabling_fact/report_line.cabling_plan * 100
             report_line.cabling_percent = percent
 
             # --- fosc
@@ -101,9 +117,23 @@ class StatusReportReactor(AbstractReactor):
             report_line.spec_trans_percent = percent
 
             # --- ap
-            plan, fact, percent = cls.get_plan_fact_counts(fs, 'access_point', 'real_access_point')
-            report_line.ap_plan = plan
-            report_line.ap_fact = fact
+            # --- plan already set from mssql!
+            # --- get fact
+            fact_lyr = cls.get_layer_by_type(fs, 'real_access_point')
+            if fact_lyr:
+                fact_count = cls.get_feat_count(fact_lyr)
+            else:
+                fact_count = None
+            report_line.ap_fact = fact_count
+            # --- get percenatage
+            if not report_line.ap_plan:
+                report_line.ap_plan = None
+            if report_line.ap_plan is None or report_line.ap_fact is None:
+                percent = None
+            elif report_line.ap_plan == 0:
+                percent = 0
+            else:
+                percent = report_line.ap_fact/report_line.ap_plan * 100
             report_line.ap_percent = percent
 
             # save overdue status
@@ -121,7 +151,11 @@ class StatusReportReactor(AbstractReactor):
 
         LogEntry.info('StatusReportReactor finished!', component=COMP_ID, group=StatusReportReactor.identity)
 
-
+    @classmethod
+    def get_layer_by_type(cls, focl_struct, lyr_type):
+        lyrs = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(lyr_type)]
+        lyr = lyrs[0] if len(lyrs) else None
+        return lyr
 
 
     @classmethod
@@ -137,11 +171,8 @@ class StatusReportReactor(AbstractReactor):
 
     @classmethod
     def get_plan_fact_counts(cls, focl_struct, plan_layer_name, fact_layer_name):
-        plan_lyr = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(plan_layer_name)]
-        plan_lyr = plan_lyr[0] if len(plan_lyr) else None
-
-        real_lyr = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(fact_layer_name)]
-        real_lyr = real_lyr[0] if len(real_lyr) else None
+        plan_lyr = cls.get_layer_by_type(focl_struct, plan_layer_name)
+        real_lyr = cls.get_layer_by_type(focl_struct, fact_layer_name)
 
         if plan_lyr:
             plan_count = cls.get_feat_count(plan_lyr)
@@ -153,6 +184,8 @@ class StatusReportReactor(AbstractReactor):
         else:
             real_count = None
 
+        if not plan_count:
+            plan_count = None
         if real_count is None or plan_count is None:
             percent = None
         elif plan_count == 0:
@@ -181,11 +214,8 @@ class StatusReportReactor(AbstractReactor):
 
     @classmethod
     def get_plan_fact_length(cls, focl_struct, plan_layer_name, fact_layer_name):
-        plan_lyr = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(plan_layer_name)]
-        plan_lyr = plan_lyr[0] if len(plan_lyr) else None
-
-        real_lyr = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(fact_layer_name)]
-        real_lyr = real_lyr[0] if len(real_lyr) else None
+        plan_lyr = cls.get_layer_by_type(focl_struct, plan_layer_name)
+        real_lyr = cls.get_layer_by_type(focl_struct, fact_layer_name)
 
         if plan_lyr:
             plan_length = cls.get_feat_length(plan_lyr)
