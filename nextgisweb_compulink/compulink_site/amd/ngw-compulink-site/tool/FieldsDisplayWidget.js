@@ -89,17 +89,20 @@ define([
                 if (val === null) {
                     // pass
                 } else if (field.datatype == "DATE") {
-                    val = locale.format(new Date(val.year, val.month - 1, val.day), {
+                    d_val = new Date(Date.UTC(val.year, val.month - 1, val.day));
+                    val = locale.format(d_val, {
                         selector: "date",
                         formatLength: "medium"
                     });
                 } else if (field.datatype == "TIME") {
-                    val = locale.format(new Date(0, 0, 0, val.hour, val.minute, val.second), {
+                    d_val = new Date(Date.UTC(0, 0, 0, val.hour, val.minute, val.second));
+                    val = locale.format(d_val, {
                         selector: "time",
                         formatLength: "medium"
                     });
                 } else if (field.datatype == "DATETIME") {
-                    val = locale.format(new Date(val.year, val.month - 1, val.day, val.hour, val.minute, val.second), {
+                    d_val = new Date(Date.UTC(val.year, val.month - 1, val.day, val.hour, val.minute, val.second));
+                    val = locale.format(d_val, {
                         formatLength: "medium"
                     });
                 }
