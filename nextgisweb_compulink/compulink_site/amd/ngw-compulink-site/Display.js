@@ -175,6 +175,8 @@ define([
 
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
+        ngwConfig: ngwConfig ? ngwConfig : null,
+
 
         // Загрузка разных видов модулей: adapter, basemap, plugin
         _midDeferred: undefined,
@@ -456,6 +458,15 @@ define([
         switchBottomToolbar: function(val) {
             panel = registry.byId("bottomPanel");
             mainContainer = registry.byId("centerContainer");
+            if(val)
+                mainContainer.addChild(panel);
+            else
+                mainContainer.removeChild(panel);
+        },
+
+        switchLegendPane: function(val) {
+            panel = registry.byId("legendPane");
+            mainContainer = registry.byId("rightPanel");
             if(val)
                 mainContainer.addChild(panel);
             else
