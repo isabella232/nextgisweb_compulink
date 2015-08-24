@@ -94,8 +94,8 @@
     height: auto !important;
 }
 
-#rightPanel[data-resource-type-filter=vols] div.dijitSplitter,
-#rightPanel[data-resource-type-filter=sit] div.dijitSplitter {
+#rightPanel[data-resource-type-filter=vols] #sitLayersPane_splitter,
+#rightPanel[data-resource-type-filter=sit] #volsLayersPane_splitter {
     display: none;
 }
 
