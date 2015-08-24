@@ -73,8 +73,13 @@
     right: 0;
 }
 
+#rightPanel div.legend_cont,
 #rightPanel div.tree-wrapper {
     overflow: auto;
+}
+
+#rightPanel div.legend_cont {
+    height: 100%;
 }
 
 #rightPanel[data-resource-type-filter=vols] div.sit,
