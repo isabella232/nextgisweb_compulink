@@ -1,5 +1,6 @@
 <map>
   <layer>
+    <type>Point</type>
     <class>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
