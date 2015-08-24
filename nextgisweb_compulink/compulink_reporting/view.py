@@ -19,7 +19,7 @@ def setup_pyramid(comp, config):
         '/compulink/reporting/get_status_report').add_view(get_status_report)
 
 
-@view_config(renderer='json')
+@view_config()
 def get_status_report(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
@@ -91,7 +91,9 @@ def get_status_report(request):
     # footer
     # todo?
 
-    return Response(json.dumps(json_report))
+    return Response(
+        json.dumps(json_report),
+        content_type=b'application/json')
 
 
 def get_user_writable_focls(user):
