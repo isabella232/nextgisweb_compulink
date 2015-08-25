@@ -28,7 +28,8 @@ define([
     "dojox/layout/TableContainer",
     "ngw-compulink-reporting/RegionSelect",
     "ngw-compulink-reporting/DistrictSelect",
-    "ngw-compulink-reporting/StatusSelect"
+    "ngw-compulink-reporting/StatusSelect",
+    "ngw-compulink-site/DisplayHeader"
 ], function (
     declare,
     lang,
