@@ -34,13 +34,13 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.reporting.get_status_report',
         '/compulink/reporting/get_status_report',
-        client = ()) \
+        client=()) \
         .add_view(get_status_report)
 
     config.add_route(
         'compulink.reporting.export_status_report',
         '/compulink/reporting/export_status_report',
-        client = ())\
+        client=())\
         .add_view(export_status_report)
 
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/status_grid.mako')
@@ -102,6 +102,7 @@ def get_status_report(request):
         json.dumps(json_report),
         content_type=b'application/json')
 
+
 def export_status_report(request):
     """
     ИНДЕКСЫ ЗАВЯЗАНЫ НА ШАБЛОН!
@@ -110,13 +111,14 @@ def export_status_report(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
+    print '1'
     #open template
     template_path = path.join(TEMPLATES_PATH, 'status_report.xlsx')
     wb = load_workbook(template_path)
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         ws = wb.active
-
+        print '2'
         # write headers
         ws.cell(row=3, column=3).value = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         ws.cell(row=3, column=7).value = request.user.display_name
@@ -132,9 +134,7 @@ def export_status_report(request):
             font=border_style.font,
             fill=PatternFill(patternType=FILL_SOLID, fgColor=Color(rgb='F46A6A'))
         )
-
         footer_style = ws.cell(row=3, column=1).style
-
 
         # get data
         report_query = construct_query(request)
@@ -143,12 +143,8 @@ def export_status_report(request):
         regions = get_regions_from_resource(as_dict=True)
         districts = get_districts_from_resource(as_dict=True)
         statuses = get_project_statuses(as_dict=True)
-
+        print '3'
         num_line = 1
-
-        # sums
-        sums = {9: 0, 10: 0, 12: 0, 13: 0, 15: 0, 16: 0, 18: 0, 19: 0, 21: 0, 22: 0}
-
         for row in report_query.all():
             line_in_ws = 7 + num_line
 
@@ -200,7 +196,7 @@ def export_status_report(request):
             ws.cell('%s%s' % (pair[2], line_in_ws)).style = footer_style
 
         wb.save(path.abspath(temp_file.name))  # save to temp
-
+        print '4'
         response = FileResponse(
             path.abspath(temp_file.name),
             content_type=bytes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),

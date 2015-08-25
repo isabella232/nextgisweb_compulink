@@ -13,7 +13,8 @@ requires = (
     'shapely',
     'transaction',
     'sqlalchemy',
-    'pymssql'
+    'pymssql',
+    'openpyxl'
 )
 
 entry_points = {
