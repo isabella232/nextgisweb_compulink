@@ -26,6 +26,7 @@ def amd_packages():
     return (
         ('ngw-compulink-admin', 'nextgisweb_compulink:compulink_admin/amd/ngw-compulink-admin'),
         ('ngw-compulink-site', 'nextgisweb_compulink:compulink_site/amd/ngw-compulink-site'),
+        ('ngw-compulink-reporting', 'nextgisweb_compulink:compulink_reporting/amd/ngw-compulink-reporting'),
         ('ngw-compulink-libs', 'nextgisweb_compulink:compulink_site/static/js'),
         ('jquery', 'nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2')
     )

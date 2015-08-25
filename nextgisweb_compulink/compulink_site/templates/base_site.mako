@@ -65,7 +65,8 @@
         %else:
             isGuest: false,
             userName: '${request.user}',
-            logoutUrl: '${request.route_url('auth.logout')}'
+            logoutUrl: '${request.route_url('auth.logout')}',
+            reportUrl: '${request.route_url('compulink.reporting.status_grid')}'
         %endif
         }
     </script>
