@@ -9,21 +9,21 @@
         style="margin-bottom: 0px; overflow:auto">
 
          <div data-dojo-type="dojox/layout/TableContainer"
-              data-dojo-props="cols:2" style="width:50%;">
+              data-dojo-props="cols: 2, labelWidth: 150" style="width:50%">
             
             <div data-dojo-attach-point="regionSelect"
                  data-dojo-type="ngw-compulink-reporting/RegionSelect"
-                 title="Субъект РФ" style="width:100%;"></div>
+                 title="Субъект РФ" style="width:90%;"></div>
             <div data-dojo-attach-point="statusSelect"
                  data-dojo-type="ngw-compulink-reporting/StatusSelect"
                  title="Статус" style="width:100%;"></div>
             <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
                  data-dojo-attach-point="districtSelect"
-                 title="Регион" style="width:100%;"></div>
+                 title="Район" style="width:90%;"></div>
             <div data-dojo-type="dijit/form/CheckBox"
                  data-dojo-attach-point="onlyOverdue"
                  data-dojo-props="value: true"
-                 title="Просроченные"></div>
+                 title="Только просроченные"></div>
 
         </div>
 

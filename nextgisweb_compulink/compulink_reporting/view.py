@@ -45,6 +45,9 @@ def setup_pyramid(comp, config):
 
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/status_grid.mako')
 def status_grid(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     return dict(
         show_header=True,
         request=request

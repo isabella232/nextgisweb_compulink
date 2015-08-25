@@ -1,3 +1,24 @@
+.dijitTableLayout label { font-weight: bold; }
+
+.dgrid-header .dgrid-cell { text-align: center; }
+.dgrid-content .dgrid-cell.field-start_build_time,
+.dgrid-content .dgrid-cell.field-end_build_time,
+.dgrid-content .dgrid-cell.field-cabling_plan,
+.dgrid-content .dgrid-cell.field-cabling_fact,
+.dgrid-content .dgrid-cell.field-cabling_percent,
+.dgrid-content .dgrid-cell.field-fosc_plan,
+.dgrid-content .dgrid-cell.field-fosc_fact,
+.dgrid-content .dgrid-cell.field-fosc_percent,
+.dgrid-content .dgrid-cell.field-cross_plan,
+.dgrid-content .dgrid-cell.field-cross_fact,
+.dgrid-content .dgrid-cell.field-cross_percent,
+.dgrid-content .dgrid-cell.field-spec_trans_plan,
+.dgrid-content .dgrid-cell.field-spec_trans_fact,
+.dgrid-content .dgrid-cell.field-spec_trans_percent,
+.dgrid-content .dgrid-cell.field-ap_plan,
+.dgrid-content .dgrid-cell.field-ap_fact,
+.dgrid-content .dgrid-cell.field-ap_percent { text-align: center; }
+
 .field-focl_name { width: 14em; }
 .field-region { width: 14em; }
 .field-district { width: 14em; }
