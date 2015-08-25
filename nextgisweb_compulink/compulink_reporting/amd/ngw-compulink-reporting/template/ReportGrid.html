@@ -1,0 +1,36 @@
+<div data-dojo-type="${baseClass}">
+
+    <div data-dojo-attach-point="gridPane" data-dojo-type="dijit/layout/ContentPane"
+        data-dojo-props="region: 'center'" style="padding: 0;">
+    </div>
+
+    <div data-dojo-attach-point="toolbar" data-dojo-type="dijit/layout/ContentPane"
+        data-dojo-props="region: 'top'"
+        style="margin-bottom: 0px; overflow:auto">
+
+         <div data-dojo-type="dojox/layout/TableContainer"
+              data-dojo-props="cols:2" style="width:50%;">
+            
+            <div data-dojo-attach-point="regionSelect"
+                 data-dojo-type="ngw-compulink-reporting/RegionSelect"
+                 title="Субъект РФ" style="width:100%;"></div>
+            <div data-dojo-attach-point="statusSelect"
+                 data-dojo-type="ngw-compulink-reporting/StatusSelect"
+                 title="Статус" style="width:100%;"></div>
+            <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
+                 data-dojo-attach-point="districtSelect"
+                 title="Регион" style="width:100%;"></div>
+            <div data-dojo-type="dijit/form/CheckBox"
+                 data-dojo-attach-point="onlyOverdue"
+                 data-dojo-props="value: true"
+                 title="Просроченные"></div>
+
+        </div>
+
+        <button data-dojo-type="dijit/form/Button"
+                data-dojo-attach-point="buildReport"
+                type="button">Построить</button>
+
+    </div>
+
+</div>

@@ -2,12 +2,11 @@
 import json
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
-from pyramid.view import view_config
-
 
 from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport
+from nextgisweb.pyramidcomp import viewargs
 from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, FoclProject
@@ -15,11 +14,25 @@ from nextgisweb_compulink.compulink_admin.model import FoclStruct, FoclProject
 
 def setup_pyramid(comp, config):
     config.add_route(
+        'compulink.reporting.status_grid',
+        '/compulink/reporting/grid') \
+        .add_view(status_grid)
+
+    config.add_route(
         'compulink.reporting.get_status_report',
-        '/compulink/reporting/get_status_report').add_view(get_status_report)
+        '/compulink/reporting/get_status_report',
+        client = ()) \
+        .add_view(get_status_report)
 
 
-@view_config()
+@viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/status_grid.mako')
+def status_grid(request):
+    return dict(
+        show_header=True,
+        request=request
+    )
+
+
 def get_status_report(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
