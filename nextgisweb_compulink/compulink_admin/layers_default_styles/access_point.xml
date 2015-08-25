@@ -6,6 +6,7 @@
     <anchorpoint x="0.5" y="0.5" />
   </symbol>
   <layer>
+    <type>Point</type>
     <labelitem>name</labelitem>
     <class>
       <style>

@@ -1,6 +1,7 @@
 <map>
   <layer>
-    <class>
+   <type>Point</type>
+   <class>
       <style>
         <outlinecolor red="0" green="0" blue="0"/>
         <symbol>std:circle</symbol>

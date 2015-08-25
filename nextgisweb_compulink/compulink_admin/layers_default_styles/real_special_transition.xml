@@ -1,5 +1,6 @@
 <map>
   <layer>
+    <type>Line</type>
     <class>
       <style>
         <linecap>round</linecap>

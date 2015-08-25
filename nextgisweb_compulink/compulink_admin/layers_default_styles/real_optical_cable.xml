@@ -1,5 +1,6 @@
 <map>
   <layer>
+    <type>Line</type>
 
     <class>
       <expression>( '[laying_method]'='ground' )</expression>
@@ -7,16 +8,6 @@
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
         <color red="156" green="121" blue="0" />
-        <width>3.0</width>
-      </style>
-    </class>
-
-    <class>
-      <expression>( '[laying_method]'='air_link' )</expression>
-      <style>
-        <linecap>square</linecap>
-        <linejoin>bevel</linejoin>
-        <color red="90" green="219" blue="238" />
         <width>3.0</width>
       </style>
     </class>
@@ -42,22 +33,21 @@
     </class>
 
     <class>
-      <expression>( '[laying_method]'='sewer' )</expression>
-
-      <style>
-        <linecap>square</linecap>
-        <linejoin>bevel</linejoin>
-        <color red="118" green="0" blue="236" />
-        <width>3.0</width>
-      </style>
-    </class>
-
-    <class>
       <expression>( '[laying_method]'='building' )</expression>
       <style>
         <linecap>square</linecap>
         <linejoin>bevel</linejoin>
         <color red="29" green="66" blue="201" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='other' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="118" green="0" blue="236" />
         <width>3.0</width>
       </style>
     </class>

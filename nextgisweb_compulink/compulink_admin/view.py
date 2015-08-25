@@ -36,7 +36,7 @@ def setup_pyramid(comp, config):
 
 # TODO: NEED BIG REFACTORING!!!!
 
-def get_regions_from_resource():
+def get_regions_from_resource(as_dict=False):
 
     # get dictionary
     vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
@@ -53,6 +53,9 @@ def get_regions_from_resource():
     features = []
     for f in query():
         features.append({'name': f.fields[REGIONS_NAME_FIELD], 'id': f.fields[REGIONS_ID_FIELD]})
+
+    if as_dict:
+        return {feat['id']: feat['name'] for feat in features}
 
     return features
 
@@ -109,7 +112,7 @@ def get_region_id(reg_short_name):
     return feature.fields[REGIONS_ID_FIELD] if feature else None
 
 
-def get_districts_from_resource():
+def get_districts_from_resource(as_dict=False):
 
     vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
     if not vector_res:
@@ -129,6 +132,9 @@ def get_districts_from_resource():
             'id': f.fields[DISTRICT_ID_FIELD],
             'parent_id': f.fields[DISTRICT_PARENT_ID_FIELD]
         })
+
+    if as_dict:
+        return {feat['id']: feat['name'] for feat in features}
 
     return features
 
@@ -185,11 +191,15 @@ def get_district_id(distr_short_name, parent_id):
     return feature.fields[DISTRICT_ID_FIELD] if feature else None
 
 
-def get_project_statuses():
-    return [
-        {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
-        {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
-        {'name': 'Построено', 'id': PROJECT_STATUS_BUILT},
-        {'name': 'Сдано заказчику', 'id': PROJECT_STATUS_DELIVERED},
+def get_project_statuses(as_dict=False):
+    statuses = [
+            {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
+            {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
+            {'name': 'Построено', 'id': PROJECT_STATUS_BUILT},
+            {'name': 'Сдано заказчику', 'id': PROJECT_STATUS_DELIVERED},
     ]
-    return []
+
+    if as_dict:
+        return {status['id']: status['name'] for status in statuses}
+    else:
+        return statuses
