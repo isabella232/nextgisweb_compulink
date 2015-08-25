@@ -112,37 +112,37 @@ define([
                 },
                 {label: 'Прокладка ОК',
                     children: [
-                        {label: 'План, км', field: 'cabling_plan'},
-                        {label: 'Факт, км', field: 'cabling_fact'},
-                        {label: '%', field: 'cabling_percent'}
+                        {label: 'План, км', field: 'cabling_plan', name: 'cabling_plan'},
+                        {label: 'Факт, км', field: 'cabling_fact', name: 'cabling_fact'},
+                        {label: '%', field: 'cabling_percent', name: 'cabling_percent'}
                     ]
                 },
                 {label: 'Разварка муфт',
                     children: [
-                        {label: 'План, шт', field: 'fosc_plan'},
-                        {label: 'Факт, шт', field: 'fosc_fact'},
-                        {label: '%', field: 'fosc_percent'}
+                        {label: 'План, шт', field: 'fosc_plan', name: 'fosc_plan'},
+                        {label: 'Факт, шт', field: 'fosc_fact', name: 'fosc_fact'},
+                        {label: '%', field: 'fosc_percent', name: 'fosc_percent'}
                     ]
                 },
                 {label: 'Разварка кроссов',
                     children: [
-                        {label: 'План, шт', field: 'cross_plan'},
-                        {label: 'Факт, шт', field: 'cross_fact'},
-                        {label: '%', field: 'cross_percent'}
+                        {label: 'План, шт', field: 'cross_plan', name: 'cross_plan'},
+                        {label: 'Факт, шт', field: 'cross_fact', name: 'cross_fact'},
+                        {label: '%', field: 'cross_percent', name: 'cross_percent'}
                     ]
                 },
                 {label: 'Строительство ГНБ переходов',
                     children: [
-                        {label: 'План, шт', field: 'spec_trans_plan'},
-                        {label: 'Факт, шт', field: 'spec_trans_fact'},
-                        {label: '%', field: 'spec_trans_percent'}
+                        {label: 'План, шт', field: 'spec_trans_plan', name: 'spec_trans_plan'},
+                        {label: 'Факт, шт', field: 'spec_trans_fact', name: 'spec_trans_fact'},
+                        {label: '%', field: 'spec_trans_percent', name: 'spec_trans_percent'}
                     ]
                 },
                 {label: 'Монтаж точек доступа',
                     children: [
-                        {label: 'План, шт', field: 'ap_plan'},
-                        {label: 'Факт, шт', field: 'ap_fact'},
-                        {label: '%', field: 'ap_percent'}
+                        {label: 'План, шт', field: 'ap_plan', name: 'ap_plan'},
+                        {label: 'Факт, шт', field: 'ap_fact', name: 'ap_fact'},
+                        {label: '%', field: 'ap_percent', name: 'ap_percent'}
                     ]
                 }
             ];
