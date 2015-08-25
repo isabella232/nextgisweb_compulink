@@ -13,11 +13,14 @@ define([
     //grid
     "dgrid/Grid",
     "dgrid/Selection",
+    "dgrid/ColumnSet",
     "dgrid/extensions/DijitRegistry",
+    "dgrid/extensions/CompoundColumns",
     //settings
     "ngw/settings!compulink_admin",
     //style
     "ngw/dgrid/css",
+    "xstyle/css!./resource/ReportGrid.css",
     //template
     "dijit/form/CheckBox",
     "dijit/form/Button",
@@ -40,11 +43,14 @@ define([
     route,
     Grid,
     Selection,
+    ColumnSet,
     DijitRegistry,
+    CompoundColumns,
+    ColumnResizer,
     settings
 ) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, DijitRegistry], {});
+    var GridClass = declare([Grid, DijitRegistry, CompoundColumns], {});
     
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
@@ -92,11 +98,52 @@ define([
 
         initializeGrid: function() {
             var columns = [
-                {field: "focl_name", label: "Наименование ВОЛС"},
-                {field: "region", label: "Субъект РФ"},
-                {field: "district", label: "Муниципальный район"},
-                {field: "status", label: "Статус строительства"},
-                {field: "subcontr_name", label: "Подрядчик"}
+                {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name'},
+                {label: 'Субъект РФ', field: 'region', name: 'region'},
+                {label: 'Муниципальный район', field: 'district', name: 'district'},
+                {label: 'Статус', field: 'status', name: 'status'},
+                {label: 'Подрядчик', field: 'subcontr_name', name: 'subcontr_name'},
+                {label: 'Плановые сроки выполнения СМР',
+                    children: [
+                        {label: 'Начало', field: 'start_build_time', name: 'start_build_time'},
+                        {label: 'Окончание', field: 'end_build_time', name: 'end_build_time'}
+                    ]
+                },
+                {label: 'Прокладка ОК',
+                    children: [
+                        {label: 'План, км', field: 'cabling_plan'},
+                        {label: 'Факт, км', field: 'cabling_fact'},
+                        {label: '%', field: 'cabling_percent'}
+                    ]
+                },
+                {label: 'Разварка муфт',
+                    children: [
+                        {label: 'План, шт', field: 'fosc_plan'},
+                        {label: 'Факт, шт', field: 'fosc_fact'},
+                        {label: '%', field: 'fosc_percent'}
+                    ]
+                },
+                {label: 'Разварка кроссов',
+                    children: [
+                        {label: 'План, шт', field: 'cross_plan'},
+                        {label: 'Факт, шт', field: 'cross_fact'},
+                        {label: '%', field: 'cross_percent'}
+                    ]
+                },
+                {label: 'Строительство ГНБ переходов',
+                    children: [
+                        {label: 'План, шт', field: 'spec_trans_plan'},
+                        {label: 'Факт, шт', field: 'spec_trans_fact'},
+                        {label: '%', field: 'spec_trans_percent'}
+                    ]
+                },
+                {label: 'Монтаж точек доступа',
+                    children: [
+                        {label: 'План, шт', field: 'ap_plan'},
+                        {label: 'Факт, шт', field: 'ap_fact'},
+                        {label: '%', field: 'ap_percent'}
+                    ]
+                }
             ];
 
             this._grid = new GridClass({
