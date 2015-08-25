@@ -10,6 +10,8 @@ from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport
 from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
+from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
+    get_project_statuses
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, FoclProject
 
 
@@ -45,6 +47,11 @@ def get_status_report(request):
         allowed_res_ids = get_user_writable_focls(request.user)
         report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
 
+    #dicts
+    regions = get_regions_from_resource(as_dict=True)
+    districts = get_districts_from_resource(as_dict=True)
+    statuses = get_project_statuses(as_dict=True)
+
 
     json_report = []
     num_line = 1
@@ -62,9 +69,9 @@ def get_status_report(request):
         json_row = {
             'num_line':         num_line,
             'focl_name':        row.focl_name,
-            'region':           row.region,     #todo: from dict!
-            'district':         row.district,   #todo: from dict!
-            'status':           row.status,     #todo: from dict!
+            'region':           regions.get(row.region, row.region),
+            'district':         districts.get(row.district, row.district),
+            'status':           statuses.get(row.status, row.status),
             'subcontr_name':    row.subcontr_name,
             'start_build_time': row.start_build_time,
             'end_build_time':   row.end_build_time,
