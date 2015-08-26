@@ -51,13 +51,9 @@ def status_grid(request):
     all_regions = get_regions_from_resource()
     all_districts = get_districts_from_resource()
 
-    if not request.user.is_administrator:
-        acc_reg_id, acc_dist_id = get_user_accessible_structs(request.user)
-        regions = filter(lambda x: x['id'] in acc_reg_id, all_regions)
-        districts = filter(lambda x: x['id'] in acc_dist_id, all_districts)
-    else:
-        regions = all_regions
-        districts = all_districts
+    acc_reg_id, acc_dist_id = get_user_accessible_structs(request.user)
+    regions = filter(lambda x: x['id'] in acc_reg_id, all_regions)
+    districts = filter(lambda x: x['id'] in acc_dist_id, all_districts)
 
     return dict(
         show_header=True,
@@ -276,18 +272,21 @@ def get_user_writable_focls(user):
 
 
 def get_user_accessible_structs(user):
-    res_ids = get_user_writable_focls(user)
 
-    focls = DBSession.query(FoclStruct).filter(FoclStruct.id.in_(res_ids)).all()
+    query = DBSession.query(FoclStruct.region, FoclStruct.district)
+
+    if not user.is_administrator:
+        res_ids = get_user_writable_focls(user)
+        query = query.filter(FoclStruct.id.in_(res_ids))
 
     regions = []
     districts = []
 
-    for focl in focls:
-        if focl.region not in regions:
-            regions.append(focl.region)
-        if focl.district not in districts:
-            districts.append(focl.district)
+    for region, district in query.all():
+        if region not in regions:
+            regions.append(region)
+        if district not in districts:
+            districts.append(district)
 
     return regions, districts
 
