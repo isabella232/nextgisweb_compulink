@@ -19,7 +19,7 @@ from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
-from nextgisweb_compulink.compulink_admin.model import FoclProject
+from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -47,9 +47,23 @@ def status_grid(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
+    # prepare dicts
+    all_regions = get_regions_from_resource()
+    all_districts = get_districts_from_resource()
+
+    if not request.user.is_administrator:
+        acc_reg_id, acc_dist_id = get_user_accessible_structs(request.user)
+        regions = filter(lambda x: x['id'] in acc_reg_id, all_regions)
+        districts = filter(lambda x: x['id'] in acc_dist_id, all_districts)
+    else:
+        regions = all_regions
+        districts = all_districts
+
     return dict(
         show_header=True,
-        request=request
+        request=request,
+        regions=regions,
+        districts=districts
     )
 
 
@@ -259,4 +273,26 @@ def get_user_writable_focls(user):
         get_perms_recursive(rule.resource)
 
     return allowed_res_ids
+
+
+def get_user_accessible_structs(user):
+    res_ids = get_user_writable_focls(user)
+
+    focls = DBSession.query(FoclStruct).filter(FoclStruct.id.in_(res_ids)).all()
+
+    regions = []
+    districts = []
+
+    for focl in focls:
+        if focl.region not in regions:
+            regions.append(focl.region)
+        if focl.district not in districts:
+            districts.append(focl.district)
+
+    return regions, districts
+
+
+
+
+
 
