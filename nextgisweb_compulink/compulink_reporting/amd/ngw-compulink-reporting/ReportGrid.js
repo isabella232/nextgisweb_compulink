@@ -65,29 +65,31 @@ define([
         postCreate: function () {
             this.inherited(arguments);
 
-            var w = this;
+            var w = this,
+                rs = w.regionSelect, rss = rs.store,
+                ds = w.districtSelect, dss = ds.store;
+
+            rss.data.unshift({'id': '-', 'name': 'Все'});
+            dss.data.unshift({'id': '-', 'name': 'Все'});
+            rss.setData(rss.data);
+            dss.setData(dss.data);
 
             // Синхронизируем выпадающие списки субъектов и регионов
-            this.regionSelect.watch('value', function(attr, oldValue, newValue) {
+            ds.set('_store', lang.clone(dss));
+            rs.watch('value', function(attr, oldValue, newValue) {
                 if (newValue == '-') {
-                    w.districtSelect.set('disabled', true);
-                }
-                else {
-                    w.districtSelect.set('disabled', false);
-                    w.districtSelect.query.parent_id = newValue;
-                    w.districtSelect.set('value',
-                        w.districtSelect.store.getIdentity(
-                            w.districtSelect.store.query({
-                                'parent_id': newValue
-                            })[0]));
+                    ds.set('disabled', true);
+                } else {
+                    ds.set('disabled', false);
+                    var fdata = ds._store.query(function (d) {
+                        return ((d.parent_id == newValue) ||
+                                (d.id == '-'))});
+                    dss.setData(fdata);
+
+                    // Из списка районов выбираем первый элемент
+                    ds.set('value', dss.getIdentity(dss.data[0]));
                 }
             });
-
-            // По умолчанию из списка выбираем первый регион
-            this.regionSelect.set('value',
-                w.regionSelect.store.getIdentity(
-                    w.regionSelect.store.data[0]
-                ));
 
             // Обрабатываем нажатие кнопки
             this.buildReport.on('click', function() {
@@ -101,8 +103,8 @@ define([
                 }));
             });
 
-            this.regionSelect.store.data.unshift({'id': '-', 'name': 'Все'});
-            this.regionSelect.store.setData(this.regionSelect.store.data);
+            // Из списка регионов выбираем первый элемент
+            rs.set('value', rss.getIdentity(rss.data[0]));
         },
 
         initializeGrid: function() {
@@ -177,8 +179,11 @@ define([
 
             if (this.regionSelect.get('value') !== '-') {
                 value['region'] = this.regionSelect.get('value');
-                value['district'] = this.districtSelect.get('value');
+                if (this.districtSelect.get('value') !== '-') {
+                    value['district'] = this.districtSelect.get('value');
+                }
             }
+
             if (this.onlyOverdue.checked) {
                 value['only_overdue'] = true;
             }
