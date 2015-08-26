@@ -4,12 +4,11 @@ import tempfile
 from datetime import datetime
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Color, Style
-from openpyxl.styles.colors import RED
 from openpyxl.styles.fills import FILL_SOLID
+from openpyxl.styles.numbers import FORMAT_PERCENTAGE, NumberFormat
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
-from pyramid.view import view_config
 
 
 from nextgisweb import DBSession
@@ -137,6 +136,10 @@ def export_status_report(request):
             fill=PatternFill(patternType=FILL_SOLID, fgColor=Color(rgb='F46A6A'))
         )
         footer_style = ws.cell(row=3, column=1).style
+        footer_style_percent = Style(
+            font=footer_style.font,
+            number_format=NumberFormat.FORMAT_PERCENTAGE
+        )
 
         # get data
         report_query = construct_query(request)
@@ -194,7 +197,7 @@ def export_status_report(request):
             ws.cell('%s%s' % (pair[1], line_in_ws)).style = footer_style
 
             ws.cell('%s%s' % (pair[2], line_in_ws)).value = u'={0}{1}/{2}{1}'.format(pair[0], str(line_in_ws), pair[1])
-            ws.cell('%s%s' % (pair[2], line_in_ws)).style = footer_style
+            ws.cell('%s%s' % (pair[2], line_in_ws)).style = footer_style_percent
 
         wb.save(path.abspath(temp_file.name))  # save to temp
         response = FileResponse(
