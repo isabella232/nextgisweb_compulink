@@ -416,12 +416,12 @@ def export_focl_struct(request, export_type):
                 kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
                 _json_to_kml(json_path, kml_path)
                 # remove json
-                os.remove(json_path)
+                os.remove(json_path.encode('utf-8'))
             if export_type == 'csv':
                 csv_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'csv'))
                 _json_to_csv(json_path, csv_path)
                 # remove json
-                os.remove(json_path)
+                os.remove(json_path.encode('utf-8'))
 
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
