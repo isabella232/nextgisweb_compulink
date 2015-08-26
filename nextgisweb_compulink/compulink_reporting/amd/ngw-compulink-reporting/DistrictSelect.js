@@ -1,13 +1,11 @@
 define([
     "dojo/_base/declare",
     "dijit/form/FilteringSelect",
-    "dojo/store/Memory",
-    "ngw/settings!compulink_admin"
+    "dojo/store/Memory"
 ], function (
     declare,
     FilteringSelect,
-    Memory,
-    settings
+    Memory
 ) {
     return declare([FilteringSelect], {
 
@@ -15,7 +13,7 @@ define([
             this.inherited(arguments);
             this.idProperty = 'id';
             this.searchAttr = 'name';
-            this.store = new Memory({data: settings.districts_dict});
+            this.store = new Memory({data: params.districts});
         }
     });
 });

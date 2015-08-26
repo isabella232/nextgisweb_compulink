@@ -5,6 +5,9 @@
 </%def>
 
 <%def name="head()">
+
+    <% import json %>
+
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/icons.css')}"
           rel="stylesheet" type="text/css" media="screen"/>
 
@@ -25,6 +28,10 @@
                 parser.parse();
             });
         });
+
+        var rlist = ${regions   | json.dumps, n},
+            dlist = ${districts | json.dumps, n};
+
     </script>
 
     <style type="text/css">

@@ -13,11 +13,13 @@
             
             <div data-dojo-attach-point="regionSelect"
                  data-dojo-type="ngw-compulink-reporting/RegionSelect"
+                 data-dojo-props="regions: rlist"
                  title="Субъект РФ" style="width:90%;"></div>
             <div data-dojo-attach-point="statusSelect"
                  data-dojo-type="ngw-compulink-reporting/StatusSelect"
                  title="Статус" style="width:100%;"></div>
             <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
+                 data-dojo-props="districts: dlist"
                  data-dojo-attach-point="districtSelect"
                  title="Район" style="width:90%;"></div>
             <div data-dojo-type="dijit/form/CheckBox"
