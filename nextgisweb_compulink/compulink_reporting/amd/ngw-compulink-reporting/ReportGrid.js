@@ -69,12 +69,18 @@ define([
 
             // Синхронизируем выпадающие списки субъектов и регионов
             this.regionSelect.watch('value', function(attr, oldValue, newValue) {
-                w.districtSelect.query.parent_id = newValue;
-                w.districtSelect.set('value',
-                    w.districtSelect.store.getIdentity(
-                        w.districtSelect.store.query({
-                            'parent_id': newValue
-                        })[0]));
+                if (newValue == '-') {
+                    w.districtSelect.set('disabled', true);
+                }
+                else {
+                    w.districtSelect.set('disabled', false);
+                    w.districtSelect.query.parent_id = newValue;
+                    w.districtSelect.set('value',
+                        w.districtSelect.store.getIdentity(
+                            w.districtSelect.store.query({
+                                'parent_id': newValue
+                            })[0]));
+                }
             });
 
             // По умолчанию из списка выбираем первый регион
@@ -95,6 +101,8 @@ define([
                 }));
             });
 
+            this.regionSelect.store.data.unshift({'id': '-', 'name': 'Все'});
+            this.regionSelect.store.setData(this.regionSelect.store.data);
         },
 
         initializeGrid: function() {
@@ -163,10 +171,13 @@ define([
         },
 
         _getValueAttr: function() {
-            var value = {
-                'region': this.regionSelect.get('value'),
-                'district': this.districtSelect.get('value'),
-                'status': this.statusSelect.get('value')
+            var value = {};
+
+            value['status'] = this.statusSelect.get('value');
+
+            if (this.regionSelect.get('value') !== '-') {
+                value['region'] = this.regionSelect.get('value');
+                value['district'] = this.districtSelect.get('value');
             }
             if (this.onlyOverdue.checked) {
                 value['only_overdue'] = true;
