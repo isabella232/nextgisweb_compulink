@@ -18,8 +18,7 @@ define([
     "dgrid/ColumnSet",
     "dgrid/extensions/DijitRegistry",
     "dgrid/extensions/CompoundColumns",
-    //settings
-    "ngw/settings!compulink_admin",
+    "ngw-compulink-reporting/SummaryRow",
     //style
     "ngw/dgrid/css",
     "xstyle/css!./resource/ReportGrid.css",
@@ -51,11 +50,10 @@ define([
     ColumnSet,
     DijitRegistry,
     CompoundColumns,
-    ColumnResizer,
-    settings
+    SummaryRow
 ) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, DijitRegistry, CompoundColumns], {});
+    var GridClass = declare([Grid, DijitRegistry, CompoundColumns, SummaryRow], {});
     
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
@@ -104,6 +102,7 @@ define([
                 }).then(lang.hitch(this, function(data) {
                     w._grid.refresh();
                     w._grid.renderArray(data);
+                    w._grid.set('summary', w._getTotals(data));
                 }));
             });
 
@@ -189,6 +188,52 @@ define([
 
             this.gridPane.set("content", this._grid.domNode);
             this._grid.startup();
+        },
+
+        _getTotals: function(data) {
+            var totals = {
+                'cabling_plan': 0,
+                'cabling_fact': 0,
+                'fosc_plan': 0,
+                'fosc_fact': 0,
+                'cross_plan': 0,
+                'cross_fact': 0,
+                'spec_trans_plan': 0,
+                'spec_trans_fact': 0,
+                'ap_plan': null,
+                'ap_fact': 0
+            };
+
+            for (var i = data.length; i--;) {
+                for (var k in totals) {
+                    totals[k] += data[i][k];
+                }
+            }
+
+            totals['cabling_percent'] = null;
+            totals['fosc_percent'] = null;
+            totals['cross_percent'] = null;
+            totals['spec_trans_percent'] = null;
+            totals['ap_percent'] = null;
+
+            // Рассчитываем итоговые проценты как отношение факта к плану
+            if (totals['cabling_plan']) {
+                totals['cabling_percent'] = Math.round((totals['cabling_fact'] / totals['cabling_plan'])*100) + '%';
+            }
+            if (totals['fosc_plan']) {
+                totals['fosc_percent'] = Math.round((totals['fosc_fact'] / totals['fosc_plan'])*100) + '%';
+            }
+            if (totals['cross_plan']) {
+                totals['cross_percent'] = Math.round((totals['cross_fact'] / totals['cross_plan'])*100) + '%';
+            }
+            if (totals['spec_trans_plan']) {
+                totals['spec_trans_percent'] = Math.round((totals['spec_trans_fact'] / totals['spec_trans_plan'])*100) + '%';
+            }
+            if (totals['ap_plan']) {
+                totals['ap_percent'] = Math.round((totals['ap_fact'] / totals['ap_plan'])*100) + '%';
+            }
+            totals['cabling_plan'] = null;
+            return totals;
         },
 
         _getValueAttr: function() {

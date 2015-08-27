@@ -1,5 +1,8 @@
 .dijitTableLayout label { font-weight: bold; }
 
+.dgrid-row  { height: 40px; }
+.dgrid-cell { white-space: normal; }
+
 .dgrid-header .dgrid-cell { text-align: center; }
 .dgrid-content .dgrid-cell.field-start_build_time,
 .dgrid-content .dgrid-cell.field-end_build_time,
@@ -26,3 +29,15 @@
 .field-subcontr_name { width: 8em; }
 .field-start_build_time { width: 9em; }
 .field-end_build_time { width: 9em; }
+
+.summary-row {
+    font-weight: bold;
+    text-align: center;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.summary-row .dgrid-cell {
+    text-align: center;
+    border-color: #bbb !important;
+}
