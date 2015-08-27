@@ -1,6 +1,7 @@
 define([
     "dojo/_base/declare",
     "dojo/_base/lang",
+    "dojo/aspect",
     "dojo/request/xhr",
     "dojo/dom-style",
     "dojo/store/Memory",
@@ -33,6 +34,7 @@ define([
 ], function (
     declare,
     lang,
+    aspect,
     xhr,
     domStyle,
     Memory,
@@ -105,6 +107,14 @@ define([
 
             // Из списка регионов выбираем первый элемент
             rs.set('value', rss.getIdentity(rss.data[0]));
+
+            // Меняем цвет строки для просроченных объектов
+            aspect.after(w._grid, "renderRow", function(row, args) {
+                if (args[0]['is_overdue']) {
+                    domStyle.set(row, "background-color", "#ff6666");
+                }
+                return row;
+            });
         },
 
         initializeGrid: function() {
