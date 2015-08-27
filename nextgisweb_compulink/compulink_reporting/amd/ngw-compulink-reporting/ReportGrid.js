@@ -4,6 +4,7 @@ define([
     "dojo/aspect",
     "dojo/request/xhr",
     "dojo/dom-style",
+    "dojo/io-query",
     "dojo/store/Memory",
     "dojo/store/Observable",
     "dijit/layout/BorderContainer",
@@ -37,6 +38,7 @@ define([
     aspect,
     xhr,
     domStyle,
+    ioQuery,
     Memory,
     Observable,
     BorderContainer,
@@ -93,7 +95,7 @@ define([
                 }
             });
 
-            // Обрабатываем нажатие кнопки
+            // Обрабатываем нажатие кнопки 'Построить'
             this.buildReport.on('click', function() {
                 xhr(route.compulink.reporting.get_status_report(), {
                     method: 'GET',
@@ -103,6 +105,13 @@ define([
                     w._grid.refresh();
                     w._grid.renderArray(data);
                 }));
+            });
+
+            // Обрабатываем нажатие кнопки 'Выгрузить в Excel'
+            this.exportExcel.on('click', function() {
+                var url = route.compulink.reporting.export_status_report();
+                    queryStr = ioQuery.objectToQuery(w.get('value'));
+                window.open(url + '?' + queryStr, '_blank');
             });
 
             // Из списка регионов выбираем первый элемент
