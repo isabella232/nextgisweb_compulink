@@ -206,7 +206,7 @@ def export_status_report(request):
             ws.cell('%s%s' % (pair[1], line_in_ws)).value = u'=SUM({0}8:{0}{1})'.format(pair[1], str(line_in_ws-2))
             ws.cell('%s%s' % (pair[1], line_in_ws)).style = footer_style
 
-            ws.cell('%s%s' % (pair[2], line_in_ws)).value = u'={0}{1}/{2}{1}'.format(pair[0], str(line_in_ws), pair[1])
+            ws.cell('%s%s' % (pair[2], line_in_ws)).value = u'={0}{1}/{2}{1}'.format(pair[1], str(line_in_ws), pair[0])
             ws.cell('%s%s' % (pair[2], line_in_ws)).style = footer_style_percent
 
         wb.save(path.abspath(temp_file.name))  # save to temp
