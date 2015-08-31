@@ -156,14 +156,14 @@ class ConstructFoclLineReactor(AbstractReactor):
 
     @classmethod
     def write_segment(cls, layer, segment_points, cluster, info):
-        print 'Write segmet: %s' % str(segment_points)
+        #print 'Write segmet: %s' % str(segment_points)
         feature = Feature(fields=info, geom=MultiLineString([segment_points]))
         feature_id = layer.feature_create(feature)
 
 
     @classmethod
     def get_segment_info(cls, segment_points, cluster):
-        print 'Get segmet info: %s' % str(segment_points)
+        #print 'Get segmet info: %s' % str(segment_points)
 
         # get features by coord
         feature_points = []
@@ -178,7 +178,19 @@ class ConstructFoclLineReactor(AbstractReactor):
         for feat in feature_points:
             if feat.fields['laying_method'] and feat.fields['laying_method'] not in laying_methods:
                 laying_methods.append(feat.fields['laying_method'])
-        laying_method = laying_methods[0] if laying_methods else None  # TODO: Need rules!!!
+
+        if laying_methods:
+            order = ['transmission_towers', 'ground', 'canalization', 'building', 'other']
+
+            for selected_lay_met in order:
+                if selected_lay_met in laying_methods:
+                    laying_method = selected_lay_met
+                    break
+            # set first
+            if not laying_method:
+                laying_method = laying_methods[0]
+        else:
+            laying_method = None
 
         # get built_date
         built_date = feature_points[0].fields['built_date']
