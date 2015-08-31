@@ -98,7 +98,7 @@ class ConstructFoclLineReactor(AbstractReactor):
                 for feat in cluster:
                     geom_1 = feat.geom
                     geom_2 = new_feat.geom
-                    if geom_1.distance(geom_2) <= 550:  # TODO: need transform + elipsoid dist!
+                    if geom_1.distance(geom_2) <= 600:  # TODO: need transform + elipsoid dist!
                         cluster.append(new_feat)
                         return True
             return False
