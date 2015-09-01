@@ -329,6 +329,7 @@ def get_layers_by_type(request):
     if not group_res_ids or not layer_types:
         return Response("[]")
 
+    layer_types.sort(reverse=True)
     resp_list = []
 
     dbsession = DBSession()
@@ -363,6 +364,10 @@ def get_layers_by_type(request):
 def _get_layer_type_by_name(layers_types, name):
     for layer_type in layers_types:
         if name.startswith(layer_type):
+            if '_point' in layer_type and '_point' not in name:
+                continue
+            if '_point' not in layer_type and '_point' in name:
+                continue
             return layer_type
     return None
 
