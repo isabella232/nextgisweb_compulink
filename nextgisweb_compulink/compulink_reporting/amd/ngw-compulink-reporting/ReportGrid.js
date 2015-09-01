@@ -30,7 +30,8 @@ define([
     "ngw-compulink-reporting/RegionSelect",
     "ngw-compulink-reporting/DistrictSelect",
     "ngw-compulink-reporting/StatusSelect",
-    "ngw-compulink-site/DisplayHeader"
+    "ngw-compulink-site/DisplayHeader",
+    "dijit/Toolbar"
 ], function (
     declare,
     lang,

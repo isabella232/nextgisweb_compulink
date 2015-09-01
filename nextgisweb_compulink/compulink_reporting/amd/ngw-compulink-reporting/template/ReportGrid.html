@@ -1,5 +1,14 @@
 <div data-dojo-type="${baseClass}">
 
+    <div data-dojo-attach-point="mapToolbar2"
+         data-dojo-type="dijit/Toolbar"
+         data-dojo-props="region: 'top'">
+        <div data-dojo-id="displayHeader"
+             data-dojo-type="ngw-compulink-site/DisplayHeader"
+             data-dojo-props="">
+        </div>
+    </div>
+
     <div data-dojo-attach-point="gridPane" data-dojo-type="dijit/layout/ContentPane"
         data-dojo-props="region: 'center'" style="padding: 0;">
     </div>
@@ -10,7 +19,7 @@
 
          <div data-dojo-type="dojox/layout/TableContainer"
               data-dojo-props="cols: 2, labelWidth: 150" style="width:50%">
-            
+
             <div data-dojo-attach-point="regionSelect"
                  data-dojo-type="ngw-compulink-reporting/RegionSelect"
                  data-dojo-props="regions: rlist"
