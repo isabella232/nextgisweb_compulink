@@ -74,7 +74,8 @@ define([
 
             var w = this,
                 rs = w.regionSelect, rss = rs.store,
-                ds = w.districtSelect, dss = ds.store;
+                ds = w.districtSelect, dss = ds.store,
+                ss = w.statusSelect;
 
             rss.data.unshift({'id': '-', 'name': 'Все'});
             dss.data.unshift({'id': '-', 'name': 'Все'});
@@ -120,6 +121,9 @@ define([
 
             // Из списка регионов выбираем первый элемент
             rs.set('value', rss.getIdentity(rss.data[0]));
+
+            // Отмечаем все статусы
+            ss.set('value', ss.options);
 
             // Меняем цвет строки для просроченных объектов
             aspect.after(w._grid, "renderRow", function(row, args) {

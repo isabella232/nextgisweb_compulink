@@ -25,6 +25,7 @@ define([
             });
             this.dropDown = true;
             this.multiple = true;
+            this.sortByLabel = false;
             this.store = new ObjectStore({
                 objectStore: new Memory({data: options})
             });
