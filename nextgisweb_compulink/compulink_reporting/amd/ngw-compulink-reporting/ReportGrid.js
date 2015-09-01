@@ -7,6 +7,8 @@ define([
     "dojo/io-query",
     "dojo/store/Memory",
     "dojo/store/Observable",
+    "dojo/date/locale",
+    "dojo/date/stamp",
     "dijit/layout/BorderContainer",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
@@ -41,6 +43,8 @@ define([
     ioQuery,
     Memory,
     Observable,
+    locale,
+    stamp,
     BorderContainer,
     _TemplatedMixin,
     _WidgetsInTemplateMixin,
@@ -127,6 +131,17 @@ define([
         },
 
         initializeGrid: function() {
+            var getDate = function(prop, obj) {
+                if (obj[prop]) {
+                    return locale.format(stamp.fromISOString(obj[prop]), {
+                        selector: "date",
+                        datePattern: "dd.MM.yyyy"
+                    });
+                } else {
+                    return obj[prop];
+                }
+            };
+
             var columns = [
                 {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name'},
                 {label: 'Субъект РФ', field: 'region', name: 'region'},
@@ -135,8 +150,8 @@ define([
                 {label: 'Подрядчик', field: 'subcontr_name', name: 'subcontr_name'},
                 {label: 'Плановые сроки выполнения СМР',
                     children: [
-                        {label: 'Начало', field: 'start_build_time', name: 'start_build_time'},
-                        {label: 'Окончание', field: 'end_build_time', name: 'end_build_time'}
+                        {label: 'Начало', field: 'start_build_time', name: 'start_build_time', get: lang.partial(getDate, 'start_build_time')},
+                        {label: 'Окончание', field: 'end_build_time', name: 'end_build_time', get: lang.partial(getDate, 'end_build_time')}
                     ]
                 },
                 {label: 'Прокладка ОК',
