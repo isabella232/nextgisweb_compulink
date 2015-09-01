@@ -20,6 +20,7 @@ from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
 from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct
+from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -107,11 +108,9 @@ def get_status_report(request):
         json_report.append(json_row)
         num_line += 1
 
-    # footer
-    # todo?
 
     return Response(
-        json.dumps(json_report),
+        json.dumps(json_report, cls=DateTimeJSONEncoder),
         content_type=b'application/json')
 
 
