@@ -1,6 +1,6 @@
 .dijitTableLayout label { font-weight: bold; }
 
-.dgrid-row  { height: 40px; }
+.dgrid-row  { height: 3em; }
 .dgrid-cell { white-space: normal; }
 
 .dgrid-header .dgrid-cell { text-align: center; }
