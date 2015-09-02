@@ -9,7 +9,7 @@ from openpyxl.styles.numbers import FORMAT_PERCENTAGE, NumberFormat
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
-
+from sqlalchemy import func
 
 from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
@@ -262,6 +262,8 @@ def construct_query(request):
     if not request.user.is_administrator:
         allowed_res_ids = get_user_writable_focls(request.user)
         report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+
+    report_query = report_query.order_by(func.lower(ConstructionStatusReport.focl_name))
 
     return report_query
 
