@@ -20,6 +20,7 @@ from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
 from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct
+from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 
 CURR_PATH = path.dirname(path.abspath(__file__))
@@ -133,12 +134,42 @@ def export_status_report(request):
         ws = wb.active
 
         # write headers
-        ws.cell(row=3, column=3).value = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-        ws.cell(row=3, column=7).value = request.user.display_name
+        region_filter = request.params.get('region', None)
+        if region_filter:
+            region = get_region_name(region_filter)
+        else:
+            region = 'Все'
+
+        district_filter = request.params.get('district', None)
+        if district_filter:
+            district = get_district_name(district_filter)
+        else:
+            district = 'Все'
+
+        status_filter = request.params.getall('status')
+        if status_filter:
+            st_names = get_project_statuses(as_dict=True)
+
+            if len(set(st_names.keys()).difference(set(status_filter))) == 0:
+                statuses = 'Все'
+            else:
+                statuses = set(st_names[st] for st in status_filter)
+                statuses = ', '.join(statuses)
+        else:
+            statuses = 'Нет'
+
+        only_overdue = 'Да' if request.params.get('only_overdue', False) else 'Нет'
+
+        ws.cell(row=3, column=7).value = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+        ws.cell(row=4, column=7).value = request.user.display_name
+        ws.cell(row=3, column=3).value = region
+        ws.cell(row=4, column=3).value = district
+        ws.cell(row=5, column=3).value = statuses
+        ws.cell(row=6, column=3).value = only_overdue
 
         # set borders (bug in lib!)
-        border_style = ws.cell(row=6, column=7).style  # normal bordered cell :(
-        for header_row in ws.get_squared_range(1, 5, 23, 7):
+        border_style = ws.cell(row=9, column=7).style  # normal bordered cell :(
+        for header_row in ws.get_squared_range(1, 8, 23, 9):
             for header_cell in header_row:
                 header_cell.style = border_style
 
@@ -155,7 +186,7 @@ def export_status_report(request):
             font=red_font
         )
 
-        footer_style = ws.cell(row=3, column=1).style
+        footer_style = ws.cell(row=3, column=2).style
         footer_style_percent = Style(
             font=footer_style.font,
             number_format=NumberFormat.FORMAT_PERCENTAGE
@@ -170,7 +201,7 @@ def export_status_report(request):
         statuses = get_project_statuses(as_dict=True)
         num_line = 1
         for row in report_query.all():
-            line_in_ws = 7 + num_line
+            line_in_ws = 9 + num_line
 
             ws.cell(row=line_in_ws, column=1).value = num_line
             ws.cell(row=line_in_ws, column=2).value = row.focl_name
@@ -206,7 +237,7 @@ def export_status_report(request):
             num_line += 1
 
         # footer
-        line_in_ws = 7 + num_line
+        line_in_ws = 9 + num_line
         ws.merge_cells(start_row=line_in_ws, start_column=1, end_row=line_in_ws, end_column=6)
         ws.cell(row=line_in_ws, column=1).value = u'Итого'
         ws.cell(row=line_in_ws, column=1).style = footer_style
@@ -247,8 +278,8 @@ def construct_query(request):
         report_query = report_query.filter(ConstructionStatusReport.district==district_filter)
     if overdue_filter:
         report_query = report_query.filter(ConstructionStatusReport.is_overdue==True)
-    if status_filter:
-        report_query = report_query.filter(ConstructionStatusReport.status.in_(status_filter))
+
+    report_query = report_query.filter(ConstructionStatusReport.status.in_(status_filter))
 
     if not request.user.is_administrator:
         allowed_res_ids = get_user_writable_focls(request.user)
