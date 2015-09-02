@@ -254,7 +254,6 @@ define([
             if (totals['ap_plan']) {
                 totals['ap_percent'] = Math.round((totals['ap_fact'] / totals['ap_plan'])*100) + '%';
             }
-            totals['cabling_plan'] = null;
             return totals;
         },
 
