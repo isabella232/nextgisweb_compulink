@@ -199,6 +199,21 @@ def export_status_report(request):
         regions = get_regions_from_resource(as_dict=True)
         districts = get_districts_from_resource(as_dict=True)
         statuses = get_project_statuses(as_dict=True)
+
+        # totals
+        totals = {
+            9: 0,
+            10: 0,
+            12: 0,
+            13: 0,
+            15: 0,
+            16: 0,
+            18: 0,
+            19: 0,
+            21: 0,
+            22: 0,
+        }
+
         num_line = 1
         for row in report_query.all():
             line_in_ws = 9 + num_line
@@ -233,6 +248,11 @@ def export_status_report(request):
             if row.is_overdue:
                 ws.cell(row=line_in_ws, column=8).style = dt_overdue
 
+            # save totals
+            for key in totals.keys():
+                val = ws.cell(row=line_in_ws, column=key).value
+                if val:
+                    totals[key] += val
 
             num_line += 1
 
@@ -242,15 +262,21 @@ def export_status_report(request):
         ws.cell(row=line_in_ws, column=1).value = u'Итого'
         ws.cell(row=line_in_ws, column=1).style = footer_style
 
-        for pair in [('I', 'J', 'K'), ('L', 'M', 'N'), ('O', 'P', 'Q'), ('R', 'S', 'T'), ('U', 'V', 'W')]:
-            ws.cell('%s%s' % (pair[0], line_in_ws)).value = u'=SUM({0}8:{0}{1})'.format(pair[0], str(line_in_ws-2))
-            ws.cell('%s%s' % (pair[0], line_in_ws)).style = footer_style
+        for key in totals.keys():
+                val = totals[key]
+                if val:
+                    ws.cell(row=line_in_ws, column=key).value = val
+                    ws.cell(row=line_in_ws, column=key).style = footer_style
 
-            ws.cell('%s%s' % (pair[1], line_in_ws)).value = u'=SUM({0}8:{0}{1})'.format(pair[1], str(line_in_ws-2))
-            ws.cell('%s%s' % (pair[1], line_in_ws)).style = footer_style
-
-            ws.cell('%s%s' % (pair[2], line_in_ws)).value = u'={0}{1}/{2}{1}'.format(pair[1], str(line_in_ws), pair[0])
-            ws.cell('%s%s' % (pair[2], line_in_ws)).style = footer_style_percent
+        for key in [11, 14, 17, 20, 23]:
+            plan = ws.cell(row=line_in_ws, column=key-2).value
+            fact = ws.cell(row=line_in_ws, column=key-1).value
+            val = None
+            if plan and fact:
+                val = float(fact)/float(plan)
+            if val:
+                ws.cell(row=line_in_ws, column=key).value = val
+                ws.cell(row=line_in_ws, column=key).style = footer_style_percent
 
         wb.save(path.abspath(temp_file.name))  # save to temp
         response = FileResponse(
