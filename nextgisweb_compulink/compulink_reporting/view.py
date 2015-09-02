@@ -56,6 +56,9 @@ def status_grid(request):
     regions = filter(lambda x: x['id'] in acc_reg_id, all_regions)
     districts = filter(lambda x: x['id'] in acc_dist_id, all_districts)
 
+    regions.sort(key=lambda x: x['name'].lower())
+    districts.sort(key=lambda x: x['name'].lower())
+
     return dict(
         show_header=True,
         request=request,
