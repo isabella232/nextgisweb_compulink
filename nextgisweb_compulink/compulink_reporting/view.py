@@ -226,7 +226,7 @@ def export_status_report(request):
             ws.cell(row=line_in_ws, column=6).value = row.subcontr_name
             ws.cell(row=line_in_ws, column=7).value = row.start_build_time
             ws.cell(row=line_in_ws, column=8).value = row.end_build_time
-            ws.cell(row=line_in_ws, column=9).value = row.cabling_plan / 1000 if row.cabling_plan else None
+            ws.cell(row=line_in_ws, column=9).value = row.cabling_plan if row.cabling_plan else None
             ws.cell(row=line_in_ws, column=10).value = row.cabling_fact / 1000 if row.cabling_fact else None
             ws.cell(row=line_in_ws, column=11).value = row.cabling_percent
             ws.cell(row=line_in_ws, column=12).value = row.fosc_plan
