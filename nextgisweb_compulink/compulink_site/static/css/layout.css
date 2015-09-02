@@ -1,3 +1,20 @@
+#headerContainer {
+    display: table;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+#headerContainer .header {
+    display: table-cell;
+    vertical-align: middle;
+    background-color: #2D3E50;
+}
+
+div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
+    border: none;
+}
+
 /* resources type drop down styles */
 
 #resourcesTypeSelector {
@@ -256,15 +273,15 @@ div.ngwPopup {
 }
 
 #identifyStatus.active.error span.loader,
-#identifyStatus.active.error span.text{
+#identifyStatus.active.error span.text {
     display: none;
 }
 
-#identifyStatus span.text-error{
+#identifyStatus span.text-error {
     display: none;
     color: indianred;
 }
 
-#identifyStatus.active.error span.text-error{
+#identifyStatus.active.error span.text-error {
     display: inline-block;
 }
