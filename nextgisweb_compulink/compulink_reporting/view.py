@@ -92,7 +92,7 @@ def get_status_report(request):
             'subcontr_name':    row.subcontr_name,
             'start_build_time': row.start_build_time,
             'end_build_time':   row.end_build_time,
-            'cabling_plan':     row.cabling_plan / 1000 if row.cabling_plan else None,  # in km
+            'cabling_plan':     row.cabling_plan if row.cabling_plan else None,  # already in km
             'cabling_fact':     row.cabling_fact / 1000 if row.cabling_fact else None,  # in km
             'cabling_percent':  row.cabling_percent,
             'fosc_plan':        row.fosc_plan,
