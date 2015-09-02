@@ -4,6 +4,7 @@ define([
     "dojo/aspect",
     "dojo/request/xhr",
     "dojo/dom-style",
+    "dojo/query",
     "dojo/io-query",
     "dojo/store/Memory",
     "dojo/store/Observable",
@@ -40,6 +41,7 @@ define([
     aspect,
     xhr,
     domStyle,
+    query,
     ioQuery,
     Memory,
     Observable,
@@ -128,7 +130,7 @@ define([
             // Меняем цвет строки для просроченных объектов
             aspect.after(w._grid, "renderRow", function(row, args) {
                 if (args[0]['is_overdue']) {
-                    domStyle.set(row, "background-color", "#ff6666");
+                    domStyle.set(query(".field-end_build_time", row)[0], "color", "#ff6666");
                 }
                 return row;
             });
