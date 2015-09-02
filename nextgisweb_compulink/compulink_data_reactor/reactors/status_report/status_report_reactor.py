@@ -153,7 +153,7 @@ class StatusReportReactor(AbstractReactor):
 
     @classmethod
     def get_layer_by_type(cls, focl_struct, lyr_type):
-        lyrs = [lyr for lyr in focl_struct.children if lyr.keyname and lyr.keyname.startswith(lyr_type)]
+        lyrs = [lyr for lyr in focl_struct.children if lyr.keyname and '_'.join(lyr.keyname.rsplit('_')[:-1]) == lyr_type]
         lyr = lyrs[0] if len(lyrs) else None
         return lyr
 
