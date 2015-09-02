@@ -45,29 +45,29 @@
         };
 
         var headerData = {
-        <% settings = request.env.pyramid.settings %>
-        %if 'logo' in settings and os.path.isfile(settings['logo']):
-            srcLogo: '${request.route_url('pyramid.logo')}',
-        %else:
-            srcLogo: '${request.static_url('nextgisweb_compulink:compulink_site/static/img/cl_logo.png')}',
-        %endif
+            <% settings = request.env.pyramid.settings %>
+            %if 'logo' in settings and os.path.isfile(settings['logo']):
+                srcLogo: '${request.route_url('pyramid.logo')}',
+            %else:
+                srcLogo: '${request.static_url('nextgisweb_compulink:compulink_site/static/img/cl_logo.png')}',
+            %endif
             appUrl: '${request.application_url}',
             fullName: '${request.env.core.settings['system.full_name']}',
-        %if request.route_url('resource.root'):
-            isAdm: true,
-            rootPan: '${request.route_url('resource.root')}',
-        %else:
-            isAdm: false,
-        %endif
-        %if request.user.keyname == 'guest':
-            loginUrl: '${request.route_url('auth.login')}',
-            isGuest: true
-        %else:
-            isGuest: false,
-            userName: '${request.user}',
-            logoutUrl: '${request.route_url('auth.logout')}',
-            reportUrl: '${request.route_url('compulink.reporting.status_grid')}'
-        %endif
+            %if request.route_url('resource.root'):
+                isAdm: true,
+                rootPan: '${request.route_url('resource.root')}',
+            %else:
+                isAdm: false,
+            %endif
+            %if request.user.keyname == 'guest':
+                loginUrl: '${request.route_url('auth.login')}',
+                isGuest: true
+            %else:
+                isGuest: false,
+                userName: '${request.user}',
+                logoutUrl: '${request.route_url('auth.logout')}',
+                reportUrl: '${request.route_url('compulink.reporting.status_grid')}'
+            %endif
         }
     </script>
 
@@ -85,15 +85,7 @@
 <body class="claro">
 
     %if show_header==True:
-        <div id="page_pane" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters: false"
-             style="width: 100%; height: 100%;">
-
-            <div id="content_pane" data-dojo-type="dijit/layout/ContentPane"
-                 data-dojo-props="region: 'center', gutters: false"
-                 style="width: 100%; height: 100%; padding: 0; margin: 0">
-                ${next.body()}
-            </div>
-        </div>
+        ${next.body()}
     %else:
         ${next.body()}
     %endif
