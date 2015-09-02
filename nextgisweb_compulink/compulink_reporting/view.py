@@ -206,7 +206,7 @@ def export_status_report(request):
             num_line += 1
 
         # footer
-        line_in_ws = 7 + num_line + 1
+        line_in_ws = 7 + num_line
         ws.merge_cells(start_row=line_in_ws, start_column=1, end_row=line_in_ws, end_column=6)
         ws.cell(row=line_in_ws, column=1).value = u'Итого'
         ws.cell(row=line_in_ws, column=1).style = footer_style
