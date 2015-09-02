@@ -3,7 +3,7 @@ import json
 import tempfile
 from datetime import datetime
 from openpyxl import load_workbook
-from openpyxl.styles import PatternFill, Color, Style
+from openpyxl.styles import PatternFill, Color, Style, Font
 from openpyxl.styles.fills import FILL_SOLID
 from openpyxl.styles.numbers import FORMAT_PERCENTAGE, NumberFormat
 from os import path
@@ -143,10 +143,7 @@ def export_status_report(request):
                 header_cell.style = border_style
 
         # styles
-        overdue_fill = Style(
-            font=border_style.font,
-            fill=PatternFill(patternType=FILL_SOLID, fgColor=Color(rgb='F46A6A'))
-        )
+        red_font = border_style.font.copy(color='F46A6A')
 
         dt_style = Style(
             number_format='DD.MM.YYYY',
@@ -155,8 +152,7 @@ def export_status_report(request):
 
         dt_overdue = Style(
             number_format='DD.MM.YYYY',
-            font=border_style.font,
-            fill=PatternFill(patternType=FILL_SOLID, fgColor=Color(rgb='F46A6A'))
+            font=red_font
         )
 
         footer_style = ws.cell(row=3, column=1).style
@@ -204,11 +200,6 @@ def export_status_report(request):
             ws.cell(row=line_in_ws, column=8).style = dt_style
 
             if row.is_overdue:
-                for header_row in ws.get_squared_range(1, line_in_ws, 23, line_in_ws):
-                    for header_cell in header_row:
-                        header_cell.style = overdue_fill
-                # special format fo DT
-                ws.cell(row=line_in_ws, column=7).style = dt_overdue
                 ws.cell(row=line_in_ws, column=8).style = dt_overdue
 
 
