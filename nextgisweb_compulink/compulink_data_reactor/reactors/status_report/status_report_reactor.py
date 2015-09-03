@@ -22,11 +22,12 @@ class StatusReportReactor(AbstractReactor):
 
     @classmethod
     def run(cls, env):
-        LogEntry.info('StatusReportReactor started!', component=COMP_ID, group=StatusReportReactor.identity)
 
         ngw_session = NgwSession()
         ms_session = MsSqlSession()
         transaction.manager.begin()
+
+        LogEntry.info('StatusReportReactor started!', component=COMP_ID, group=StatusReportReactor.identity, append_dt=datetime.now())
 
         # clear all data from table
         ngw_session.query(ConstructionStatusReport).delete()
@@ -147,9 +148,9 @@ class StatusReportReactor(AbstractReactor):
             report_line.persist()
             ngw_session.flush()
 
-        transaction.manager.commit()
+        LogEntry.info('StatusReportReactor finished!', component=COMP_ID, group=StatusReportReactor.identity, append_dt=datetime.now())
 
-        LogEntry.info('StatusReportReactor finished!', component=COMP_ID, group=StatusReportReactor.identity)
+        transaction.manager.commit()
 
     @classmethod
     def get_layer_by_type(cls, focl_struct, lyr_type):
@@ -199,7 +200,7 @@ class StatusReportReactor(AbstractReactor):
     @classmethod
     def get_feat_length(cls, layer):
         query = layer.feature_query()
-        query.geom()
+        query.geom_length()
         result = query()
 
         if result.total_count < 1:
@@ -207,9 +208,8 @@ class StatusReportReactor(AbstractReactor):
         else:
             total_length = 0
             for feat in result:
-                geom = feat.geom
-                total_length += geom.length  # TODO: need transform + elipsoid len!
-            return total_length
+                total_length += feat.calculations['geom_len']
+            return round(total_length, 3)
 
 
     @classmethod
