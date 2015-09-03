@@ -93,7 +93,7 @@ def get_status_report(request):
             'start_build_time': row.start_build_time,
             'end_build_time':   row.end_build_time,
             'cabling_plan':     row.cabling_plan if row.cabling_plan else None,  # already in km
-            'cabling_fact':     row.cabling_fact / 1000 if row.cabling_fact else None,  # in km
+            'cabling_fact':     row.cabling_fact if row.cabling_fact else None,  # already in km
             'cabling_percent':  row.cabling_percent,
             'fosc_plan':        row.fosc_plan,
             'fosc_fact':        row.fosc_fact,
@@ -227,7 +227,7 @@ def export_status_report(request):
             ws.cell(row=line_in_ws, column=7).value = row.start_build_time
             ws.cell(row=line_in_ws, column=8).value = row.end_build_time
             ws.cell(row=line_in_ws, column=9).value = row.cabling_plan if row.cabling_plan else None
-            ws.cell(row=line_in_ws, column=10).value = row.cabling_fact / 1000 if row.cabling_fact else None
+            ws.cell(row=line_in_ws, column=10).value = row.cabling_fact if row.cabling_fact else None
             ws.cell(row=line_in_ws, column=11).value = row.cabling_percent
             ws.cell(row=line_in_ws, column=12).value = row.fosc_plan
             ws.cell(row=line_in_ws, column=13).value = row.fosc_fact

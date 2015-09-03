@@ -84,7 +84,7 @@ class StatusReportReactor(AbstractReactor):
             # --- get fact
             fact_lyr = cls.get_layer_by_type(fs, 'real_optical_cable')
             if fact_lyr:
-                fact_len = cls.get_feat_length(fact_lyr)
+                fact_len = round(cls.get_feat_length(fact_lyr)/1000, 3)  # in km
             else:
                 fact_len = None
             report_line.cabling_fact = fact_len
@@ -209,7 +209,7 @@ class StatusReportReactor(AbstractReactor):
             total_length = 0
             for feat in result:
                 total_length += feat.calculations['geom_len']
-            return round(total_length, 3)
+            return total_length
 
 
     @classmethod
