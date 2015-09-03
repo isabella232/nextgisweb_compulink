@@ -1,3 +1,4 @@
+from datetime import datetime
 from nextgisweb import DBSession
 
 import numpy as np
@@ -21,10 +22,15 @@ class ConstructFoclLineReactor(AbstractReactor):
 
     @classmethod
     def run(cls, env):
-        LogEntry.info('ConstructFoclLineReactor started!', component=COMP_ID, group=ConstructFoclLineReactor.identity)
+
+        log_info = lambda x: LogEntry.info(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now())
+        log_debug = lambda x: LogEntry.debug(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now())
+        log_warning = lambda x: LogEntry.warning(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now())
 
         db_session = DBSession()
         transaction.manager.begin()
+
+        log_info('ConstructFoclLineReactor started!')
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
@@ -41,9 +47,9 @@ class ConstructFoclLineReactor(AbstractReactor):
             result = query()
 
             if result.total_count > 0:
-                LogEntry.debug('Construct line for %s started!' % fs.display_name, component=COMP_ID, group=ConstructFoclLineReactor.identity)
+                log_debug('Construct line for %s started!' % fs.display_name)
             else:
-                LogEntry.debug('Construct line for %s skeeped (no points)!' % fs.display_name, component=COMP_ID, group=ConstructFoclLineReactor.identity)
+                log_debug('Construct line for %s skeeped (no points)!' % fs.display_name)
                 continue
 
             features = [feature for feature in result]
@@ -57,7 +63,7 @@ class ConstructFoclLineReactor(AbstractReactor):
             #merge points in clusters
             for cluster in clusters:
                 if len(cluster) < 2:
-                    LogEntry.warning('Line %s has unclustered point!' % fs.display_name, component=COMP_ID, group=ConstructFoclLineReactor.identity)
+                    log_warning('Line %s has unclustered point!')
                     continue
                 if len(cluster) == 2:
                     # construct segment
@@ -75,9 +81,9 @@ class ConstructFoclLineReactor(AbstractReactor):
 
             db_session.flush()
 
+        log_info('ConstructFoclLineReactor finished!')
 
         transaction.manager.commit()
-        LogEntry.info('ConstructFoclLineReactor finished!', component=COMP_ID, group=ConstructFoclLineReactor.identity)
 
 
 
