@@ -3,6 +3,7 @@ define([
     "dojox/form/CheckedMultiSelect",
     "dojo/data/ObjectStore",
     "dojo/store/Memory",
+    "dojo/_base/lang",
     "dojo/_base/array",
     "ngw/settings!compulink_admin",
     "xstyle/css!dojox/form/resources/CheckedMultiSelect.css"
@@ -11,6 +12,7 @@ define([
     CheckedMultiSelect,
     ObjectStore,
     Memory,
+    lang,
     array,
     settings
 ) {
@@ -26,9 +28,46 @@ define([
             this.dropDown = true;
             this.multiple = true;
             this.sortByLabel = false;
+
+            options.unshift({'id': '-', label: 'Все'});
             this.store = new ObjectStore({
                 objectStore: new Memory({data: options})
             });
+        },
+
+        updateAll: function(state){
+            if(this.multiple){
+                array.forEach(this.options, function(i){
+                    i.selected = state;
+                });
+                this._updateSelection();
+            }
+        },
+
+        _updateSelection: function() {
+            this.inherited(arguments);
+            if(this.dropDown && this.dropDownButton){
+                var i = 0, label = "";
+                array.forEach(this.options, function(option){
+                    if(option.selected && option['label'] !== 'Все'){
+                        i++;
+                        label = option.label;
+                    }
+                });
+                this.dropDownButton.set("label", this.multiple ?
+                    lang.replace(this._nlsResources.multiSelectLabelText, {num: i}) :
+                    label);
+            }
+        },
+
+        startup: function() {
+            this.inherited(arguments);
+
+            var w = this;
+            var allOption = this.dropDownMenu.getChildren()[0];
+            allOption['onChange'] = function(state){
+                w.updateAll(state);
+            };
         }
     });
 });

@@ -5,6 +5,7 @@ define([
     "dojo/request/xhr",
     "dojo/dom-style",
     "dojo/query",
+    "dojo/_base/array",
     "dojo/io-query",
     "dojo/store/Memory",
     "dojo/store/Observable",
@@ -42,6 +43,7 @@ define([
     xhr,
     domStyle,
     query,
+    array,
     ioQuery,
     Memory,
     Observable,
@@ -100,6 +102,10 @@ define([
                     ds.set('value', dss.getIdentity(dss.data[0]));
                 }
             });
+
+            // Статусы
+            a = ss;
+
 
             // Обрабатываем нажатие кнопки 'Построить'
             this.buildReport.on('click', function() {
@@ -260,7 +266,9 @@ define([
         _getValueAttr: function() {
             var value = {};
 
-            value['status'] = this.statusSelect.get('value');
+            value['status'] = array.filter(
+                this.statusSelect.get('value'),
+                function(status) { return status !== '-'});
 
             if (this.regionSelect.get('value') !== '-') {
                 value['region'] = this.regionSelect.get('value');
