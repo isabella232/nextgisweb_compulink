@@ -63,11 +63,17 @@ define([
         startup: function() {
             this.inherited(arguments);
 
-            var w = this;
-            var allOption = this.dropDownMenu.getChildren()[0];
-            allOption['onChange'] = function(state){
-                w.updateAll(state);
-            };
+            var w = this, clbck;
+            array.forEach(this.dropDownMenu.getChildren(), function(child, idx) {
+                if (idx == 0) {
+                    clbck = function(state) { w.updateAll(state); }
+                } else {
+                    clbck = function(state) {
+                        if (!state) { w.options[0].selected = state; }
+                    }
+                }
+                child.onChange = clbck;
+            });
         }
     });
 });
