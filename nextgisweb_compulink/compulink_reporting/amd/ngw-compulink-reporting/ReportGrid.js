@@ -103,10 +103,6 @@ define([
                 }
             });
 
-            // Статусы
-            a = ss;
-
-
             // Обрабатываем нажатие кнопки 'Построить'
             this.buildReport.on('click', function() {
                 xhr(route.compulink.reporting.get_status_report(), {
