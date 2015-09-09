@@ -22,9 +22,12 @@ class CompulinkMssqlBridgeComponent(Component):
 
     def setup_pyramid(self, config):
 
-        conn_str = self._settings.get('conn_str', 'no')
+        enabled_sett = self._settings.get('enable', 'false').lower()
+        self.enabled = enabled_sett in ('true', 'yes', '1')
 
-        CompulinkMssqlBridgeComponent.configure_db_conn(conn_str)
+        if self.enabled:
+            conn_str = self._settings.get('conn_str', 'no')
+            CompulinkMssqlBridgeComponent.configure_db_conn(conn_str)
 
         self.DBSession = DBSession
         self.Base = Base
