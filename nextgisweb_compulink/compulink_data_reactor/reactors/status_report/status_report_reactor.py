@@ -37,7 +37,8 @@ class StatusReportReactor(AbstractReactor):
         now_dt = date.today()
 
         # get mssql info
-        mssql_enable = env.compulink_mssql_bridge.settings.get('enable', False)
+        enabled_sett = env.compulink_mssql_bridge.settings.get('enable', 'false').lower()
+        mssql_enable = enabled_sett in ('true', 'yes', '1')
 
         ms_info = dict()
         if mssql_enable:
