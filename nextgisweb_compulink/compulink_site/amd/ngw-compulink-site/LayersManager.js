@@ -9,10 +9,11 @@ define([
     'dijit/registry'
 ], function (declare, lang, array, topic, Deferred, xhr, on, registry) {
     return declare([], {
-        constructor: function (ResourcesTree, LayersSelector, Display) {
+        constructor: function (ResourcesTree, LayersSelector, Display, layerInOne) {
             this.ResourcesTree = ResourcesTree;
             this.LayersSelector = LayersSelector;
             this.Display = Display;
+            this.layerInOne = typeof layerInOne != 'undefined' ? layerInOne : true;
 
             this.LayerTypes = {
                 focl_struct: [],
