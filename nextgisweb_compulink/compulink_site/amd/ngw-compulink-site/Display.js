@@ -935,6 +935,29 @@ define([
             return lyr;
         },
 
+        appendLayersToMapInOne: function (resourcesIds, resourceType, layerType) {
+            var data,
+                adapt = new Adapter({}),
+                lyr;
+
+            resourcesIds = resourcesIds.join(',');
+
+            data = {
+                "resource": resourcesIds,
+                "visibility": true,
+                "name": resourcesIds
+            };
+
+            lyr = adapt.createLayer(data);
+
+            lyr.res_type = resourceType;
+            lyr.layer_type = layerType;
+
+            this.map.addLayer(lyr);
+
+            return lyr;
+        },
+
         removeLayerFromMap: function (layer) {
             this.map.removeLayer(layer);
         }
