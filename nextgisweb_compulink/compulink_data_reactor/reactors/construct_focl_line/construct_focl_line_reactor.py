@@ -10,8 +10,14 @@ from nextgisweb_compulink.compulink_data_reactor import COMP_ID
 from nextgisweb.feature_layer import Feature
 from nextgisweb.vector_layer import TableInfo
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
-from .connector import SOM1d
 from nextgisweb_log.model import LogEntry
+
+try:
+    from .rconnector import RSOM1d as SOM1d
+except:
+    from .connector import SOM1d
+
+from .rconnector import RSOM1d as SOM1d
 
 __author__ = 'yellow'
 
