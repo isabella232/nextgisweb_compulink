@@ -25,10 +25,7 @@ define([
                 situation_plan: []
             };
 
-            this.LayersByTypes = {
-                focl_struct: {},
-                situation_plan: {}
-            };
+            this.LayersByTypes = {};
 
             this.LayersByResources = {
                 focl_struct: {},
@@ -44,7 +41,10 @@ define([
             array.forEach(this.Display.config.focl_layers_type, function (layerConfig) {
                 if (layerConfig.children && layerConfig.children.length > 0) {
                     array.forEach(layerConfig.children, function (layerConfigChild) {
-                        this.LayersOrder.focl_struct[layerConfigChild.id] = {order: layerConfigChild.order, zIndexes: []};
+                        this.LayersOrder.focl_struct[layerConfigChild.id] = {
+                            order: layerConfigChild.order,
+                            zIndexes: []
+                        };
                     }, this);
                 }
             }, this);
@@ -59,46 +59,35 @@ define([
                     layersStackChanged = false;
 
                 for (i = 0, l = inserted.length; i < l; i++) {
-                    this.LayerTypes[resourceType].push(inserted[i]);
                     types.push(inserted[i]);
                 }
 
                 if (l > 0) {
                     resources = this.Resources.focl_struct.concat(this.Resources.situation_plan);
                     if (resources.length > 0) {
-
                         var resources_prepared = array.map(resources, function (resourceId) {
                             return resourceId.replace('res_', '');
                         });
 
-                        this.getLayers(resources_prepared, types).then(lang.hitch(this, function (layers) {
-                            this.addLayers(layers);
-                        }));
+                        for (var typesInsertedCount = types.length, typeIndex = 0; typeIndex < typesInsertedCount; typeIndex++) {
+                            var layerType = types[typeIndex];
+                            this.getLayers(resources_prepared, layerType).then(lang.hitch(this, function (layers) {
+                                this.rebuildLayers(layers);
+                            }));
+                        }
                     }
                 }
 
                 for (i = 0, l = deleted.length; i < l; i++) {
-                    var index = this.LayerTypes[resourceType].indexOf(deleted[i]);
-                    if (index > -1) {
-                        this.LayerTypes[resourceType].splice(index, 1);
-                    }
-
-                    var layersByTypes = this.LayersByTypes[resourceType][deleted[i]];
-
-                    for (var vector_id in layersByTypes) {
-                        layersStackChanged = true;
-                        var layer = this.Layers[vector_id];
-
-                        delete this.LayersByResources[resourceType][layer._res_id][vector_id];
-                        delete this.Layers[vector_id];
-
+                    if (this.LayersByTypes[deleted[i]]) {
+                        var layer = this.LayersByTypes[deleted[i]];
                         Display.removeLayerFromMap(layer);
-                        this.removeZIndex(layer);
+                        //this.removeZIndex(layer);
+                        delete this.LayersByTypes[deleted[i]];
+                        layersStackChanged = true;
                     }
-
-                    this.LayersByTypes[resourceType][deleted[i]] = {};
-                    if (layersStackChanged) this._applyZIndexes();
                 }
+                //if (layersStackChanged) this._applyZIndexes();
             }));
 
             topic.subscribe('resources/changed', lang.hitch(this, function (bottom_selected, inserted, deleted) {
@@ -114,15 +103,7 @@ define([
                         this.Resources[node.original.res_type].push(inserted[i]);
                         resources.push(inserted[i].replace('res_', ''));
                     }
-                }
-
-                if (l > 0) {
-                    types = this.LayersSelector.getLayersTypesSelected();
-                    if (types.length > 0) {
-                        this.getLayers(resources, types).then(lang.hitch(this, function (layers) {
-                            this.addLayers(layers);
-                        }));
-                    }
+                    if (!layersStackChanged) layersStackChanged = true;
                 }
 
                 for (i = 0, l = deleted.length; i < l; i++) {
@@ -134,21 +115,27 @@ define([
                     if (index > -1) {
                         this.Resources[res_type].splice(index, 1);
                     }
+                    if (!layersStackChanged) layersStackChanged = true;
+                }
 
-                    layersByResources = this.LayersByResources[res_type][resId.replace('res_', '')];
-
-                    for (var vector_id in layersByResources) {
-                        layer = this.Layers[vector_id];
-
-                        delete this.Layers[vector_id];
-                        delete this.LayersByTypes[res_type][layer._layer_type][vector_id];
-
-                        Display.removeLayerFromMap(layer);
-                        this.removeZIndex(layer);
-                        layersStackChanged = true;
+                if (layersStackChanged) {
+                    types = this.LayersSelector.getLayersTypesSelected();
+                    resources = this.Resources.focl_struct.concat(this.Resources.situation_plan);
+                    if (resources.length > 0) {
+                        var resources_prepared = array.map(resources, function (resourceId) {
+                            return resourceId.replace('res_', '');
+                        });
+                        for (var typesCount = types.length, typeIndex = 0; typeIndex < typesCount; typeIndex++) {
+                            var type = types[typeIndex];
+                            this.getLayers(resources_prepared, type).then(lang.hitch(this, function (layers) {
+                                this.rebuildLayers(layers);
+                            }));
+                        }
+                    } else {
+                        this.clearLayers();
                     }
-                    this.LayersByResources[res_type][resId.replace('res_', '')] = {};
-                    if (layersStackChanged) this._applyZIndexes();
+
+                    //this._applyZIndexes();
                 }
             }));
 
@@ -157,38 +144,49 @@ define([
             }));
         },
 
-        addLayers: function (layers) {
+        rebuildLayers: function (layers) {
             var layerData,
                 layer,
-                layerByType,
-                layerByResource;
+                i, layerType,
+                layersCount = layers.length,
+                stylesIds = [];
 
-            for (var i = 0, layersCount = layers.length; i < layersCount; i++) {
-                layerData = layers[i];
-                layer = this.Display.appendLayerToMap(layerData.vector_id, layerData.style_id, layerData.res_type, layerData.type);
-
-                layerByType = this.LayersByTypes[layerData.res_type][layerData.type];
-                if (!layerByType) {
-                    this.LayersByTypes[layerData.res_type][layerData.type] = {};
-                    layerByType = this.LayersByTypes[layerData.res_type][layerData.type];
-                }
-
-                layerByType[layerData.vector_id] = true;
-
-                layerByResource = this.LayersByResources[layerData.res_type][layerData.res_id];
-                if (!layerByResource) {
-                    this.LayersByResources[layerData.res_type][layerData.res_id] = {};
-                    layerByResource = this.LayersByResources[layerData.res_type][layerData.res_id];
-                }
-
-                layerByResource[layerData.vector_id] = true;
-
-                layer._res_id = layerData.res_id;
-                layer._layer_type = layerData.type;
-                this.Layers[layerData.vector_id] = layer;
-                this.setZIndex(layer);
+            if (layersCount > 0) {
+                layerType = layers[0].type;
+            } else {
+                return false;
             }
-            this._applyZIndexes();
+
+            for (i = 0, layersCount; i < layersCount; i++) {
+                layerData = layers[i];
+                if (layerData.type !== layerType) {
+                    console.log('Mutable layers types: ' + layerType + ', ' + layerData.type);
+                }
+                stylesIds.push(layerData.style_id);
+            }
+
+            if (this.LayersByTypes[layerType]) {
+                this.Display.removeLayerFromMap(this.LayersByTypes[layerType]);
+                //this.removeZIndex(this.LayersByTypes[layerType]);
+                delete this.LayersByTypes[this.LayersByTypes[layerType]];
+            }
+
+            layer = this.Display.appendLayersToMapInOne(stylesIds, layerType);
+
+            this.LayersByTypes[layerType] = layer;
+
+            layer._layer_type = layerData.type;
+            //this.setZIndex(layer);
+            //this._applyZIndexes();
+        },
+
+        clearLayers: function () {
+            for (var layerType in this.LayersByTypes) {
+                if (this.LayersByTypes.hasOwnProperty(layerType) &&
+                    this.LayersByTypes[layerType]) {
+                    this.Display.removeLayerFromMap(this.LayersByTypes[layerType]);
+                }
+            }
         },
 
         getLayers: function (resources, types) {
