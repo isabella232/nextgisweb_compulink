@@ -915,42 +915,21 @@ define([
             );
         },
 
-        appendLayerToMap: function (layer_id, style_id, resourceType, layerType) {
-            var data = {
-                    "layerId": layer_id,        // Слой
-                    "styleId": style_id,        // Стиль
-                    "visibility": true,          // Вкл
-                    "name": layer_id
-                },
-                adapt = new Adapter({}),
-                lyr = adapt.createLayer(data);
-
-            lyr.name = layer_id;
-            lyr.res_id = layer_id;
-            lyr.res_type = resourceType;
-            lyr.layer_type = layerType;
-
-            this.map.addLayer(lyr);
-
-            return lyr;
-        },
-
-        appendLayersToMapInOne: function (resourcesIds, resourceType, layerType) {
+        appendLayersToMapInOne: function (resourcesIds, layerType) {
             var data,
                 adapt = new Adapter({}),
                 lyr;
 
-            resourcesIds = resourcesIds.join(',');
+            resourcesIds = (resourcesIds.constructor === Array) ? resourcesIds.join(',') : resourcesIds;
 
             data = {
-                "resource": resourcesIds,
+                "styleId": resourcesIds,
                 "visibility": true,
                 "name": resourcesIds
             };
 
             lyr = adapt.createLayer(data);
 
-            lyr.res_type = resourceType;
             lyr.layer_type = layerType;
 
             this.map.addLayer(lyr);
@@ -961,6 +940,5 @@ define([
         removeLayerFromMap: function (layer) {
             this.map.removeLayer(layer);
         }
-
     });
 });
