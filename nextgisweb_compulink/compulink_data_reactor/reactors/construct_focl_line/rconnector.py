@@ -70,7 +70,7 @@ class RSOM1d():
 
     def connect(self):
         # train SOM
-        ordered = self.conn_fun(self.data, self.size*100)
+        ordered = self.conn_fun(self.data, self.size*1000)
 
         # Нужно для тюнера, который ожидает на вход массив комплексных чисел
         z = np.array([complex(p[0], p[1]) for p in np.transpose(np.asarray(ordered)[:2, :])])

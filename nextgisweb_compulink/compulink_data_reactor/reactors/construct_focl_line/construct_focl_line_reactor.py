@@ -14,8 +14,10 @@ from nextgisweb_log.model import LogEntry
 
 try:
     from .rconnector import RSOM1d as SOM1d
+    CONNECTOR_NAME = 'R Connector'
 except:
     from .connector import SOM1d
+    CONNECTOR_NAME = 'Python Connector'
 
 from .rconnector import RSOM1d as SOM1d
 
@@ -36,7 +38,7 @@ class ConstructFoclLineReactor(AbstractReactor):
         db_session = DBSession()
         transaction.manager.begin()
 
-        log_info('ConstructFoclLineReactor started!')
+        log_info('ConstructFoclLineReactor started! (%s)' % CONNECTOR_NAME)
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
@@ -110,7 +112,7 @@ class ConstructFoclLineReactor(AbstractReactor):
                 for feat in cluster:
                     geom_1 = feat.geom
                     geom_2 = new_feat.geom
-                    if geom_1.distance(geom_2) <= 600:  # TODO: need transform + elipsoid dist!
+                    if geom_1.distance(geom_2) <= 650:  # TODO: need transform + elipsoid dist!
                         cluster.append(new_feat)
                         return True
             return False
