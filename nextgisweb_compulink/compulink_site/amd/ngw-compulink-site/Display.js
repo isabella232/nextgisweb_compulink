@@ -923,6 +923,7 @@ define([
             resourcesIds = (resourcesIds.constructor === Array) ? resourcesIds.join(',') : resourcesIds;
 
             data = {
+                "layerId": resourcesIds,
                 "styleId": resourcesIds,
                 "visibility": true,
                 "name": resourcesIds
@@ -931,7 +932,7 @@ define([
             lyr = adapt.createLayer(data);
 
             lyr.layer_type = layerType;
-
+            lyr.name = resourcesIds;
             this.map.addLayer(lyr);
 
             return lyr;
