@@ -96,7 +96,6 @@ define([
                         this.Resources[node.original.res_type].push(inserted[i]);
                         resources.push(inserted[i].replace('res_', ''));
                     }
-                    if (!layersStackChanged) layersStackChanged = true;
                 }
 
                 for (i = 0, l = deleted.length; i < l; i++) {
@@ -108,28 +107,27 @@ define([
                     if (index > -1) {
                         this.Resources[res_type].splice(index, 1);
                     }
-                    if (!layersStackChanged) layersStackChanged = true;
                 }
 
-                if (layersStackChanged) {
-                    types = this.LayersSelector.getLayersTypesSelected();
-                    resources = this.Resources.focl_struct.concat(this.Resources.situation_plan);
-                    if (resources.length > 0) {
-                        var resources_prepared = array.map(resources, function (resourceId) {
-                            return resourceId.replace('res_', '');
-                        });
-                        for (var typesCount = types.length, typeIndex = 0; typeIndex < typesCount; typeIndex++) {
-                            var type = types[typeIndex];
-                            this.getLayers(resources_prepared, type).then(lang.hitch(this, function (layers) {
-                                this.rebuildLayers(layers);
-                            }));
-                        }
-                    } else {
-                        this.clearLayers();
+
+                types = this.LayersSelector.getLayersTypesSelected();
+                resources = this.Resources.focl_struct.concat(this.Resources.situation_plan);
+                if (resources.length > 0) {
+                    var resources_prepared = array.map(resources, function (resourceId) {
+                        return resourceId.replace('res_', '');
+                    });
+                    for (var typesCount = types.length, typeIndex = 0; typeIndex < typesCount; typeIndex++) {
+                        var type = types[typeIndex];
+                        this.getLayers(resources_prepared, type).then(lang.hitch(this, function (layers) {
+                            this.rebuildLayers(layers);
+                        }));
                     }
-
-                    //this._applyZIndexes();
+                } else {
+                    this.clearLayers();
                 }
+
+                //this._applyZIndexes();
+
             }));
 
             topic.subscribe('caclulate/resources/count', lang.hitch(this, function () {
@@ -161,7 +159,7 @@ define([
             if (this.LayersByTypes[layerType]) {
                 this.Display.removeLayerFromMap(this.LayersByTypes[layerType]);
                 //this.removeZIndex(this.LayersByTypes[layerType]);
-                delete this.LayersByTypes[this.LayersByTypes[layerType]];
+                delete this.LayersByTypes[layerType];
             }
 
             layer = this.Display.appendLayersToMapInOne(stylesIds, layerType);
@@ -178,6 +176,7 @@ define([
                 if (this.LayersByTypes.hasOwnProperty(layerType) &&
                     this.LayersByTypes[layerType]) {
                     this.Display.removeLayerFromMap(this.LayersByTypes[layerType]);
+                    delete this.LayersByTypes[layerType];
                 }
             }
         },
