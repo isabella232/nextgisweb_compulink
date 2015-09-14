@@ -34,9 +34,9 @@ define([
     "dojo/store/util/QueryResults",
     "ngw/route",
     // tools
-    "webmap/tool/Base",
-    "webmap/tool/Zoom",
-    "webmap/tool/Measure",
+    "ngw-webmap/tool/Base",
+    "ngw-webmap/tool/Zoom",
+    "ngw-webmap/tool/Measure",
     "ngw-compulink-site/ResourcesTree",
     "ngw-compulink-site/LayersSelector",
     "ngw-compulink-site/LimitLayersValidator",
@@ -46,7 +46,7 @@ define([
     "ngw-compulink-site/SelectedResourcesTable",
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
-    "webmap/ImageAdapter",
+    "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
     // template

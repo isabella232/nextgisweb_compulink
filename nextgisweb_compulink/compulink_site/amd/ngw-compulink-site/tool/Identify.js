@@ -1,7 +1,7 @@
 /*global console, OpenLayers*/
 define([
     "dojo/_base/declare",
-    "webmap/tool/Base",
+    "ngw-webmap/tool/Base",
     "dojo/_base/lang",
     "dojo/_base/array",
     "dojo/Deferred",
