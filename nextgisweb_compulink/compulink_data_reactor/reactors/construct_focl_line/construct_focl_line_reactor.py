@@ -19,8 +19,6 @@ except:
     from .connector import SOM1d
     CONNECTOR_NAME = 'Python Connector'
 
-from .rconnector import RSOM1d as SOM1d
-
 __author__ = 'yellow'
 
 @AbstractReactor.registry.register
