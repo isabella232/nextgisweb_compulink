@@ -32,24 +32,17 @@ define([
                 situation_plan: {}
             };
 
-            this.LayersOrder = {
-                _layers: {},
-                focl_struct: {},
-                situation_plan: {}
-            };
+            this.LayersOrder = {};
 
             array.forEach(this.Display.config.focl_layers_type, function (layerConfig) {
                 if (layerConfig.children && layerConfig.children.length > 0) {
                     array.forEach(layerConfig.children, function (layerConfigChild) {
-                        this.LayersOrder.focl_struct[layerConfigChild.id] = {
-                            order: layerConfigChild.order,
-                            zIndexes: []
-                        };
+                        this.LayersOrder[layerConfigChild.id] = layerConfigChild.order;
                     }, this);
                 }
             }, this);
             array.forEach(this.Display.config.sit_plan_layers_type, function (layerConfig) {
-                this.LayersOrder.situation_plan[layerConfig.id] = {order: layerConfig.order, zIndexes: []};
+                this.LayersOrder[layerConfig.id] = layerConfig.order;
             }, this);
 
             this.Layers = {};
