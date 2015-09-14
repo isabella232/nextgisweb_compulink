@@ -44,7 +44,7 @@ def get_focl_info(request):
             'end_build_time': work3.AgreementFinishDateWork.strftime('%d.%m.%y') if work3 else '',
             'start_exp_time': work4.AgreementStartDateWork.strftime('%d.%m.%y') if work4 else '',
             'end_exp_time': work4.AgreementFinishDateWork.strftime('%d.%m.%y') if work4 else '',
-            'subcontr': work3.SubContractor.ContractorName if work3 else '',
+            'subcontr': work3.SubContractor.ContractorName if (work3 and work3.SubContractor) else '',
         }
         focl_info_list.append(focl_info)
 
