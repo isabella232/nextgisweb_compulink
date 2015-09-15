@@ -915,24 +915,27 @@ define([
             );
         },
 
-        appendLayersToMapInOne: function (resourcesIds, layerType) {
+        appendLayersToMapInOne: function (vectorIds, stylesIds, layerType) {
             var data,
                 adapt = new Adapter({}),
                 lyr;
 
-            resourcesIds = (resourcesIds.constructor === Array) ? resourcesIds.join(',') : resourcesIds;
+            stylesIds = (stylesIds.constructor === Array) ? stylesIds.join(',') : stylesIds;
+            vectorIds = (vectorIds.constructor === Array) ? vectorIds.join(',') : vectorIds;
 
             data = {
-                "layerId": resourcesIds,
-                "styleId": resourcesIds,
+                "layerId": stylesIds,
+                "styleId": stylesIds,
                 "visibility": true,
-                "name": resourcesIds
+                "name": stylesIds
             };
 
             lyr = adapt.createLayer(data);
 
             lyr.layer_type = layerType;
-            lyr.name = resourcesIds;
+            lyr.vectors_ids = vectorIds;
+            lyr.name = stylesIds;
+
             this.map.addLayer(lyr);
 
             return lyr;
