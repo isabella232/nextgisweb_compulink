@@ -26,23 +26,30 @@ define([
             };
 
             this.LayersByTypes = {};
+            this.LayersByVectorId = {};
 
             this.LayersByResources = {
                 focl_struct: {},
                 situation_plan: {}
             };
 
-            this.LayersOrder = {};
+            this.LayersConfig = {};
 
             array.forEach(this.Display.config.focl_layers_type, function (layerConfig) {
                 if (layerConfig.children && layerConfig.children.length > 0) {
                     array.forEach(layerConfig.children, function (layerConfigChild) {
-                        this.LayersOrder[layerConfigChild.id] = layerConfigChild.order;
+                        this.LayersConfig[layerConfigChild.id] = {
+                            order: layerConfigChild.order,
+                            text: layerConfigChild.text
+                        };
                     }, this);
                 }
             }, this);
             array.forEach(this.Display.config.sit_plan_layers_type, function (layerConfig) {
-                this.LayersOrder[layerConfig.id] = layerConfig.order;
+                this.LayersConfig[layerConfig.id] =  {
+                            order: layerConfig.order,
+                            text: layerConfig.text
+                        };
             }, this);
 
             this.Layers = {};
@@ -74,6 +81,10 @@ define([
                 for (i = 0, l = deleted.length; i < l; i++) {
                     if (this.LayersByTypes[deleted[i]]) {
                         var layer = this.LayersByTypes[deleted[i]];
+                        var layerVectorIds = layer.vectors_ids.split(',');
+                        array.forEach(layerVectorIds, function (vectorId) {
+                            delete this.LayersByVectorId[vectorId];
+                        }, this);
                         Display.removeLayerFromMap(layer);
                         //this.removeZIndex(layer);
                         delete this.LayersByTypes[deleted[i]];
@@ -140,7 +151,9 @@ define([
                 layer,
                 i, layerType,
                 layersCount = layers.length,
-                stylesIds = [];
+                stylesIds = [],
+                vectorIds = [],
+                layerVectorIds;
 
             if (layersCount > 0) {
                 layerType = layers[0].type;
@@ -153,18 +166,29 @@ define([
                 if (layerData.type !== layerType) {
                     console.log('Mutable layers types: ' + layerType + ', ' + layerData.type);
                 }
+
                 stylesIds.push(layerData.style_id);
+                vectorIds.push(layerData.vector_id);
             }
 
             if (this.LayersByTypes[layerType]) {
-                this.Display.removeLayerFromMap(this.LayersByTypes[layerType]);
+                layer = this.LayersByTypes[layerType];
+                layerVectorIds = layer.vectors_ids.split(',');
+                array.forEach(layerVectorIds, function (vectorId) {
+                    delete this.LayersByVectorId[vectorId];
+                }, this);
+                this.Display.removeLayerFromMap(layer);
                 //this.removeZIndex(this.LayersByTypes[layerType]);
                 delete this.LayersByTypes[layerType];
             }
 
-            layer = this.Display.appendLayersToMapInOne(stylesIds, layerType);
+            layer = this.Display.appendLayersToMapInOne(vectorIds, stylesIds, layerType);
 
             this.LayersByTypes[layerType] = layer;
+
+            array.forEach(vectorIds, function (vectorId){
+                this.LayersByVectorId[vectorId] = layer;
+            }, this);
 
             layer._layer_type = layerData.type;
             //this.setZIndex(layer);
@@ -179,6 +203,7 @@ define([
                     delete this.LayersByTypes[layerType];
                 }
             }
+            this.LayersByVectorId = {};
         },
 
         getLayers: function (resources, types) {
@@ -227,7 +252,7 @@ define([
         setZIndex: function (layer) {
             var resourceType = layer.res_type,
                 layerType = layer.layer_type,
-                layerOrderConfig = this.LayersOrder[resourceType][layerType],
+                layerOrderConfig = this.LayersConfig[resourceType][layerType],
                 order = layerOrderConfig.order,
                 multiplier = 1000,
                 countZIndexes = layerOrderConfig.zIndexes.length,
@@ -266,7 +291,7 @@ define([
         },
 
         removeZIndex: function (layer) {
-            var layerOrderConfig = this.LayersOrder[layer.res_type][layer.layer_type],
+            var layerOrderConfig = this.LayersConfig[layer.res_type][layer.layer_type],
                 zIndex = parseInt(layer.olLayer.getZIndex()),
                 index;
 
