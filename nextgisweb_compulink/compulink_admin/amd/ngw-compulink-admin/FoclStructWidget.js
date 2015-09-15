@@ -14,9 +14,7 @@ define([
     "ngw-resource/serialize",
     // resource
     "dojo/text!./template/FoclStructWidget.html",
-    "ngw/settings!compulink_admin",
-    // template
-    "ngw/form/UploaderList"
+    "ngw/settings!compulink_admin"
 ], function (
     declare,
     lang,

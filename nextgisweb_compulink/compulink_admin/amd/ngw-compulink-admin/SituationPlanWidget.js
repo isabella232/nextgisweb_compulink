@@ -7,9 +7,7 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "ngw-resource/serialize",
     // resource
-    "dojo/text!./template/SituationPlanWidget.html",
-    // template
-    "ngw/form/UploaderList"
+    "dojo/text!./template/SituationPlanWidget.html"
 ], function (
     declare,
     lang,
