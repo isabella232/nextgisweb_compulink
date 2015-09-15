@@ -215,19 +215,17 @@ define([
 
         _getLayersOrdered: function () {
             var layersOrdered = [],
-                layersActivatedInfo = this.layersManager.Layers,
-                layerInfo, vector_id, layer_type, order;
+                layersByVectorId = this.layersManager.LayersByVectorId,
+                layer, vector_id;
 
-            for (vector_id in layersActivatedInfo) {
-                if (layersActivatedInfo.hasOwnProperty(vector_id)) {
-                    layerInfo = layersActivatedInfo[vector_id];
-                    layer_type = layerInfo.layer_type;
-                    order = layersTypesById[layer_type].order;
+            for (vector_id in layersByVectorId) {
+                if (layersByVectorId.hasOwnProperty(vector_id)) {
+                    layer = layersByVectorId[vector_id];
                     layersOrdered.push({
                         id: vector_id,
-                        z: order,
-                        lt: layer_type,
-                        layerName: layersTypesById[layer_type].text
+                        z: this.layersManager.LayersConfig[layer.layer_type].order,
+                        lt: layer.layer_type,
+                        layerName: this.layersManager.LayersConfig[layer.layer_type].text
                     });
                 }
             }
@@ -380,7 +378,8 @@ define([
         execute: function (pixel) {
             var tool = this,
                 olMap = this.display.map.olMap,
-                point = olMap.getLonLatFromPixel(new OpenLayers.Pixel(pixel[0], pixel[1]));
+                point = olMap.getLonLatFromPixel(new OpenLayers.Pixel(pixel[0], pixel[1])),
+                vectors_ids = [];
 
             var request = {
                 srs: 3857,
@@ -390,8 +389,11 @@ define([
 
             for (var lyr_name in this.display.map.layers) {
                 var lyr = this.display.map.layers[lyr_name];
-                if (lyr.res_id) {
-                    request.layers.push(lyr.res_id);
+                if (lyr.vectors_ids) {
+                    vectors_ids = lyr.vectors_ids.split(',');
+                    array.forEach(vectors_ids, function (vector_id, index) {
+                        request.layers.push(vector_id);
+                    }, this);
                 }
             }
 
