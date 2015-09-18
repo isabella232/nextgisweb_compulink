@@ -3,6 +3,7 @@ from .reactors.abstract_reactor import AbstractReactor
 from nextgisweb.command import Command
 
 from .reactors.construct_focl_line.construct_focl_line_reactor import ConstructFoclLineReactor  # NOQA
+from .reactors.construct_spec_transition_line.construct_spec_transition_line_reactor import ConstructSpecTransitionLineReactor  # NOQA
 from .reactors.status_report.status_report_reactor import StatusReportReactor # NOQA
 
 
