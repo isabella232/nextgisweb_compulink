@@ -41,16 +41,17 @@ class UpdateStylesCommand():
 
         ms_styles_resources = dbsession.query(MapserverStyle).options(joinedload_all('parent')).all()
 
+        new_styles_keys = new_styles.keys()
+        new_styles_keys.sort(reverse=True)
+
         for ms_style_res in ms_styles_resources:
             vector_layer_key = ms_style_res.parent.keyname
             if not vector_layer_key:
                 print "!!!! %s was not updated! No parent keyname!" % (ms_style_res.display_name)
                 continue
             updated = False
-            new_styles_keys = new_styles.keys()
-            new_styles_keys.sort(reverse=True)
             for style_name in new_styles_keys:
-                if style_name in vector_layer_key:
+                if vector_layer_key.startswith(style_name):
                     ms_style_res.xml = new_styles[style_name]
                     ms_style_res.persist()
                     print "!!!! %s was updated!" % vector_layer_key
