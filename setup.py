@@ -14,7 +14,8 @@ requires = (
     'transaction',
     'sqlalchemy',
     'pymssql',
-    'openpyxl'
+    'openpyxl',
+    'pyproj',
 )
 
 entry_points = {

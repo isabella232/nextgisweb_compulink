@@ -1,7 +1,6 @@
 from datetime import datetime
 from nextgisweb import DBSession
 
-import numpy as np
 from shapely.geometry import MultiLineString
 import transaction
 
@@ -10,6 +9,7 @@ from nextgisweb_compulink.compulink_data_reactor import COMP_ID
 from nextgisweb.feature_layer import Feature
 from nextgisweb.vector_layer import TableInfo
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
+from ...utils import DistanceUtils
 from nextgisweb_log.model import LogEntry
 __author__ = 'yellow'
 
@@ -17,6 +17,9 @@ __author__ = 'yellow'
 class ConstructSpecTransitionLineReactor(AbstractReactor):
     identity = 'construct_spec_transition_line'
     priority = 2
+
+    # Max len of spec transition
+    DISTANCE_LIMIT = 300
 
     @classmethod
     def run(cls, env):
@@ -76,7 +79,13 @@ class ConstructSpecTransitionLineReactor(AbstractReactor):
                     if start_point_feat.geom.distance(end_point_feat.geom) < near_len:
                         near_point_feat = end_point_feat
                         near_len = start_point_feat.geom.distance(end_point_feat.geom)
-                
+
+                # check distance limit
+                real_dist = DistanceUtils.get_spherical_distance(start_point_feat.geom[0], near_point_feat.geom[0])
+                if real_dist > cls.DISTANCE_LIMIT:
+                    log_warning('Point %s has no paired points near that maximum distance!' % start_point_feat.id)
+                    continue
+
                 # construct line
                 line_feats = [start_point_feat, near_point_feat]
                 info = cls.get_segment_info(line_feats)
