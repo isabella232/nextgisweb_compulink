@@ -21,6 +21,7 @@ import subprocess
 from nextgisweb import DBSession, db
 from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
+from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
@@ -106,6 +107,9 @@ def get_child_resx_by_parent(request):
     if type_filter == 'sit' or not type_filter:
         suitable_types.append(SituationPlan.identity)
 
+    if not request.user.is_administrator:
+        allowed_res_list = _get_user_resources_tree(request.user)
+
 
     child_resources_json = []
     for child_resource in children:
@@ -114,11 +118,10 @@ def get_child_resx_by_parent(request):
             if child_resource.identity == ResourceGroup.identity and child_resource.keyname == DICTIONARY_GROUP_KEYNAME:
                 continue
             # check permissions
-            if (child_resource.identity in (FoclStruct.identity, SituationPlan.identity)) \
-                    and not (child_resource.has_permission(DataScope.write, request.user)):
+            if not request.user.is_administrator and child_resource.id not in allowed_res_list:
                 continue
             is_need_checkbox = child_resource.identity in (FoclProject.identity, SituationPlan.identity, FoclStruct.identity)
-            has_children = child_resource.identity in (ResourceGroup.identity, FoclProject.identity) # TODO: add check for real children
+            has_children = child_resource.identity in (ResourceGroup.identity, FoclProject.identity)
             child_resources_json.append({
                 'id': 'res_' + str(child_resource.id),
                 'text': child_resource.display_name,
@@ -135,6 +138,40 @@ def get_child_resx_by_parent(request):
     dbsession.close()
 
     return Response(json.dumps(child_resources_json))
+
+def _get_user_resources_tree(user):
+    # get explicit rules
+    rules_query = DBSession.query(ResourceACLRule)\
+        .filter(ResourceACLRule.principal_id==user.principal_id)\
+        .filter(ResourceACLRule.scope==DataScope.identity)\
+        .options(joinedload_all(ResourceACLRule.resource))
+
+    #todo: user groups explicit rules???
+
+    allowed_res_ids = set()
+
+    def get_child_perms_recursive(resource):
+        # add self
+        if resource.identity == FoclStruct.identity:
+            if resource.has_permission(DataScope.write, user):
+                allowed_res_ids.add(resource.id)
+        elif resource.identity in [ResourceGroup.identity, FoclProject.identity]:
+            allowed_res_ids.add(resource.id)
+        # add childs
+        if resource.identity in [ResourceGroup.identity, FoclProject.identity]:
+            for child in resource.children:
+                get_child_perms_recursive(child)
+
+    def get_parents_recursive(resource):
+        if resource.parent is not None:
+            allowed_res_ids.add(resource.parent.id)
+            get_parents_recursive(resource.parent)
+
+    for rule in rules_query.all():
+        get_child_perms_recursive(rule.resource)
+        get_parents_recursive(rule.resource)
+
+    return allowed_res_ids
 
 
 def show_map(request):
