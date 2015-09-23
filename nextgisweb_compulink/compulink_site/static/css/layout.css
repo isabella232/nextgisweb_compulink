@@ -7,7 +7,7 @@
 
 #headerContainer .header {
     display: table-cell;
-    vertical-align: middle;
+    vertical-align: top;
     background-color: #2D3E50;
 }
 
