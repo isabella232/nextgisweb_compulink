@@ -61,7 +61,6 @@
                 isAdm: true,
                 resourcesUrl: '${request.route_url('resource.root')}',
                 controlPanelUrl: '${request.route_url('pyramid.control_panel')}',
-                reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
             %else:
                 isAdm: false,
             %endif
@@ -71,6 +70,7 @@
             %else:
                 isGuest: false,
                 userName: '${request.user}',
+                reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
                 logoutUrl: '${request.route_url('auth.logout')}'
             %endif
         }
