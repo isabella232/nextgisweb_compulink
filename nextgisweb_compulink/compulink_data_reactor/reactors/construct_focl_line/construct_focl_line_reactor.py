@@ -10,6 +10,7 @@ from nextgisweb_compulink.compulink_data_reactor import COMP_ID
 from nextgisweb.feature_layer import Feature
 from nextgisweb.vector_layer import TableInfo
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
+from nextgisweb_compulink.compulink_data_reactor.utils import DistanceUtils
 from nextgisweb_log.model import LogEntry
 
 try:
@@ -25,6 +26,9 @@ __author__ = 'yellow'
 class ConstructFoclLineReactor(AbstractReactor):
     identity = 'construct_line'
     priority = 1
+
+    # Max distance of point in segment
+    DISTANCE_LIMIT = 350
 
     @classmethod
     def run(cls, env):
@@ -110,7 +114,8 @@ class ConstructFoclLineReactor(AbstractReactor):
                 for feat in cluster:
                     geom_1 = feat.geom
                     geom_2 = new_feat.geom
-                    if geom_1.distance(geom_2) <= 650:  # TODO: need transform + elipsoid dist!
+                    real_dist = DistanceUtils.get_spherical_distance(geom_1[0], geom_2[0])
+                    if real_dist > cls.DISTANCE_LIMIT:
                         cluster.append(new_feat)
                         return True
             return False
