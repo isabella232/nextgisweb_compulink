@@ -57,7 +57,7 @@
             %endif
             appUrl: '${request.application_url}',
             fullName: '${request.env.core.settings['system.full_name']}',
-            %if request.route_url('resource.root'):
+            %if request.user.is_administrator:
                 isAdm: true,
                 resourcesUrl: '${request.route_url('resource.root')}',
                 controlPanelUrl: '${request.route_url('pyramid.control_panel')}',
