@@ -1,23 +1,23 @@
 <div id="header" class="header" style="padding: 0; margin: 0">
-    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+    <div class="home-menu pure-menu pure-menu-horizontal" style="overflow:visible;">
         <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
 
-        <a class="pure-menu-heading" href="{{ headerData.appUrl }}">
+        <a class="pure-menu-heading" href="{{ headerData.appUrl }}" style="float:left;">
             {{ headerData.fullName }}
         </a>
 
-        <ul>
-            {% if headerData.isAdm %}
-                <li><a href="{{ headerData.rootPan }}">Панель управления</a></li>
-            {% endif %}
-
-            {% if headerData.isGuest %}
-                <li><a href="{{ headerData.loginUrl }}">Вход</a></li>
-            {% else %}
-                <li class="user">{{ headerData.userName }}</li>
-                <li><a href="{{ headerData.reportUrl }}">Отчёт</a></li>
-                <li><a href="{{ headerData.logoutUrl }}">Выход</a></li>
-            {% endif %}
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" id="menuLink1" class="pure-menu-link user" style="padding-right: 3ex;">{{ headerData.userName }}</a>
+                <ul class="pure-menu-children" style="background-color: inherit;">
+                    {% if headerData.isAdm %}
+                        <li class="pure-menu-item"><a href="{{ headerData.resourcesUrl }}" class="pure-menu-link">Ресурсы</a></li>
+                        <li class="pure-menu-item"><a href="{{ headerData.controlPanelUrl }}" class="pure-menu-link">Панель управления</a></li>
+                        <li class="pure-menu-item"><a href="{{ headerData.reportUrl }}" class="pure-menu-link">Отчёт</a></li>
+                    {% endif %}
+                    <li class="pure-menu-item"><a href="{{ headerData.logoutUrl }}" class="pure-menu-link">Выход</a></li>
+                </ul>
+            </li>
         </ul>
     </div>
 </div>

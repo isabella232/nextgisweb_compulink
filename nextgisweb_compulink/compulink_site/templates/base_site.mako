@@ -15,7 +15,7 @@
         ${request.env.core.settings['system.name']}
     </title>
 
-    <link href="${request.static_url('nextgisweb:static/css/pure-0.4.2-min.css')}"
+    <link href="${request.static_url('nextgisweb:static/css/pure-0.6.0-min.css')}"
           rel="stylesheet" type="text/css"/>
 
     <link href="${request.static_url('nextgisweb:static/css/layout.css')}"
@@ -59,7 +59,9 @@
             fullName: '${request.env.core.settings['system.full_name']}',
             %if request.route_url('resource.root'):
                 isAdm: true,
-                rootPan: '${request.route_url('resource.root')}',
+                resourcesUrl: '${request.route_url('resource.root')}',
+                controlPanelUrl: '${request.route_url('pyramid.control_panel')}',
+                reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
             %else:
                 isAdm: false,
             %endif
@@ -69,8 +71,7 @@
             %else:
                 isGuest: false,
                 userName: '${request.user}',
-                logoutUrl: '${request.route_url('auth.logout')}',
-                reportUrl: '${request.route_url('compulink.reporting.status_grid')}'
+                logoutUrl: '${request.route_url('auth.logout')}'
             %endif
         }
     </script>
