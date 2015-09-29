@@ -115,7 +115,7 @@ class ConstructFoclLineReactor(AbstractReactor):
                     geom_1 = feat.geom
                     geom_2 = new_feat.geom
                     real_dist = DistanceUtils.get_spherical_distance(geom_1[0], geom_2[0])
-                    if real_dist > cls.DISTANCE_LIMIT:
+                    if real_dist < cls.DISTANCE_LIMIT:
                         cluster.append(new_feat)
                         return True
             return False
