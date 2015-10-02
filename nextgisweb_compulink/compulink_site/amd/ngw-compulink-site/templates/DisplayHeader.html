@@ -12,9 +12,14 @@
                 <li class="pure-menu-item"><a href="{{ headerData.controlPanelUrl }}" class="pure-menu-link">Панель управления</a></li>
             {% endif %}
             <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                <a href="#" id="menuLink1" class="pure-menu-link user" style="padding-right: 2.5ex;">{{ headerData.userName }}</a>
+                <a href="#" id="menuLink1" class="pure-menu-link">Отчёты</a>
                 <ul class="pure-menu-children" style="background-color: #2D3E50;">
-                    <li class="pure-menu-item"><a href="{{ headerData.reportUrl }}" class="pure-menu-link">Отчёт</a></li>
+                    <li class="pure-menu-item"><a href="{{ headerData.reportUrl }}" class="pure-menu-link">Отчёт о ходе строительства</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                <a href="#" id="menuLink2" class="pure-menu-link user" style="padding-right: 2.5ex;">{{ headerData.userName }}</a>
+                <ul class="pure-menu-children" style="background-color: #2D3E50;">
                     <li class="pure-menu-item"><a href="{{ headerData.logoutUrl }}" class="pure-menu-link">Выход</a></li>
                 </ul>
             </li>
