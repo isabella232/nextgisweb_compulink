@@ -18,6 +18,10 @@ div.body-wrapper {
     bottom: 0;
 }
 
+div.body-wrapper .dijitTabPaneWrapper {
+    overflow: hidden;
+}
+
 #headerContainer {
     display: table;
     padding: 0;
