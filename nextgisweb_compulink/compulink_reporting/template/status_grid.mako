@@ -39,8 +39,22 @@
     </style>
 </%def>
 
-
-<div data-dojo-id="display"
-     data-dojo-type="ngw-compulink-reporting/ReportGrid"
-     style="width: 100%; height: 100%">
+<div class="main-wrapper">
+    <div class="header-wrapper">
+        <div id="headerContainer"
+             data-dojo-type="dijit/layout/ContentPane"
+             data-dojo-props="region: 'top'"
+             style="width: 100%; overflow:visible;">
+            <div data-dojo-id="displayHeader"
+                 data-dojo-type="ngw-compulink-site/DisplayHeader"
+                 data-dojo-props="">
+            </div>
+        </div>
+    </div>
+    <div class="body-wrapper">
+        <div data-dojo-id="display"
+             data-dojo-type="ngw-compulink-reporting/ReportGrid"
+             style="width: 100%; height: 100%">
+        </div>
+    </div>
 </div>
