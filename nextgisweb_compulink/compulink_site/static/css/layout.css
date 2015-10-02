@@ -35,6 +35,11 @@ div.body-wrapper .dijitTabPaneWrapper {
     background-color: #2D3E50;
 }
 
+#headerContainer ul.pure-menu-children {
+    position: absolute;
+    right: 0;
+}
+
 div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     border: none;
 }
