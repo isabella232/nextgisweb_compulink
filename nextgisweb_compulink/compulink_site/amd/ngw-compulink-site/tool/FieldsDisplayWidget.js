@@ -80,10 +80,10 @@ define([
                 }
 
                 if (bool_fields.indexOf(field.keyname) >= 0) {
-                    if (val==0)
-                        val = "Нет";
-                    else
+                    if (val==1)
                         val = "Да";
+                    else
+                        val = "Нет";
                 }
 
                 if (val === null) {
