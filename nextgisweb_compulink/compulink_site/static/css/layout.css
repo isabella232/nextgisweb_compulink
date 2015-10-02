@@ -40,6 +40,12 @@ div.body-wrapper .dijitTabPaneWrapper {
     right: 0;
 }
 
+#headerContainer .pure-menu a,
+#headerContainer ul.pure-menu-children li.pure-menu-item:hover,
+#headerContainer ul.pure-menu-children li.pure-menu-item a:hover{
+    border: none;
+}
+
 div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     border: none;
 }
