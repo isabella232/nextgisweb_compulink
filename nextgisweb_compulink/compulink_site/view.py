@@ -25,10 +25,12 @@ from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
-from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject
+from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
-from ..compulink_admin.view import get_region_name, get_district_name
+from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
+    get_districts_from_resource, get_project_statuses
+from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
 from nextgisweb_compulink.compulink_site import COMP_ID
 from nextgisweb_log.model import LogEntry, LogLevels
 from nextgisweb_lookuptable.model import LookupTable
@@ -275,22 +277,65 @@ def get_focl_info(request):
     dbsession = DBSession()
     resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
 
+    # get rows from reporting
+    reporting_rows = {row.focl_res_id: row for row in dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id.in_(res_ids)).all() }
+
     resp = []
+
+    #dicts
+    regions = get_regions_from_resource(as_dict=True)
+    districts = get_districts_from_resource(as_dict=True)
+    statuses = get_project_statuses(as_dict=True)
+
     for res in resources:
         if res.identity not in (FoclStruct.identity, SituationPlan.identity):
             continue
-        region = get_region_name(res.region)
-        district = get_district_name(res.district)
-        external_id = res.external_id if res.identity == FoclStruct.identity else ''
-        resp.append(
-            {
-                'id': res.id,
-                'display_name': res.display_name,
-                'district': district,
-                'region': region,
-                'external_id': external_id
-            }
-        )
+
+        # try to get data from status report
+        if res.id in reporting_rows.keys():
+            report_row = reporting_rows[res.id]
+            resp.append(
+                {
+                    'id': report_row.focl_res_id,
+                    'display_name': report_row.focl_name,
+                    'district': districts.get(report_row.district, report_row.district),
+                    'region': regions.get(report_row.region, report_row.region),
+                    'status': statuses.get(report_row.status, report_row.status),
+                    'cabling_fact': report_row.cabling_fact,
+
+                    'start_build_time': report_row.start_build_time.strftime('%d.%m.%y') if report_row.start_build_time else '',
+                    'end_build_time': report_row.end_build_time.strftime('%d.%m.%y') if report_row.end_build_time else '',
+                    'start_deliver_time': report_row.start_deliver_time.strftime('%d.%m.%y') if report_row.start_deliver_time else '',
+                    'end_deliver_time': report_row.end_deliver_time.strftime('%d.%m.%y') if report_row.end_deliver_time else '',
+
+                    'subcontr': report_row.subcontr_name,
+
+                    'is_overdue': report_row.is_overdue,
+                    'is_month_overdue': report_row.is_month_overdue,
+                    'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
+                }
+            )
+        else:
+            # else get from resource
+            resp.append(
+                {
+                    'id': res.id,
+                    'display_name': res.display_name,
+                    'district': districts.get(res.district, res.district),
+                    'region': regions.get(res.region, res.region),
+                    'status': statuses.get(res.status, res.status),
+
+                    'cabling_fact': None,
+                    'start_build_time': None,
+                    'end_build_time': None,
+                    'start_deliver_time': None,
+                    'end_deliver_time': None,
+                    'subcontr': None,
+                    'is_overdue': False,
+                    'is_month_overdue': False,
+                    'is_focl_delivered': False,
+                }
+            )
 
     dbsession.close()
 

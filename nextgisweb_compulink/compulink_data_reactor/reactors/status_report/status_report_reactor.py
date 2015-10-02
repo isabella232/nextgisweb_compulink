@@ -46,7 +46,9 @@ class StatusReportReactor(AbstractReactor):
             CompulinkMssqlBridgeComponent.configure_db_conn(env.compulink_mssql_bridge.settings.get('conn_str', 'no'))
 
             fs_external_ids = ngw_session.query(FoclStruct.external_id).all()
-            ms_rows = ms_session.query(ConstructObjects).filter(ConstructObjects.ObjectID.in_(fs_external_ids)).options(joinedload_all(ConstructObjects.Work3)).all()
+            ms_rows = ms_session.query(ConstructObjects)\
+                .filter(ConstructObjects.ObjectID.in_(fs_external_ids))\
+                .options(joinedload_all(ConstructObjects.Work3), joinedload_all(ConstructObjects.Work4)).all()
             for row in ms_rows:
                 if row.ObjectID not in ms_info.keys():
                     ms_info[str(row.ObjectID)] = row
@@ -74,6 +76,8 @@ class StatusReportReactor(AbstractReactor):
                 report_line.subcontr_name = ms_row.Work3.SubContractor.ContractorName if ms_row.Work3 and ms_row.Work3.SubContractor else None
                 report_line.start_build_time = ms_row.Work3.AgreementStartDateWork if ms_row.Work3 else None
                 report_line.end_build_time = ms_row.Work3.AgreementFinishDateWork if ms_row.Work3 else None
+                report_line.start_deliver_time = ms_row.Work4.AgreementStartDateWork if ms_row.Work4 else None
+                report_line.end_deliver_time = ms_row.Work4.AgreementFinishDateWork if ms_row.Work4 else None
             else:
                 LogEntry.warning('Not found mssql info for resource %s (external_id is %s)' % (report_line.id, report_line.external_id),
                               component=COMP_ID,

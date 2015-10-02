@@ -22,6 +22,8 @@ class ConstructionStatusReport(Base):
     subcontr_name = db.Column(db.Unicode, nullable=True)        # Подрядчик строительства
     start_build_time = db.Column(db.DateTime, nullable=True)    # Строительство ВОЛС (начало)
     end_build_time = db.Column(db.DateTime, nullable=True)      # Строительство ВОЛС (окончание)
+    start_deliver_time = db.Column(db.DateTime, nullable=True)    # Cдача заказчику (начало)
+    end_deliver_time = db.Column(db.DateTime, nullable=True)      # Cдача заказчику (окончание)
 
     cabling_plan = db.Column(db.Float, nullable=True)      # Прокладка ОК План (км)
     cabling_fact = db.Column(db.Float, nullable=True)      # Прокладка ОК Факт (км)
