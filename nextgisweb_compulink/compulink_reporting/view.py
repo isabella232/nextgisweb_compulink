@@ -19,7 +19,7 @@ from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
-from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct
+from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED
 from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 
@@ -108,6 +108,8 @@ def get_status_report(request):
             'ap_fact':          row.ap_fact,
             'ap_percent':       row.ap_percent,
             'is_overdue':       row.is_overdue,
+            'is_month_overdue':       row.is_monht_overdue,
+            'is_focl_delivered':      row.status == PROJECT_STATUS_DELIVERED,
         }
         json_report.append(json_row)
         num_line += 1
@@ -173,17 +175,45 @@ def export_status_report(request):
             for header_cell in header_row:
                 header_cell.style = border_style
 
+
         # styles
+        bold_style = ws.cell(row=3, column=2).style
+
         red_font = border_style.font.copy(color='F46A6A')
+        red_bold_font = bold_style.font.copy(color='F46A6A')
+        green_font = border_style.font.copy(color='008600')
 
         dt_style = Style(
             number_format='DD.MM.YYYY',
             font=border_style.font
         )
 
-        dt_overdue = Style(
+        overdue_style = Style(
+            font=red_font
+        )
+
+        dt_overdue_style = Style(
             number_format='DD.MM.YYYY',
             font=red_font
+        )
+
+        month_overdue_style = Style(
+            font=red_bold_font
+        )
+
+        dt_month_overdue_style = Style(
+            number_format='DD.MM.YYYY',
+            font=red_bold_font
+        )
+
+
+        delivered_style = Style(
+            font=green_font
+        )
+
+        dt_delivered_style = Style(
+            number_format='DD.MM.YYYY',
+            font=green_font
         )
 
         footer_style = ws.cell(row=3, column=2).style
@@ -246,7 +276,23 @@ def export_status_report(request):
             ws.cell(row=line_in_ws, column=8).style = dt_style
 
             if row.is_overdue:
-                ws.cell(row=line_in_ws, column=8).style = dt_overdue
+                for col in xrange(1, 23+1):
+                    ws.cell(row=line_in_ws, column=col).style = overdue_style
+                ws.cell(row=line_in_ws, column=7).style = dt_overdue_style
+                ws.cell(row=line_in_ws, column=8).style = dt_overdue_style
+
+            if row.is_month_overdue:
+                for col in xrange(1, 23+1):
+                    ws.cell(row=line_in_ws, column=col).style = month_overdue_style
+                ws.cell(row=line_in_ws, column=7).style = dt_month_overdue_style
+                ws.cell(row=line_in_ws, column=8).style = dt_month_overdue_style
+
+            if row.status == PROJECT_STATUS_DELIVERED:
+                for col in xrange(1, 23+1):
+                    ws.cell(row=line_in_ws, column=col).style = delivered_style
+                ws.cell(row=line_in_ws, column=7).style = dt_delivered_style
+                ws.cell(row=line_in_ws, column=8).style = dt_delivered_style
+
 
             # save totals
             for key in totals.keys():

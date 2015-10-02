@@ -44,3 +44,4 @@ class ConstructionStatusReport(Base):
     ap_percent = db.Column(db.Integer, nullable=True)   # Монтаж точек доступа %
 
     is_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены
+    is_month_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены более чем на месяц

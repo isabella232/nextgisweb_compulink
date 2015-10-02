@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from nextgisweb import DBSession as NgwSession
 from datetime import datetime, date
 from nextgisweb_compulink.compulink_mssql_bridge import CompulinkMssqlBridgeComponent, DBSession as MsSqlSession
@@ -143,8 +144,10 @@ class StatusReportReactor(AbstractReactor):
                now_dt > report_line.end_build_time and \
                report_line.status not in [PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED]:
                 report_line.is_overdue = True
+                report_line.is_month_overdue = now_dt - relativedelta(months=1) > report_line.end_build_time
             else:
                 report_line.is_overdue = False
+                report_line.is_month_overdue = False
 
             report_line.persist()
             ngw_session.flush()
