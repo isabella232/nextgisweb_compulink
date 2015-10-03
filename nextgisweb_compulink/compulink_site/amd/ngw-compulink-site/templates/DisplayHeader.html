@@ -19,7 +19,7 @@
             {% endif %}
             <li>
                 <a href="#" title="Отчёты" class="parent-link">Отчёты</a>
-                <ul>
+                <ul class="child-items">
                     <li>
                         <a title="Открыть отчёт о ходе строительства" href="{{ headerData.reportUrl }}">Отчёт о ходе
                             строительства</a>
@@ -28,7 +28,7 @@
             </li>
             <li>
                 <a href="#" title="Имя пользователя" class="parent-link">{{headerData.userName }}</a>
-                <ul>
+                <ul class="child-items">
                     <li>
                         <a href="{{ headerData.logoutUrl }}" title="Выход из системы">Выход</a>
                     </li>

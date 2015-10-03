@@ -57,6 +57,10 @@
     content: "\25BE";
 }
 
+#nav ul.child-items {
+    min-width: 100%;
+}
+
 #header a.header-title {
     color: white;
     text-decoration: none;
