@@ -2,6 +2,7 @@
     <div class="home-menu pure-menu pure-menu-horizontal" style="overflow:visible;">
         <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
 
+
         <a class="pure-menu-heading" href="{{ headerData.appUrl }}" style="float:left;">
             {{ headerData.fullName }}
         </a>
@@ -9,17 +10,18 @@
         <ul id="nav">
             {% if headerData.isAdm %}
             <li class="pure-menu-item">
-                <a href="{{ headerData.resourcesUrl }}" title="Ресурсы">Ресурсы</a>
+                <a href="{{ headerData.resourcesUrl }}" title="На страницу ресурсов">Ресурсы</a>
             </li>
             <li class="pure-menu-item">
-                <a href="{{ headerData.controlPanelUrl }}" title="Панель управления">Панель управления</a>
+                <a href="{{ headerData.controlPanelUrl }}" title="К панеле управления">Панель управления</a>
             </li>
             {% endif %}
             <li>
                 <a href="#" title="Отчёты">Отчёты</a>
                 <ul>
                     <li>
-                        <a title="Отчёт о ходе строительства" href="{{ headerData.reportUrl }}">Отчёт о ходе строительства</a>
+                        <a title="Открыть отчёт о ходе строительства" href="{{ headerData.reportUrl }}">Отчёт о ходе
+                            строительства</a>
                     </li>
                 </ul>
             </li>
@@ -27,7 +29,7 @@
                 <a href="#" title="Имя пользователя">{{headerData.userName }}</a>
                 <ul>
                     <li>
-                        <a href="{{ headerData.logoutUrl }}" title="Выход">Выход</a>
+                        <a href="{{ headerData.logoutUrl }}" title="Выход из системы">Выход</a>
                     </li>
                 </ul>
             </li>
