@@ -1,9 +1,10 @@
 <div id="header" class="header" style="padding: 0; margin: 0">
-    <div class="home-menu pure-menu pure-menu-horizontal" style="overflow:visible;">
-        <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
+    <div style="overflow:visible;" class="home-menu pure-menu pure-menu-horizontal">
+        <a class="header-inline" href="{{ headerData.appUrl }}" title="На главную">
+            <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
+        </a>
 
-
-        <a class="pure-menu-heading" href="{{ headerData.appUrl }}" style="float:left;">
+        <a class="header-inline pure-menu-heading" href="{{ headerData.appUrl }}" title="На главную">
             {{ headerData.fullName }}
         </a>
 

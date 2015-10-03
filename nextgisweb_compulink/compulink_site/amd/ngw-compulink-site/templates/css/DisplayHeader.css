@@ -51,3 +51,9 @@
     display: block; /*DISPLAY ONLY WHEN ITEM IS HOVERED*/
     right: 0;
 }
+
+#header a.header-title {
+    color: white;
+    text-decoration: none;
+    text-transform: capitalize;
+}
