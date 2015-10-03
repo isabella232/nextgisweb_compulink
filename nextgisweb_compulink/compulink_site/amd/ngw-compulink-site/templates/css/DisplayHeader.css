@@ -52,6 +52,11 @@
     right: 0;
 }
 
+#nav a.parent-link:after {
+    padding-left: 3px;
+    content: "\25BE";
+}
+
 #header a.header-title {
     color: white;
     text-decoration: none;
