@@ -6,7 +6,8 @@ define([
     "dijit/_WidgetsInTemplateMixin",
     "dojox/dtl",
     "dojox/dtl/Context",
-    "dojo/text!./templates/DisplayHeader.html"
+    "dojo/text!./templates/DisplayHeader.html",
+    "xstyle/css!./templates/css/DisplayHeader.css"
 ], function (
     declare,
     _WidgetBase,
