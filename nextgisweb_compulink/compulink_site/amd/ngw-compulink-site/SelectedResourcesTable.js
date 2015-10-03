@@ -1,6 +1,8 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/aspect',
+    'dojo/dom-style',
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
@@ -12,7 +14,7 @@ define([
     "dgrid/Selection",
     "dijit/Menu",
     "dijit/MenuItem"
-], function (declare, lang, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem) {
+], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem) {
     return declare(null, {
 
         _columns: {
@@ -82,6 +84,19 @@ define([
                 })
             }));
 
+            // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
+            aspect.after(this._grid, "renderRow", function(row, args) {
+                if (args[0]['is_overdue']) {
+                    domStyle.set(row, "color", "#ff6666");
+                }
+                if (args[0]['is_month_overdue']) {
+                    domStyle.set(row, "font-weight", "bold");
+                }
+                if (args[0]['is_focl_delivered']) {
+                    domStyle.set(row, "color", "#008600");
+                }
+                return row;
+            });
 
             //this._grid.startup();
 
