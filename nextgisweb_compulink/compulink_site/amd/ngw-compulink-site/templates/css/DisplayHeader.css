@@ -2,14 +2,16 @@
 /* http://jsfiddle.net/V8aL6/2/ solution */
 
 #nav {
-    list-style: none;
-    font-weight: bold;
-    margin: 0;
+    display: block;
     float: right;
-    height: 28px;
-    display: inline-block;
-    position:relative;
-    z-index:5;
+    font-weight: bold;
+    height: 15px;
+    list-style: outside none none;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 5;
 }
 
 #nav li {
