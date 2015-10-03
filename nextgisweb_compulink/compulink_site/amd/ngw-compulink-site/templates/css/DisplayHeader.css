@@ -52,6 +52,10 @@
     right: 0;
 }
 
+#nav li a:hover {
+    color: #cae1f3;
+}
+
 #nav a.parent-link:after {
     padding-left: 3px;
     content: "\25BE";
