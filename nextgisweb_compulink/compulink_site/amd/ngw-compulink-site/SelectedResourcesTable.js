@@ -13,7 +13,9 @@ define([
     'dojo/store/Memory',
     'dgrid/Selection',
     'dijit/Menu',
-    'dijit/MenuItem'
+    'dijit/MenuItem',
+    //style
+    'xstyle/css!./resource/SelectedResourcesTable.css'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem) {
     return declare(null, {
 
