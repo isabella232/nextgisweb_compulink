@@ -17,6 +17,7 @@ define([
         buttonCancel: 'Cancel',
         handlerOk: function () {},
         handlerCancel: function () {},
+        isDestroyedAfterHiding: false,
 
         constructor: function (kwArgs) {
             lang.mixin(this, kwArgs);
@@ -38,12 +39,18 @@ define([
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
                     this.hide();
+                    if (this.isDestroyedAfterHiding) {
+                        this.destroyRecursive();
+                    }
                 }));
             }
             if (this.handlerCancel) {
                 on(this.content.cancelButton, 'click', lang.hitch(this, function () {
                     this.handlerCancel.call();
                     this.hide();
+                    if (this.isDestroyedAfterHiding) {
+                        this.destroyRecursive();
+                    }
                 }));
             }
         },
