@@ -16,9 +16,10 @@ define([
     'dijit/Menu',
     'dijit/MenuItem',
     'dijit/MenuSeparator',
+    'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, registry, mustache, OnDemandGrid,
-             ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, ConfirmDialog) {
+             ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select, ConfirmDialog) {
     return declare(null, {
 
         _columns: {
@@ -93,7 +94,9 @@ define([
             this._menu.addChild(new MenuItem({
                 label: 'Изменить статус',
                 onClick: lang.hitch(this, function (evt) {
-                    this._showChangeStatusDialog(evt);
+                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    this._showChangeStatusDialog(item);
+                    this._loadStatuses(item);
                 })
             }));
 
@@ -148,7 +151,7 @@ define([
         },
 
         _changeStatusDialog: null,
-        _showChangeStatusDialog: function (evt) {
+        _showChangeStatusDialog: function (gridItem) {
             this._changeStatusDialog = new ConfirmDialog({
                 title: 'Изменение статуса объекта строительства',
                 message: '',
@@ -168,7 +171,35 @@ define([
                 class: 'loading-statuses'
             });
             domConstruct.place(pStatus, this._changeStatusDialog.contentNode);
+
             this._changeStatusDialog.show();
+        },
+
+        _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{id}/focl_status',
+        _loadStatuses: function (gridItem) {
+            var get_statuses_url = this._get_statuses_url.replace('{id}', gridItem);
+
+            xhr.get(get_statuses_url, {handleAs: 'json'})
+                .then(lang.hitch(this, function (statusesInfo) {
+                    this._buildStatusesSelector(statusesInfo);
+            }));
+        },
+
+        _buildStatusesSelector: function (statusesInfo) {
+            var availableStatuses = statusesInfo.statuses,
+                countStatuses = availableStatuses.length,
+                statusesOptions = [],
+                statusInfo, i;
+
+            for (i = 0; i < countStatuses; i++) {
+                statusInfo = availableStatuses[i];
+                statusesOptions.push({label: statusInfo.name, value: statusInfo.id});
+            }
+
+            new Select({
+                name: "select2",
+                options: statusesOptions
+            }).placeAt(this._changeStatusDialog.contentNode).startup();
         }
     });
 });
