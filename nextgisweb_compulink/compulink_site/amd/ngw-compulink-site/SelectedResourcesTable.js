@@ -96,9 +96,9 @@ define([
             this._menu.addChild(new MenuItem({
                 label: 'Изменить статус',
                 onClick: lang.hitch(this, function (evt) {
-                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
-                    this._showChangeStatusDialog(item);
-                    this._loadStatuses(item);
+                    var itemId = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    this._showChangeStatusDialog(itemId);
+                    this._loadStatuses(itemId);
                 })
             }));
 
@@ -153,7 +153,8 @@ define([
         },
 
         _changeStatusDialog: null,
-        _showChangeStatusDialog: function (gridItem) {
+        _statusesSelector: null,
+        _showChangeStatusDialog: function (itemId) {
             this._changeStatusDialog = new ConfirmDialog({
                 title: 'Изменение статуса объекта строительства',
                 message: '',
@@ -161,12 +162,17 @@ define([
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function() {
+                    this._saveSelectedStatus();
                     this._changeStatusDialog = null;
+                    this._statusesSelector = null;
                 }),
                 handlerCancel: lang.hitch(this, function () {
                     this._changeStatusDialog = null;
+                    this._statusesSelector = null;
                 })
             });
+
+            this._changeStatusDialog._itemId = itemId;
 
             var pStatus = domConstruct.create('p', {
                 innerHTML: 'Загрузка статусов...',
@@ -177,9 +183,9 @@ define([
             this._changeStatusDialog.show();
         },
 
-        _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{id}/focl_status',
-        _loadStatuses: function (gridItem) {
-            var get_statuses_url = this._get_statuses_url.replace('{id}', gridItem);
+        _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{{id}}/focl_status',
+        _loadStatuses: function (itemId) {
+            var get_statuses_url = mustache.render(this._get_statuses_url, { id: itemId });
 
             xhr.get(get_statuses_url, {handleAs: 'json'})
                 .then(lang.hitch(this, function (statusesInfo) {
@@ -208,15 +214,33 @@ define([
             }
 
             this._removeLoadingStatusesMessage();
-            domConstruct.place('<label for="statusesSelector">Выберите статус </label>', this._changeStatusDialog.contentNode);
-            new Select({
+
+            domConstruct.place('<label for="statusesSelector">Выберите статус </label>',
+                this._changeStatusDialog.contentNode);
+
+            this._statusesSelector = new Select({
                 id: "statusesSelector",
                 options: statusesOptions
-            }).placeAt(this._changeStatusDialog.contentNode).startup();
+            });
+            this._statusesSelector.placeAt(this._changeStatusDialog.contentNode).startup()
         },
 
         _removeLoadingStatusesMessage: function () {
             query('p.loading-statuses', this._changeStatusDialog.contentNode).forEach(domConstruct.destroy);
+        },
+
+        _set_status_url: '/compulink/resources/{{id}}/set_focl_status?status={{status}}',
+        _saveSelectedStatus: function () {
+            var status = this._statusesSelector.get("value"),
+                setStatusUrl = mustache.render(this._set_status_url, {
+                    id: this._changeStatusDialog._itemId,
+                    status: status
+                });
+
+            xhr.get(setStatusUrl, {handleAs: 'json'})
+                .then(lang.hitch(this, function (result) {
+                    console.log(result);
+            }));
         }
     });
 });
