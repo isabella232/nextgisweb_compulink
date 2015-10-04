@@ -6,6 +6,7 @@ define([
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
+    'dojo/dom-construct',
     'dijit/registry',
     'ngw-compulink-libs/mustache/mustache',
     'dgrid/OnDemandGrid',
@@ -17,8 +18,8 @@ define([
     'dijit/MenuSeparator',
     'ngw-compulink-site/ConfirmDialog',
     'xstyle/css!./resource/SelectedResourcesTable.css'
-], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer,
-             Memory, Selection, Menu, MenuItem, MenuSeparator) {
+], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, registry, mustache, OnDemandGrid,
+             ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, ConfirmDialog) {
     return declare(null, {
 
         _columns: {
@@ -153,8 +154,21 @@ define([
                 title: 'Изменение статуса объекта строительства',
                 message: '',
                 buttonOk: 'Сохранить',
-                buttonCancel: 'Отменить'
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function() {
+                    this._changeStatusDialog = null;
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                    this._changeStatusDialog = null;
+                })
             });
+
+            var pStatus = domConstruct.create('p', {
+                innerHTML: 'Загрузка статусов...',
+                class: 'loading-statuses'
+            });
+            domConstruct.place(pStatus, this._changeStatusDialog.contentNode);
             this._changeStatusDialog.show();
         }
     });
