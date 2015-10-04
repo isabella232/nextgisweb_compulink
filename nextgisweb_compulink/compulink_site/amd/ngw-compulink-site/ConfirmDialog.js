@@ -1,5 +1,6 @@
 define([
     'dojo/_base/declare',
+    'dojo/query',
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/html',
@@ -9,7 +10,8 @@ define([
     'dijit/Dialog',
     'dojo/on',
     'dojo/text!./templates/ConfirmDialog.html'
-], function (declare, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on, template) {
+], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on,
+             template) {
     return declare([Dialog], {
         title: 'Confirm',
         message: 'Are you sure?',
@@ -35,6 +37,7 @@ define([
 
         postCreate: function () {
             this.inherited(arguments);
+            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
             if (this.handlerOk) {
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
