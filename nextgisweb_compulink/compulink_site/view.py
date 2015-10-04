@@ -77,6 +77,14 @@ def setup_pyramid(comp, config):
         'compulink.site.export_csv',
         '/compulink/resources/{id:\d+}/export_csv', client=('id',)) \
         .add_view(export_focl_to_csv)
+    config.add_route(
+        'compulink.site.get_focl_status',
+        '/compulink/resources/{id:\d+}/focl_status', client=('id',)) \
+        .add_view(get_focl_status)
+    config.add_route(
+        'compulink.site.set_focl_status',
+        '/compulink/resources/{id:\d+}/set_focl_status', client=('id',)) \
+        .add_view(set_focl_status)
 
 
 @view_config(renderer='json')
@@ -570,3 +578,53 @@ def _json_to_csv(in_file_path, out_file_path):
                            '-s_srs', 'EPSG:3857',
                            '-t_srs', 'EPSG:4326'])
 
+
+@view_config(renderer='json')
+def get_focl_status(request):
+    res_id = request.matchdict['id']
+    dbsession = DBSession()
+
+    try:
+        focl_resource = dbsession.query(FoclStruct).get(res_id)
+    except:
+        raise HTTPNotFound()
+
+    if not focl_resource:
+        raise HTTPNotFound()
+
+    if not focl_resource.has_permission(DataScope.write, request.user):
+        raise HTTPForbidden()
+
+    resp = {
+        'statuses': get_project_statuses(),
+        'focl_status': focl_resource.status
+    }
+
+    return Response(json.dumps(resp))
+
+
+
+@view_config(renderer='json')
+def set_focl_status(request):
+    res_id = request.matchdict['id']
+    dbsession = DBSession()
+
+    new_status = request.params.get('status', None)
+    if new_status is None or new_status not in get_project_statuses(as_dict=True).keys():
+        raise HTTPBadRequest('Set right status!')
+
+    try:
+        focl_resource = dbsession.query(FoclStruct).get(res_id)
+    except:
+        raise HTTPNotFound()
+
+    if not focl_resource:
+        raise HTTPNotFound()
+
+    if not focl_resource.has_permission(DataScope.write, request.user):
+        raise HTTPForbidden()
+
+    focl_resource.status = new_status
+    focl_resource.persist()
+
+    return Response(json.dumps({'status': 'ok'}))
