@@ -1,7 +1,7 @@
 .dijitTableLayout label { font-weight: bold; }
 
 .dgrid-row  { height: 3em; }
-.dgrid-cell { white-space: normal; }
+.dgrid-cell { white-space: normal; width: 5em; }
 
 .dgrid-header .dgrid-cell { text-align: center; }
 .dgrid-content .dgrid-cell.field-start_build_time,
