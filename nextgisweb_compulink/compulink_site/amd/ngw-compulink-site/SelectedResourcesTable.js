@@ -14,9 +14,10 @@ define([
     'dgrid/Selection',
     'dijit/Menu',
     'dijit/MenuItem',
-    //style
+    'dijit/MenuSeparator',
     'xstyle/css!./resource/SelectedResourcesTable.css'
-], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem) {
+], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer,
+             Memory, Selection, Menu, MenuItem, MenuSeparator) {
     return declare(null, {
 
         _columns: {
@@ -84,6 +85,12 @@ define([
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_csv';
                     var win = window.open(exportUrl, '_blank');
                 })
+            }));
+
+            this._menu.addChild(new MenuSeparator());
+
+            this._menu.addChild(new MenuItem({
+                label: 'Изменить статус'
             }));
 
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
