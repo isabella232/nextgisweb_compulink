@@ -4,7 +4,6 @@ define([
     "dojo/aspect",
     "dojo/request/xhr",
     "dojo/dom-style",
-    "dojo/query",
     "dojo/_base/array",
     "dojo/io-query",
     "dojo/store/Memory",
@@ -41,7 +40,6 @@ define([
     aspect,
     xhr,
     domStyle,
-    query,
     array,
     ioQuery,
     Memory,
@@ -130,7 +128,10 @@ define([
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
             aspect.after(w._grid, "renderRow", function(row, args) {
                 if (args[0]['is_overdue']) {
-                    domStyle.set(query(".field-end_build_time", row)[0], "color", "#ff6666");
+                    domStyle.set(row, "color", "#ff6666");
+                }
+                if (args[0]['is_month_overdue']) {
+                    domStyle.set(row, "font-weight", "bold");
                 }
                 if (args[0]['summary']) {
                     domStyle.set(row, "font-weight", "bold");
