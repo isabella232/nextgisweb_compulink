@@ -133,6 +133,9 @@ define([
                 if (args[0]['is_month_overdue']) {
                     domStyle.set(row, "font-weight", "bold");
                 }
+                if (args[0]['is_focl_delivered']) {
+                    domStyle.set(row, "color", "#008600");
+                }
                 if (args[0]['summary']) {
                     domStyle.set(row, "font-weight", "bold");
                     domStyle.set(row, "background-color", "#ddd");
