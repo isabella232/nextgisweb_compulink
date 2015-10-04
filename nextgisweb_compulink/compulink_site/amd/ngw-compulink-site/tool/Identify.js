@@ -339,7 +339,18 @@ define([
     parseLayersInfo(focl_layers_type);
     parseLayersInfo(sit_plan_layers_type);
 
-    var identifyStatusDiv = dom.byId("identifyStatus");
+    var identifyStatusDiv = dom.byId("identifyStatus"),
+        identifyIconLoading = new OpenLayers.Icon(
+            ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
+            new OpenLayers.Size(40,40)),
+        isIdentifyActive = false,
+        identifyLoadingMarker,
+        identifyIcon = new OpenLayers.Icon(
+            ngwConfig.compulinkAssetUrl + 'img/identify-icon.png',
+            new OpenLayers.Size(16,16)),
+        identifyMarker = null,
+        identifyLayerName = 'identifyMarkers',
+        identifyLayer = new OpenLayers.Layer.Markers(identifyLayerName);
 
     return declare(Base, {
         label: "Информация об объекте",
@@ -387,6 +398,12 @@ define([
                 layers: []
             };
 
+            isIdentifyActive = true;
+            domClass.add(identifyStatusDiv, 'active');
+            this._addIdentifyLayer();
+            identifyLoadingMarker = new OpenLayers.Marker(point, identifyIconLoading);
+            identifyLayer.addMarker(identifyLoadingMarker);
+
             for (var lyr_name in this.display.map.layers) {
                 var lyr = this.display.map.layers[lyr_name];
                 if (lyr.vectors_ids) {
@@ -402,22 +419,23 @@ define([
                 layerLabels[i] = i;
             }, this);
 
-            domClass.add(identifyStatusDiv, 'active');
-
-            // XHR-запрос к сервису
             xhr.post(route("feature_layer.identify"), {
                 handleAs: "json",
                 data: json.stringify(request)
             }).then(function (response) {
                 domClass.remove(identifyStatusDiv);
+                isIdentifyActive = false;
+                identifyLayer.removeMarker(identifyLoadingMarker);
                 tool._responsePopup(response, point, layerLabels);
-            }, function (err) {
+            }, lang.hitch(this, function (err) {
                 console.log(err);
                 domClass.add(identifyStatusDiv, 'error');
+                isIdentifyActive = false;
+                this._clearIdentifyLayer();
                 setTimeout(function () {
                     domClass.remove(identifyStatusDiv);
                 }, 3000)
-            });
+            }));
         },
 
         // WKT-строка геометрии поиска объектов для точки pixel
@@ -438,13 +456,23 @@ define([
                 this.map.olMap.removePopup(this._popup);
                 this._popup = null;
             }
+            if (identifyMarker) {
+                identifyLayer.removeMarker(identifyMarker);
+                identifyMarker = null;
+            }
         },
 
         _responsePopup: function (response, point, layerLabels) {
-            // TODO: Проверить, есть ли какой-нибудь результат
-            // и показывать popup только если он есть.
-
             this._removePopup();
+
+            if (!response.featureCount || response.featureCount === 0) {
+                this._clearIdentifyLayer();
+                return false;
+            }
+
+            this._addIdentifyLayer();
+            identifyMarker = new OpenLayers.Marker(point, identifyIcon);
+            identifyLayer.addMarker(identifyMarker);
 
             this._popup = new Popup({
                 title: "Информация об объекте",
@@ -470,7 +498,18 @@ define([
             on(this._popup._closeSpan, "click", lang.hitch(this, function () {
                 this._removePopup();
             }));
-        }
+        },
 
+        _clearIdentifyLayer: function () {
+            identifyLayer.clearMarkers();
+        },
+
+        _addIdentifyLayer: function () {
+            var olMap = this.display.map.olMap;
+            if (olMap.getLayersByName(identifyLayerName).length === 0) {
+                olMap.addLayer(identifyLayer);
+            }
+            olMap.setLayerIndex(identifyLayer, 9999);
+        }
     });
 });
