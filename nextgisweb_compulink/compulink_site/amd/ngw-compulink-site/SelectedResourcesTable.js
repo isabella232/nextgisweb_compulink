@@ -190,15 +190,24 @@ define([
             var availableStatuses = statusesInfo.statuses,
                 countStatuses = availableStatuses.length,
                 statusesOptions = [],
+                statusesOptionItem,
                 statusInfo, i;
 
             for (i = 0; i < countStatuses; i++) {
                 statusInfo = availableStatuses[i];
-                statusesOptions.push({label: statusInfo.name, value: statusInfo.id});
+                statusesOptionItem = {
+                    label: statusInfo.name, value: statusInfo.id
+                };
+
+                if (statusInfo.id === statusesInfo.focl_status) {
+                    statusesOptionItem.selected = true;
+                }
+
+                statusesOptions.push(statusesOptionItem);
             }
 
             new Select({
-                name: "select2",
+                name: "statusesSelector",
                 options: statusesOptions
             }).placeAt(this._changeStatusDialog.contentNode).startup();
         }
