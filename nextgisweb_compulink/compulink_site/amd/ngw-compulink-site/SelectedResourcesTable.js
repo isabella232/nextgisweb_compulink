@@ -7,6 +7,7 @@ define([
     'dojo/Deferred',
     'dojo/request/xhr',
     'dojo/dom-construct',
+    'dojo/query',
     'dijit/registry',
     'ngw-compulink-libs/mustache/mustache',
     'dgrid/OnDemandGrid',
@@ -18,8 +19,8 @@ define([
     'dijit/MenuSeparator',
     'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog'
-], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, registry, mustache, OnDemandGrid,
-             ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select, ConfirmDialog) {
+], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
+             OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select, ConfirmDialog) {
     return declare(null, {
 
         _columns: {
@@ -205,10 +206,16 @@ define([
                 statusesOptions.push(statusesOptionItem);
             }
 
+            this._removeLoadingStatusesMessage();
+            domConstruct.place('<label for="statusesSelector">Выберите статус </label>', this._changeStatusDialog.contentNode);
             new Select({
-                name: "statusesSelector",
+                id: "statusesSelector",
                 options: statusesOptions
             }).placeAt(this._changeStatusDialog.contentNode).startup();
+        },
+
+        _removeLoadingStatusesMessage: function () {
+            query('p.loading-statuses', this._changeStatusDialog.contentNode).forEach(domConstruct.destroy);
         }
     });
 });
