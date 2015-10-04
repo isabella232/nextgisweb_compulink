@@ -15,6 +15,7 @@ define([
     'dijit/Menu',
     'dijit/MenuItem',
     'dijit/MenuSeparator',
+    'ngw-compulink-site/ConfirmDialog',
     'xstyle/css!./resource/SelectedResourcesTable.css'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, registry, mustache, OnDemandGrid, ColumnResizer,
              Memory, Selection, Menu, MenuItem, MenuSeparator) {
@@ -90,7 +91,10 @@ define([
             this._menu.addChild(new MenuSeparator());
 
             this._menu.addChild(new MenuItem({
-                label: 'Изменить статус'
+                label: 'Изменить статус',
+                onClick: lang.hitch(this, function (evt) {
+                    this._showChangeStatusDialog(evt);
+                })
             }));
 
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
@@ -141,6 +145,17 @@ define([
                 this._store.data = data;
                 this._grid.refresh();
             }));
+        },
+
+        _changeStatusDialog: null,
+        _showChangeStatusDialog: function (evt) {
+            this._changeStatusDialog = new ConfirmDialog({
+                title: 'Изменение статуса объекта строительства',
+                message: '',
+                buttonOk: 'Сохранить',
+                buttonCancel: 'Отменить'
+            });
+            this._changeStatusDialog.show();
         }
     });
 });
