@@ -108,7 +108,7 @@ def get_status_report(request):
             'ap_fact':          row.ap_fact,
             'ap_percent':       row.ap_percent,
             'is_overdue':       row.is_overdue,
-            'is_month_overdue':       row.is_monht_overdue,
+            'is_month_overdue':       row.is_month_overdue,
             'is_focl_delivered':      row.status == PROJECT_STATUS_DELIVERED,
         }
         json_report.append(json_row)
