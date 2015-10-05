@@ -36,7 +36,7 @@ def setup_pyramid(comp, config):
 
 # TODO: NEED BIG REFACTORING!!!!
 
-def get_regions_from_resource(as_dict=False):
+def get_regions_from_resource(as_dict=False, sort=False):
 
     # get dictionary
     vector_res = VectorLayer.filter_by(keyname=REGIONS_KEYNAME).first()
@@ -53,6 +53,9 @@ def get_regions_from_resource(as_dict=False):
     features = []
     for f in query():
         features.append({'name': f.fields[REGIONS_NAME_FIELD], 'id': f.fields[REGIONS_ID_FIELD]})
+
+    if sort:
+        features.sort(key=lambda x: x['name'])
 
     if as_dict:
         return {feat['id']: feat['name'] for feat in features}
@@ -112,7 +115,7 @@ def get_region_id(reg_short_name):
     return feature.fields[REGIONS_ID_FIELD] if feature else None
 
 
-def get_districts_from_resource(as_dict=False):
+def get_districts_from_resource(as_dict=False, sort=False):
 
     vector_res = VectorLayer.filter_by(keyname=DISTRICT_KEYNAME).first()
     if not vector_res:
@@ -132,6 +135,9 @@ def get_districts_from_resource(as_dict=False):
             'id': f.fields[DISTRICT_ID_FIELD],
             'parent_id': f.fields[DISTRICT_PARENT_ID_FIELD]
         })
+
+    if sort:
+        features.sort(key=lambda x: x['name'])
 
     if as_dict:
         return {feat['id']: feat['name'] for feat in features}

@@ -36,8 +36,8 @@ class CompulinkAdminComponent(Component):
 
     def client_settings(self, request):
         return dict(
-            regions_dict=get_regions_from_resource(),
-            districts_dict=get_districts_from_resource(),
+            regions_dict=get_regions_from_resource(sort=True),
+            districts_dict=get_districts_from_resource(sort=True),
             statuses_dict=get_project_statuses(),
             def_status=PROJECT_STATUS_PROJECT
         )
