@@ -164,7 +164,7 @@ define([
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function() {
-                    this._saveSelectedStatus().then(lang.hitch(function(resultStatus) {
+                    this._saveSelectedStatus().then(this, lang.hitch(function(resultStatus) {
                         if (resultStatus === 'success') {
                             alert('Статус успешно изменен!');
                             this.updateDataStore(this._lastGridState);
