@@ -121,8 +121,10 @@ define([
             this.bindEvents();
         },
 
+        _lastGridState: null,
         bindEvents: function () {
             topic.subscribe('resources/changed', lang.hitch(this, function (selection) {
+                this._lastGridState = selection;
                 this.updateDataStore(selection);
             }));
 
@@ -162,7 +164,14 @@ define([
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function() {
-                    this._saveSelectedStatus();
+                    this._saveSelectedStatus().then(lang.hitch(function(resultStatus) {
+                        if (resultStatus === 'success') {
+                            alert('Статус успешно изменен!');
+                            this.updateDataStore(this._lastGridState);
+                        }  else {
+                            alert('Изменить статус не удалось.');
+                        }
+                    }));
                     this._changeStatusDialog = null;
                     this._statusesSelector = null;
                 }),
@@ -231,7 +240,8 @@ define([
 
         _set_status_url: '/compulink/resources/{{id}}/set_focl_status?status={{status}}',
         _saveSelectedStatus: function () {
-            var status = this._statusesSelector.get("value"),
+            var deferred = new Deferred(),
+                status = this._statusesSelector.get("value"),
                 setStatusUrl = mustache.render(this._set_status_url, {
                     id: this._changeStatusDialog._itemId,
                     status: status
@@ -239,8 +249,12 @@ define([
 
             xhr.get(setStatusUrl, {handleAs: 'json'})
                 .then(lang.hitch(this, function (result) {
-                    console.log(result);
-            }));
+                    deferred.resolve('success');
+                }, lang.hitch(function (error) {
+                    deferred.resolve('error');
+                })));
+
+            return deferred.promise;
         }
     });
 });
