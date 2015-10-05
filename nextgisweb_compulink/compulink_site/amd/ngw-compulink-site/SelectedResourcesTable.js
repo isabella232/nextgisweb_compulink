@@ -149,7 +149,9 @@ define([
             for (var i=0; i<ids.length; i++) { ids_num.push(ids[i].replace('res_','')); }
 
             xhr.post(this._get_focl_info_url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
+                this._store = Memory([]);
                 this._store.data = data;
+                this._grid.store = this._store;
                 this._grid.refresh();
             }));
         },
