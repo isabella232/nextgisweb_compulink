@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+from datetime import date
+from dateutil.relativedelta import relativedelta
 import os
 from os import path, mkdir
 from shutil import rmtree
@@ -25,7 +27,8 @@ from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
-from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED
+from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
+    PROJECT_STATUS_BUILT
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
@@ -613,6 +616,7 @@ def set_focl_status(request):
     if new_status is None or new_status not in get_project_statuses(as_dict=True).keys():
         raise HTTPBadRequest('Set right status!')
 
+    # update resource
     try:
         focl_resource = dbsession.query(FoclStruct).get(res_id)
     except:
@@ -626,5 +630,25 @@ def set_focl_status(request):
 
     focl_resource.status = new_status
     focl_resource.persist()
+
+    # update reports
+    try:
+        report_line = dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id == res_id).one()
+    except:
+        report_line = None
+
+    if report_line:
+        now_dt = date.today
+        report_line.status = new_status
+        if report_line.end_build_time and \
+           now_dt > report_line.end_build_time and \
+           report_line.status not in [PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED]:
+            report_line.is_overdue = True
+            report_line.is_month_overdue = now_dt - relativedelta(months=1) > report_line.end_build_time
+        else:
+            report_line.is_overdue = False
+            report_line.is_month_overdue = False
+
+        report_line.persist()
 
     return Response(json.dumps({'status': 'ok'}))
