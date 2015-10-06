@@ -19,9 +19,11 @@ define([
     'dijit/MenuSeparator',
     'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog',
+    'ngw-compulink-site/InfoDialog',
     'xstyle/css!./resource/SelectedResourcesTable.css'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
-             OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select, ConfirmDialog) {
+             OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
+             ConfirmDialog, InfoDialog) {
     return declare(null, {
 
         _columns: {
@@ -166,14 +168,23 @@ define([
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function() {
-                    this._saveSelectedStatus().then(lang.hitch(this, function(resultStatus) {
-                        if (resultStatus === 'success') {
-                            alert('Статус успешно изменен!');
+                    this._saveSelectedStatus().then(
+                        lang.hitch(this, function (resultStatus) {
+                            new InfoDialog({
+                                isDestroyedAfterHiding: true,
+                                title: 'Изменение статуса объекта строительства',
+                                message: 'Статус успешно изменен!'
+                            }).show();
+
                             this.updateDataStore(this._lastGridState);
-                        }  else {
-                            alert('Изменить статус не удалось.');
-                        }
-                    }));
+                        }),
+                        lang.hitch(this, function () {
+                            new InfoDialog({
+                                isDestroyedAfterHiding: true,
+                                title: 'Изменение статуса объекта строительства',
+                                message: 'Изменить статус не удалось.<br/>Попробуйте еще раз.'
+                            }).show();
+                        }));
                     this._changeStatusDialog = null;
                     this._statusesSelector = null;
                 }),
@@ -242,21 +253,13 @@ define([
 
         _set_status_url: '/compulink/resources/{{id}}/set_focl_status?status={{status}}',
         _saveSelectedStatus: function () {
-            var deferred = new Deferred(),
-                status = this._statusesSelector.get("value"),
+            var status = this._statusesSelector.get("value"),
                 setStatusUrl = mustache.render(this._set_status_url, {
                     id: this._changeStatusDialog._itemId,
                     status: status
                 });
 
-            xhr.get(setStatusUrl, {handleAs: 'json'})
-                .then(lang.hitch(this, function (result) {
-                    deferred.resolve('success');
-                }, lang.hitch(function (error) {
-                    deferred.resolve('error');
-                })));
-
-            return deferred.promise;
+            return xhr.get(setStatusUrl, {handleAs: 'json'});
         }
     });
 });
