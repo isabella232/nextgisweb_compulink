@@ -46,6 +46,7 @@ define([
     "ngw-compulink-site/SelectedResourcesTable",
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
+    "ngw-compulink-site/LayersLoadingIndicator",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -111,6 +112,7 @@ define([
     SelectedResourcesTable,
     CadastreOverlay,
     DisplayHeader,
+    LayersLoadingIndicator,
     Adapter,
     clientSettings
 ) {
@@ -725,6 +727,8 @@ define([
             widget.pkkCheck.on("change",  lang.hitch(this.cadastre, this.cadastre.switchLayer) );
 
             this._zoomToInitialExtent();
+
+            new LayersLoadingIndicator(this.map);
 
             this._mapDeferred.resolve();
         },
