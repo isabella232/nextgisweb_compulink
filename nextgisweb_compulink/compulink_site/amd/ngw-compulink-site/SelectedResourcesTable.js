@@ -28,15 +28,15 @@ define([
 
         _columns: {
                 display_name: 'Наименование',
-                status: 'Статус',
                 region: 'Субъект РФ',
                 district: 'Муниципальный район',
-                cabling_fact: 'Протяженность ВОЛС',
-                start_build_time: 'Строительство ВОЛС (начало)',
-                end_build_time: 'Строительство ВОЛС (окончание)',
-                start_deliver_time: 'Сдача ВОЛС в эксплуатацию (начало)',
-                end_deliver_time: 'Сдача ВОЛС в эксплуатацию (окончание)',
-                subcontr: 'Субподрядчик СМР ВОЛС'
+                status: 'Статус',
+                cabling_fact: 'Протяженность',
+                start_build_time: 'Начало СМР',
+                end_build_time: 'Окончание СМР',
+                start_deliver_time: 'Начало сдачи заказчику',
+                end_deliver_time: 'Окончание сдачи заказчику',
+                subcontr: 'Субподрядчик'
         },
 
         _get_focl_info_url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
