@@ -1,14 +1,14 @@
-.dgrid-row {
-    height: 2em;
-}
+/*.dgrid-row {*/
+    /*height: 2em;*/
+/*}*/
 
 .dgrid-cell {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.dgrid-column-display_name {
-   width: 12em;
+.dgrid-row-odd {
+    background: #999898;
 }
 
 .dgrid-column-region {
