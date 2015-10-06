@@ -20,6 +20,7 @@ define([
         handlerOk: function () {},
         handlerCancel: function () {},
         isDestroyedAfterHiding: false,
+        isClosedAfterButtonClick: true,
 
         constructor: function (kwArgs) {
             lang.mixin(this, kwArgs);
@@ -41,19 +42,17 @@ define([
             if (this.handlerOk) {
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
+                    if (this.isClosedAfterButtonClick) return false;
                     this.hide();
-                    if (this.isDestroyedAfterHiding) {
-                        this.destroyRecursive();
-                    }
+                    if (this.isDestroyedAfterHiding) this.destroyRecursive();
                 }));
             }
             if (this.handlerCancel) {
                 on(this.content.cancelButton, 'click', lang.hitch(this, function () {
                     this.handlerCancel.call();
+                    if (this.isClosedAfterButtonClick) return false;
                     this.hide();
-                    if (this.isDestroyedAfterHiding) {
-                        this.destroyRecursive();
-                    }
+                    if (this.isDestroyedAfterHiding) this.destroyRecursive();
                 }));
             }
         },
