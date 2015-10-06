@@ -638,13 +638,13 @@ def set_focl_status(request):
         report_line = None
 
     if report_line:
-        now_dt = date.today
+        now_dt = date.today()
         report_line.status = new_status
         if report_line.end_build_time and \
-           now_dt > report_line.end_build_time and \
+           now_dt > report_line.end_build_time.date() and \
            report_line.status not in [PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED]:
             report_line.is_overdue = True
-            report_line.is_month_overdue = now_dt - relativedelta(months=1) > report_line.end_build_time
+            report_line.is_month_overdue = now_dt - relativedelta(months=1) > report_line.end_build_time.date()
         else:
             report_line.is_overdue = False
             report_line.is_month_overdue = False
