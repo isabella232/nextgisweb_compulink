@@ -34,42 +34,48 @@ define([
 
             contentWidget.startup();
             this.content = contentWidget;
+
+            this.hide = this._hideDialog;
         },
 
         postCreate: function () {
             this.inherited(arguments);
             this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
+
             if (this.handlerOk) {
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
-                    if (this.isClosedAfterButtonClick) return false;
+                    if (!this.isClosedAfterButtonClick) return false;
                     this.hide();
-                    if (this.isDestroyedAfterHiding) this.destroyRecursive();
                 }));
             }
             if (this.handlerCancel) {
                 on(this.content.cancelButton, 'click', lang.hitch(this, function () {
                     this.handlerCancel.call();
-                    if (this.isClosedAfterButtonClick) return false;
+                    if (!this.isClosedAfterButtonClick) return false;
                     this.hide();
-                    if (this.isDestroyedAfterHiding) this.destroyRecursive();
                 }));
             }
         },
 
         disableButtons: function () {
-            this.buttonOk.setDisabled(true);
-            this.buttonCancel.setDisabled(true);
+            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
+            this.content.okButton.setDisabled(true);
+            this.content.cancelButton.setDisabled(true);
         },
 
         enableButtons: function () {
-            this.buttonOk.setDisabled(false);
-            this.buttonCancel.setDisabled(false);
+            this.content.okButton.setDisabled(false);
+            this.content.cancelButton.setDisabled(false);
         },
 
         config: function (params) {
             lang.mixin(this, params);
             return this;
+        },
+
+        _hideDialog: function () {
+            if (this.isDestroyedAfterHiding) this.destroyRecursive();
         }
     });
 });
