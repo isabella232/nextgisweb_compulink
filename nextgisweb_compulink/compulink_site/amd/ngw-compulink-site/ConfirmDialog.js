@@ -57,6 +57,16 @@ define([
             }
         },
 
+        disableButtons: function () {
+            this.buttonOk.setDisabled(true);
+            this.buttonCancel.setDisabled(true);
+        },
+
+        enableButtons: function () {
+            this.buttonOk.setDisabled(false);
+            this.buttonCancel.setDisabled(false);
+        },
+
         config: function (params) {
             lang.mixin(this, params);
             return this;
