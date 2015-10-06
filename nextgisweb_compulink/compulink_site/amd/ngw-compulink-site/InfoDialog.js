@@ -9,16 +9,14 @@ define([
     'dijit/_WidgetsInTemplateMixin',
     'dijit/Dialog',
     'dojo/on',
-    'dojo/text!./templates/ConfirmDialog.html'
+    'dojo/text!./templates/InfoDialog.html'
 ], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on,
              template) {
     return declare([Dialog], {
-        title: 'Confirm',
-        message: 'Are you sure?',
+        title: 'Info',
+        message: 'Info',
         buttonOk: 'OK',
-        buttonCancel: 'Cancel',
         handlerOk: function () {},
-        handlerCancel: function () {},
         isDestroyedAfterHiding: false,
         isClosedAfterButtonClick: true,
 
@@ -28,8 +26,7 @@ define([
             var contentWidget = new (declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
                 templateString: template,
                 message: this.message,
-                buttonOk: this.buttonOk,
-                buttonCancel: this.buttonCancel
+                buttonOk: this.buttonOk
             }));
 
             contentWidget.startup();
@@ -49,24 +46,14 @@ define([
                     this.hide();
                 }));
             }
-            if (this.handlerCancel) {
-                on(this.content.cancelButton, 'click', lang.hitch(this, function () {
-                    this.handlerCancel.call();
-                    if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
-                }));
-            }
         },
 
         disableButtons: function () {
-            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
             this.content.okButton.setDisabled(true);
-            this.content.cancelButton.setDisabled(true);
         },
 
         enableButtons: function () {
             this.content.okButton.setDisabled(false);
-            this.content.cancelButton.setDisabled(false);
         },
 
         config: function (params) {
