@@ -314,10 +314,10 @@ def get_focl_info(request):
                     'status': statuses.get(report_row.status, report_row.status),
                     'cabling_fact': report_row.cabling_fact,
 
-                    'start_build_time': report_row.start_build_time.strftime('%d.%m.%y') if report_row.start_build_time else '',
-                    'end_build_time': report_row.end_build_time.strftime('%d.%m.%y') if report_row.end_build_time else '',
-                    'start_deliver_time': report_row.start_deliver_time.strftime('%d.%m.%y') if report_row.start_deliver_time else '',
-                    'end_deliver_time': report_row.end_deliver_time.strftime('%d.%m.%y') if report_row.end_deliver_time else '',
+                    'start_build_time': report_row.start_build_time.strftime('%d.%m.%Y') if report_row.start_build_time else '',
+                    'end_build_time': report_row.end_build_time.strftime('%d.%m.%Y') if report_row.end_build_time else '',
+                    'start_deliver_time': report_row.start_deliver_time.strftime('%d.%m.%Y') if report_row.start_deliver_time else '',
+                    'end_deliver_time': report_row.end_deliver_time.strftime('%d.%m.%Y') if report_row.end_deliver_time else '',
 
                     'subcontr': report_row.subcontr_name,
 
