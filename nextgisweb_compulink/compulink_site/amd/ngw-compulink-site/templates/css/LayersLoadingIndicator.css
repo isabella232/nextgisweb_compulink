@@ -1,0 +1,22 @@
+#LayersLoadingIndicator {
+    /*display: none;*/
+    position: absolute;
+    top: 30px;
+    right: 3px;
+    background: transparent;
+    z-index: 99999;
+    font-size: 16px;
+}
+
+#LayersLoadingIndicator div.loading {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-image: url('icons/loading.svg');
+}
+
+#LayersLoadingIndicator div.indicators {
+    display: block;
+    float: right;
+    margin-top: 9px;
+}
