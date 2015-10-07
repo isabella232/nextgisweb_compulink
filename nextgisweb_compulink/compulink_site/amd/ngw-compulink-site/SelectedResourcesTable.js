@@ -169,13 +169,7 @@ define([
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function() {
                     this._saveSelectedStatus().then(
-                        lang.hitch(this, function (resultStatus) {
-                            new InfoDialog({
-                                isDestroyedAfterHiding: true,
-                                title: 'Изменение статуса объекта строительства',
-                                message: 'Статус успешно изменен!'
-                            }).show();
-
+                        lang.hitch(this, function () {
                             this.updateDataStore(this._lastGridState);
                         }),
                         lang.hitch(this, function () {
