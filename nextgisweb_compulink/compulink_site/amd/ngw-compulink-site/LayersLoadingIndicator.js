@@ -3,7 +3,7 @@ define([
     'dojo/query',
     'dojo/_base/array',
     'dojo/_base/lang',
-    'dojo/_base/html',
+    'dojo/html',
     'dojo/dom-construct',
     'dijit/_Widget',
     'dijit/_TemplatedMixin',
@@ -19,29 +19,40 @@ define([
         openLayersMap: null,
         domElement: null,
         domLoaded: null,
-        domAll: null,
+        countLoaded: 0,
 
         constructor: function (map) {
             this.openLayersMap = map.olMap;
             this._buildElementIndicator();
-            this._bindEvents();
         },
 
         _buildElementIndicator: function () {
             var viewPortDiv = this.openLayersMap.viewPortDiv;
             this.domElement = domConstruct.place(mustache.render(template), viewPortDiv);
             this.domLoaded = query('span.loaded', this.domElement)[0];
-            this.all = query('span.all', this.domElement)[0];
         },
 
         _bindEvents: function () {
-            this.openLayersMap.events.register('addlayer', this.openLayersMap, function (layer) {
+            this.openLayersMap.events.register('addlayer', this.openLayersMap, lang.hitch(this, function (layer) {
+                this._layerBindEvents(layer);
+            }));
 
-            });
+            this.openLayersMap.events.register('removelayer', this.openLayersMap, lang.hitch(this, function (layer) {
+            }));
+        },
 
-            this.openLayersMap.events.register('removelayer', this.openLayersMap, function (layer) {
+        _layerBindEvents: function (layer) {
+            this.openLayersMap.events.register('loadstart', layer, lang.hitch(this, function () {
 
-            });
+            }))
+        },
+
+        _getCountLayers: function () {
+            return this.openLayersMap.getNumLayers();
+        },
+
+        _setPercent: function () {
+            html.set(this.domLoaded, Math.round(this.countLoaded / this._getCountLayers() * 100).toString());
         }
     });
 });
