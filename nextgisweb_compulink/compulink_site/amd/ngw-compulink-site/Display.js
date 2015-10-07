@@ -486,7 +486,7 @@ define([
             this.LayersManager = new LayersManager(this.ResourcesTree, this.LayersSelector, this);
 
             this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector,
-                this.LayersManager, 100);
+                this.LayersManager, 500);
             this.ResourcesTree.addValidator(this.LimitLayersValidator);
             this.LayersSelector.addValidator(this.LimitLayersValidator);
 
