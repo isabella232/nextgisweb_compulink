@@ -312,7 +312,7 @@ def get_focl_info(request):
                     'district': districts.get(report_row.district, report_row.district),
                     'region': regions.get(report_row.region, report_row.region),
                     'status': statuses.get(report_row.status, report_row.status),
-                    'cabling_fact': report_row.cabling_fact,
+                    'cabling_plan': report_row.cabling_plan,
 
                     'start_build_time': report_row.start_build_time.strftime('%d.%m.%Y') if report_row.start_build_time else '',
                     'end_build_time': report_row.end_build_time.strftime('%d.%m.%Y') if report_row.end_build_time else '',
@@ -336,7 +336,7 @@ def get_focl_info(request):
                     'region': regions.get(res.region, res.region),
                     'status': statuses.get(res.status, res.status),
 
-                    'cabling_fact': None,
+                    'cabling_plan': None,
                     'start_build_time': None,
                     'end_build_time': None,
                     'start_deliver_time': None,

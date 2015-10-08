@@ -31,7 +31,7 @@ define([
                 region: 'Субъект РФ',
                 district: 'Муниципальный район',
                 status: 'Статус',
-                cabling_fact: 'Протяженность',
+                cabling_plan: 'Протяженность',
                 start_build_time: 'Начало СМР',
                 end_build_time: 'Окончание СМР',
                 start_deliver_time: 'Начало сдачи заказчику',
