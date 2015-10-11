@@ -29,7 +29,19 @@ define([
         constructor: function (map) {
             this.openLayersMap = map.olMap;
             this._buildElementIndicator();
+            this._bindBaseLayersEvents();
             this._bindEvents();
+        },
+
+        _bindBaseLayersEvents: function () {
+            var layers = this.openLayersMap.layers,
+                countLayers = layers.length;
+
+            for (var i = 0; i < countLayers; i++) {
+                if (layers[i].isBaseLayer) {
+                    this._layerBindEvents(layers[i]);
+                }
+            }
         },
 
         _buildElementIndicator: function () {
@@ -76,17 +88,7 @@ define([
         },
 
         _getCountLayers: function () {
-            var layers = this.openLayersMap.layers,
-                countLayers = layers.length,
-                countDataLayers = 0;
-
-            for (var i = 0; i < countLayers; i++) {
-                if (!layers[i].isBaseLayer) {
-                    countDataLayers++;
-                }
-            }
-
-            return countDataLayers;
+            return this.openLayersMap.getNumLayers();
         },
 
         _decreaseLayersCount: function () {
