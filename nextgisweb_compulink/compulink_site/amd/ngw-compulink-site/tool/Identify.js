@@ -339,8 +339,7 @@ define([
     parseLayersInfo(focl_layers_type);
     parseLayersInfo(sit_plan_layers_type);
 
-    var identifyStatusDiv = dom.byId("identifyStatus"),
-        identifyIconLoading = new OpenLayers.Icon(
+    var identifyIconLoading = new OpenLayers.Icon(
             ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
             new OpenLayers.Size(40,40)),
         isIdentifyActive = false,
@@ -399,7 +398,6 @@ define([
             };
 
             isIdentifyActive = true;
-            domClass.add(identifyStatusDiv, 'active');
             this._addIdentifyLayer();
             identifyLoadingMarker = new OpenLayers.Marker(point, identifyIconLoading);
             identifyLayer.addMarker(identifyLoadingMarker);
@@ -423,18 +421,13 @@ define([
                 handleAs: "json",
                 data: json.stringify(request)
             }).then(function (response) {
-                domClass.remove(identifyStatusDiv);
                 isIdentifyActive = false;
                 identifyLayer.removeMarker(identifyLoadingMarker);
                 tool._responsePopup(response, point, layerLabels);
             }, lang.hitch(this, function (err) {
                 console.log(err);
-                domClass.add(identifyStatusDiv, 'error');
                 isIdentifyActive = false;
                 this._clearIdentifyLayer();
-                setTimeout(function () {
-                    domClass.remove(identifyStatusDiv);
-                }, 3000)
             }));
         },
 
