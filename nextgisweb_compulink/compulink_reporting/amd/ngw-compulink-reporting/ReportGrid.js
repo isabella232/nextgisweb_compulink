@@ -10,6 +10,7 @@ define([
     "dojo/store/Observable",
     "dojo/date/locale",
     "dojo/date/stamp",
+    "dojo/number",
     "dijit/layout/BorderContainer",
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
@@ -46,6 +47,7 @@ define([
     Observable,
     locale,
     stamp,
+    number,
     BorderContainer,
     _TemplatedMixin,
     _WidgetsInTemplateMixin,
@@ -156,6 +158,14 @@ define([
                 }
             };
 
+            var getDecimal = function(prop, obj) {
+                if (obj[prop] && typeof obj[prop] != "string") {
+                    return number.round(obj[prop], 3);
+                } else {
+                    return obj[prop];
+                }
+            };
+
             var columns = [
                 {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name', sortable: false},
                 {label: 'Субъект РФ', field: 'region', name: 'region', sortable: false},
@@ -170,37 +180,37 @@ define([
                 },
                 {label: 'Прокладка ОК',
                     children: [
-                        {label: 'План, км', field: 'cabling_plan', name: 'cabling_plan', sortable: false},
-                        {label: 'Факт, км', field: 'cabling_fact', name: 'cabling_fact', sortable: false},
-                        {label: '%', field: 'cabling_percent', name: 'cabling_percent', sortable: false}
+                        {label: 'План, км', field: 'cabling_plan', name: 'cabling_plan', get: lang.partial(getDecimal, 'cabling_plan'), sortable: false},
+                        {label: 'Факт, км', field: 'cabling_fact', name: 'cabling_fact', get: lang.partial(getDecimal, 'cabling_fact'), sortable: false},
+                        {label: '%', field: 'cabling_percent', name: 'cabling_percent', get: lang.partial(getDecimal, 'cabling_percent'), sortable: false}
                     ]
                 },
                 {label: 'Разварка муфт',
                     children: [
                         {label: 'План, шт', field: 'fosc_plan', name: 'fosc_plan', sortable: false},
                         {label: 'Факт, шт', field: 'fosc_fact', name: 'fosc_fact', sortable: false},
-                        {label: '%', field: 'fosc_percent', name: 'fosc_percent', sortable: false}
+                        {label: '%', field: 'fosc_percent', name: 'fosc_percent', get: lang.partial(getDecimal, 'fosc_percent'), sortable: false}
                     ]
                 },
                 {label: 'Разварка кроссов',
                     children: [
                         {label: 'План, шт', field: 'cross_plan', name: 'cross_plan', sortable: false},
                         {label: 'Факт, шт', field: 'cross_fact', name: 'cross_fact', sortable: false},
-                        {label: '%', field: 'cross_percent', name: 'cross_percent', sortable: false}
+                        {label: '%', field: 'cross_percent', name: 'cross_percent', get: lang.partial(getDecimal, 'cross_percent'), sortable: false}
                     ]
                 },
                 {label: 'Строительство ГНБ переходов',
                     children: [
                         {label: 'План, шт', field: 'spec_trans_plan', name: 'spec_trans_plan', sortable: false},
                         {label: 'Факт, шт', field: 'spec_trans_fact', name: 'spec_trans_fact', sortable: false},
-                        {label: '%', field: 'spec_trans_percent', name: 'spec_trans_percent', sortable: false}
+                        {label: '%', field: 'spec_trans_percent', name: 'spec_trans_percent', get: lang.partial(getDecimal, 'spec_trans_percent'), sortable: false}
                     ]
                 },
                 {label: 'Монтаж точек доступа',
                     children: [
                         {label: 'План, шт', field: 'ap_plan', name: 'ap_plan', sortable: false},
                         {label: 'Факт, шт', field: 'ap_fact', name: 'ap_fact', sortable: false},
-                        {label: '%', field: 'ap_percent', name: 'ap_percent', sortable: false}
+                        {label: '%', field: 'ap_percent', name: 'ap_percent', get: lang.partial(getDecimal, 'ap_percent'), sortable: false}
                     ]
                 }
             ];
