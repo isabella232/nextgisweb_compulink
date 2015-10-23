@@ -18,6 +18,7 @@ def pkginfo():
             compulink_mssql_bridge='nextgisweb_compulink.compulink_mssql_bridge',
             compulink_reporting='nextgisweb_compulink.compulink_reporting',
             compulink_data_reactor='nextgisweb_compulink.compulink_data_reactor',
+            compulink_editor='nextgisweb_compulink.compulink_editor',
         )
     )
 
