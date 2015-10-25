@@ -100,9 +100,9 @@ class StatusReportReactor(AbstractReactor):
             if report_line.cabling_plan is None or report_line.cabling_fact is None:
                 percent = None
             elif report_line.cabling_plan == 0:
-                percent = 0
+                percent = None
             else:
-                percent = report_line.cabling_fact/report_line.cabling_plan * 100
+                percent = round(report_line.cabling_fact/report_line.cabling_plan * 100)
             report_line.cabling_percent = percent
 
             # --- fosc
@@ -138,9 +138,9 @@ class StatusReportReactor(AbstractReactor):
             if report_line.ap_plan is None or report_line.ap_fact is None:
                 percent = None
             elif report_line.ap_plan == 0:
-                percent = 0
+                percent = None
             else:
-                percent = report_line.ap_fact/report_line.ap_plan * 100
+                percent = round(report_line.ap_fact/report_line.ap_plan * 100)
             report_line.ap_percent = percent
 
             # save overdue status
@@ -198,9 +198,9 @@ class StatusReportReactor(AbstractReactor):
         if real_count is None or plan_count is None:
             percent = None
         elif plan_count == 0:
-            percent = 0
+            percent = None
         else:
-            percent = real_count/plan_count * 100
+            percent = round(real_count/plan_count * 100)
 
         return plan_count, real_count, percent
 
@@ -238,8 +238,8 @@ class StatusReportReactor(AbstractReactor):
         if real_length is None or plan_length is None:
             percent = None
         elif plan_length == 0:
-             percent = 0
+             percent = None
         else:
-             percent = real_length/plan_length * 100
+             percent = round(real_length/plan_length * 100)
 
         return plan_length, real_length, percent
