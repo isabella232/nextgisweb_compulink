@@ -175,7 +175,7 @@ class StatusReportReactor(AbstractReactor):
 
         query = layer.feature_query()
         result = query()
-        return result.total_count
+        return result.total_count or None
 
 
     @classmethod
