@@ -81,7 +81,8 @@
                     "ngw/openlayers/layer/Bing"
                 ],
                 "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
-            }
+            },
+            editorUrl: "${request.route_url('compulink.editor.map')}"
         };
 
         require([
