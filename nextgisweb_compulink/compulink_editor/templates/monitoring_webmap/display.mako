@@ -87,7 +87,7 @@
         require([
             "dojo/parser",
             "dojo/ready",
-            "ngw-compulink-site/Display",
+            "ngw-compulink-editor/Display",
             "ngw-compulink-site/DisplayHeader"
         ], function (parser, ready) {
             ready(function () {
@@ -122,7 +122,7 @@
     </div>
     <div class="body-wrapper">
         <div data-dojo-id="display"
-             data-dojo-type="ngw-compulink-site/Display"
+             data-dojo-type="ngw-compulink-editor/Display"
              data-dojo-props="config: displayConfig"
              style="width: 100%; height: 100%">
         </div>
