@@ -225,7 +225,7 @@ define([
                         id: vector_id,
                         z: this.layersManager.LayersConfig[layer.layer_type].order,
                         lt: layer.layer_type,
-                        layerName: this.layersManager.LayersConfig[layer.layer_type].text
+                        layerName: this.layersManager.LayersConfig[layer.layer_type].identify_text
                     });
                 }
             }
