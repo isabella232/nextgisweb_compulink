@@ -215,6 +215,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             focl_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'identify_text': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -229,6 +230,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             objects_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'identify_text': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -243,6 +245,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             real_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'identify_text': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -268,6 +271,7 @@ def get_sit_plan_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             layers.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'identify_text': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': [],
                 'icon': vl_name,
@@ -275,6 +279,7 @@ def get_sit_plan_layers_list():
             })
         layer_order -= 1
     return layers
+
 
 @view_config(renderer='json')
 def get_focl_info(request):
