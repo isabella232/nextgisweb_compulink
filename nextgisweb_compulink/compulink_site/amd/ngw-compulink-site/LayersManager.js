@@ -40,7 +40,8 @@ define([
                     array.forEach(layerConfig.children, function (layerConfigChild) {
                         this.LayersConfig[layerConfigChild.id] = {
                             order: layerConfigChild.order,
-                            text: layerConfigChild.text
+                            text: layerConfigChild.text,
+                            identify_text: layerConfigChild.identify_text
                         };
                     }, this);
                 }
@@ -48,7 +49,8 @@ define([
             array.forEach(this.Display.config.sit_plan_layers_type, function (layerConfig) {
                 this.LayersConfig[layerConfig.id] =  {
                             order: layerConfig.order,
-                            text: layerConfig.text
+                            text: layerConfig.text,
+                            identify_text: layerConfig.identify_text
                         };
             }, this);
 
