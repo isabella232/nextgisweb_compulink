@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Заметки",
-        "description": null
+        "description": null,
+        "identify_name": "Заметка"
     },
     "feature_layer": {
         "fields": [

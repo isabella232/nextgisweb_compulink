@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Строительные длины ОК (проект)",
-        "description": null
+        "description": null,
+        "identify_name": "Строительная длина ОК (проект)"
     },
     "feature_layer": {
         "fields": [

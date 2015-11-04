@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Базовые станции сотовой связи",
-        "description": null
+        "description": null,
+        "identify_name": "Базовая станция сотовой связи"
     },
     "feature_layer": {
         "fields": [

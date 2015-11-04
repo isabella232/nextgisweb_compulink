@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Точки доступа (проект)",
-        "description": null
+        "description": null,
+        "identify_name": "Точка доступа (проект)"
     },
     "feature_layer": {
         "fields": [

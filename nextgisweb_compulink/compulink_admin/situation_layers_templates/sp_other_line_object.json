@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Прочие линейные объекты",
-        "description": null
+        "description": null,
+        "identify_name": "Прочий линейный объект"
     },
     "feature_layer": {
         "fields": [

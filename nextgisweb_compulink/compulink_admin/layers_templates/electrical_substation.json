@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Трансформаторные подстанции",
-        "description": null
+        "description": null,
+        "identify_name": "Трансформаторная подстанция"
     },
     "feature_layer": {
         "fields": [

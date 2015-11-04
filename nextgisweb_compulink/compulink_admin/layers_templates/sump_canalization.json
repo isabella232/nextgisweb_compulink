@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Колодцы кабельной канализации",
-        "description": null
+        "description": null,
+        "identify_name": "Колодец кабельной канализации"
     },
     "feature_layer": {
         "fields": [

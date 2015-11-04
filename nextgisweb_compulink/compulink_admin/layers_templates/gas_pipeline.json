@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Газопроводы",
-        "description": null
+        "description": null,
+        "identify_name": "Газопровод"
     },
     "feature_layer": {
         "fields": [

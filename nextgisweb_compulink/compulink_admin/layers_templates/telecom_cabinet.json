@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Телекоммуникационные шкафы",
-        "description": null
+        "description": null,
+        "identify_name": "Телекоммуникационныq шкаф"
     },
     "feature_layer": {
         "fields": [

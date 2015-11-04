@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Столбы/Оконечные опоры",
-        "description": null
+        "description": null,
+        "identify_name": "Столб/Оконечная опора"
     },
     "feature_layer": {
         "fields": [

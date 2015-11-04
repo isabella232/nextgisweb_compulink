@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Точки доступа",
-        "description": null
+        "description": null,
+        "identify_name": "Точка доступа"
     },
     "feature_layer": {
         "fields": [

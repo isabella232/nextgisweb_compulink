@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Прочие точечные объекты",
-        "description": null
+        "description": null,
+        "identify_name": "Прочий точечный объект"
     },
     "feature_layer": {
         "fields": [

@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Оптические кроссы (факт)",
-        "description": null
+        "description": null,
+        "identify_name": "Оптический кросс"
     },
     "feature_layer": {
         "fields": [

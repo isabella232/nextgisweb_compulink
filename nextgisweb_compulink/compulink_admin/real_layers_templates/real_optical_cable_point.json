@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Отметки трассы оптического кабеля (факт)",
-        "description": null
+        "description": null,
+        "identify_name": "Отметка трассы ВОЛС"
     },
     "feature_layer": {
         "fields": [

@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Точки А-Б",
-        "description": null
+        "description": null,
+        "identify_name": "Точка А-Б"
     },
     "feature_layer": {
         "fields": [

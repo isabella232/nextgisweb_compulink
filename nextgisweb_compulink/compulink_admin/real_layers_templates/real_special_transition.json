@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Спецпереходы (факт)",
-        "description": null
+        "description": null,
+        "identify_name": "Спецпереход"
     },
     "feature_layer": {
         "fields": [

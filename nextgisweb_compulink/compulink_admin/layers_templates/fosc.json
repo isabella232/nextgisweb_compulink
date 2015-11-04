@@ -3,7 +3,8 @@
         "permissions": [],
         "keyname": null,
         "display_name": "Оптические муфты (проект)",
-        "description": null
+        "description": null,
+        "identify_name": "Оптическая муфта (проект)"
     },
     "feature_layer": {
         "fields": [

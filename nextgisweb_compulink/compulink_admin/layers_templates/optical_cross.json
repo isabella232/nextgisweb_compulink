@@ -2,7 +2,8 @@
     "resource": {
         "keyname": null,
         "display_name": "Оптические кроссы (проект)",
-        "description": null
+        "description": null,
+        "identify_name": "Оптический кросс (проект)"
     },
     "feature_layer": {
         "fields": [
