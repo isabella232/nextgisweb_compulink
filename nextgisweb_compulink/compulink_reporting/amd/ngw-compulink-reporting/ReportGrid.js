@@ -22,6 +22,7 @@ define([
     "dgrid/ColumnSet",
     "dgrid/extensions/DijitRegistry",
     "dgrid/extensions/CompoundColumns",
+    "dgrid/extensions/ColumnResizer",
     //style
     "ngw/dgrid/css",
     "xstyle/css!./resource/ReportGrid.css",
@@ -57,10 +58,11 @@ define([
     Selection,
     ColumnSet,
     DijitRegistry,
-    CompoundColumns
+    CompoundColumns,
+    ColumnResizer
 ) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, DijitRegistry, CompoundColumns], {});
+    var GridClass = declare([Grid, DijitRegistry, CompoundColumns, ColumnResizer], {});
     
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
