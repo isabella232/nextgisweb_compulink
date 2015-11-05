@@ -212,7 +212,9 @@ class ConstructFoclLineReactor(AbstractReactor):
         # get built_date
         built_date = feature_points[0].fields['built_date']
         for feat in feature_points:
-            if feat.fields['built_date'] > built_date:
+            if not built_date and feat.fields['built_date']:
+                built_date = feat.fields['built_date']
+            elif (feat.fields['built_date'] and built_date) and feat.fields['built_date'] > built_date:
                 built_date = feat.fields['built_date']
 
         return {'laying_method': laying_method, 'built_date': built_date}
