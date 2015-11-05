@@ -123,53 +123,6 @@ define([
                 region: "center"
             }).placeAt(this.selectPane);
 
-
-            this.editButton = new Button({
-                region: "right",
-                iconClass: "dijitIconEdit",
-                style: "height: 26px; border: 0px; margin: 1px;",
-                showLabel: true,
-                onClick: function () {
-                    xhr(route.resource.item({id: ident_lid}), {
-                        method: "GET",
-                        handleAs: "json"
-                    }).then(function (data) {
-                        var fieldmap = {};
-                        array.forEach(data.feature_layer.fields, function (itm) {
-                            fieldmap[itm.keyname] = itm;
-                        });
-
-                        var label = registry.byId("featureSelector").get("displayedValue");
-
-                        var FeatureEditorDialog = new Dialog({
-                            title: label
-                        });
-
-                        var pane = new FeatureEditorWidget({
-                            resource: ident_lid, feature: ident_fid,
-                            fields: data.feature_layer.fields,
-                            title: label,
-                            iconClass: "iconDescription",
-                            closable: true,
-                            style: "width: 400px; height: 500px",
-                            oncloseContainer: function () {
-                                console.log("Get it!");
-                                FeatureEditorDialog.hide();
-                                //this._displayFeature(this._featureResponse(this.select.get("value"))); //update
-                                //widget.close();
-                            }
-                        });
-
-                        FeatureEditorDialog.set("content", pane);
-                        FeatureEditorDialog.show();
-
-                        pane.startup();
-                        pane.load();
-                    }).otherwise(console.error);
-                }
-            }).placeAt(this.selectPane);
-            domClass.add(this.editButton.domNode, "no-label");
-
             // создаем виждеты для всех расширений IFeatureLayer
             var deferreds = [];
             var widget = this;
@@ -293,7 +246,6 @@ define([
                             resourceId: ident_lid,
                             featureId: ident_fid,
                             compact: true,
-                            title: "Атрибуты",
                             aliases: true, grid_visibility: true
                         });
 
