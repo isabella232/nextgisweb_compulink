@@ -12,7 +12,8 @@ from nextgisweb.feature_layer import FIELD_TYPE
 from nextgisweb.resource import Base
 from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT
-from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT
+from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT, \
+    PROJECT_STATUS_IN_PROGRESS
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
 from nextgisweb import DBSession, db
 from nextgisweb.command import Command
@@ -36,6 +37,7 @@ class DBMigrates():
                                 'append_start_point_field',
                                 'real_layers_date_to_dt',
                                 'update_aliases_01_08',
+                                'update_statuses_05_11'
                             ])
 
     @classmethod
@@ -54,8 +56,10 @@ class DBMigrates():
             cls.append_start_point_field()
         if args.migration == 'real_layers_date_to_dt':
             cls.real_layers_date_to_dt()
-        if args.migration == 'update_aliases_01_08':    # 01.08.2015
+        if args.migration == 'update_aliases_01_08':     # 01.08.2015
             cls.update_aliases_01_08()
+        if args.migration == 'update_statuses_05_11':    # 05.11.2015
+            cls.update_statuses_05_11()
 
     @classmethod
     def append_real_layers(cls):
@@ -299,6 +303,31 @@ class DBMigrates():
                 return
 
 
+
+        transaction.manager.commit()
+        db_session.close()
+
+
+    @classmethod
+    def update_statuses_05_11(cls):
+        db_session = DBSession()
+
+        transaction.manager.begin()
+
+        resources = db_session.query(FoclStruct).filter(FoclStruct.status == PROJECT_STATUS_PROJECT)
+
+        for focl_struct in resources:
+            # search in all real layers
+            for ch_resource in focl_struct.children:
+                if ch_resource.keyname and ch_resource.keyname.startswith('real_'):
+                    #get feat count
+                    query = ch_resource.feature_query()
+                    result = query()
+                    count = result.total_count or 0
+                    if count > 0:
+                        focl_struct.status = PROJECT_STATUS_IN_PROGRESS
+                        print 'Status changed for ' + focl_struct.display_name
+                        break
 
         transaction.manager.commit()
         db_session.close()
