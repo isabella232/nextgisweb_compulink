@@ -290,13 +290,22 @@ define([
                     // это не отключено в настройках
                     if (featureLayersettings.identify.attributes) {
                         var fwidget = new FieldsDisplayWidget({
-                            resourceId: ident_lid, featureId: ident_fid, compact: true,
+                            resourceId: ident_lid,
+                            featureId: ident_fid,
+                            compact: true,
                             title: "Атрибуты",
                             aliases: true, grid_visibility: true
                         });
 
                         fwidget.renderValue(feature.fields);
-                        fwidget.placeAt(widget.extContainer);
+
+                        var fw_wrapper = new ContentPane({
+                            title: "Атрибуты",
+                            style: "margin: 0px; padding: 0px"
+                        });
+                        fw_wrapper.addChild(fwidget);
+
+                        fw_wrapper.placeAt(widget.extContainer);
                     }
 
                     array.forEach(Object.keys(widget.extWidgetClasses), function (key) {
