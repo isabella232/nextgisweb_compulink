@@ -108,7 +108,7 @@ define([
             this._menu.addChild(new MenuItem({
                 label: 'Редактировать',
                 onClick: lang.hitch(this, function (evt) {
-                    window.open(displayConfig.editorUrl + '?resource_id=' + Object.getOwnPropertyNames( this._grid.selection )[0], '_self');
+                    window.open(displayConfig.editorUrl + '?resource_id=' + Object.getOwnPropertyNames( this._grid.selection )[0], '_blank');
                 })
             }));
 
