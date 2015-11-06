@@ -100,7 +100,7 @@ define([
                         layerOrderedItem.layerName + ': ',
                         (feature.label || "#" + feature.id),
                         " (" + feature.parent + ")");
-                    domStyle.set(label, "width", (this.popupSize[0] - 65) + "px");
+                    domStyle.set(label, "width", (this.popupSize[0] - 30) + "px");
                     this.selectOptions.push({
                         label: label.outerHTML,
                         value: layerId + "/" + idx
