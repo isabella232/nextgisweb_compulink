@@ -202,20 +202,6 @@ define([
             this._rightPanelsBorderContainer.layout();
         },
 
-        getLayersTypesSelected: function (type) {
-            if (type) {
-                return this.settings.resources[type].$tree.jstree('get_bottom_selected');
-            } else {
-                var result = [];
-                for (var resourceType in this.settings.resources) {
-                    if (this.settings.resources.hasOwnProperty(resourceType)) {
-                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
-                    }
-                }
-                return result;
-            }
-        },
-
         _resourceTypeFilter: 'all',
         setResourceType: function (resourceType) {
             var exisitngPanels = this._rightPanelsBorderContainer.getChildren();
@@ -288,6 +274,20 @@ define([
             var resourcesTypesConfig = this.settings.resources;
             for (var i = 0, countSelectedNodes = layers.length; i < countSelectedNodes; i++) {
                 resourcesTypesConfig[resourceType]['$tree'].jstree('select_node', layers[i]);
+            }
+        },
+
+        getLayersTypesSelected: function (type) {
+            if (type) {
+                return this.settings.resources[type].$tree.jstree('get_bottom_selected');
+            } else {
+                var result = [];
+                for (var resourceType in this.settings.resources) {
+                    if (this.settings.resources.hasOwnProperty(resourceType)) {
+                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
+                    }
+                }
+                return result;
             }
         }
     });
