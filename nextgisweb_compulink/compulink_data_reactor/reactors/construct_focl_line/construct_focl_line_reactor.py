@@ -44,25 +44,34 @@ class ConstructFoclLineReactor(AbstractReactor):
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
-            points_lyr = [lyr for lyr in fs.children if lyr.keyname and lyr.keyname.startswith('real_optical_cable_point')]
-            points_lyr = points_lyr[0] if len(points_lyr) else None
 
+            # Output layer
             lines_lyr = [lyr for lyr in fs.children if lyr.keyname and
                          not lyr.keyname.startswith('real_optical_cable_point') and
                          lyr.keyname.startswith('real_optical_cable')]
             lines_lyr = lines_lyr[0] if len(lines_lyr) else None
 
-            query = points_lyr.feature_query()
-            query.geom()
-            result = query()
 
-            if result.total_count > 0:
+            # Collect features for processing
+            features = []
+            processing_layers_name = ['real_optical_cable_point', 'real_special_transition_point', 'real_fosc', 'real_optical_cross', 'real_access_point']
+
+            for lyr_name in processing_layers_name:
+                points_lyr = [lyr for lyr in fs.children if lyr.keyname and lyr.keyname.startswith(lyr_name)]
+                points_lyr = points_lyr[0] if len(points_lyr) else None
+
+                if points_lyr:
+                    query = points_lyr.feature_query()
+                    query.geom()
+                    result = query()
+                    features.extend([feature for feature in result])
+
+
+            if len(features) > 0:
                 log_debug('Construct line for %s started!' % fs.display_name)
             else:
                 log_debug('Construct line for %s skeeped (no points)!' % fs.display_name)
                 continue
-
-            features = [feature for feature in result]
 
             #clear line lyr
             cls.clear_layer(lines_lyr)
@@ -99,51 +108,46 @@ class ConstructFoclLineReactor(AbstractReactor):
 
     @classmethod
     def get_clusters(cls, features):
-        # get clusters
+
+        def get_feats_in_radius(center_feat, all_feats):
+            geom_1 = center_feat.geom
+            res_feats = []
+
+            # get all in radius
+            for m_feat in all_feats:
+                geom_2 = m_feat.geom
+                real_dist = DistanceUtils.get_spherical_distance(geom_1[0], geom_2[0])
+                if real_dist < cls.DISTANCE_LIMIT:
+                    res_feats.append(m_feat)
+
+            # remove from common list
+            for rem_feat in res_feats:
+                all_feats.remove(rem_feat)
+
+            # for all searched points recursive search
+            rec_feats = []
+            for r_feat in res_feats:
+                searched_feats = get_feats_in_radius(r_feat, all_feats)
+                rec_feats.extend(searched_feats)
+
+            # add to total list
+            res_feats.extend(rec_feats)
+
+            return res_feats
+
         clusters = []
 
-        def feat_in_clusters(search_feat):
-            for cluster in clusters:
-                for feat in cluster:
-                    if search_feat == feat:
-                        return True
-            return False
+        while len(features) > 0:
+            start_feat = features[0]
+            features.remove(start_feat)
 
-        def try_append_to_clusters(new_feat):
-            for cluster in clusters:
-                for feat in cluster:
-                    geom_1 = feat.geom
-                    geom_2 = new_feat.geom
-                    real_dist = DistanceUtils.get_spherical_distance(geom_1[0], geom_2[0])
-                    if real_dist < cls.DISTANCE_LIMIT:
-                        cluster.append(new_feat)
-                        return True
-            return False
+            clust = get_feats_in_radius(start_feat, features)
+            clust.append(start_feat)  # append self
 
-        exists_unhandled_points = True
+            clusters.append(clust)
 
-        while exists_unhandled_points:
-            start_point = None
-            active_cluster = []
-            exists_unhandled_points = False
-
-            for feat_result in features:
-                if feat_in_clusters(feat_result):
-                    continue
-
-                # get first point for cluster
-                if not start_point:
-                    start_point = feat_result
-                    active_cluster.append(start_point)
-                    clusters.append(active_cluster)
-                    continue
-
-                #append to existing cluster
-                if not try_append_to_clusters(feat_result):
-                    exists_unhandled_points = True
 
         return clusters
-
 
     @classmethod
     def make_line(cls, cluster):
@@ -192,9 +196,10 @@ class ConstructFoclLineReactor(AbstractReactor):
 
         # get laying_method
         laying_methods = []
+        field_name = 'laying_method'
         for feat in feature_points:
-            if feat.fields['laying_method'] and feat.fields['laying_method'] not in laying_methods:
-                laying_methods.append(feat.fields['laying_method'])
+            if field_name in feat.fields and feat.fields[field_name] and feat.fields[field_name] not in laying_methods:
+                laying_methods.append(feat.fields[field_name])
 
         if laying_methods:
             order = ['transmission_towers', 'ground', 'canalization', 'building', 'other']
