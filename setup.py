@@ -16,6 +16,7 @@ requires = (
     'pymssql',
     'openpyxl',
     'pyproj',
+    'rpy2',
 )
 
 entry_points = {
