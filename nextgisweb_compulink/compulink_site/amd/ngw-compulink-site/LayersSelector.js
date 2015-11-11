@@ -2,9 +2,13 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/query',
     'dojo/topic',
+    'dojo/dom-attr',
+    'dojo/dom-style',
+    'dijit/registry',
     'ngw-compulink-libs/jstree-3.0.9/jstree'
-], function (declare, lang, array, topic, jstree) {
+], function (declare, lang, array, query, topic, domAttr, domStyle, registry, jstree) {
 
     return declare('LayersSelector', [], {
         settings: {
@@ -19,6 +23,7 @@ define([
             this.$panel = jQuery('#' + this.settings.panelIndicatorId);
             this.buildLayersTrees();
             this.bindEvents();
+            this.setPanelsDomElements();
         },
 
         buildLayersTrees: function () {
@@ -163,26 +168,60 @@ define([
             }));
         },
 
-        getLayersTypesSelected: function (type) {
-            if (type) {
-                return this.settings.resources[type].$tree.jstree('get_bottom_selected');
-            } else {
-                var result = [];
-                for (var resourceType in this.settings.resources) {
-                    if (this.settings.resources.hasOwnProperty(resourceType)) {
-                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
-                    }
-                }
-                return result;
-            }
+        _rightPanelsBorderContainer: null,
+        _rightPanels: {},
+        _rightPanelsState: {
+            all: [
+                {name: 'focl', region: 'top', height: '30%', splitter: true},
+                {name: 'sit', region: 'center', height: '30%', splitter: true},
+                {name: 'legend', region: 'bottom', height: '40%', splitter: true}
+            ],
+            sit: [
+                {name: 'sit', region: 'top', height: '50%', splitter: true},
+                {name: 'legend', region: 'center', height: '50%', splitter: true}
+            ],
+            vols: [
+                {name: 'focl', region: 'top', height: '50%', splitter: true},
+                {name: 'legend', region: 'center', height: '50%', splitter: true}
+            ]
         },
+        setPanelsDomElements: function () {
+            var rightPanels,
+                rightPanelName,
+                panelWidget;
 
+            this._rightPanelsBorderContainer = registry.byId('rightPanelsBorderContainer');
+
+            rightPanels = query('div[data-right-panel]', this._rightPanelsBorderContainer.srcNodeRef);
+            array.forEach(rightPanels, function (domPanel) {
+                rightPanelName = domAttr.get(domPanel, 'data-right-panel');
+                panelWidget = registry.byId(domAttr.get(domPanel, 'id'));
+                this._rightPanels[rightPanelName] = panelWidget;
+            }, this);
+
+            this._rightPanelsBorderContainer.layout();
+        },
 
         _resourceTypeFilter: 'all',
         setResourceType: function (resourceType) {
-            this._resourceTypeFilter = resourceType;
-            this.$panel.attr('data-resource-type-filter', resourceType);
-            //this.deselectAllOther(resourceType);
+            var exisitngPanels = this._rightPanelsBorderContainer.getChildren();
+
+            array.forEach(exisitngPanels, function (domPanel) {
+                this._rightPanelsBorderContainer.removeChild(domPanel);
+            }, this);
+
+            this._rightPanelsBorderContainer.resize();
+
+            array.forEach(this._rightPanelsState[resourceType], function (panelSettings) {
+                var widgetPanel = this._rightPanels[panelSettings.name];
+                domStyle.set(widgetPanel.domNode, 'height', panelSettings.height);
+                widgetPanel.set('region', panelSettings.region);
+                widgetPanel.set('splitter', panelSettings.splitter === true);
+                this._rightPanelsBorderContainer.addChild(widgetPanel);
+            }, this);
+
+            this._rightPanelsBorderContainer.resize();
+            this._rightPanelsBorderContainer.layout();
         },
 
         deselectAllOther: function (resourceTypeSelected) {
@@ -235,6 +274,20 @@ define([
             var resourcesTypesConfig = this.settings.resources;
             for (var i = 0, countSelectedNodes = layers.length; i < countSelectedNodes; i++) {
                 resourcesTypesConfig[resourceType]['$tree'].jstree('select_node', layers[i]);
+            }
+        },
+
+        getLayersTypesSelected: function (type) {
+            if (type) {
+                return this.settings.resources[type].$tree.jstree('get_bottom_selected');
+            } else {
+                var result = [];
+                for (var resourceType in this.settings.resources) {
+                    if (this.settings.resources.hasOwnProperty(resourceType)) {
+                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
+                    }
+                }
+                return result;
             }
         }
     });

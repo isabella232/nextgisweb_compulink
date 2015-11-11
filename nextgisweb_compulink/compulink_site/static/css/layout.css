@@ -117,6 +117,7 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
 }
 
 #rightPanel div.tree-wrapper,
+#rightPanel div.legend_wrapper,
 #rightPanel div.tree-overlay {
     position: absolute;
     top: 23px;
@@ -125,40 +126,9 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     right: 0;
 }
 
-#rightPanel div.legend_cont,
-#rightPanel div.tree-wrapper {
+#rightPanel div.tree-wrapper,
+#rightPanel div.legend_wrapper {
     overflow: auto;
-}
-
-#rightPanel div.legend_cont {
-    height: 100%;
-}
-
-#rightPanel[data-resource-type-filter=vols] div.sit,
-#rightPanel[data-resource-type-filter=sit] div.vols {
-    display: none;
-}
-
-#rightPanel[data-resource-type-filter=vols] div.vols,
-#rightPanel[data-resource-type-filter=sit] div.sit {
-    top: 5px !important;
-    bottom: 5px !important;
-    height: auto !important;
-}
-
-#rightPanel[data-resource-type-filter=vols] #sitLayersPane_splitter,
-#rightPanel[data-resource-type-filter=sit] #volsLayersPane_splitter {
-    display: none;
-}
-
-/*#rightPanel[data-resource-type-filter=vols] div.sit div.tree-overlay,*/
-/*#rightPanel[data-resource-type-filter=sit] div.vols div.tree-overlay {*/
-/*display: block;*/
-/*}*/
-
-#rightPanel[data-resource-type-filter=vols] div.sit div.tree-wrapper,
-#rightPanel[data-resource-type-filter=sit] div.vols div.tree-wrapper {
-    overflow: hidden;
 }
 
 #rightPanel i.jstree-ocl {
