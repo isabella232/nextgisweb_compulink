@@ -3,9 +3,8 @@ import json
 import tempfile
 from datetime import datetime
 from openpyxl import load_workbook
-from openpyxl.styles import PatternFill, Color, Style, Font
-from openpyxl.styles.fills import FILL_SOLID
-from openpyxl.styles.numbers import FORMAT_PERCENTAGE, NumberFormat
+from openpyxl.styles import Style
+from openpyxl.styles.numbers import FORMAT_PERCENTAGE
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
@@ -219,7 +218,7 @@ def export_status_report(request):
         footer_style = ws.cell(row=3, column=2).style
         footer_style_percent = Style(
             font=footer_style.font,
-            number_format=NumberFormat.FORMAT_PERCENTAGE
+            number_format=FORMAT_PERCENTAGE
         )
 
         # get data
