@@ -73,6 +73,10 @@
                 reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
                 logoutUrl: '${request.route_url('auth.logout')}'
             %endif
+        };
+
+        var editorConfig = {
+            resourceId: '${request.GET['resource_id']}'
         }
     </script>
 
