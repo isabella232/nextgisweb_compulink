@@ -123,7 +123,6 @@ def get_child_resx_by_parent(request):
     if not request.user.is_administrator:
         allowed_res_list = _get_user_resources_tree(request.user)
 
-
     child_resources_json = []
     for child_resource in children:
         if child_resource.identity in suitable_types:
@@ -151,6 +150,7 @@ def get_child_resx_by_parent(request):
     dbsession.close()
 
     return Response(json.dumps(child_resources_json))
+
 
 def _get_user_resources_tree(user):
     # get explicit rules
@@ -215,6 +215,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             focl_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'idf-name': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -229,6 +230,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             objects_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'idf-name': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -243,6 +245,7 @@ def get_focl_layers_list():
             json_layer_struct = json.load(json_file, encoding='utf-8')
             real_layers_for_jstree.append({
                 'text': json_layer_struct['resource']['display_name'],
+                'idf-name': json_layer_struct['resource']['identify_name'],
                 'id': vl_name,
                 'children': False,
                 'icon': vl_name,
@@ -275,6 +278,7 @@ def get_sit_plan_layers_list():
             })
         layer_order -= 1
     return layers
+
 
 @view_config(renderer='json')
 def get_focl_info(request):
@@ -409,7 +413,6 @@ def get_focl_extent(request):
     return Response(json.dumps(resp))
 
 
-
 @view_config(renderer='json')
 def get_layers_by_type(request):
     if request.user.keyname == 'guest':
@@ -464,6 +467,7 @@ def _get_layer_type_by_name(layers_types, name):
             return layer_type
     return None
 
+
 def get_all_dicts():
     dbsession = DBSession()
     dicts_resources = dbsession.query(LookupTable).all()
@@ -483,6 +487,7 @@ def export_focl_to_kml(request):
 
 def export_focl_to_geojson(request):
     return export_focl_struct(request, 'geojson')
+
 
 def export_focl_to_csv(request):
     return export_focl_struct(request, 'csv')
@@ -520,7 +525,6 @@ def export_focl_struct(request, export_type):
                 _json_to_csv(json_path, csv_path)
                 # remove json
                 os.remove(json_path.encode('utf-8'))
-
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         # write archive
@@ -572,6 +576,7 @@ def _save_resource_to_file(vector_resource, file_path, single_geom=False):
 def _json_to_kml(in_file_path, out_file_path):
     subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path.encode('utf-8'), in_file_path.encode('utf-8')])
 
+
 def _json_to_csv(in_file_path, out_file_path):
     subprocess.check_call(['ogr2ogr',
                            '-f', 'CSV',
@@ -604,7 +609,6 @@ def get_focl_status(request):
     }
 
     return Response(json.dumps(resp))
-
 
 
 @view_config(renderer='json')
