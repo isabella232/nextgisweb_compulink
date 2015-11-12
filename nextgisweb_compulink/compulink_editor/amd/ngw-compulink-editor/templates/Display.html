@@ -167,27 +167,11 @@
                     <div data-dojo-type="dijit/layout/BorderContainer"
                          data-dojo-props="region: 'center'"
                          style="padding-bottom: 0; padding-right: 0">
-
-                        <!-- Тулбар над деревом слоев -->
-                        <div data-dojo-type="dijit/Toolbar"
-                             data-dojo-props="region: 'top'">
-
-                            <select data-dojo-type="dijit/form/Select" id="resourcesTypeSelector">
-                                <option value="all" selected="selected">ВОЛС и Ситуационные планы</option>
-                                <option value="sit">Ситуационные планы</option>
-                                <option value="vols">ВОЛС</option>
-                            </select>
-
-                        </div>
-
-                        <!-- Панель для размещения дерева ресурсов -->
                         <div data-dojo-attach-point="resourceTreePane"
                              data-dojo-type="dijit/layout/ContentPane"
                              data-dojo-props="region: 'center'"
                              style="padding: 0">
-                            <div id="resourcesTree"></div>
                         </div>
-
                     </div>
 
 
@@ -219,7 +203,7 @@
 
                 <!-- Правая панель -->
                 <div id='rightPanel'
-                     data-resource-type-filter="" ,
+                     data-resource-type-filter=""
                      data-dojo-type="dijit/layout/BorderContainer"
                      data-dojo-props="region: 'right', splitter: true, gutters: false"
                      style="width: 260px; padding: 0;">
@@ -227,28 +211,17 @@
 
                     <div data-dojo-type="dijit/layout/BorderContainer"
                          data-dojo-attach-point=""
-                         data-dojo-props="region: 'center'"
+                         data-dojo-props="region: 'center', gutters:true, liveSplitters:true"
+                         id="rightPanelsBorderContainer"
                          style="padding-left: 0; position: relative;">
-
-                        <!-- Панель для размещения списка типа слоев Сит плана-->
-                        <div id="sitLayersPane"
-                             data-dojo-attach-point="sitPlanLayersTreePane"
-                             data-dojo-type="dijit/layout/ContentPane"
-                             data-dojo-props="region: 'top', splitter: true"
-                             style="padding: 0; height: 50%; position: relative;" class="sit">
-                            <div class="title">Слои Сит. плана</div>
-                            <div class="tree-overlay"></div>
-                            <div class="tree-wrapper">
-                                <div id="spLayersTree"></div>
-                            </div>
-                        </div>
 
                         <!-- Панель для размещения списка типа слоев ВОЛС -->
                         <div id="foclLayersPane"
                              data-dojo-attach-point="foclLayersTreePane"
                              data-dojo-type="dijit/layout/ContentPane"
-                             data-dojo-props="region: 'center'"
-                             style="padding: 0; height: 45%; position: relative;" class="vols">
+                             data-dojo-props="region: 'top', splitter: true"
+                             data-right-panel="focl"
+                             style="padding: 0;height: 60%" class="vols">
                             <div class="title">Слои ВОЛС</div>
                             <div class="tree-overlay"></div>
                             <div class="tree-wrapper">
@@ -256,13 +229,28 @@
                             </div>
                         </div>
 
+                        <!-- Панель для размещения списка типа слоев Сит плана-->
+                        <div id="sitLayersPane"
+                             data-dojo-attach-point="sitPlanLayersTreePane"
+                             data-dojo-type="dijit/layout/ContentPane"
+                             data-dojo-props="region: 'center', splitter: true"
+                             data-right-panel="sit"
+                             style="padding: 0;height: 20%" class="sit">
+                            <div class="title">Слои Сит. плана</div>
+                            <div class="tree-overlay"></div>
+                            <div class="tree-wrapper">
+                                <div id="spLayersTree"></div>
+                            </div>
+                        </div>
+
                         <!-- Панель для легенды-->
                         <div id="legendPane"
                              data-dojo-type="dijit/layout/ContentPane"
                              data-dojo-props="region: 'bottom', splitter: true"
-                             style="padding: 0; height: 55%; position: relative;" class="leg">
+                             data-right-panel="legend"
+                             style="padding: 0;height: 20%" class="leg">
                             <div class="title">Легенда</div>
-                            <div class="legend_cont">
+                            <div class="legend_wrapper">
                                 <img src="${ngwConfig.compulinkAssetUrl}img/legend.png" />
                             </div>
                         </div>
