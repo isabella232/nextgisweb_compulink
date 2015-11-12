@@ -42,7 +42,7 @@ define([
     "ngw-compulink-site/LimitLayersValidator",
     "ngw-compulink-site/EventsMediator",
     "ngw-compulink-site/ResourcesTypeSelector",
-    "ngw-compulink-site/LayersManager",
+    "ngw-compulink-editor/LayersManager",
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
@@ -316,8 +316,6 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
-                    resourcesTypeSelector.selectResourceType('vols');
                     this.LayersSelector.selectLayers([
                         'real_special_transition', 'real_special_transition_point',  'real_optical_cable',
                         'real_optical_cable_point', 'real_fosc', 'real_optical_cross', 'real_access_point'
@@ -479,16 +477,7 @@ define([
             this.inherited(arguments);
 
             this.LayersSelector = this.buildLayersSelector();
-            this.ResourcesTree = new ResourcesTree("#resourcesTree", {
-                type: 'vols'
-            });
-            this.LayersManager = new LayersManager(this.ResourcesTree, this.LayersSelector, this);
-
-            this.LimitLayersValidator = new LimitLayersValidator(this.ResourcesTree, this.LayersSelector,
-                this.LayersManager, 500);
-            this.ResourcesTree.addValidator(this.LimitLayersValidator);
-            this.LayersSelector.addValidator(this.LimitLayersValidator);
-
+            this.LayersManager = new LayersManager(this.LayersSelector, this);
             this._startupDeferred.resolve();
 
             //events
