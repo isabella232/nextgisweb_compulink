@@ -123,7 +123,6 @@ def get_child_resx_by_parent(request):
     if not request.user.is_administrator:
         allowed_res_list = _get_user_resources_tree(request.user)
 
-
     child_resources_json = []
     for child_resource in children:
         if child_resource.identity in suitable_types:
@@ -151,6 +150,7 @@ def get_child_resx_by_parent(request):
     dbsession.close()
 
     return Response(json.dumps(child_resources_json))
+
 
 def _get_user_resources_tree(user):
     # get explicit rules
@@ -473,6 +473,7 @@ def _get_layer_type_by_name(layers_types, name):
             return layer_type
     return None
 
+
 def get_all_dicts():
     dbsession = DBSession()
     dicts_resources = dbsession.query(LookupTable).all()
@@ -492,6 +493,7 @@ def export_focl_to_kml(request):
 
 def export_focl_to_geojson(request):
     return export_focl_struct(request, 'geojson')
+
 
 def export_focl_to_csv(request):
     return export_focl_struct(request, 'csv')
@@ -529,7 +531,6 @@ def export_focl_struct(request, export_type):
                 _json_to_csv(json_path, csv_path)
                 # remove json
                 os.remove(json_path.encode('utf-8'))
-
 
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         # write archive
@@ -581,6 +582,7 @@ def _save_resource_to_file(vector_resource, file_path, single_geom=False):
 def _json_to_kml(in_file_path, out_file_path):
     subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path.encode('utf-8'), in_file_path.encode('utf-8')])
 
+
 def _json_to_csv(in_file_path, out_file_path):
     subprocess.check_call(['ogr2ogr',
                            '-f', 'CSV',
@@ -613,7 +615,6 @@ def get_focl_status(request):
     }
 
     return Response(json.dumps(resp))
-
 
 
 @view_config(renderer='json')
