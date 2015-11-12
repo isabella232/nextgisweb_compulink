@@ -387,20 +387,26 @@ def get_focl_extent(request):
     if res_id is None:
         return Response('[]')
 
-    dbsession = DBSession()
-    resource = dbsession.query(Resource).filter(Resource.id == res_id).first()
+    resp = {'extent': get_extent_by_resource_id(res_id)}
+    return Response(json.dumps(resp))
+
+
+def get_extent_by_resource_id(resource_id):
+    session = DBSession()
+    resource = session.query(Resource).filter(Resource.id == resource_id).first()
 
     extent = None
     for res in resource.children:
         if res.identity != VectorLayer.identity:
             continue
-        #get extent
-        tableinfo = TableInfo.from_layer(res)
-        tableinfo.setup_metadata(tablename=res._tablename)
+
+        table_info = TableInfo.from_layer(res)
+        table_info.setup_metadata(tablename=res._tablename)
 
         columns = [db.func.st_astext(db.func.st_extent(db.text('geom')).label('box'))]
-        query = sql.select(columns=columns, from_obj=tableinfo.table)
-        extent_str = dbsession.connection().scalar(query)
+        query = sql.select(columns=columns, from_obj=table_info.table)
+        extent_str = session.connection().scalar(query)
+
         if extent_str:
             if not extent:
                 extent = loads(extent_str).bounds
@@ -408,11 +414,9 @@ def get_focl_extent(request):
                 new_extent = loads(extent_str).bounds
                 extent = extent_union(extent, new_extent)
 
-    dbsession.close()
-    extent = extent_buff(extent, 1000)
-    resp = {'extent': extent}
-    return Response(json.dumps(resp))
+    session.close()
 
+    return extent_buff(extent, 1000)
 
 
 @view_config(renderer='json')
