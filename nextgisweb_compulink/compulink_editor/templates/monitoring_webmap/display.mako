@@ -73,12 +73,7 @@
                 "id": 1,
                 "label": null
             },
-            "extent": [
-                20,
-                20,
-                180,
-                80
-            ],
+            "extent": ${json.dumps(extent)},
             "mid": {
                 "adapter": [],
                 "basemap": [
