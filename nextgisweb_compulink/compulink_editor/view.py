@@ -38,6 +38,9 @@ from nextgisweb_compulink.compulink_site import COMP_ID
 from nextgisweb_log.model import LogEntry, LogLevels
 from nextgisweb_lookuptable.model import LookupTable
 
+from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
+from pyproj import Proj, transform
+
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 
@@ -191,17 +194,37 @@ def show_map(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
+    resource_id = int(request.GET['resource_id'])
+    extent3857 = get_extent_by_resource_id(resource_id)
+    extent4326 = _extent_3857_to_4326(extent3857)
+
     focl_layers = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
+
     values = dict(
         show_header=True,
         focl_layers_type=focl_layers['focl'],
         objects_layers_type=focl_layers['objects'],
         real_layers_type=focl_layers['real'],
-        sit_plan_layers_type=sit_plan_layers_type
+        sit_plan_layers_type=sit_plan_layers_type,
+        extent=extent4326
     )
-    return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako', values,
+
+    return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
+                              values,
                               request=request)
+
+
+def _extent_3857_to_4326(extent3857):
+    projection_3857 = Proj(init='EPSG:3857')
+    projection_4326 = Proj(init='EPSG:4326')
+    x1, y1 = tuple(extent3857[0:2])
+    x2, y2 = tuple(extent3857[2:4])
+
+    extent4326 = list(transform(projection_3857, projection_4326, x1, y1)) + \
+        list(transform(projection_3857, projection_4326, x2, y2))
+
+    return extent4326
 
 
 def get_focl_layers_list():
@@ -386,20 +409,26 @@ def get_focl_extent(request):
     if res_id is None:
         return Response('[]')
 
+    resp = {'extent': get_extent_by_resource_id(res_id)}
+    return Response(json.dumps(resp))
+
+
+def get_extent_by_resource_id(resource_id):
     dbsession = DBSession()
-    resource = dbsession.query(Resource).filter(Resource.id == res_id).first()
+    resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
 
     extent = None
     for res in resource.children:
         if res.identity != VectorLayer.identity:
             continue
-        #get extent
+
         tableinfo = TableInfo.from_layer(res)
         tableinfo.setup_metadata(tablename=res._tablename)
 
         columns = [db.func.st_astext(db.func.st_extent(db.text('geom')).label('box'))]
         query = sql.select(columns=columns, from_obj=tableinfo.table)
         extent_str = dbsession.connection().scalar(query)
+
         if extent_str:
             if not extent:
                 extent = loads(extent_str).bounds
@@ -408,9 +437,8 @@ def get_focl_extent(request):
                 extent = extent_union(extent, new_extent)
 
     dbsession.close()
-    extent = extent_buff(extent, 1000)
-    resp = {'extent': extent}
-    return Response(json.dumps(resp))
+
+    return extent_buff(extent, 1000)
 
 
 @view_config(renderer='json')
