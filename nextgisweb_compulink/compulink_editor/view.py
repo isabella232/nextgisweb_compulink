@@ -40,9 +40,11 @@ from nextgisweb_lookuptable.model import LookupTable
 
 from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
 from pyproj import Proj, transform
+from config import EDITABLE_LAYERS
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
+GUID_LENGTH = 32
 
 
 def setup_pyramid(comp, config):
@@ -207,7 +209,8 @@ def show_map(request):
         objects_layers_type=focl_layers['objects'],
         real_layers_type=focl_layers['real'],
         sit_plan_layers_type=sit_plan_layers_type,
-        extent=extent4326
+        extent=extent4326,
+        editable_layers=get_editable_layers_items(resource_id)
     )
 
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
@@ -225,6 +228,27 @@ def _extent_3857_to_4326(extent3857):
         list(transform(projection_3857, projection_4326, x2, y2))
 
     return extent4326
+
+
+def get_editable_layers_items(resource_id):
+    editable_layers = []
+    dbsession = DBSession()
+
+    resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
+
+    for child_resource in resource.children:
+        if child_resource.identity != VectorLayer.identity:
+            continue
+        if len(child_resource.keyname) < (GUID_LENGTH + 1):
+            continue
+        layer_keyname_without_guid = child_resource.keyname[0:-(GUID_LENGTH + 1)]
+        if layer_keyname_without_guid not in EDITABLE_LAYERS:
+            continue
+        editable_layers.append(child_resource)
+
+    dbsession.close()
+
+    return editable_layers
 
 
 def get_focl_layers_list():
