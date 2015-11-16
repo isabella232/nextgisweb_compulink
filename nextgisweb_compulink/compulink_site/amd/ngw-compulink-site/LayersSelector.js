@@ -116,7 +116,8 @@ define([
                     }
                 }))
             } else {
-                topic.publish('layers/type/changed', [selected_node.id], [], resourceType);
+                this._saveTreeState($tree, resourceType);
+                topic.publish('layers/type/changed', insertedNodes.inserted, [], resourceType);
             }
         },
 
