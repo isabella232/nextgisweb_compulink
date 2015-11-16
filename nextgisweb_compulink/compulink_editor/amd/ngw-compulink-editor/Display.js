@@ -46,6 +46,8 @@ define([
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
+    "ngw-compulink-editor/editor/FeaturesManager",
+    "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -111,6 +113,8 @@ define([
     CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
+    EditorFeaturesManager,
+    NgwServiceFacade,
     Adapter,
     clientSettings
 ) {
@@ -320,6 +324,11 @@ define([
                         'real_special_transition', 'real_special_transition_point',  'real_optical_cable',
                         'real_optical_cable_point', 'real_fosc', 'real_optical_cross', 'real_access_point'
                     ], 'focl_struct');
+
+                    this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
+                    this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
+                        editorConfig.editableLayersId, true, true);
+
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
