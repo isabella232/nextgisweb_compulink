@@ -28,14 +28,21 @@ define([
             this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer');
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
+            this._bindAddLayerEvent(this._map.olMap);
             return this._layer;
         },
 
         _createModify: function () {
             this._modify = new openlayers.Control.ModifyFeature(this._layer);
             this._modify.mode = openlayers.Control.ModifyFeature.DRAG;
-            // todo: fix TypeError: Cannot read property 'Z_INDEX_BASE' of null
-            //this._modify.activate();
+            this._map.olMap.addControl(this._modify);
+            this._modify.activate();
+        },
+
+        _bindAddLayerEvent: function (map) {
+            map.events.register('addlayer', map, lang.hitch(this, function () {
+                this._map.olMap.setLayerIndex(this._layer, 9999);
+            }));
         },
 
         createLayer: function () {
