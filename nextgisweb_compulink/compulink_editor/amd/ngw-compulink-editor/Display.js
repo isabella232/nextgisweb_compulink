@@ -327,7 +327,7 @@ define([
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
-                        editorConfig.editableLayersId, true, true);
+                        editorConfig.editableLayersInfo, true, true);
 
                     new EventsMediator(this);
                 })

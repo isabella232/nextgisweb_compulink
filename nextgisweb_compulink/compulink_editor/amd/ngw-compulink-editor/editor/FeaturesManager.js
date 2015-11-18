@@ -7,15 +7,15 @@ define([
 ], function (declare, lang, array, all, openlayers) {
 
     return declare([], {
-        constructor: function (map, ngwServiceFacade, editableLayersId, isCreateLayer, isFillObjects) {
+        constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
             this._map = map;
-            this._editableLayersId = editableLayersId;
+            this._editableLayersInfo = editableLayersInfo;
             this._ngwServiceFacade = ngwServiceFacade;
             if (isCreateLayer) this.createLayer();
             if (isFillObjects) this.fillObjects();
         },
 
-        _editableLayersId: null,
+        _editableLayersInfo: null,
         _map: null,
         _ngwServiceFacade: null,
         _layer: null,
@@ -58,8 +58,8 @@ define([
         fillObjects: function () {
             var getFeaturesPromises = [];
 
-            array.forEach(this._editableLayersId, function (editableLayerId) {
-                getFeaturesPromises.push(this._ngwServiceFacade.getAllFeatures(editableLayerId));
+            array.forEach(this._editableLayersInfo, function (editableLayerInfo) {
+                getFeaturesPromises.push(this._ngwServiceFacade.getAllFeatures(editableLayerInfo.id));
             }, this);
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
@@ -68,12 +68,15 @@ define([
         },
 
         _createFeatures: function (ngwFeatureItems) {
-            var features;
+            var feature,
+                editableLayerInfo;
 
-            array.forEach(ngwFeatureItems, function (ngwFeatures) {
+            array.forEach(ngwFeatureItems, function (ngwFeatures, getFeaturesPromiseIndex) {
+                editableLayerInfo = this._editableLayersInfo[getFeaturesPromiseIndex];
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
-                    features = this._wkt.read(ngwFeature.geom);
-                    this.getLayer().addFeatures(features);
+                    feature = this._wkt.read(ngwFeature.geom);
+                    feature.style = editableLayerInfo.style;
+                    this.getLayer().addFeatures(feature);
                 }))
             }, this);
         }
