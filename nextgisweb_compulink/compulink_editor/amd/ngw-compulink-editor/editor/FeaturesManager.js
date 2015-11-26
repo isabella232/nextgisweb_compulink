@@ -3,8 +3,9 @@ define([
     'dojo/_base/lang',
     'dojo/_base/array',
     'dojo/promise/all',
-    'ngw/openlayers'
-], function (declare, lang, array, all, openlayers) {
+    'ngw/openlayers',
+    'ngw-compulink-editor/editor/ModifyFeature'
+], function (declare, lang, array, all, openlayers, CompulinkModifyFeature) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
@@ -33,8 +34,10 @@ define([
         },
 
         _createModify: function () {
-            this._modify = new openlayers.Control.ModifyFeature(this._layer);
-            this._modify.mode = openlayers.Control.ModifyFeature.DRAG;
+            this._modify = new CompulinkModifyFeature(this._layer);
+            this._modify.mode = CompulinkModifyFeature.RESHAPE;
+            this._modify.createVertices = false;
+            this._modify.bySegment = true;
             this._map.olMap.addControl(this._modify);
             this._modify.activate();
         },
@@ -76,6 +79,7 @@ define([
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
                     feature = this._wkt.read(ngwFeature.geom);
                     feature.style = editableLayerInfo.style;
+                    console.log(ngwFeature);
                     this.getLayer().addFeatures(feature);
                 }))
             }, this);
