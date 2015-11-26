@@ -5,11 +5,11 @@
 define([
     'ngw/openlayers'
 ], function (openlayers) {
-    if (openlayers.Control.CompulinkModifyFeature) {
-        return openlayers.Control.CompulinkModifyFeature;
+    if (openlayers.Control.EditorModifyFeature) {
+        return openlayers.Control.EditorModifyFeature;
     }
 
-    openlayers.Control.CompulinkModifyFeature = openlayers.Class(openlayers.Control, {
+    openlayers.Control.EditorModifyFeature = openlayers.Class(openlayers.Control, {
 
         /**
          * APIProperty: bySegment
@@ -126,13 +126,13 @@ define([
         /**
          * APIProperty: mode
          * {Integer} Bitfields specifying the modification mode. Defaults to
-         *      openlayers.Control.CompulinkModifyFeature.RESHAPE. To set the mode to a
+         *      openlayers.Control.EditorModifyFeature.RESHAPE. To set the mode to a
          *      combination of options, use the | operator. For example, to allow
          *      the control to both resize and rotate features, use the following
          *      syntax
          * (code)
-         * control.mode = openlayers.Control.CompulinkModifyFeature.RESIZE |
-         *                openlayers.Control.CompulinkModifyFeature.ROTATE;
+         * control.mode = openlayers.Control.EditorModifyFeature.RESIZE |
+         *                openlayers.Control.EditorModifyFeature.ROTATE;
          *  (end)
          */
         mode: null,
@@ -202,7 +202,7 @@ define([
         },
 
         /**
-         * Constructor: openlayers.Control.CompulinkModifyFeature
+         * Constructor: openlayers.Control.EditorModifyFeature
          * Create a new modify feature control.
          *
          * Parameters:
@@ -223,7 +223,7 @@ define([
             this.virtualStyle.fillOpacity = 0.3;
             this.virtualStyle.strokeOpacity = 0.3;
             this.deleteCodes = [46, 68];
-            this.mode = openlayers.Control.CompulinkModifyFeature.RESHAPE;
+            this.mode = openlayers.Control.EditorModifyFeature.RESHAPE;
             openlayers.Control.prototype.initialize.apply(this, [options]);
             if (!(openlayers.Util.isArray(this.deleteCodes))) {
                 this.deleteCodes = [this.deleteCodes];
@@ -286,10 +286,10 @@ define([
                 if (!window.rbush) {
                     throw new Error("The rbush library is required");
                 }
-                if (!openlayers.Control.CompulinkModifyFeature.BySegment) {
-                    throw new Error("OpenLayers.Control.CompulinkModifyFeature.BySegment is missing from the build");
+                if (!openlayers.Control.EditorModifyFeature.BySegment) {
+                    throw new Error("OpenLayers.Control.EditorModifyFeature.BySegment is missing from the build");
                 } else {
-                    openlayers.Util.extend(this, openlayers.Control.CompulinkModifyFeature.BySegment);
+                    openlayers.Util.extend(this, openlayers.Control.EditorModifyFeature.BySegment);
                 }
             }
         },
@@ -625,16 +625,16 @@ define([
             }
             if (this.feature &&
                 this.feature.geometry.CLASS_NAME != "OpenLayers.Geometry.Point") {
-                if ((this.mode & openlayers.Control.CompulinkModifyFeature.DRAG)) {
+                if ((this.mode & openlayers.Control.EditorModifyFeature.DRAG)) {
                     this.collectDragHandle();
                 }
-                if ((this.mode & (openlayers.Control.CompulinkModifyFeature.ROTATE |
-                    openlayers.Control.CompulinkModifyFeature.RESIZE))) {
+                if ((this.mode & (openlayers.Control.EditorModifyFeature.ROTATE |
+                    openlayers.Control.EditorModifyFeature.RESIZE))) {
                     this.collectRadiusHandle();
                 }
-                if (this.mode & openlayers.Control.CompulinkModifyFeature.RESHAPE) {
+                if (this.mode & openlayers.Control.EditorModifyFeature.RESHAPE) {
                     // Don't collect vertices when we're resizing
-                    if (!(this.mode & openlayers.Control.CompulinkModifyFeature.RESIZE)) {
+                    if (!(this.mode & openlayers.Control.EditorModifyFeature.RESIZE)) {
                         this.collectVertices();
                     }
                 }
@@ -772,9 +772,9 @@ define([
                 bounds.right, bounds.bottom
             );
             var radius = new openlayers.Feature.Vector(radiusGeometry);
-            var resize = (this.mode & openlayers.Control.CompulinkModifyFeature.RESIZE);
-            var reshape = (this.mode & openlayers.Control.CompulinkModifyFeature.RESHAPE);
-            var rotate = (this.mode & openlayers.Control.CompulinkModifyFeature.ROTATE);
+            var resize = (this.mode & openlayers.Control.EditorModifyFeature.RESIZE);
+            var reshape = (this.mode & openlayers.Control.EditorModifyFeature.RESHAPE);
+            var rotate = (this.mode & openlayers.Control.EditorModifyFeature.ROTATE);
 
             radiusGeometry.move = function (x, y) {
                 openlayers.Geometry.Point.prototype.move.call(this, x, y);
@@ -861,29 +861,29 @@ define([
             }
         },
 
-        CLASS_NAME: "OpenLayers.Control.CompulinkModifyFeature"
+        CLASS_NAME: "OpenLayers.Control.EditorModifyFeature"
     });
 
     /**
      * Constant: RESHAPE
      * {Integer} Constant used to make the control work in reshape mode
      */
-    openlayers.Control.CompulinkModifyFeature.RESHAPE = 1;
+    openlayers.Control.EditorModifyFeature.RESHAPE = 1;
     /**
      * Constant: RESIZE
      * {Integer} Constant used to make the control work in resize mode
      */
-    openlayers.Control.CompulinkModifyFeature.RESIZE = 2;
+    openlayers.Control.EditorModifyFeature.RESIZE = 2;
     /**
      * Constant: ROTATE
      * {Integer} Constant used to make the control work in rotate mode
      */
-    openlayers.Control.CompulinkModifyFeature.ROTATE = 4;
+    openlayers.Control.EditorModifyFeature.ROTATE = 4;
     /**
      * Constant: DRAG
      * {Integer} Constant used to make the control work in drag mode
      */
-    openlayers.Control.CompulinkModifyFeature.DRAG = 8;
+    openlayers.Control.EditorModifyFeature.DRAG = 8;
 
-    return openlayers.Control.CompulinkModifyFeature;
+    return openlayers.Control.EditorModifyFeature;
 });
