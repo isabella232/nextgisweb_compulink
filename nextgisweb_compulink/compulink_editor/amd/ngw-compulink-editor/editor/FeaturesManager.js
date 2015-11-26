@@ -4,8 +4,9 @@ define([
     'dojo/_base/array',
     'dojo/promise/all',
     'ngw/openlayers',
-    'ngw-compulink-editor/editor/ModifyFeature'
-], function (declare, lang, array, all, openlayers, CompulinkModifyFeature) {
+    'ngw-compulink-editor/editor/openlayers/ModifyFeature',
+    'ngw-compulink-editor/editor/openlayers/Snapping'
+], function (declare, lang, array, all, openlayers, EditorModifyFeature, EditorSnapping) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
@@ -34,8 +35,8 @@ define([
         },
 
         _createModify: function () {
-            this._modify = new CompulinkModifyFeature(this._layer);
-            this._modify.mode = CompulinkModifyFeature.RESHAPE;
+            this._modify = new EditorModifyFeature(this._layer);
+            this._modify.mode = EditorModifyFeature.RESHAPE;
             this._modify.createVertices = false;
             this._modify.bySegment = true;
             this._map.olMap.addControl(this._modify);
@@ -43,7 +44,7 @@ define([
         },
 
         _createSnapping: function () {
-            this._snapping = new openlayers.Control.Snapping({
+            this._snapping = new EditorSnapping({
                 layer: this._layer,
                 targets: [this._layer],
                 greedy: false
