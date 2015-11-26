@@ -4,8 +4,8 @@ define([
     'dojo/_base/array',
     'dojo/promise/all',
     'ngw/openlayers',
-    'ngw-compulink-editor/editor/openlayers/ModifyFeature',
-    'ngw-compulink-editor/editor/openlayers/Snapping'
+    'ngw-compulink-editor/editor/openlayers/EditorModifyFeature',
+    'ngw-compulink-editor/editor/openlayers/EditorSnapping'
 ], function (declare, lang, array, all, openlayers, EditorModifyFeature, EditorSnapping) {
 
     return declare([], {
