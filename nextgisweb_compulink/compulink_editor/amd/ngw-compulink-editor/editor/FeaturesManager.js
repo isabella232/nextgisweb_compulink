@@ -42,6 +42,15 @@ define([
             this._modify.activate();
         },
 
+        _createSnapping: function () {
+            this._snapping = new openlayers.Control.Snapping({
+                layer: this._layer,
+                targets: [this._layer],
+                greedy: false
+            });
+            this._snapping.activate();
+        },
+
         _bindAddLayerEvent: function (map) {
             map.events.register('addlayer', map, lang.hitch(this, function () {
                 this._map.olMap.setLayerIndex(this._layer, 9999);
@@ -51,6 +60,7 @@ define([
         createLayer: function () {
             this._getLayer();
             this._createModify();
+            this._createSnapping();
             return this._getLayer();
         },
 
