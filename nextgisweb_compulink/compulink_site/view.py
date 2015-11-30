@@ -88,7 +88,10 @@ def setup_pyramid(comp, config):
         'compulink.site.set_focl_status',
         '/compulink/resources/{id:\d+}/set_focl_status', client=('id',)) \
         .add_view(set_focl_status)
-
+    config.add_route(
+        'compulink.site.get_dicts',
+        '/compulink/get_dicts',) \
+        .add_view(get_dicts)
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
@@ -486,6 +489,9 @@ def get_all_dicts():
 
     return dicts
 
+@view_config(renderer='json')
+def get_dicts(request):
+    return Response(json.dumps(get_all_dicts()))
 
 def export_focl_to_kml(request):
     return export_focl_struct(request, 'kml')
