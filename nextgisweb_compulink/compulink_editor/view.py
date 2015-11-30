@@ -203,6 +203,9 @@ def show_map(request):
     focl_layers = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
 
+    editable_layers = _get_editable_layers_items(resource_id)
+    editable_layers_view_model = _create_editable_layers_view_model(editable_layers)
+
     values = dict(
         show_header=True,
         focl_layers_type=focl_layers['focl'],
@@ -210,7 +213,7 @@ def show_map(request):
         real_layers_type=focl_layers['real'],
         sit_plan_layers_type=sit_plan_layers_type,
         extent=extent4326,
-        editable_layers=get_editable_layers_items(resource_id)
+        editable_layers_info=editable_layers_view_model
     )
 
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
@@ -230,7 +233,7 @@ def _extent_3857_to_4326(extent3857):
     return extent4326
 
 
-def get_editable_layers_items(resource_id):
+def _get_editable_layers_items(resource_id):
     editable_layers = []
     dbsession = DBSession()
 
@@ -244,11 +247,24 @@ def get_editable_layers_items(resource_id):
         layer_keyname_without_guid = child_resource.keyname[0:-(GUID_LENGTH + 1)]
         if layer_keyname_without_guid not in EDITABLE_LAYERS:
             continue
-        editable_layers.append(child_resource)
+        editable_layers.append({
+            'resource': child_resource,
+            'settings': EDITABLE_LAYERS[layer_keyname_without_guid]
+        })
 
     dbsession.close()
 
     return editable_layers
+
+
+def _create_editable_layers_view_model(editable_layers):
+    editable_layers_model = []
+    for editable_layer_item in editable_layers:
+        editable_layers_model.append({
+            'id': editable_layer_item['resource'].id,
+            'style': editable_layer_item['settings']['style']
+        })
+    return editable_layers_model
 
 
 def get_focl_layers_list():
