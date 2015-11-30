@@ -3,17 +3,16 @@ define([
     'dojo/_base/lang',
     'dojo/_base/array',
     'dojo/promise/all',
-    'ngw/openlayers',
-    'ngw-compulink-editor/editor/openlayers/EditorModifyFeature',
-    'ngw-compulink-editor/editor/openlayers/EditorSnapping'
-], function (declare, lang, array, all, openlayers, EditorModifyFeature, EditorSnapping) {
+    'dojo/topic',
+    'ngw/openlayers'
+], function (declare, lang, array, all, topic, openlayers) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
             this._map = map;
             this._editableLayersInfo = editableLayersInfo;
             this._ngwServiceFacade = ngwServiceFacade;
-            if (isCreateLayer) this.createLayer();
+            if (isCreateLayer) this.getLayer();
             if (isFillObjects) this.fillObjects();
         },
 
@@ -31,20 +30,21 @@ define([
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
             this._bindAddLayerEvent(this._map.olMap);
+            this._createModify();
+            this._createSnapping();
             return this._layer;
         },
 
         _createModify: function () {
-            this._modify = new EditorModifyFeature(this._layer);
-            this._modify.mode = EditorModifyFeature.RESHAPE;
+            this._modify = new openlayers.Control.ModifyFeature(this._layer);
+            this._modify.mode = openlayers.Control.ModifyFeature.RESHAPE;
             this._modify.createVertices = false;
-            this._modify.bySegment = true;
             this._map.olMap.addControl(this._modify);
             this._modify.activate();
         },
 
         _createSnapping: function () {
-            this._snapping = new EditorSnapping({
+            this._snapping = new openlayers.Control.Snapping({
                 layer: this._layer,
                 targets: [this._layer],
                 greedy: false
@@ -58,15 +58,8 @@ define([
             }));
         },
 
-        createLayer: function () {
-            this._getLayer();
-            this._createModify();
-            this._createSnapping();
-            return this._getLayer();
-        },
-
         getLayer: function () {
-            return this.createLayer();
+            return this._getLayer();
         },
 
         fillObjects: function () {
@@ -90,10 +83,15 @@ define([
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
                     feature = this._wkt.read(ngwFeature.geom);
                     feature.style = editableLayerInfo.style;
-                    console.log(ngwFeature);
+                    feature.ngwLayerId = editableLayerInfo.id;
+                    feature.ngwFeatureId = ngwFeature.id;
                     this.getLayer().addFeatures(feature);
                 }))
             }, this);
+
+            this.getLayer().events.register('beforefeaturemodified', this.getLayer(), function (event) {
+                topic.publish('/editor/feature/select', event.feature);
+            });
         }
     });
 });
