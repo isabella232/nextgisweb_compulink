@@ -9,7 +9,6 @@ from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
 from sqlalchemy import func
-
 from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport
@@ -24,6 +23,7 @@ from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
+
 
 def setup_pyramid(comp, config):
     config.add_route(
@@ -40,8 +40,9 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.reporting.export_status_report',
         '/compulink/reporting/export_status_report',
-        client=())\
+        client=()) \
         .add_view(export_status_report)
+
 
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/status_grid.mako')
 def status_grid(request):
@@ -73,7 +74,7 @@ def get_status_report(request):
 
     report_query = construct_query(request)
 
-    #dicts
+    # dicts
     regions = get_regions_from_resource(as_dict=True)
     districts = get_districts_from_resource(as_dict=True)
     statuses = get_project_statuses(as_dict=True)
@@ -81,38 +82,36 @@ def get_status_report(request):
     json_report = []
     num_line = 1
     for row in report_query.all():
-
         json_row = {
-            'num_line':         num_line,
-            'focl_name':        row.focl_name,
-            'region':           regions.get(row.region, row.region),
-            'district':         districts.get(row.district, row.district),
-            'status':           statuses.get(row.status, row.status),
-            'subcontr_name':    row.subcontr_name,
+            'num_line': num_line,
+            'focl_name': row.focl_name,
+            'region': regions.get(row.region, row.region),
+            'district': districts.get(row.district, row.district),
+            'status': statuses.get(row.status, row.status),
+            'subcontr_name': row.subcontr_name,
             'start_build_time': row.start_build_time,
-            'end_build_time':   row.end_build_time,
-            'cabling_plan':     row.cabling_plan if row.cabling_plan else None,  # already in km
-            'cabling_fact':     row.cabling_fact if row.cabling_fact else None,  # already in km
-            'cabling_percent':  row.cabling_percent,
-            'fosc_plan':        row.fosc_plan,
-            'fosc_fact':        row.fosc_fact,
-            'fosc_percent':     row.fosc_percent,
-            'cross_plan':       row.cross_plan,
-            'cross_fact':       row.cross_fact,
-            'cross_percent':    row.cross_percent,
-            'spec_trans_plan':        row.spec_trans_plan,
-            'spec_trans_fact':        row.spec_trans_fact,
-            'spec_trans_percent':     row.spec_trans_percent,
-            'ap_plan':          row.ap_plan,
-            'ap_fact':          row.ap_fact,
-            'ap_percent':       row.ap_percent,
-            'is_overdue':       row.is_overdue,
-            'is_month_overdue':       row.is_month_overdue,
-            'is_focl_delivered':      row.status == PROJECT_STATUS_DELIVERED,
+            'end_build_time': row.end_build_time,
+            'cabling_plan': row.cabling_plan if row.cabling_plan else None,  # already in km
+            'cabling_fact': row.cabling_fact if row.cabling_fact else None,  # already in km
+            'cabling_percent': row.cabling_percent,
+            'fosc_plan': row.fosc_plan,
+            'fosc_fact': row.fosc_fact,
+            'fosc_percent': row.fosc_percent,
+            'cross_plan': row.cross_plan,
+            'cross_fact': row.cross_fact,
+            'cross_percent': row.cross_percent,
+            'spec_trans_plan': row.spec_trans_plan,
+            'spec_trans_fact': row.spec_trans_fact,
+            'spec_trans_percent': row.spec_trans_percent,
+            'ap_plan': row.ap_plan,
+            'ap_fact': row.ap_fact,
+            'ap_percent': row.ap_percent,
+            'is_overdue': row.is_overdue,
+            'is_month_overdue': row.is_month_overdue,
+            'is_focl_delivered': row.status == PROJECT_STATUS_DELIVERED,
         }
         json_report.append(json_row)
         num_line += 1
-
 
     return Response(
         json.dumps(json_report, cls=DateTimeJSONEncoder),
@@ -127,7 +126,7 @@ def export_status_report(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    #open template
+    # open template
     template_path = path.join(TEMPLATES_PATH, 'status_report.xlsx')
     wb = load_workbook(template_path)
 
@@ -174,7 +173,6 @@ def export_status_report(request):
             for header_cell in header_row:
                 header_cell.style = border_style
 
-
         # styles
         bold_style = ws.cell(row=3, column=2).style
 
@@ -204,7 +202,6 @@ def export_status_report(request):
             number_format='DD.MM.YYYY',
             font=red_bold_font
         )
-
 
         delivered_style = Style(
             font=green_font
@@ -275,23 +272,22 @@ def export_status_report(request):
             ws.cell(row=line_in_ws, column=8).style = dt_style
 
             if row.is_overdue:
-                for col in xrange(1, 23+1):
+                for col in xrange(1, 23 + 1):
                     ws.cell(row=line_in_ws, column=col).style = overdue_style
                 ws.cell(row=line_in_ws, column=7).style = dt_overdue_style
                 ws.cell(row=line_in_ws, column=8).style = dt_overdue_style
 
             if row.is_month_overdue:
-                for col in xrange(1, 23+1):
+                for col in xrange(1, 23 + 1):
                     ws.cell(row=line_in_ws, column=col).style = month_overdue_style
                 ws.cell(row=line_in_ws, column=7).style = dt_month_overdue_style
                 ws.cell(row=line_in_ws, column=8).style = dt_month_overdue_style
 
             if row.status == PROJECT_STATUS_DELIVERED:
-                for col in xrange(1, 23+1):
+                for col in xrange(1, 23 + 1):
                     ws.cell(row=line_in_ws, column=col).style = delivered_style
                 ws.cell(row=line_in_ws, column=7).style = dt_delivered_style
                 ws.cell(row=line_in_ws, column=8).style = dt_delivered_style
-
 
             # save totals
             for key in totals.keys():
@@ -308,17 +304,17 @@ def export_status_report(request):
         ws.cell(row=line_in_ws, column=1).style = footer_style
 
         for key in totals.keys():
-                val = totals[key]
-                if val:
-                    ws.cell(row=line_in_ws, column=key).value = val
-                    ws.cell(row=line_in_ws, column=key).style = footer_style
+            val = totals[key]
+            if val:
+                ws.cell(row=line_in_ws, column=key).value = val
+                ws.cell(row=line_in_ws, column=key).style = footer_style
 
         for key in [11, 14, 17, 20, 23]:
-            plan = ws.cell(row=line_in_ws, column=key-2).value
-            fact = ws.cell(row=line_in_ws, column=key-1).value
+            plan = ws.cell(row=line_in_ws, column=key - 2).value
+            fact = ws.cell(row=line_in_ws, column=key - 1).value
             val = None
             if plan and fact:
-                val = float(fact)/float(plan)
+                val = float(fact) / float(plan)
             if val:
                 ws.cell(row=line_in_ws, column=key).value = val
                 ws.cell(row=line_in_ws, column=key).style = footer_style_percent
@@ -341,14 +337,13 @@ def construct_query(request):
     overdue_filter = request.params.get('only_overdue', False)
     status_filter = request.params.getall('status')
 
-
     report_query = DBSession.query(ConstructionStatusReport)
     if region_filter:
-        report_query = report_query.filter(ConstructionStatusReport.region==region_filter)
+        report_query = report_query.filter(ConstructionStatusReport.region == region_filter)
     if district_filter:
-        report_query = report_query.filter(ConstructionStatusReport.district==district_filter)
+        report_query = report_query.filter(ConstructionStatusReport.district == district_filter)
     if overdue_filter:
-        report_query = report_query.filter(ConstructionStatusReport.is_overdue==True)
+        report_query = report_query.filter(ConstructionStatusReport.is_overdue == True)
 
     report_query = report_query.filter(ConstructionStatusReport.status.in_(status_filter))
 
@@ -361,16 +356,14 @@ def construct_query(request):
     return report_query
 
 
-
 def get_user_writable_focls(user):
     # get explicit rules
-    rules_query = DBSession.query(ResourceACLRule)\
-        .filter(ResourceACLRule.principal_id==user.principal_id)\
-        .filter(ResourceACLRule.scope==DataScope.identity)\
+    rules_query = DBSession.query(ResourceACLRule) \
+        .filter(ResourceACLRule.principal_id == user.principal_id) \
+        .filter(ResourceACLRule.scope == DataScope.identity) \
         .options(joinedload_all(ResourceACLRule.resource))
 
-    #todo: user groups explicit rules???
-
+    # todo: user groups explicit rules???
     # get permission for resource and children
     allowed_res_ids = []
 
@@ -388,7 +381,6 @@ def get_user_writable_focls(user):
 
 
 def get_user_accessible_structs(user):
-
     query = DBSession.query(FoclStruct.region, FoclStruct.district)
 
     if not user.is_administrator:
@@ -405,9 +397,3 @@ def get_user_accessible_structs(user):
             districts.append(district)
 
     return regions, districts
-
-
-
-
-
-
