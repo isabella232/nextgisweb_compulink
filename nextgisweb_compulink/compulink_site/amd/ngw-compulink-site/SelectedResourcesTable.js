@@ -31,7 +31,9 @@ define([
                 region: 'Субъект РФ',
                 district: 'Муниципальный район',
                 status: 'Статус',
-                cabling_plan: 'Протяженность',
+                cabling_plan: 'Плановая протяженность (км)',
+                cabling_fact: 'Проложено кабеля (км)',
+                cabling_percent: '% выполнения',
                 start_build_time: 'Начало СМР',
                 end_build_time: 'Окончание СМР',
                 start_deliver_time: 'Начало сдачи заказчику',
@@ -114,6 +116,20 @@ define([
 
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
             aspect.after(this._grid, 'renderRow', function(row, args) {
+                if (args[0]['cabling_plan_today'] && args[0]['cabling_fact'] && args[0]['cabling_plan_today']!=0) {
+
+                    var cabling_plan_today = args[0]['cabling_plan_today'];
+                    var cabling_fact = args[0]['cabling_fact'];
+
+                    var plan_overhead = (cabling_fact - cabling_plan_today)/cabling_plan_today;
+
+                    if (plan_overhead > 0.15) {
+                        domStyle.set(row, 'color', '#77D36D');
+                    }
+                    if (plan_overhead < -0.15 ) {
+                        domStyle.set(row, 'color', '#FFA8A8');
+                    }
+                }
                 if (args[0]['is_overdue']) {
                     domStyle.set(row, 'color', '#ff6666');
                 }

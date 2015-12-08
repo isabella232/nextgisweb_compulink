@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from datetime import date
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 import os
 from os import path, mkdir
@@ -321,6 +321,8 @@ def get_focl_info(request):
                     'region': regions.get(report_row.region, report_row.region),
                     'status': statuses.get(report_row.status, report_row.status),
                     'cabling_plan': report_row.cabling_plan,
+                    'cabling_fact': report_row.cabling_fact,
+                    'cabling_percent': report_row.cabling_percent,
 
                     'start_build_time': report_row.start_build_time.strftime('%d.%m.%Y') if report_row.start_build_time else '',
                     'end_build_time': report_row.end_build_time.strftime('%d.%m.%Y') if report_row.end_build_time else '',
@@ -332,6 +334,9 @@ def get_focl_info(request):
                     'is_overdue': report_row.is_overdue,
                     'is_month_overdue': report_row.is_month_overdue,
                     'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
+
+                    'cabling_plan_today': report_row.cabling_plan / (report_row.end_build_time - report_row.start_build_time) * (datetime.now - report_row.start_build_time)
+                        if (report_row.end_build_time and report_row.start_build_time) else None,
                 }
             )
         else:
@@ -345,6 +350,8 @@ def get_focl_info(request):
                     'status': statuses.get(res.status, res.status),
 
                     'cabling_plan': None,
+                    'cabling_fact': None,
+                    'cabling_percent': None,
                     'start_build_time': None,
                     'end_build_time': None,
                     'start_deliver_time': None,
@@ -353,6 +360,7 @@ def get_focl_info(request):
                     'is_overdue': False,
                     'is_month_overdue': False,
                     'is_focl_delivered': False,
+                    'focl_plan_state': None
                 }
             )
 
