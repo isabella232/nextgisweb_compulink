@@ -337,7 +337,7 @@ def get_focl_info(request):
                     'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
 
                     'cabling_plan_today': report_row.cabling_plan * ((datetime.now() - report_row.start_build_time).seconds/((report_row.end_build_time - report_row.start_build_time).seconds+1))
-                        if (report_row.end_build_time and report_row.start_build_time) else None,
+                        if (report_row.end_build_time is not None and report_row.start_build_time is not None) else None,
                 }
             )
         else:
