@@ -320,6 +320,7 @@ def get_focl_info(request):
                     'district': districts.get(report_row.district, report_row.district),
                     'region': regions.get(report_row.region, report_row.region),
                     'status': statuses.get(report_row.status, report_row.status),
+
                     'cabling_plan': report_row.cabling_plan,
                     'cabling_fact': report_row.cabling_fact,
                     'cabling_percent': report_row.cabling_percent,
@@ -352,15 +353,19 @@ def get_focl_info(request):
                     'cabling_plan': None,
                     'cabling_fact': None,
                     'cabling_percent': None,
+
                     'start_build_time': None,
                     'end_build_time': None,
                     'start_deliver_time': None,
                     'end_deliver_time': None,
+
                     'subcontr': None,
+
                     'is_overdue': False,
                     'is_month_overdue': False,
                     'is_focl_delivered': False,
-                    'focl_plan_state': None
+
+                    'cabling_plan_today': None
                 }
             )
 

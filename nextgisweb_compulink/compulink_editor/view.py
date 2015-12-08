@@ -56,9 +56,9 @@ def setup_pyramid(comp, config):
         'compulink.editor.json',
         '/compulink/resources/child').add_view(get_child_resx_by_parent)
 
-    config.add_route(
-        'compulink.editor.focl_info',
-        '/compulink/resources/focl_info').add_view(get_focl_info)
+    # config.add_route(
+    #     'compulink.editor.focl_info',
+    #     '/compulink/resources/focl_info').add_view(get_focl_info)
 
     config.add_route(
         'compulink.editor.focl_extent',
