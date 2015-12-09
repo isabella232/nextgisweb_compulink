@@ -30,7 +30,14 @@ class DBInit():
     @classmethod
     def argparser_setup(cls, parser, env):
         parser.add_argument('--force', dest='force', action='store_true', default=False)
-        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts', 'dicts', 'domain_dicts'], default='all')
+        parser.add_argument('--action', choices=['all',
+                                                 'icons',
+                                                 'dict_group',
+                                                 'shape_dicts',
+                                                 'dicts',
+                                                 'domain_dicts',
+                                                 'rt_domain_dicts'
+                                                 ], default='all')
 
 
     @classmethod
@@ -48,7 +55,8 @@ class DBInit():
             cls.load_dicts(force=args.force)
         if args.action in ['all', 'domain_dicts']:
             cls.load_domain_dicts(force=args.force)
-
+        if args.action in ['all', 'rt_domain_dicts']:
+            cls.load_rt_domain_dicts(force=args.force)
 
         if make_transaction:
             transaction.manager.commit()
@@ -290,6 +298,54 @@ class DBInit():
                 district.region = regs[dist_row['region_id']]
 
                 district.persist()
+
+
+    @classmethod
+    def load_rt_domain_dicts(cls, force=False):
+        print 'Loading RT domain dicts...'
+        from ..compulink_admin.model import Region
+        from ..compulink_reporting.model import RtMacroDivision, RtBranch, RtBranchRegion
+        from csv import DictReader
+
+        db_session = DBSession()
+
+        if (db_session.query(RtMacroDivision).count() > 0 or
+            db_session.query(RtBranch).count() > 0 or
+            db_session.query(RtBranchRegion).count() > 0
+            ) and not force:
+            print '     RT Domain dictionary already existings! Returning...'
+            return
+
+        with open(path.join(BASE_PATH, 'rt_macro_division.csv')) as macro_csv, \
+            open(path.join(BASE_PATH, 'rt_branch.csv')) as branch_csv, \
+            open(path.join(BASE_PATH, 'rt_branch_region.csv')) as branch_region_csv:
+
+            macro_reader = DictReader(macro_csv)
+            branch_reader = DictReader(branch_csv)
+            branch_region_reader = DictReader(branch_region_csv)
+
+
+            macros = {}
+            branches = {}
+            for macro_row in macro_reader:
+                macro = RtMacroDivision()
+                macro.name = macro_row['name']
+                macro.persist()
+                macros[macro_row['id']] = macro
+
+            for branch_row in branch_reader:
+                branch = RtBranch()
+                branch.name = branch_row['name']
+                branch.rt_macro_division = macros[branch_row['macro_division_id']]
+                branch.persist()
+                branches[branch_row['id']] = branch
+
+            for br_reg_row in branch_region_reader:
+                branch_reg = RtBranchRegion()
+                branch_reg.rt_branch = branches[br_reg_row['rt_branch_id']]
+                branch_reg.region = db_session.query(Region).filter(Region.region_code == br_reg_row['region_code']).one()
+                branch_reg.persist()
+
 
 
 
