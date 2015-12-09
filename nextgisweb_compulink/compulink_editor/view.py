@@ -48,25 +48,26 @@ GUID_LENGTH = 32
 
 
 def setup_pyramid(comp, config):
+    # todo: check URL's
     config.add_route(
         'compulink.editor.map',
         '/compulink/editor').add_view(show_map)
 
     config.add_route(
         'compulink.editor.json',
-        '/compulink/resources/child').add_view(get_child_resx_by_parent)
+        '/compulink/editor/resources/child').add_view(get_child_resx_by_parent)
 
-    # config.add_route(
-    #     'compulink.editor.focl_info',
-    #     '/compulink/resources/focl_info').add_view(get_focl_info)
+    config.add_route(
+        'compulink.editor.focl_info',
+        '/compulink/editor/resources/focl_info').add_view(get_focl_info)
 
     config.add_route(
         'compulink.editor.focl_extent',
-        '/compulink/resources/focl_extent').add_view(get_focl_extent)
+        '/compulink/editor/resources/focl_extent').add_view(get_focl_extent)
 
     config.add_route(
         'compulink.editor.layers_by_type',
-        '/compulink/resources/layers_by_type').add_view(get_layers_by_type)
+        '/compulink/editor/resources/layers_by_type').add_view(get_layers_by_type)
 
     config.add_static_view(
         name='compulink/editor/static',
@@ -74,24 +75,24 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink.editor.export_kml',
-        '/compulink/resources/{id:\d+}/export_kml', client=('id',)) \
+        '/compulink/editor/resources/{id:\d+}/export_kml', client=('id',)) \
         .add_view(export_focl_to_kml)
 
     config.add_route(
         'compulink.editor.export_geojson',
-        '/compulink/resources/{id:\d+}/export_geojson', client=('id',)) \
+        '/compulink/editor/resources/{id:\d+}/export_geojson', client=('id',)) \
         .add_view(export_focl_to_geojson)
     config.add_route(
         'compulink.editor.export_csv',
-        '/compulink/resources/{id:\d+}/export_csv', client=('id',)) \
+        '/compulink/editor/resources/{id:\d+}/export_csv', client=('id',)) \
         .add_view(export_focl_to_csv)
     config.add_route(
         'compulink.editor.get_focl_status',
-        '/compulink/resources/{id:\d+}/focl_status', client=('id',)) \
+        '/compulink/editor/resources/{id:\d+}/focl_status', client=('id',)) \
         .add_view(get_focl_status)
     config.add_route(
         'compulink.editor.set_focl_status',
-        '/compulink/resources/{id:\d+}/set_focl_status', client=('id',)) \
+        '/compulink/editor/resources/{id:\d+}/set_focl_status', client=('id',)) \
         .add_view(set_focl_status)
 
 

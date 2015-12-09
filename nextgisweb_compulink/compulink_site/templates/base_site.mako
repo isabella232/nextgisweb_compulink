@@ -71,6 +71,7 @@
                 isGuest: false,
                 userName: '${request.user}',
                 reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
+                reportUcnUrl: '${request.route_url('compulink.reports.ucn')}',
                 logoutUrl: '${request.route_url('auth.logout')}'
             %endif
         }

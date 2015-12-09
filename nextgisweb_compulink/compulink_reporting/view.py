@@ -20,6 +20,7 @@ from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_
 from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED
 from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
+from view_ucn import add_routes
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -42,6 +43,8 @@ def setup_pyramid(comp, config):
         '/compulink/reporting/export_status_report',
         client=()) \
         .add_view(export_status_report)
+
+    add_routes(config)
 
 
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/status_grid.mako')

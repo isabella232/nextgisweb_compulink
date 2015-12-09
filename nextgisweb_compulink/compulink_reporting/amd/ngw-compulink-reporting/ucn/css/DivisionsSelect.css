@@ -1,0 +1,45 @@
+div.districts-select {
+    width: 20%;
+    min-width: 150px;
+}
+
+div.districts-select inout {
+    border: 1px #b5bcc7 solid;
+}
+
+div.tree-wrapper {
+    width: 300px;
+    height: 250px;
+    overflow: auto;
+    margin-top: 1px;
+}
+
+div.districts-select {
+    display: inline-block;
+    z-index: 999;
+}
+
+div.districts-select input {
+    width: 100%;
+}
+
+div.tree-wrapper {
+    display: none;
+    position: fixed;
+    background-color: white;
+    border: 1px #b5bcc7 solid;
+}
+
+div.tree-wrapper.visible {
+    display: block;
+}
+
+.dojoxCheckedMultiSelectMenuCheckBoxItemIcon {
+    display:block
+}
+.dojoxCheckedMultiSelectCheckBoxInput {
+    opacity:1
+}
+div.pad {
+    position:absolute
+}

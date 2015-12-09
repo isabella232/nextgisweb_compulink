@@ -48,6 +48,7 @@ define([
     "ngw-compulink-site/LayersLoadingIndicator",
     "ngw-compulink-editor/editor/FeaturesManager",
     "ngw-compulink-editor/editor/NgwServiceFacade",
+    "ngw-compulink-editor/editor/AttributesEditor",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -115,6 +116,7 @@ define([
     LayersLoadingIndicator,
     EditorFeaturesManager,
     NgwServiceFacade,
+    AttributesEditor,
     Adapter,
     clientSettings
 ) {
@@ -329,6 +331,8 @@ define([
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
                         editorConfig.editableLayersInfo, true, true);
 
+                    this.AttributesEditor = registry.byId("attributesEditor");
+                    this.AttributesEditor.setNgwServiceFacade(this.NgwServiceFacade);
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });

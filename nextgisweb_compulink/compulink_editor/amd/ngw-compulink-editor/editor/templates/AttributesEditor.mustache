@@ -1,0 +1,27 @@
+<h4>{{resource.display_name}}</h4>
+<form>
+    <input type="hidden" name="id" value="{{resource.id}}"/>
+    {{#fields}}
+        <div class="control-group">
+            <label>{{displayName}}</label>
+
+            {{#IS_STRING}}
+                <textarea type="text" name="{{keyname}}" >{{value}}</textarea>
+            {{/IS_STRING}}
+
+            {{#IS_FLOAT}}
+                <input type="number" name="{{keyname}}" value="{{value}}"/>
+            {{/IS_FLOAT}}
+
+            {{#IS_INTEGER}}
+                <input type="number" name="{{keyname}}" value="{{value}}"/>
+            {{/IS_INTEGER}}
+
+            {{#IS_DATETIME}}
+                <input type="datetime-local" name="{{keyname}}" value="{{value}}"/>
+            {{/IS_DATETIME}}
+        </div>
+    {{/fields}}
+    <input class="save" type="button" value="Сохранить"/>
+</form>
+
