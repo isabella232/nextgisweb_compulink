@@ -14,6 +14,11 @@ def init_calendar():
 
     db_session = DBSession()
 
+    count = db_session.query(Calendar).count()
+    if count != 0:
+        print '     Calendar is not empty! Returning...'
+        return
+
     start_date = date(2014, 1, 1)
     max_date = date(2025, 1, 1)
 

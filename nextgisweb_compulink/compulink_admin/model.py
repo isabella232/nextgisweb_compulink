@@ -4,11 +4,14 @@ import json
 from lxml import etree
 import uuid
 import codecs
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
 from nextgisweb import db
 
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.auth.models import User
-from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope, ResourceScope)
+from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope, ResourceScope, Resource)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.webmap.adapter import ImageAdapter
 from nextgisweb.webmap.model import WebMap, WebMapItem
@@ -268,5 +271,80 @@ class ModelsUtils():
         ms.persist()
 
         return ms
+
+
+# ---- DOMAIN MODELS ----
+class Region(Base):
+    __tablename__ = 'region'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+    region_code = db.Column(db.Integer, nullable=True)
+
+
+class District(Base):
+    __tablename__ = 'district'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+
+    region_id = db.Column(db.Integer, ForeignKey(Region.id))
+
+    region = relationship(Region)
+
+
+class Project(Base):
+    __tablename__ = 'project'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+    description = db.Column(db.UnicodeText, nullable=True)
+    root_resource_id = db.Column(db.Integer, nullable=True)
+
+    root_resource = relationship(
+        Resource,
+        foreign_keys=[root_resource_id,],
+        primaryjoin= root_resource_id == Resource.id,
+        lazy='joined'
+    )
+
+
+class ConstructObject(Base):
+    __tablename__ = 'construct_object'
+    __table_args__ = {'schema': 'compulink'}
+
+    resource_id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+    name = db.Column(db.Unicode(length=300))
+    external_id = db.Column(db.Unicode(length=300), nullable=True)
+    district_id = db.Column(db.Integer, ForeignKey(District.id), nullable=True)
+    region_id = db.Column(db.Integer, ForeignKey(Region.id), nullable=True)
+    project_id = db.Column(db.Integer, ForeignKey(Project.id), nullable=True)
+    subcontr_name = db.Column(db.Unicode(length=300), nullable=True)
+    start_build_date = db.Column(db.Date, nullable=True)
+    end_build_date = db.Column(db.Date, nullable=True)
+    start_deliver_date = db.Column(db.Date, nullable=True)
+    end_deliver_date = db.Column(db.Date, nullable=True)
+    cabling_plan = db.Column(db.Float)
+    fosc_plan = db.Column(db.Integer, nullable=True)
+    cross_plan = db.Column(db.Integer, nullable=True)
+    spec_trans_plan = db.Column(db.Integer, nullable=True)
+    access_point_plan = db.Column(db.Integer, nullable=True)
+
+    resource = relationship(
+        Resource,
+        foreign_keys=[resource_id, ],
+        primaryjoin=resource_id == Resource.id,
+    )
+
+    district = relationship(District)
+    region = relationship(Region)
+
+    project = relationship(Project)
 
 

@@ -15,6 +15,7 @@ from nextgisweb.env import env
 from nextgisweb.spatial_ref_sys import SRS
 from nextgisweb.vector_layer import VectorLayer
 from nextgisweb.vector_layer.model import _set_encoding, VE
+from nextgisweb_compulink.compulink_admin.model import ConstructObject
 from nextgisweb_compulink.compulink_admin.well_known_resource import *
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater
 from default_dicts import DEFAULT_COMPULINK_DICTS
@@ -29,7 +30,7 @@ class DBInit():
     @classmethod
     def argparser_setup(cls, parser, env):
         parser.add_argument('--force', dest='force', action='store_true', default=False)
-        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts', 'dicts'], default='all')
+        parser.add_argument('--action', choices=['all', 'icons', 'dict_group', 'shape_dicts', 'dicts', 'domain_dicts'], default='all')
 
 
     @classmethod
@@ -45,6 +46,9 @@ class DBInit():
             cls.load_icons()
         if args.action in ['all', 'dicts']:
             cls.load_dicts(force=args.force)
+        if args.action in ['all', 'domain_dicts']:
+            cls.load_domain_dicts(force=args.force)
+
 
         if make_transaction:
             transaction.manager.commit()
@@ -251,6 +255,41 @@ class DBInit():
 
             dict_res.val = dict_values['items']
             dict_res.persist()
+
+    @classmethod
+    def load_domain_dicts(cls, force=False):
+        print 'Loading domain dicts...'
+        from ..compulink_admin.model import Region, District
+        from csv import DictReader
+
+        db_session = DBSession()
+
+        if (db_session.query(Region).count() > 0 or db_session.query(District).count() > 0) and not force:
+            print '     Domain dictionary already existings! Returning...'
+            return
+
+        with open(path.join(BASE_PATH, 'regions.csv')) as reg_csv, \
+             open(path.join(BASE_PATH, 'districts.csv')) as dist_csv:
+
+            reg_reader = DictReader(reg_csv)
+            dist_reader = DictReader(dist_csv)
+
+            regs = {}
+            for reg_row in reg_reader:
+                region = Region()
+                region.name = reg_row['name']
+                region.short_name = reg_row['short_name']
+                region.region_code = reg_row['region_code']
+                region.persist()
+                regs[reg_row['id']] = region
+
+            for dist_row in dist_reader:
+                district = District()
+                district.name = dist_row['name']
+                district.short_name = dist_row['short_name']
+                district.region = regs[dist_row['region_id']]
+
+                district.persist()
 
 
 
