@@ -1,0 +1,76 @@
+#attributesEditor {
+    padding: 0;
+    font-size: 1em;
+}
+
+#attributesEditor div.invitation,
+#attributesEditor div.attributes {
+    padding: 2px;
+}
+
+#attributesEditor.empty div.invitation,
+#attributesEditor.fill div.attributes,
+#attributesEditor.wait div.wait {
+    display: block;
+}
+
+#attributesEditor.empty div.attributes,
+#attributesEditor.empty div.wait,
+#attributesEditor.fill div.invitation,
+#attributesEditor.fill div.wait,
+#attributesEditor.wait div.invitation,
+#attributesEditor.wait div.attributes {
+    display: none;
+}
+
+#attributesEditor.fill div.attributes {
+    display: block;
+}
+
+#attributesEditor h3, h4 {
+    text-align: center;
+}
+
+#attributesEditor h3 {
+    margin: 0 0 3px 0;
+    padding: 5px 0;
+    display: block;
+    background-color: #6F8FB0;
+    color: white;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+}
+
+#attributesEditor input, #attributesEditor textarea {
+    width: 90%;
+}
+
+#attributesEditor input.save {
+    width: auto;
+    border: 1px solid #FF5656;
+    background: #FFD4D2 none;
+    padding: 5px 12px;
+    font-size: 1.2em;
+    line-height: 1.3333333;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+}
+
+#attributesEditor input.save:hover {
+    color: #fff;
+    background-color: #bd2931;
+    border-color: #bd0810;
+}
+
+#attributesEditor div.control-group {
+    margin: 2px 0;
+}
