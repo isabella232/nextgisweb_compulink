@@ -1,10 +1,11 @@
 # coding=utf-8
 import types
-from sqlalchemy import event
+from sqlalchemy import event, ForeignKey
+from sqlalchemy.orm import relationship
 
 from nextgisweb import db
 from nextgisweb.models import declarative_base
-from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT
+from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT, Region
 
 Base = declarative_base()
 
@@ -87,3 +88,36 @@ def tometadata(self, metadata):
     return result
 
 Calendar.__table__.tometadata = types.MethodType(tometadata, Calendar.__table__)
+
+
+# ---- RT DOMAIN MODELS ----
+class RtMacroDivision(Base):
+    __tablename__ = 'rt_macro_division'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+
+
+class RtBranch(Base):
+    __tablename__ = 'rt_branch'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+    macro_division_id = db.Column(db.Integer, ForeignKey(RtMacroDivision.id))
+
+    rt_macro_division = relationship(RtMacroDivision)
+
+
+class RtBranchRegion(Base):
+    __tablename__ = 'rt_branch_region'
+    __table_args__ = {'schema': 'compulink'}
+
+    region_id = db.Column(db.Integer, ForeignKey(Region.id), primary_key=True)
+    rt_branch_id = db.Column(db.Integer, ForeignKey(RtBranch.id))
+
+    region = relationship(Region)
+    rt_branch = relationship(RtBranch)
