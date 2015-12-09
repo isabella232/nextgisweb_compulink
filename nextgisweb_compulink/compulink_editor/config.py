@@ -4,7 +4,7 @@ EDITABLE_LAYERS = {
             'strokeColor': '#ff3300',
             'pointRadius': 10,
             'fillColor': '#ff3300',
-            'strokeWidth': 1,
+            'strokeWidth': 3,
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.6
@@ -26,7 +26,7 @@ EDITABLE_LAYERS = {
             'strokeColor': '#0066ff',
             'pointRadius': 10,
             'fillColor': '#0066ff',
-            'strokeWidth': 1,
+            'strokeWidth': 3,
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.6
@@ -48,7 +48,7 @@ EDITABLE_LAYERS = {
             'strokeColor': '#ff00ff',
             'pointRadius': 10,
             'fillColor': '#ff00ff',
-            'strokeWidth': 1,
+            'strokeWidth': 3,
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.6
