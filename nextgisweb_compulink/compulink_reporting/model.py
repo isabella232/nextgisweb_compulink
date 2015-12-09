@@ -1,4 +1,6 @@
 # coding=utf-8
+import types
+from sqlalchemy import event
 
 from nextgisweb import db
 from nextgisweb.models import declarative_base
@@ -6,6 +8,7 @@ from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT
 
 Base = declarative_base()
 
+#TODO: move ConstructionStatusReport to scheme compulink
 
 class ConstructionStatusReport(Base):
     __tablename__ = 'compulink_status_report'
@@ -47,3 +50,40 @@ class ConstructionStatusReport(Base):
 
     is_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены
     is_month_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены более чем на месяц
+
+
+class Calendar(Base):
+    __tablename__ = 'calendar'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    full_date = db.Column(db.Date, index=True)
+    year_number = db.Column(db.SmallInteger, index=True)
+    semester_number = db.Column(db.SmallInteger)
+    semester_name = db.Column(db.Unicode(length=15))
+    quarter_number = db.Column(db.SmallInteger, index=True)
+    quarter_name = db.Column(db.Unicode(length=15))
+    month_number = db.Column(db.SmallInteger, index=True)
+    month_name = db.Column(db.Unicode(length=8))
+    year_week_number = db.Column(db.SmallInteger)
+    month_week_number = db.Column(db.SmallInteger)
+    month_decade_number = db.Column(db.SmallInteger)
+    year_day_number = db.Column(db.SmallInteger, index=True)
+    month_day_number = db.Column(db.SmallInteger)
+    week_day_number = db.Column(db.SmallInteger)
+    week_day_name = db.Column(db.Unicode(length=11))
+    week_day_short_name = db.Column(db.Unicode(length=2))
+    weekend = db.Column(db.Boolean)
+
+
+def tometadata(self, metadata):
+    def create_schema(*args, **kwargs):
+        try:
+            db.DDL('CREATE SCHEMA compulink')
+        finally:
+            pass
+    result = db.Table.tometadata(self, metadata)
+    event.listen(result, "before_create", create_schema)
+    return result
+
+Calendar.__table__.tometadata = types.MethodType(tometadata, Calendar.__table__)

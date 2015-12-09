@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from nextgisweb.component import Component
 from ident import COMP_ID
+from .init_db import init_calendar
 from .model import Base
 
 @Component.registry.register
@@ -12,6 +13,10 @@ class CompulinkReportingComponent(Component):
 
     def initialize(self):
         super(CompulinkReportingComponent, self).initialize()
+
+
+    def initialize_db(self):
+        init_calendar()
 
     def setup_pyramid(self, config):
         super(CompulinkReportingComponent, self).setup_pyramid(config)
