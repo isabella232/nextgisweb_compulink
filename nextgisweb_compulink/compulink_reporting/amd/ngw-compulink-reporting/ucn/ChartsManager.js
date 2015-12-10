@@ -55,6 +55,8 @@ define([
                     this._charts[id] = chart;
                 }
             }
+
+            topic.publish('/reports/ucn/charts/init/finish');
         },
 
         _updateCharts: function (chartsData) {

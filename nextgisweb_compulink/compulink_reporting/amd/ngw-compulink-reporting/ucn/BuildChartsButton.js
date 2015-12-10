@@ -19,6 +19,10 @@ define([
             on(this, 'click', lang.hitch(this, function () {
                 this._fireRenderCharts();
             }));
+
+            topic.subscribe('/reports/ucn/charts/init/finish', lang.hitch(this, function () {
+                this._fireRenderCharts();
+            }));
         },
 
         _fireRenderCharts: function () {
