@@ -93,7 +93,7 @@ def get_charts_data(request):
     division = request.POST['division']
     years = request.POST['years']
 
-    return {
+    return Response(json.dumps({
         'dynamics': {
             'labels': [u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль'],
             'Vols': {
@@ -116,4 +116,4 @@ def get_charts_data(request):
                 'fact': [5000, 8100, 16100, 18000, 19800, 22000]
             }
         }
-    }
+    }))
