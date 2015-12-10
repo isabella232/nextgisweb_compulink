@@ -10,6 +10,7 @@ from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
 from sqlalchemy import func
 from nextgisweb import DBSession
+from datetime import date
 from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport, RtMacroDivision
 from nextgisweb.pyramid import viewargs
@@ -85,7 +86,16 @@ def _get_divisions():
 
 
 def _get_years():
-    return [2015, 2016, 2017, 2018]
+    current_year = date.today().year
+
+    years_view_model = [
+        {'year': 2015, 'selected': True},
+        {'year': 2016},
+        {'year': 2017},
+        {'year': 2018},
+    ]
+
+    return years_view_model
 
 
 @view_config(renderer='json')

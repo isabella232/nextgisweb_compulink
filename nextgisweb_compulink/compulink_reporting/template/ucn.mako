@@ -58,7 +58,6 @@
             parser.parse();
             ready(function () {
                 var chartsManager;
-
                 chartsManager = new ChartsManager(compulinkServiceFacade, params);
                 chartsManager.init();
             });
@@ -84,6 +83,7 @@
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="z-index: 999;">
                 <div class="control-group-inline">
                     <span>Подразделение Ростелекома</span>
+
                     <div id="selectDivision"
                          data-dojo-attach-point="divisionsSelect"
                          data-dojo-type="ngw-compulink-reporting/ucn/DivisionsSelect"
@@ -96,12 +96,17 @@
                             data-dojo-type="ngw-compulink-reporting/ucn/YearsCheckedMultiSelect"
                             name="years">
                         %for year in years:
-                            <option value="${year}">${year}</option>
+                            <option
+                                % if 'selected' in year:
+                                    selected="selected"
+                                % endif
+                                    value="${year['year']}">${year['year']}</option>
                         %endfor
                     </select>
                 </div>
                 <div class="control-group-inline">
-                    <button data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
+                    <button id="buildCharts"
+                            data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
                             data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
                             type="button">
                     </button>
