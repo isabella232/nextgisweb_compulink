@@ -32,6 +32,11 @@
             min-width: 600px;
             min-height: 300px;
         }
+
+        div.control-group-inline {
+            display: inline-block;
+            margin: 0 5px;
+        }
     </style>
 
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery.js')}"></script>
@@ -77,27 +82,30 @@
         <div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;">
 
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="z-index: 999;">
-                <span>Подразделение Ростелекома</span>
+                <div class="control-group-inline">
+                    <span>Подразделение Ростелекома</span>
+                    <div id="selectDivision"
+                         data-dojo-attach-point="divisionsSelect"
+                         data-dojo-type="ngw-compulink-reporting/ucn/DivisionsSelect"
+                         title="Подразделение Ростелекома"></div>
+                </div>
 
-                <div id="selectDivision"
-                     data-dojo-attach-point="divisionsSelect"
-                     data-dojo-type="ngw-compulink-reporting/ucn/DivisionsSelect"
-                     title="Подразделение Ростелекома"></div>
-
-                <span>Период</span>
-
-                <select id="selectYears"
-                        data-dojo-type="ngw-compulink-reporting/ucn/YearsCheckedMultiSelect"
-                        name="years">
-                    %for year in years:
-                        <option value="${year}">${year}</option>
-                    %endfor
-                </select>
-
-                <button data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
-                        data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
-                        type="button">
-                </button>
+                <div class="control-group-inline">
+                    <span>Период</span>
+                    <select id="selectYears"
+                            data-dojo-type="ngw-compulink-reporting/ucn/YearsCheckedMultiSelect"
+                            name="years">
+                        %for year in years:
+                            <option value="${year}">${year}</option>
+                        %endfor
+                    </select>
+                </div>
+                <div class="control-group-inline">
+                    <button data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
+                            data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
+                            type="button">
+                    </button>
+                </div>
             </div>
 
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
