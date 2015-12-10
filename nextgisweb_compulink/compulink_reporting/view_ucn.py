@@ -39,8 +39,25 @@ def add_routes(config):
         .add_view(get_charts_data)
 
 
+UCN_GROUP_NAME = 'ucn_report'
+
+
+def ucn_group_verify(f):
+    def wrapper(*args, **kw):
+        request = args[0]
+        groups = request.user.member_of
+        if len(filter(lambda group: group.keyname == UCN_GROUP_NAME, groups)) < 1:
+            raise HTTPForbidden()
+        else:
+            return f(*args, **kw)
+
+    return wrapper
+
+
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/ucn.mako')
+@ucn_group_verify
 def get_reports_ucn(request):
+    user = request.user
     return {
         'years': _get_years(),
         'divisions': _get_divisions()
@@ -99,7 +116,8 @@ def _get_years():
     return years_view_model
 
 
-@view_config(renderer='json')
+@viewargs(renderer='json')
+@ucn_group_verify
 def get_charts_data(request):
     division = request.POST['division']
     years = request.POST['years']
