@@ -11,9 +11,10 @@ import transaction
 from nextgisweb.feature_layer import FIELD_TYPE
 from nextgisweb.resource import Base
 from nextgisweb.vector_layer import VectorLayer
+from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT, \
-    PROJECT_STATUS_IN_PROGRESS
+    PROJECT_STATUS_IN_PROGRESS, Project, ConstructObject, Region, District
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
 from nextgisweb import DBSession, db
 from nextgisweb.command import Command
@@ -37,8 +38,11 @@ class DBMigrates():
                                 'append_start_point_field',
                                 'real_layers_date_to_dt',
                                 'update_aliases_01_08',
-                                'update_statuses_05_11'
+                                'update_statuses_05_11',
+                                'fill_construct_obj_12_10'
                             ])
+        parser.add_argument('--ucn_id',
+                            required=False)
 
     @classmethod
     def execute(cls, args, env):
@@ -60,6 +64,9 @@ class DBMigrates():
             cls.update_aliases_01_08()
         if args.migration == 'update_statuses_05_11':    # 05.11.2015
             cls.update_statuses_05_11()
+        if args.migration == 'fill_construct_obj_12_10':    # 05.11.2015
+            cls.fill_construct_obj_12_10(args)
+
 
     @classmethod
     def append_real_layers(cls):
@@ -331,3 +338,88 @@ class DBMigrates():
 
         transaction.manager.commit()
         db_session.close()
+
+    @classmethod
+    def fill_construct_obj_12_10(cls, args):
+        if not args.ucn_id:
+            print 'Set UCN root resource id!'
+            return
+
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        # remove all existing ConstructObjects
+        db_session.query(ConstructObject).delete()
+
+        # create ucn Project
+        pr_name = 'УЦН'
+        root_resource_id = args.ucn_id
+        try:
+            proj = db_session.query(Project).filter(Project.name == pr_name).one()
+        except:
+            proj = Project()
+            proj.name = pr_name
+            proj.root_resource_id = root_resource_id
+            proj.persist()
+
+        region_dict = get_regions_from_resource(as_dict=True)
+        district_dict = get_districts_from_resource(as_dict=True)
+
+        # fill
+        resources = db_session.query(FoclStruct)
+
+        for focl_struct in resources:
+            co = ConstructObject()
+            co.name = focl_struct.display_name
+            co.resource = focl_struct
+            co.external_id = focl_struct.external_id
+
+            # try to get region
+            if focl_struct.region:
+                if focl_struct.region in region_dict.keys():
+                    name = region_dict[focl_struct.region]
+                    try:
+                        region = db_session.query(Region).filter(Region.name == name).one()
+                        co.region = region
+                    except:
+                        print 'Region name not found in regions table! Resource %s, region name = %s' % (focl_struct.id, name)
+                else:
+                    print 'Region id not found in layer! Resource %s' % focl_struct.id
+
+            # try to get district
+            if focl_struct.district:
+                if focl_struct.district in district_dict.keys():
+                    name = district_dict[focl_struct.district]
+                    try:
+                        dist_query = db_session.query(District).filter(District.name == name)
+                        if co.region:
+                            dist_query = dist_query.filter(District.region==co.region)
+                        dist = dist_query.one()
+                        co.district = dist
+                    except:
+                        print 'District name not found in district table! Resource %s, district name = %s' % (focl_struct.id, name)
+                else:
+                    print 'District id not found in layer! Resource %s' % focl_struct.id
+
+            #try to get project
+            co.project = cls.get_project_by_resource(focl_struct)
+
+            co.persist()
+
+        transaction.manager.commit()
+        db_session.close()
+
+    @classmethod
+    def get_project_by_resource(cls, resource):
+        if '_project_cache' not in cls.__dict__.keys():
+            db_session = DBSession()
+            projects = db_session.query(Project).all()
+            cls._project_cache = {project.root_resource_id: project for project in projects if project.root_resource_id is not None}
+
+        res = resource
+        while res:
+            if res.id in cls._project_cache.keys():
+                return cls._project_cache[res.id]
+            res = res.parent
+
+        return None
