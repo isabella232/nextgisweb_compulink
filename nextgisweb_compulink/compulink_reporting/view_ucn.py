@@ -13,6 +13,7 @@ from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport, RtMacroDivision
 from nextgisweb.pyramid import viewargs
+from pyramid.view import view_config
 from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
@@ -28,6 +29,12 @@ def add_routes(config):
         '/compulink/reports/ucn',
         client=()) \
         .add_view(get_reports_ucn)
+
+    config.add_route(
+        'compulink.reports.ucn.chart',
+        '/compulink/reports/ucn/chart',
+        client=()) \
+        .add_view(get_charts_data)
 
 
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/ucn.mako')
@@ -79,3 +86,34 @@ def _get_divisions():
 
 def _get_years():
     return [2015, 2016, 2017, 2018]
+
+
+@view_config(renderer='json')
+def get_charts_data(request):
+    division = request.POST['division']
+    years = request.POST['years']
+
+    return {
+        'dynamics': {
+            'labels': [u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль'],
+            'Vols': {
+                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
+                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+            },
+            'Td': {
+                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
+                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+            }
+        },
+        'plan': {
+            'labels': [u'Дальний Восток', u'Сибирь', u'Урал', u'Волга', u'Юг', u'Северо-Запад'],
+            'Vols': {
+                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
+                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+            },
+            'Td': {
+                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
+                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+            }
+        }
+    }
