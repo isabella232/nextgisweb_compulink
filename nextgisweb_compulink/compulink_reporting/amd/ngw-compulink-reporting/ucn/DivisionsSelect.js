@@ -11,12 +11,14 @@ define([
         templateString: template,
         $domNodeTree: null,
         _selectedDivisionId: null,
+        $input: null,
 
         postCreate: function () {
             var domNode = this.domNode;
 
             this.inherited(arguments);
             this.$domNodeTree = jQuery(domNode).find('div.tree');
+            this.$input = jQuery(this.domNode).find('input');
 
             this.$domNodeTree.jstree({
                 'core': {
@@ -29,24 +31,31 @@ define([
 
         _bindEvents: function () {
             var $domNode = jQuery(this.domNode),
-                $input = $domNode.find('input'),
                 $treeWrapper = $domNode.find('div.tree-wrapper');
 
-            $input.focus(function () {
+            this.$input.focus(function () {
                 $treeWrapper.addClass('visible');
             });
 
-            $input.focusout(function () {
+            this.$input.focusout(function () {
                 setTimeout(function () {
                     $treeWrapper.removeClass('visible');
                 }, 1000);
             });
 
             this.$domNodeTree.on('select_node.jstree', lang.hitch(this, function (e, data) {
-                var node = data.node;
-                $input.val(node.text);
-                this._selectedDivisionId = node.id;
+                this._selectNode(data.node);
             }));
+
+            this.$domNodeTree.on('loaded.jstree', lang.hitch(this, function () {
+                var selectedNodes = this.$domNodeTree.jstree('get_selected', true);
+                this._selectNode(selectedNodes[0]);
+            }));
+        },
+
+        _selectNode: function (node) {
+            this.$input.val(node.text);
+            this._selectedDivisionId = node.id;
         },
 
         _showTree: function ($treeWrapper) {

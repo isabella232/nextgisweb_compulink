@@ -53,7 +53,7 @@ def _get_divisions():
     root_el = {
         'id': 'root',
         'text': u'Все МРФ',
-        'state': {'opened': True},
+        'state': {'opened': True, 'selected': True},
         'children': []
     }
 
