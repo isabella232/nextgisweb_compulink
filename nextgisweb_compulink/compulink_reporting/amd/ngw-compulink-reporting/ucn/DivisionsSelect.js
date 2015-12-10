@@ -9,12 +9,16 @@ define([
 ], function (declare, lang, _WidgetBase, _TemplatedMixin, template) {
     return declare([_WidgetBase, _TemplatedMixin], {
         templateString: template,
+        $domNodeTree: null,
+        _selectedDivisionId: null,
 
         postCreate: function () {
             var domNode = this.domNode;
-            this.inherited(arguments);
 
-            jQuery(this.domNode).find('div.tree').jstree({
+            this.inherited(arguments);
+            this.$domNodeTree = jQuery(domNode).find('div.tree');
+
+            this.$domNodeTree.jstree({
                 'core': {
                     'data': divisions
                 }
@@ -28,13 +32,19 @@ define([
                 $input = $domNode.find('input'),
                 $treeWrapper = $domNode.find('div.tree-wrapper');
 
-            $domNode.hover(function () {
+            $input.focus(function () {
                 $treeWrapper.addClass('visible');
             });
 
-            $domNode.focusout(function () {
-               $treeWrapper.removeClass('visible');
-            });
+            this.$domNodeTree.on('select_node.jstree', lang.hitch(this, function (e, data) {
+                var node = data.node;
+                $input.val(node.text);
+                this._selectedDivisionId = node.id;
+            }));
+        },
+
+        getDivision: function () {
+            return this._selectedDivisionId;
         }
     });
 });
