@@ -17,7 +17,15 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jstree-3.0.9/themes/default/style.css')}"
           rel="stylesheet" type="text/css"/>
 
-    <style>
+    <style type="text/css">
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         #dynamicsVols, #planVols, #dynamicsTd, #planTd {
             width: 100% !important;
             height: 100% !important;
@@ -51,16 +59,6 @@
             });
         });
     </script>
-
-    <style type="text/css">
-        body, html {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-    </style>
 </%def>
 
 <div class="main-wrapper">
