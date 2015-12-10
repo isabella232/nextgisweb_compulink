@@ -76,7 +76,8 @@ define([
                     });
 
                     this._clearSeries(chart);
-                    this._addSeries(chart, chartsData[dataKeys[0]][dataKeys[1]]);
+                    this._addSeries(chart, chartsData[dataKeys[0]][dataKeys[1]],
+                        this._params[idChart].seriesSettings);
 
                     chartDivSize = domGeometry.position(chart.node, false);
                     chart.resize(chartDivSize.w, chartDivSize.h);
@@ -90,9 +91,9 @@ define([
                 chart.removeSeries(chart.series[0].name);
         },
 
-        _addSeries: function (chart, seriesData) {
+        _addSeries: function (chart, seriesData, seriesParams) {
             df.forIn(seriesData, function (series, seriesName) {
-                chart.addSeries(seriesName, series);
+                chart.addSeries(seriesName, series, seriesParams[seriesName]);
             }, this);
         }
     });

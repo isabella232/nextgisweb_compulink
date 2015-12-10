@@ -52,6 +52,10 @@
                         },
                         plotSettings: {
                             type: 'Default'
+                        },
+                        seriesSettings: {
+                            plan: {stroke: 'blue'},
+                            fact: {stroke: 'red'}
                         }
                     },
                     planVols: {
@@ -63,6 +67,10 @@
                             type: 'ClusteredColumns',
                             gap: 5,
                             maxBarSize: 20
+                        },
+                        seriesSettings: {
+                            plan: {stroke: '#3333ff', fill: '#6699ff'},
+                            fact: {stroke: '#ff0000', fill: '#ff6666'}
                         }
                     },
                     dynamicsTd: {
@@ -72,6 +80,10 @@
                         },
                         plotSettings: {
                             type: 'Default'
+                        },
+                        seriesSettings: {
+                            plan: {stroke: 'blue'},
+                            fact: {stroke: 'red'}
                         }
                     },
                     planTd: {
@@ -83,6 +95,10 @@
                             type: 'ClusteredColumns',
                             gap: 5,
                             maxBarSize: 20
+                        },
+                        seriesSettings: {
+                            plan: {stroke: '#3333ff', fill: '#6699ff'},
+                            fact: {stroke: '#ff0000', fill: '#ff6666'}
                         }
                     }
                 };
