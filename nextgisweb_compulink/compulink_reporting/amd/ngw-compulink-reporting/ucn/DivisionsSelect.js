@@ -1,12 +1,13 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/topic',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dojo/text!./templates/DivisionsSelect.html',
     'ngw-compulink-libs/jstree-3.0.9/jstree',
     'xstyle/css!./css/DivisionsSelect.css'
-], function (declare, lang, _WidgetBase, _TemplatedMixin, template) {
+], function (declare, lang, topic, _WidgetBase, _TemplatedMixin, template) {
     return declare([_WidgetBase, _TemplatedMixin], {
         templateString: template,
         $domNodeTree: null,
@@ -50,6 +51,7 @@ define([
             this.$domNodeTree.on('loaded.jstree', lang.hitch(this, function () {
                 var selectedNodes = this.$domNodeTree.jstree('get_selected', true);
                 this._selectNode(selectedNodes[0]);
+                topic.publish('/reports/ucn/charts/init');
             }));
         },
 

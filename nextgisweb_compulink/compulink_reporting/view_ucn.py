@@ -8,6 +8,7 @@ from openpyxl.styles.numbers import FORMAT_PERCENTAGE
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
+from random import randint
 from sqlalchemy import func
 from nextgisweb import DBSession
 from datetime import date
@@ -38,8 +39,25 @@ def add_routes(config):
         .add_view(get_charts_data)
 
 
+UCN_GROUP_NAME = 'ucn_report'
+
+
+def ucn_group_verify(f):
+    def wrapper(*args, **kw):
+        request = args[0]
+        groups = request.user.member_of
+        if len(filter(lambda group: group.keyname == UCN_GROUP_NAME, groups)) < 1:
+            raise HTTPForbidden()
+        else:
+            return f(*args, **kw)
+
+    return wrapper
+
+
 @viewargs(renderer='nextgisweb_compulink:compulink_reporting/template/ucn.mako')
+@ucn_group_verify
 def get_reports_ucn(request):
+    user = request.user
     return {
         'years': _get_years(),
         'divisions': _get_divisions()
@@ -98,7 +116,8 @@ def _get_years():
     return years_view_model
 
 
-@view_config(renderer='json')
+@viewargs(renderer='json')
+@ucn_group_verify
 def get_charts_data(request):
     division = request.POST['division']
     years = request.POST['years']
@@ -107,23 +126,23 @@ def get_charts_data(request):
         'dynamics': {
             'labels': [u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль'],
             'Vols': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             },
             'Td': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             }
         },
         'plan': {
             'labels': [u'Дальний Восток', u'Сибирь', u'Урал', u'Волга', u'Юг', u'Северо-Запад'],
             'Vols': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             },
             'Td': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             }
         }
     }))

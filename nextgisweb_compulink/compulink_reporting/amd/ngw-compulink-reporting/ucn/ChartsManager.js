@@ -56,7 +56,7 @@ define([
                 }
             }
 
-            topic.publish('/reports/ucn/charts/init/finish');
+            topic.publish('/reports/ucn/charts/init');
         },
 
         _updateCharts: function (chartsData) {
