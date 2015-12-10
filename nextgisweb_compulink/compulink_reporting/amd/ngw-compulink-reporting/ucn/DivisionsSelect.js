@@ -36,11 +36,33 @@ define([
                 $treeWrapper.addClass('visible');
             });
 
+            $input.focusout(function () {
+                setTimeout(function () {
+                    $treeWrapper.removeClass('visible');
+                }, 1000);
+            });
+
             this.$domNodeTree.on('select_node.jstree', lang.hitch(this, function (e, data) {
                 var node = data.node;
                 $input.val(node.text);
                 this._selectedDivisionId = node.id;
             }));
+        },
+
+        _showTree: function ($treeWrapper) {
+            var htmlClick, $treeWrapperClick;
+
+            $treeWrapper.addClass('visible');
+
+            htmlClick = $('html').on('click', function () {
+                $treeWrapper.removeClass('visible');
+                $('html').off(htmlClick);
+                $treeWrapper.off($treeWrapperClick);
+            });
+
+            $treeWrapperClick = $treeWrapper.on('click', function (event) {
+                event.stopPropagation();
+            });
         },
 
         getDivision: function () {
