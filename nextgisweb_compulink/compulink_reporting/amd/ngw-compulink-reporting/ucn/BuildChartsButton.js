@@ -11,6 +11,7 @@ define([
         label: 'Построить',
         _divisionSelect: null,
         _yearSelect: null,
+        _initialization: false,
 
         postCreate: function () {
             this._divisionSelect = registry.byId(this.divisionSelectorId);
@@ -20,7 +21,11 @@ define([
                 this._fireRenderCharts();
             }));
 
-            topic.subscribe('/reports/ucn/charts/init/finish', lang.hitch(this, function () {
+            topic.subscribe('/reports/ucn/charts/init', lang.hitch(this, function () {
+                var division = this._divisionSelect.getDivision(),
+                    years = this._yearSelect.getYears();
+                if (this._initialization || !division || years.length < 1) return false;
+                this._initialization = true;
                 this._fireRenderCharts();
             }));
         },
