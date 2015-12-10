@@ -1,10 +1,13 @@
 # coding=utf-8
 import types
 from sqlalchemy import event, ForeignKey
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 
 from nextgisweb import db
+from nextgisweb.file_storage import FileObj
 from nextgisweb.models import declarative_base
+from nextgisweb.resource import Resource
 from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT, Region, \
     tometadata_event
 
@@ -84,7 +87,7 @@ class RtMacroDivision(Base):
     __table_args__ = {'schema': 'compulink'}
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(length=300))
+    name = db.Column(db.Unicode(length=300), nullable=False)
     short_name = db.Column(db.Unicode(length=100), nullable=True)
 
 
@@ -105,7 +108,7 @@ class RtBranchRegion(Base):
     __table_args__ = {'schema': 'compulink'}
 
     region_id = db.Column(db.Integer, ForeignKey(Region.id), primary_key=True)
-    rt_branch_id = db.Column(db.Integer, ForeignKey(RtBranch.id))
+    rt_branch_id = db.Column(db.Integer, ForeignKey(RtBranch.id), nullable=False)
 
     region = relationship(Region)
     rt_branch = relationship(RtBranch, backref='regions')
@@ -116,3 +119,102 @@ Calendar.__table__.tometadata = types.MethodType(tometadata_event, Calendar.__ta
 RtMacroDivision.__table__.tometadata = types.MethodType(tometadata_event, RtMacroDivision.__table__)
 RtBranch.__table__.tometadata = types.MethodType(tometadata_event, RtBranch.__table__)
 RtBranchRegion.__table__.tometadata = types.MethodType(tometadata_event, RtBranchRegion.__table__)
+
+
+#---- Rt reports -----
+
+# - Mixins
+class BaseBuiltReportMixin(object):
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    resource_id = db.Column(db.Integer, index=True, nullable=False)
+
+    @declared_attr
+    def build_date_id(cls):
+        return db.Column(db.Integer, ForeignKey(Calendar.id), index=True, nullable=False)
+
+    @declared_attr
+    def build_date(cls):
+        return relationship(Calendar)
+
+    # @declared_attr
+    # def resource(cls):
+    #     return relationship(Resource, primaryjoin=Resource.id==cls.resource_id)
+
+class ObjectTypeMixin(object):
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.UnicodeText, nullable=True)
+
+# - FOSC
+class FoscType(Base, ObjectTypeMixin):
+    __tablename__ = 'fosc_type'
+    type = db.Column(db.Unicode(length=100), nullable=False)
+
+
+class BuiltFosc(Base, BaseBuiltReportMixin):
+    __tablename__ = 'built_fosc'
+
+    fosc_count = db.Column(db.Integer, nullable=False)
+    fosc_type_id = db.Column(db.Integer, ForeignKey(FoscType.id), nullable=True)
+
+    fosc_type = relationship(FoscType)
+
+# - Cable
+class CableLayingMethod(Base, ObjectTypeMixin):
+    __tablename__ = 'cable_laying_method'
+    method = db.Column(db.Unicode(length=100), nullable=False)
+
+
+class BuiltCable(Base, BaseBuiltReportMixin):
+    __tablename__ = 'built_cable'
+
+    cable_length = db.Column(db.Float, nullable=False)
+    laying_method_id = db.Column(db.Integer, ForeignKey(CableLayingMethod.id), nullable=True)
+
+    laying_method = relationship(CableLayingMethod)
+
+# - Cross
+class OpticalCrossType(Base, ObjectTypeMixin):
+    __tablename__ = 'optical_cross_type'
+    type = db.Column(db.Unicode(length=100), nullable=False)
+
+
+class BuiltOpticalCross(Base, BaseBuiltReportMixin):
+    __tablename__ = 'built_optical_cross'
+
+    optical_cross_count = db.Column(db.Integer, nullable=False)
+    optical_cross_type_id = db.Column(db.Integer, ForeignKey(OpticalCrossType.id), nullable=True)
+
+    optical_cross_type = relationship(OpticalCrossType)
+
+# - AccessPoint
+class AccessPointType(Base, ObjectTypeMixin):
+    __tablename__ = 'access_point_type'
+    type = db.Column(db.Unicode(length=100), nullable=False)
+
+
+class BuiltAccessPoint(Base, BaseBuiltReportMixin):
+    __tablename__ = 'built_access_point'
+
+    access_point_count = db.Column(db.Integer, nullable=False)
+    access_point_type_id = db.Column(db.Integer, ForeignKey(AccessPointType.id), nullable=True)
+
+    access_point_type = relationship(AccessPointType)
+
+# -  Spec Transition
+class SpecLayingMethod(Base, ObjectTypeMixin):
+    __tablename__ = 'spec_laying_method'
+    method = db.Column(db.Unicode(length=100), nullable=False)
+
+
+class BuiltSpecTransition(Base, BaseBuiltReportMixin):
+    __tablename__ = ' built_spec_transition'
+
+    spec_trans_length = db.Column(db.Float, nullable=False)
+    spec_trans_count = db.Column(db.Integer, nullable=False)
+    spec_laying_method_id = db.Column(db.Integer, ForeignKey(SpecLayingMethod.id), nullable=True)
+
+    spec_laying_method = relationship(SpecLayingMethod)
