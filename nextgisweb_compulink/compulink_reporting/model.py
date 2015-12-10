@@ -109,7 +109,7 @@ class RtBranch(Base):
     short_name = db.Column(db.Unicode(length=100), nullable=True)
     macro_division_id = db.Column(db.Integer, ForeignKey(RtMacroDivision.id))
 
-    rt_macro_division = relationship(RtMacroDivision)
+    rt_macro_division = relationship(RtMacroDivision, backref='branches')
 
 
 class RtBranchRegion(Base):
@@ -120,4 +120,4 @@ class RtBranchRegion(Base):
     rt_branch_id = db.Column(db.Integer, ForeignKey(RtBranch.id))
 
     region = relationship(Region)
-    rt_branch = relationship(RtBranch)
+    rt_branch = relationship(RtBranch, backref='regions')

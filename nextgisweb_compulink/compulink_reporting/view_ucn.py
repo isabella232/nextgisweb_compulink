@@ -11,7 +11,7 @@ from pyramid.response import Response, FileResponse
 from sqlalchemy import func
 from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
-from .model import ConstructionStatusReport
+from .model import ConstructionStatusReport, RtMacroDivision
 from nextgisweb.pyramid import viewargs
 from nextgisweb.resource import DataScope, ResourceGroup
 from nextgisweb.resource.model import ResourceACLRule
@@ -40,63 +40,41 @@ def get_reports_ucn(request):
 
 def _get_divisions():
     # todo: change the stub to real data set from database
-    return [
-        {
-            'id': 1,
-            'text': u'Все МРФ',
-            'state': {'opened': True},
-            'children': [
-                {
-                    'id': 2,
-                    'text': u'Центр',
-                    'children': [
-                        {
-                            'id': 3,
-                            'text': u'Владимирская область',
-                            'children': False
-                        },
-                        {
-                            'id': 4,
-                            'text': u'Воронежская область',
-                            'children': False
-                        }
-                    ]
-                },
-                {
-                    'id': 5,
-                    'text': u'Волга',
-                    'children': [
-                        {
-                            'id': 6,
-                            'text': u'Владимирская область',
-                            'children': False
-                        },
-                        {
-                            'id': 7,
-                            'text': u'Воронежская область',
-                            'children': False
-                        }
-                    ]
-                },
-                {
-                    'id': 8,
-                    'text': u'Юг',
-                    'children': [
-                        {
-                            'id': 9,
-                            'text': u'Владимирская область',
-                            'children': False
-                        },
-                        {
-                            'id': 10,
-                            'text': u'Воронежская область',
-                            'children': False
-                        }
-                    ]
-                }
-            ]
+    result = []
+
+    #root element
+    root_el = {
+        'id': 'root',
+        'text': u'Все МРФ',
+        'state': {'opened': True},
+        'children': []
+    }
+
+    result.append(root_el)
+
+    #get macro regions
+    db_session = DBSession()
+
+    macros = db_session.query(RtMacroDivision).all()
+
+    for macro in macros:
+        macro_el = {
+            'id': 'm.%s' % macro.id,
+            'text': macro.name,
+            'children': []
         }
-    ]
+        root_el['children'].append(macro_el)
+
+        # get filials
+        for branch in macro.branches:
+            branch_el = {
+                'id': 'b.%s' % branch.id,
+                'text': branch.name,
+                'children': False
+            }
+            macro_el['children'].append(branch_el)
+
+    return result
 
 
 def _get_years():
