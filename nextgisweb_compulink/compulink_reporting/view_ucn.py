@@ -8,6 +8,7 @@ from openpyxl.styles.numbers import FORMAT_PERCENTAGE
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
+from random import randint
 from sqlalchemy import func
 from nextgisweb import DBSession
 from datetime import date
@@ -107,23 +108,23 @@ def get_charts_data(request):
         'dynamics': {
             'labels': [u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль'],
             'Vols': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             },
             'Td': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             }
         },
         'plan': {
             'labels': [u'Дальний Восток', u'Сибирь', u'Урал', u'Волга', u'Юг', u'Северо-Запад'],
             'Vols': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             },
             'Td': {
-                'plan': [5000, 8000, 15000, 17000, 19000, 19500],
-                'fact': [5000, 8100, 16100, 18000, 19800, 22000]
+                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
+                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
             }
         }
     }))
