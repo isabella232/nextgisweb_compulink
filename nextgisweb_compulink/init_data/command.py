@@ -271,6 +271,8 @@ class DBInit():
         from csv import DictReader
 
         db_session = DBSession()
+        db_session.autoflush = False
+
 
         if (db_session.query(Region).count() > 0 or db_session.query(District).count() > 0) and not force:
             print '     Domain dictionary already existings! Returning...'
@@ -299,6 +301,8 @@ class DBInit():
 
                 district.persist()
 
+        db_session.flush()
+
 
     @classmethod
     def load_rt_domain_dicts(cls, force=False):
@@ -308,6 +312,7 @@ class DBInit():
         from csv import DictReader
 
         db_session = DBSession()
+        db_session.autoflush = False
 
         if (db_session.query(RtMacroDivision).count() > 0 or
             db_session.query(RtBranch).count() > 0 or
@@ -345,6 +350,9 @@ class DBInit():
                 branch_reg.rt_branch = branches[br_reg_row['rt_branch_id']]
                 branch_reg.region = db_session.query(Region).filter(Region.region_code == br_reg_row['region_code']).one()
                 branch_reg.persist()
+
+        db_session.flush()
+
 
 
 

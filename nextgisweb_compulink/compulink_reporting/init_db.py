@@ -13,6 +13,7 @@ def init_calendar():
     print('Fill calendar...')
 
     db_session = DBSession()
+    db_session.autoflush = False
 
     count = db_session.query(Calendar).count()
     if count != 0:
@@ -92,6 +93,8 @@ def init_calendar():
 
         cal.persist()
         active_date = active_date + relat_day
+
+    db_session.flush()
 
 
 def get_week_of_month(any_date):
