@@ -5,7 +5,8 @@ from sqlalchemy.orm import relationship
 
 from nextgisweb import db
 from nextgisweb.models import declarative_base
-from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT, Region
+from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT, Region, \
+    tometadata_event
 
 Base = declarative_base()
 
@@ -77,19 +78,6 @@ class Calendar(Base):
     weekend = db.Column(db.Boolean)
 
 
-def tometadata(self, metadata):
-    def create_schema(*args, **kwargs):
-        try:
-            db.DDL('CREATE SCHEMA compulink')
-        finally:
-            pass
-    result = db.Table.tometadata(self, metadata)
-    event.listen(result, "before_create", create_schema)
-    return result
-
-Calendar.__table__.tometadata = types.MethodType(tometadata, Calendar.__table__)
-
-
 # ---- RT DOMAIN MODELS ----
 class RtMacroDivision(Base):
     __tablename__ = 'rt_macro_division'
@@ -121,3 +109,10 @@ class RtBranchRegion(Base):
 
     region = relationship(Region)
     rt_branch = relationship(RtBranch, backref='regions')
+
+
+#---- Metadata and scheme staff
+Calendar.__table__.tometadata = types.MethodType(tometadata_event, Calendar.__table__)
+RtMacroDivision.__table__.tometadata = types.MethodType(tometadata_event, RtMacroDivision.__table__)
+RtBranch.__table__.tometadata = types.MethodType(tometadata_event, RtBranch.__table__)
+RtBranchRegion.__table__.tometadata = types.MethodType(tometadata_event, RtBranchRegion.__table__)

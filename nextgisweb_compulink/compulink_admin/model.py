@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-from lxml import etree
+
+import types
 import uuid
 import codecs
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, event
 from sqlalchemy.orm import relationship
 
 from nextgisweb import db
 
 from nextgisweb.models import declarative_base, DBSession
-from nextgisweb.auth.models import User
-from nextgisweb.resource import (ResourceGroup, Serializer, DataStructureScope, DataScope, ResourceScope, Resource)
+from nextgisweb.resource import (ResourceGroup, Serializer, DataScope, ResourceScope, Resource)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.webmap.adapter import ImageAdapter
 from nextgisweb.webmap.model import WebMap, WebMapItem
 from nextgisweb.wfsserver import Service as WfsService
 from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
-from nextgisweb_mapserver import qml
 from nextgisweb_mapserver.model import MapserverStyle
 
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
@@ -348,3 +347,15 @@ class ConstructObject(Base):
     project = relationship(Project)
 
 
+
+#---- Metadata and scheme staff
+
+def tometadata_event(self, metadata):
+    result = db.Table.tometadata(self, metadata)
+    event.listen(result, "before_create", db.DDL('CREATE SCHEMA IF NOT EXISTS compulink;'))
+    return result
+
+Region.__table__.tometadata = types.MethodType(tometadata_event, Region.__table__)
+District.__table__.tometadata = types.MethodType(tometadata_event, District.__table__)
+Project.__table__.tometadata = types.MethodType(tometadata_event, Project.__table__)
+ConstructObject.__table__.tometadata = types.MethodType(tometadata_event, ConstructObject.__table__)
