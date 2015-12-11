@@ -19,7 +19,7 @@ __author__ = 'yellow'
 @AbstractReactor.registry.register
 class StatusReportReactor(AbstractReactor):
     identity = 'status_report'
-    priority = 10
+    priority = 20
 
     @classmethod
     def run(cls, env):

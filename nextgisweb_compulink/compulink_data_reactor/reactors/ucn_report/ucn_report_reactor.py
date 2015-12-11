@@ -10,7 +10,7 @@ __author__ = 'yellow'
 @AbstractReactor.registry.register
 class UcnReportReactor(AbstractReactor):
     identity = 'ucn_report'
-    priority = 10
+    priority = 21
 
     @classmethod
     def run(cls, env):
