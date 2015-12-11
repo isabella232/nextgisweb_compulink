@@ -218,3 +218,15 @@ class BuiltSpecTransition(Base, BaseBuiltReportMixin):
     spec_laying_method_id = db.Column(db.Integer, ForeignKey(SpecLayingMethod.id), nullable=True)
 
     spec_laying_method = relationship(SpecLayingMethod)
+
+#---- Metadata and scheme staff
+FoscType.__table__.tometadata = types.MethodType(tometadata_event, FoscType.__table__)
+BuiltFosc.__table__.tometadata = types.MethodType(tometadata_event, BuiltFosc.__table__)
+CableLayingMethod.__table__.tometadata = types.MethodType(tometadata_event, CableLayingMethod.__table__)
+BuiltCable.__table__.tometadata = types.MethodType(tometadata_event, BuiltCable.__table__)
+OpticalCrossType.__table__.tometadata = types.MethodType(tometadata_event, OpticalCrossType.__table__)
+BuiltOpticalCross.__table__.tometadata = types.MethodType(tometadata_event, BuiltOpticalCross.__table__)
+AccessPointType.__table__.tometadata = types.MethodType(tometadata_event, AccessPointType.__table__)
+BuiltAccessPoint.__table__.tometadata = types.MethodType(tometadata_event, BuiltAccessPoint.__table__)
+SpecLayingMethod.__table__.tometadata = types.MethodType(tometadata_event, SpecLayingMethod.__table__)
+BuiltSpecTransition.__table__.tometadata = types.MethodType(tometadata_event, BuiltSpecTransition.__table__)
