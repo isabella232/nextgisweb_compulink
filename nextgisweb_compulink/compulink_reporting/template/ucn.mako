@@ -97,7 +97,7 @@
                             name="years">
                         %for year in years:
                             <option
-                                % if 'selected' in year:
+                                % if year['selected'] == True:
                                     selected="selected"
                                 % endif
                                     value="${year['year']}">${year['year']}</option>

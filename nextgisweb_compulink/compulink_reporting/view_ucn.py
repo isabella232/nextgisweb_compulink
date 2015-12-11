@@ -5,9 +5,11 @@ from random import randint
 
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
+from sqlalchemy import func
 
 from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
+from nextgisweb_compulink.compulink_admin.model import ConstructObject
 from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME
 from .model import RtMacroDivision
 
@@ -89,15 +91,27 @@ def _get_divisions():
 
 
 def _get_years():
+    # get min max from db
+    db_session = DBSession()
+    min_start_date = db_session.query(func.min(ConstructObject.start_build_date)).scalar()
+    max_end_date = db_session.query(func.min(ConstructObject.end_build_date)).scalar()
+
+    # if null, set def values
+    min_start_year = min_start_date.year if min_start_date else 2015
+    max_end_year = max_end_date.year if max_end_date else 2020
+
+    # check min max
+    if min_start_year > max_end_year:
+        min_start_year, max_end_year = max_end_year, min_start_year
+
+    # create range
+    years = list(range(min_start_year, max_end_year+1))
+
+    # current and selected years
     current_year = date.today().year
+    selected_year = current_year if current_year in years else years[0]
 
-    years_view_model = [
-        {'year': 2015, 'selected': True},
-        {'year': 2016},
-        {'year': 2017},
-        {'year': 2018},
-    ]
-
+    years_view_model = [{'year': x, 'selected': x == selected_year} for x in years]
     return years_view_model
 
 
