@@ -6,6 +6,8 @@ from .reactors.construct_focl_line.construct_focl_line_reactor import ConstructF
 from .reactors.construct_spec_transition_line.construct_spec_transition_line_reactor import ConstructSpecTransitionLineReactor  # NOQA
 from .reactors.status_report.status_report_reactor import StatusReportReactor # NOQA
 from .reactors.ucn_report.ucn_report_reactor import UcnReportReactor # NOQA
+from .reactors.external_update_focl_info.external_update_reactor import ExternalUpdateReactor # NOQA
+
 
 @Command.registry.register
 class DataReactorCommand():
