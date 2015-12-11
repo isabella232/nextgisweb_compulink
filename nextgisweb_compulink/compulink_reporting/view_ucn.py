@@ -1,28 +1,15 @@
 # coding=utf-8
 import json
-import tempfile
-from datetime import datetime
-from openpyxl import load_workbook
-from openpyxl.styles import Style
-from openpyxl.styles.numbers import FORMAT_PERCENTAGE
-from os import path
-from pyramid.httpexceptions import HTTPForbidden
-from pyramid.response import Response, FileResponse
-from random import randint
-from sqlalchemy import func
-from nextgisweb import DBSession
 from datetime import date
-from sqlalchemy.orm import joinedload_all
-from .model import ConstructionStatusReport, RtMacroDivision
+from random import randint
+
+from pyramid.httpexceptions import HTTPForbidden
+from pyramid.response import Response
+
+from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
-from pyramid.view import view_config
-from nextgisweb.resource import DataScope, ResourceGroup
-from nextgisweb.resource.model import ResourceACLRule
-from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
-    get_project_statuses
-from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED
-from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
-from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
+from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME
+from .model import RtMacroDivision
 
 
 def add_routes(config):
@@ -38,8 +25,6 @@ def add_routes(config):
         client=()) \
         .add_view(get_charts_data)
 
-
-UCN_GROUP_NAME = 'ucn_report'
 
 
 def ucn_group_verify(f):

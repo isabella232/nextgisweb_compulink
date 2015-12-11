@@ -2,10 +2,11 @@
 from datetime import date
 import calendar
 from dateutil import relativedelta
-from sqlalchemy import event
 from nextgisweb import DBSession
+from nextgisweb.auth import User
+from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_GROUP_ALIAS
 from .model import Calendar
-
+from nextgisweb.env import env
 
 
 
@@ -102,3 +103,21 @@ def get_week_of_month(any_date):
     for w in weeks:
         if any_date.day in w:
             return weeks.index(w) + 1
+
+
+def init_ucn_group():
+    print('Create user group for UCN reports...')
+
+    db_session = DBSession()
+
+
+    try:
+        adm_user = db_session.query(User).filter(User.keyname == 'administrator').one()
+        users = [adm_user]
+    except:
+        print ('User Administrator not found!')
+        users = []
+
+    # create group if not exists
+    env.auth.initialize_group(UCN_GROUP_NAME, UCN_GROUP_ALIAS, members=users)
+
