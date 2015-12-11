@@ -211,7 +211,7 @@ class SpecLayingMethod(Base, ObjectTypeMixin):
 
 
 class BuiltSpecTransition(Base, BaseBuiltReportMixin):
-    __tablename__ = ' built_spec_transition'
+    __tablename__ = 'built_spec_transition'
 
     spec_trans_length = db.Column(db.Float, nullable=False)
     spec_trans_count = db.Column(db.Integer, nullable=False)
