@@ -109,14 +109,14 @@ def get_charts_data(request):
 
     return Response(json.dumps({
         'dynamics': {
-            'labels': [u'Февраль', u'Март', u'Апрель', u'Май', u'Июнь', u'Июль'],
+            'labels': [r for r in xrange(365)],
             'Vols': {
-                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
-                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
+                'plan': [randint(0, 1000) for r in xrange(365)],
+                'fact': [randint(0, 1000) for r in xrange(365)]
             },
             'Td': {
-                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
-                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
+                'plan': [randint(0, 1000) for r in xrange(365)],
+                'fact': [randint(0, 1000) for r in xrange(365)]
             }
         },
         'plan': {
