@@ -305,6 +305,7 @@ class Project(Base):
     short_name = db.Column(db.Unicode(length=100), nullable=True)
     description = db.Column(db.UnicodeText, nullable=True)
     root_resource_id = db.Column(db.Integer, nullable=True)
+    keyname = db.Column(db.Unicode(length=100), nullable=True)
 
     root_resource = relationship(
         Resource,
