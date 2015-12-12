@@ -4,7 +4,8 @@ import calendar
 from dateutil import relativedelta
 from nextgisweb import DBSession
 from nextgisweb.auth import User
-from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_GROUP_ALIAS
+from nextgisweb_compulink.compulink_admin.model import Project
+from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_GROUP_ALIAS, UCN_PROJECT_KEYNAME, UCN_PROJECT_NAME, UCN_PROJECT_SHORTNAME
 from .model import Calendar
 from nextgisweb.env import env
 
@@ -109,8 +110,6 @@ def init_ucn_group():
     print('Create user group for UCN reports...')
 
     db_session = DBSession()
-
-
     try:
         adm_user = db_session.query(User).filter(User.keyname == 'administrator').one()
         users = [adm_user]
@@ -120,4 +119,18 @@ def init_ucn_group():
 
     # create group if not exists
     env.auth.initialize_group(UCN_GROUP_NAME, UCN_GROUP_ALIAS, members=users)
+
+
+def init_ucn_project():
+    print('Create UCN project...')
+
+    db_session = DBSession()
+    try:
+        proj = db_session.query(Project).filter(Project.keyname == UCN_PROJECT_KEYNAME).one()
+    except:
+        proj = Project()
+        proj.name = UCN_PROJECT_NAME
+        proj.short_name = UCN_PROJECT_SHORTNAME
+        proj.keyname = UCN_PROJECT_KEYNAME
+        proj.persist()
 

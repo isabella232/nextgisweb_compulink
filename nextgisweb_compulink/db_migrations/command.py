@@ -16,7 +16,7 @@ from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_S
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, Project, ConstructObject, Region, District
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
-from nextgisweb import DBSession, db
+from nextgisweb import DBSession
 from nextgisweb.command import Command
 
 
@@ -350,17 +350,6 @@ class DBMigrates():
 
         # remove all existing ConstructObjects
         db_session.query(ConstructObject).delete()
-
-        # create ucn Project
-        pr_name = 'УЦН'
-        root_resource_id = args.ucn_id
-        try:
-            proj = db_session.query(Project).filter(Project.name == pr_name).one()
-        except:
-            proj = Project()
-            proj.name = pr_name
-            proj.root_resource_id = root_resource_id
-            proj.persist()
 
         region_dict = get_regions_from_resource(as_dict=True)
         district_dict = get_districts_from_resource(as_dict=True)
