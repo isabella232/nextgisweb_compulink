@@ -6,11 +6,12 @@ from random import randint
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload_all
 
 from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
-from nextgisweb_compulink.compulink_admin.model import ConstructObject
-from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME
+from nextgisweb_compulink.compulink_admin.model import ConstructObject, Project
+from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_PROJECT_KEYNAME
 from .model import RtMacroDivision
 
 
@@ -68,7 +69,7 @@ def _get_divisions():
     #get macro regions
     db_session = DBSession()
 
-    macros = db_session.query(RtMacroDivision).all()
+    macros = db_session.query(RtMacroDivision).options(joinedload_all(RtMacroDivision.branches)).all()
 
     for macro in macros:
         macro_el = {
@@ -93,8 +94,10 @@ def _get_divisions():
 def _get_years():
     # get min max from db
     db_session = DBSession()
-    min_start_date = db_session.query(func.min(ConstructObject.start_build_date)).scalar()
-    max_end_date = db_session.query(func.min(ConstructObject.end_build_date)).scalar()
+    ucn_proj = db_session.query(Project).filter(Project.keyname==UCN_PROJECT_KEYNAME).one()
+
+    min_start_date = db_session.query(func.min(ConstructObject.start_build_date)).filter(ConstructObject.project == ucn_proj).scalar()
+    max_end_date = db_session.query(func.max(ConstructObject.end_build_date)).filter(ConstructObject.project == ucn_proj).scalar()
 
     # if null, set def values
     min_start_year = min_start_date.year if min_start_date else 2015
@@ -120,6 +123,9 @@ def _get_years():
 def get_charts_data(request):
     division = request.POST['division']
     years = request.POST['years']
+
+    # plan td
+
 
     return Response(json.dumps({
         'dynamics': {
