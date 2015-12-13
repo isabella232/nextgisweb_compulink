@@ -1,7 +1,7 @@
 <%inherit file='nextgisweb_compulink:compulink_site/templates/base_site.mako' />
 
 <%def name="title()">
-    Отчёт УЦН
+    Отчет по проекту УЦН
 </%def>
 
 <%def name="head()">
@@ -24,6 +24,10 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
         }
 
         #dynamicsVols, #planVols, #dynamicsTd, #planTd {
@@ -91,8 +95,8 @@
     </div>
     <div class="body-wrapper">
         <div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;">
-
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="z-index: 999;">
+                <h1>Отчет о реализации проекта Устранение цифрового неравенства</h1>
                 <div class="control-group-inline">
                     <span>Подразделение Ростелекома</span>
 
