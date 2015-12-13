@@ -13,8 +13,8 @@
                 y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
-                plan: {stroke: 'blue'},
-                fact: {stroke: 'red'}
+                plan: {name: 'План', stroke: 'blue'},
+                fact: {name: 'Факт', stroke: 'red'}
             }
         },
         planVols: {
@@ -32,8 +32,8 @@
                 y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
-                plan: {stroke: '#3333ff', fill: '#6699ff'},
-                fact: {stroke: '#ff0000', fill: '#ff6666'}
+                plan: {name: 'План', stroke: '#3333ff', fill: '#6699ff'},
+                fact: {name: 'Факт', stroke: '#ff0000', fill: '#ff6666'}
             }
         },
         dynamicsTd: {
@@ -49,8 +49,8 @@
                 y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
-                plan: {stroke: 'blue'},
-                fact: {stroke: 'red'}
+                plan: {name: 'План', stroke: 'blue'},
+                fact: {name: 'Факт', stroke: 'red'}
             }
         },
         planTd: {
@@ -68,8 +68,8 @@
                 y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
-                plan: {stroke: '#3333ff', fill: '#6699ff'},
-                fact: {stroke: '#ff0000', fill: '#ff6666'}
+                plan: {name: 'План', stroke: '#3333ff', fill: '#6699ff'},
+                fact: {name: 'Факт', stroke: '#ff0000', fill: '#ff6666'}
             }
         }
     };
