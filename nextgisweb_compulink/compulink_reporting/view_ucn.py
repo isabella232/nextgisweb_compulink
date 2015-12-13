@@ -34,7 +34,6 @@ def add_routes(config):
         .add_view(get_charts_data)
 
 
-
 def ucn_group_verify(f):
     def wrapper(*args, **kw):
         request = args[0]
