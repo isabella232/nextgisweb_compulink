@@ -12,7 +12,7 @@ from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
 from nextgisweb_compulink.compulink_admin.model import ConstructObject, Project, District
 from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_PROJECT_KEYNAME
-from .model import RtMacroDivision, RtBranch, RtBranchRegion, BuiltAccessPoint
+from .model import RtMacroDivision, RtBranch, RtBranchRegion, BuiltAccessPoint, BuiltCable
 
 
 class DIVISION_TYPE:
@@ -164,17 +164,18 @@ def get_charts_data(request):
     # dynamic charts
 
     # execution charts
-    res = _get_ap_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
+    res = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
     exec_labels = []
     ap_plan = []
     ap_fact = []
-    for k, (p, f) in res.iteritems():
+    focl_plan = []
+    focl_fact = []
+    for k, (ap_p, ap_f, focl_p, focl_f) in res.iteritems():
         exec_labels.append(k)
-        ap_plan.append(p or 0)
-        ap_fact.append(f or 0)
-
-    focl_plan = [randint(0, 2000) for x in range(0, len(exec_labels))]
-    focl_fact = [randint(0, 2000) for x in range(0, len(exec_labels))]
+        ap_plan.append(ap_p or 0)
+        ap_fact.append(ap_f or 0)
+        focl_plan.append(focl_p or 0)
+        focl_fact.append(focl_f or 0)
 
 
     #return
@@ -204,7 +205,7 @@ def get_charts_data(request):
     }))
 
 
-def _get_ap_execution_values(division_type, aggr_elements, suit_filter, aggr_filter):
+def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter):
     db_session = DBSession()
 
     today = date.today()
@@ -223,9 +224,8 @@ def _get_ap_execution_values(division_type, aggr_elements, suit_filter, aggr_fil
             el_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.district == aggr_el).subquery()
 
         #TODO: можно немного ускорить, если отказаться от aggr_filter. По сути он лишний, так как есть el_filter
-        # plan
         # выбираем все ТД по плану для ОС у которых дата сдачи меньше чем сегодня
-        plan_val = db_session.query(func.sum(ConstructObject.access_point_plan))\
+        ap_plan_val = db_session.query(func.sum(ConstructObject.access_point_plan))\
             .filter(
                 ConstructObject.resource_id.in_(suit_filter),
                 ConstructObject.resource_id.in_(aggr_filter),
@@ -233,16 +233,42 @@ def _get_ap_execution_values(division_type, aggr_elements, suit_filter, aggr_fil
                 ConstructObject.end_build_date <= today
             ).scalar()
 
-
-        # fact
         # выбираем все ТД построенные на текущий момент для заданных ресурсов и заданного элемента
-        fact_val = db_session.query(func.sum(BuiltAccessPoint.access_point_count))\
+        ap_fact_val = db_session.query(func.sum(BuiltAccessPoint.access_point_count))\
             .filter(
                 BuiltAccessPoint.resource_id.in_(suit_filter),
                 BuiltAccessPoint.resource_id.in_(aggr_filter),
                 BuiltAccessPoint.resource_id.in_(el_filter),
             ).scalar()
 
-        res[aggr_el.name] = (plan_val, fact_val)
-    return res
+        # выбираем все ОС для заданного эелемента
+        el_objs = db_session.query(ConstructObject)\
+            .filter(
+                ConstructObject.resource_id.in_(suit_filter),
+                ConstructObject.resource_id.in_(aggr_filter),
+                ConstructObject.resource_id.in_(el_filter)
+            ).all()
+        focl_plan_val = 0
+        for const_obj in el_objs:
+            #план = Общая плановая протяженность ВОЛС / (Плановая дата окончания СМР – Плановая дата начала СМР) * (Текущая дата - Плановая дата начала СМР)
+            total_plan_length = const_obj.cabling_plan
+            start_date = const_obj.start_build_date
+            end_date = const_obj.end_build_date
 
+            if total_plan_length and start_date and end_date and (end_date-start_date).days != 0:
+                base_date = today if today < end_date else end_date
+                obj_plan_val = total_plan_length * ((base_date - start_date).days / (end_date - start_date).days)
+                focl_plan_val += obj_plan_val
+
+        # выбираем все длины построенные на текущий момент для заданных ресурсов и заданного элемента
+        focl_fact_val = db_session.query(func.sum(BuiltCable.cable_length))\
+            .filter(
+                BuiltCable.resource_id.in_(suit_filter),
+                BuiltCable.resource_id.in_(aggr_filter),
+                BuiltCable.resource_id.in_(el_filter),
+            ).scalar()
+        focl_fact_val = focl_fact_val/1000 if focl_fact_val else 0
+
+
+        res[aggr_el.name] = (ap_plan_val, ap_fact_val, focl_plan_val, focl_fact_val)
+    return res
