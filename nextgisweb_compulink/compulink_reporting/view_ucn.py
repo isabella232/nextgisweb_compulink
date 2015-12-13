@@ -5,15 +5,20 @@ from random import randint
 
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
-from sqlalchemy import func
+from sqlalchemy import func, and_, extract
 from sqlalchemy.orm import joinedload_all
 
 from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
-from nextgisweb_compulink.compulink_admin.model import ConstructObject, Project
+from nextgisweb_compulink.compulink_admin.model import ConstructObject, Project, District
 from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_PROJECT_KEYNAME
-from .model import RtMacroDivision
+from .model import RtMacroDivision, RtBranch, RtBranchRegion, BuiltAccessPoint
 
+
+class DIVISION_TYPE:
+    ROOT = 'root'
+    MRF = 'mrf'
+    BRANCH = 'branch'
 
 def add_routes(config):
     config.add_route(
@@ -58,7 +63,7 @@ def _get_divisions():
 
     #root element
     root_el = {
-        'id': 'root',
+        'id': '%s.%s' % (DIVISION_TYPE.ROOT, None),
         'text': u'Все МРФ',
         'state': {'opened': True, 'selected': True},
         'children': []
@@ -73,7 +78,7 @@ def _get_divisions():
 
     for macro in macros:
         macro_el = {
-            'id': 'm.%s' % macro.id,
+            'id': '%s.%s' % (DIVISION_TYPE.MRF, macro.id),
             'text': macro.name,
             'children': []
         }
@@ -82,7 +87,7 @@ def _get_divisions():
         # get filials
         for branch in macro.branches:
             branch_el = {
-                'id': 'b.%s' % branch.id,
+                'id': '%s.%s' % (DIVISION_TYPE.BRANCH, branch.id),
                 'text': branch.name,
                 'children': False
             }
@@ -124,9 +129,55 @@ def get_charts_data(request):
     division = request.POST['division']
     years = request.POST['years']
 
-    # plan td
+    # get params
+    years = [int(y) for y in json.loads(years)]
+    division_type, division_id = division.split('.')
+
+    # base subqueries
+    db_session = DBSession()
+    ucn_proj = db_session.query(Project).filter(Project.keyname == UCN_PROJECT_KEYNAME).one()
+
+    suitable_constr_obj = db_session.query(ConstructObject.resource_id)\
+        .filter(ConstructObject.project == ucn_proj, (extract('year', ConstructObject.end_build_date).in_(years)))\
+        .subquery('suit_co')
+
+    if division_type == DIVISION_TYPE.ROOT:
+        # элементы агригации - МРФ (все)
+        aggr_elements = db_session.query(RtMacroDivision).all()
+        # ограничения на выборку по ресурсам нет
+        aggr_filter = db_session.query(ConstructObject.resource_id).subquery()
+    elif division_type == DIVISION_TYPE.MRF:
+        # элементы агригации - Подразделения для заданного МРФ
+        aggr_elements = db_session.query(RtBranch).filter(RtBranch.macro_division_id == division_id).all()
+        # ограничение на выборку по ресурсам - все объекты строительства у которых регион с списке регионов заданного МРФ
+        _rt_macro_filter = db_session.query(RtBranch.id).filter(RtBranch.macro_division_id == division_id).subquery()
+        _rt_reg_filter = db_session.query(RtBranchRegion.region_id).filter(RtBranchRegion.rt_branch_id.in_(_rt_macro_filter)).subquery()
+        aggr_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.region_id.in_(_rt_reg_filter)).subquery()
+    else:
+        # элементы агригации - Районы всех регионов, входящих в заданное подразделение
+        _rt_reg_filter = db_session.query(RtBranchRegion.region_id).filter(RtBranchRegion.rt_branch_id == division_id).subquery()
+        aggr_elements = db_session.query(District).filter(District.region_id.in_(_rt_reg_filter)).all()
+        # ограничение на выборку по ресурсам - все объекты строительства у которых район в списке районов всех регионов, входящих в заданное подразделение
+        _dist_filter = db_session.query(District.id).filter(District.region_id.in_(_rt_reg_filter)).subquery()
+        aggr_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.district_id.in_(_dist_filter)).subquery()
+
+    # dynamic charts
+
+    # execution charts
+    res = _get_ap_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
+    exec_labels = []
+    ap_plan = []
+    ap_fact = []
+    for k, (p, f) in res.iteritems():
+        exec_labels.append(k)
+        ap_plan.append(p or 0)
+        ap_fact.append(f or 0)
+
+    focl_plan = [randint(0, 2000) for x in range(0, len(exec_labels))]
+    focl_fact = [randint(0, 2000) for x in range(0, len(exec_labels))]
 
 
+    #return
     return Response(json.dumps({
         'dynamics': {
             'labels': [r for r in xrange(365)],
@@ -140,14 +191,58 @@ def get_charts_data(request):
             }
         },
         'plan': {
-            'labels': [u'Дальний Восток', u'Сибирь', u'Урал', u'Волга', u'Юг', u'Северо-Запад'],
+            'labels': exec_labels,
             'Vols': {
-                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
-                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
+                'plan': focl_plan,
+                'fact': focl_fact
             },
             'Td': {
-                'plan': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)],
-                'fact': [randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000), randint(0, 2000)]
+                'plan': ap_plan,
+                'fact': ap_fact
             }
         }
     }))
+
+
+def _get_ap_execution_values(division_type, aggr_elements, suit_filter, aggr_filter):
+    db_session = DBSession()
+
+    today = date.today()
+    res = {}
+
+    for aggr_el in aggr_elements:
+        if division_type == DIVISION_TYPE.ROOT:
+            _rt_macro_filter = db_session.query(RtBranch.id).filter(RtBranch.rt_macro_division == aggr_el).subquery()
+            _rt_reg_filter = db_session.query(RtBranchRegion.region_id).filter(RtBranchRegion.rt_branch_id.in_(_rt_macro_filter)).subquery()
+            el_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.region_id.in_(_rt_reg_filter)).subquery()
+        elif division_type == DIVISION_TYPE.MRF:
+            _rt_reg_filter = db_session.query(RtBranchRegion.region_id).filter(RtBranchRegion.rt_branch == aggr_el).subquery()
+            _dist_filter = db_session.query(District.id).filter(District.region_id.in_(_rt_reg_filter)).subquery()
+            el_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.district_id.in_(_dist_filter)).subquery()
+        else:
+            el_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.district == aggr_el).subquery()
+
+        #TODO: можно немного ускорить, если отказаться от aggr_filter. По сути он лишний, так как есть el_filter
+        # plan
+        # выбираем все ТД по плану для ОС у которых дата сдачи меньше чем сегодня
+        plan_val = db_session.query(func.sum(ConstructObject.access_point_plan))\
+            .filter(
+                ConstructObject.resource_id.in_(suit_filter),
+                ConstructObject.resource_id.in_(aggr_filter),
+                ConstructObject.resource_id.in_(el_filter),
+                ConstructObject.end_build_date <= today
+            ).scalar()
+
+
+        # fact
+        # выбираем все ТД построенные на текущий момент для заданных ресурсов и заданного элемента
+        fact_val = db_session.query(func.sum(BuiltAccessPoint.access_point_count))\
+            .filter(
+                BuiltAccessPoint.resource_id.in_(suit_filter),
+                BuiltAccessPoint.resource_id.in_(aggr_filter),
+                BuiltAccessPoint.resource_id.in_(el_filter),
+            ).scalar()
+
+        res[aggr_el.name] = (plan_val, fact_val)
+    return res
+
