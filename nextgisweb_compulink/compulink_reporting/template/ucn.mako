@@ -41,6 +41,10 @@
             left: 45%;
         }
 
+        label.dojoxLegendText {
+            padding-right: 10px;
+        }
+
         div.control-group-inline {
             display: inline-block;
             margin: 0 5px;
