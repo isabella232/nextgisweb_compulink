@@ -33,8 +33,6 @@
         #dynamicsVols, #planVols, #dynamicsTd, #planTd {
             width: 100% !important;
             height: 97% !important;
-            min-width: 600px;
-            min-height: 300px;
             text-align: center;
         }
 

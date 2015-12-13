@@ -4,6 +4,7 @@ define([
     'dojo/_base/array',
     'dojo/dom-geometry',
     'dojo/topic',
+    'dojo/on',
     'dojox/lang/functional',
     'dojox/charting/Chart',
     'dojox/charting/widget/Legend',
@@ -11,7 +12,7 @@ define([
     'dojox/charting/axis2d/Default',
     'dojox/charting/plot2d/Default',
     'dojox/charting/plot2d/ClusteredColumns'
-], function (declare, lang, array, domGeometry, topic, df, Chart, Legend, theme) {
+], function (declare, lang, array, domGeometry, topic, on, df, Chart, Legend, theme) {
 
     return declare([], {
         _compulinkServiceFacade: null,
@@ -28,6 +29,27 @@ define([
             topic.subscribe('/reports/ucn/charts/render', lang.hitch(this, function (params) {
                 this.updateCharts(params.division, params.years);
             }));
+
+            on(window, 'resize', lang.hitch(this, function () {
+                if (this._charts) {
+                    this._reRenderAllCharts();
+                } else {
+                    return false;
+                }
+            }));
+        },
+
+        _reRenderAllCharts: function () {
+            var idChart, chart, chartDivSize;
+
+            for (idChart in this._charts) {
+                if (this._charts.hasOwnProperty(idChart)) {
+                    chart = this._charts[idChart].chart;
+                    chartDivSize = domGeometry.position(chart.node, false);
+                    chart.resize(chartDivSize.w, chartDivSize.h);
+                    chart.setTheme(theme).fullRender();
+                }
+            }
         },
 
         updateCharts: function (division, years) {
