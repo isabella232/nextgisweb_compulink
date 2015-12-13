@@ -8,6 +8,10 @@
             plotSettings: {
                 type: 'Default'
             },
+            axisSettings: {
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
+                y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+            },
             seriesSettings: {
                 plan: {stroke: 'blue'},
                 fact: {stroke: 'red'}
@@ -23,6 +27,10 @@
                 gap: 5,
                 maxBarSize: 20
             },
+            axisSettings: {
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
+                y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+            },
             seriesSettings: {
                 plan: {stroke: '#3333ff', fill: '#6699ff'},
                 fact: {stroke: '#ff0000', fill: '#ff6666'}
@@ -35,6 +43,10 @@
             },
             plotSettings: {
                 type: 'Default'
+            },
+            axisSettings: {
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
+                y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
                 plan: {stroke: 'blue'},
@@ -50,6 +62,10 @@
                 type: 'ClusteredColumns',
                 gap: 5,
                 maxBarSize: 20
+            },
+            axisSettings: {
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
+                y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
             },
             seriesSettings: {
                 plan: {stroke: '#3333ff', fill: '#6699ff'},

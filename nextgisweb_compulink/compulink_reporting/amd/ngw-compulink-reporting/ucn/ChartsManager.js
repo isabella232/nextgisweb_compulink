@@ -49,8 +49,8 @@ define([
                 if (params.hasOwnProperty(id)) {
                     chartParams = params[id];
                     chart = new Chart(id, chartParams.chartSettings).
-                    addAxis('x', {fixLower: 'minor', fixUpper: 'minor', natural: true}).
-                    addAxis('y', {vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}).
+                    addAxis('x', chartParams.axisSettings.x).
+                    addAxis('y', chartParams.axisSettings.y).
                     addPlot('default', chartParams.plotSettings);
                     this._charts[id] = chart;
                 }
