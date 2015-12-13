@@ -28,9 +28,17 @@
 
         #dynamicsVols, #planVols, #dynamicsTd, #planTd {
             width: 100% !important;
-            height: 100% !important;
+            height: 97% !important;
             min-width: 600px;
             min-height: 300px;
+            text-align: center;
+        }
+
+        #dynamicsVolsLegend, #planVolsLegend, #dynamicsTdLegend, #planTdLegend {
+            position: absolute;
+            bottom: 3px;
+            display: inline-table;
+            left: 45%;
         }
 
         div.control-group-inline {
@@ -123,10 +131,12 @@
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'leading'"
                                  style="width: 50%">
                                 <div id="dynamicsVols" style="width: 100% !important; height: 100% !important;"></div>
+                                <div id="dynamicsVolsLegend"></div>
                             </div>
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
                                  style="width: 50%">
                                 <div id="planVols" style="width: 100%; height: 100%;"></div>
+                                <div id="planVolsLegend"></div>
                             </div>
                         </div>
                     </div>
@@ -137,10 +147,12 @@
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'leading'"
                                  style="width: 50%">
                                 <div id="dynamicsTd" style="width: 100%; height: 100%;"></div>
+                                <div id="dynamicsTdLegend"></div>
                             </div>
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
                                  style="width: 50%">
                                 <div id="planTd" style="width: 100%; height: 100%;"></div>
+                                <div id="planTdLegend"></div>
                             </div>
                         </div>
                     </div>
