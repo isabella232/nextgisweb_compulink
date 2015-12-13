@@ -6,11 +6,12 @@ define([
     'dojo/topic',
     'dojox/lang/functional',
     'dojox/charting/Chart',
+    'dojox/charting/widget/Legend',
     'dojox/charting/themes/Minty',
     'dojox/charting/axis2d/Default',
     'dojox/charting/plot2d/Default',
     'dojox/charting/plot2d/ClusteredColumns'
-], function (declare, lang, array, domGeometry, topic, df, Chart, theme) {
+], function (declare, lang, array, domGeometry, topic, df, Chart, Legend, theme) {
 
     return declare([], {
         _compulinkServiceFacade: null,
@@ -52,7 +53,8 @@ define([
                     addAxis('x', chartParams.axisSettings.x).
                     addAxis('y', chartParams.axisSettings.y).
                     addPlot('default', chartParams.plotSettings);
-                    this._charts[id] = chart;
+                    this._charts[id] = {chart: null, legend: null};
+                    this._charts[id].chart = chart;
                 }
             }
 
@@ -60,14 +62,13 @@ define([
         },
 
         _updateCharts: function (chartsData) {
-            var idChart, chart, dataKeys, chartDivSize;
+            var idChart, chartItem, chart, dataKeys, chartDivSize;
 
             for (idChart in this._charts) {
                 if (this._charts.hasOwnProperty(idChart)) {
-                    chart = this._charts[idChart];
+                    chartItem = this._charts[idChart];
+                    chart = chartItem.chart;
                     dataKeys = this._params[idChart].dataKeys;
-
-
                     chart.removeAxis('x');
                     chart.addAxis('x', {
                         fixLower: 'minor', fixUpper: 'minor', natural: true,
@@ -84,6 +85,10 @@ define([
                     chartDivSize = domGeometry.position(chart.node, false);
                     chart.resize(chartDivSize.w, chartDivSize.h);
                     chart.setTheme(theme).fullRender();
+
+                    if (!chartItem.legend) {
+                        chartItem.legend = new Legend({chart: chart}, idChart + 'Legend');
+                    }
                 }
             }
         },
@@ -95,7 +100,7 @@ define([
 
         _addSeries: function (chart, seriesData, seriesParams) {
             df.forIn(seriesData, function (series, seriesName) {
-                chart.addSeries(seriesName, series, seriesParams[seriesName]);
+                chart.addSeries(seriesParams[seriesName].name, series, seriesParams[seriesName]);
             }, this);
         }
     });
