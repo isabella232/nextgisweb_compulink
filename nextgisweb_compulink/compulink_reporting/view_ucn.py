@@ -165,7 +165,7 @@ def get_charts_data(request):
     res_dyn = _get_dynamic_values(years, suitable_constr_obj, aggr_filter)
 
     # execution charts
-    res = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
+    res_exec = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
     dynamic_labels = []
     j = 0
     for i, label in enumerate(res_dyn['label']):
