@@ -8,6 +8,7 @@ div.districts-select inout {
 }
 
 div.input-wrapper {
+    position: relative;
     padding-bottom: 1px;
 }
 
@@ -24,6 +25,21 @@ div.districts-select {
 
 div.districts-select input {
     width: 100%;
+    height: 13px;
+}
+
+div.districts-select div.dijitArrowButton {
+    position: absolute;
+    display: block;
+    top: 0;
+    right: -4px;
+    width: 17px;
+    height: 17px;
+}
+
+div.districts-select div.dijitArrowButtonInner {
+    width: 15px;
+    height: 16px;
 }
 
 div.tree-wrapper {
@@ -38,11 +54,13 @@ div.tree-wrapper.visible {
 }
 
 .dojoxCheckedMultiSelectMenuCheckBoxItemIcon {
-    display:block
+    display: block
 }
+
 .dojoxCheckedMultiSelectCheckBoxInput {
-    opacity:1
+    opacity: 1
 }
+
 div.pad {
-    position:absolute
+    position: absolute
 }
