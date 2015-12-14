@@ -25,16 +25,20 @@ div.districts-select {
 
 div.districts-select input {
     width: 100%;
-    height: 13px;
+    height: 15px;
+    padding: 0;
+    border-radius: 0;
+    border: 1px solid gray;
 }
 
 div.districts-select div.dijitArrowButton {
     position: absolute;
     display: block;
     top: 0;
-    right: -4px;
-    width: 17px;
-    height: 17px;
+    right: -2px;
+    width: 15px;
+    height: 15px;
+    background-color: white;
 }
 
 div.districts-select div.dijitArrowButtonInner {
