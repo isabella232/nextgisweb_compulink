@@ -258,7 +258,7 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
 
             if total_plan_length and start_date and end_date and (end_date-start_date).days != 0:
                 base_date = today if today < end_date else end_date
-                obj_plan_val = total_plan_length * ((base_date - start_date).days / (end_date - start_date).days)
+                obj_plan_val = total_plan_length * (float((base_date - start_date).days) / (end_date - start_date).days)
                 focl_plan_val += obj_plan_val
 
         # выбираем все длины построенные на текущий момент для заданных ресурсов и заданного элемента
@@ -341,8 +341,21 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
             res['ap_fact'].append(None)
 
         # set cable plan
-        #TODO
-        res['cable_plan'].append(cable_plan_val)
+        focl_plan_val = 0
+        for const_obj in plan_data:
+            total_plan_length = const_obj.cabling_plan
+            start_date = const_obj.start_build_date
+            end_date = const_obj.end_build_date
+
+            if total_plan_length and start_date and end_date and (end_date-start_date).days != 0 and (active_date >= start_date):
+                if active_date > end_date:
+                    focl_plan_val += total_plan_length
+                else:
+                    base_date = active_date if active_date < end_date else end_date
+                    obj_plan_val = total_plan_length * (float((base_date - start_date).days) / (end_date - start_date).days)
+                    focl_plan_val += obj_plan_val
+
+        res['cable_plan'].append(focl_plan_val)
 
         # set cable fact
         if active_date <= today:
