@@ -41,8 +41,6 @@ class DBMigrates():
                                 'update_statuses_05_11',
                                 'fill_construct_obj_12_10'
                             ])
-        parser.add_argument('--ucn_id',
-                            required=False)
 
     @classmethod
     def execute(cls, args, env):
@@ -341,9 +339,6 @@ class DBMigrates():
 
     @classmethod
     def fill_construct_obj_12_10(cls, args):
-        if not args.ucn_id:
-            print 'Set UCN root resource id!'
-            return
 
         db_session = DBSession()
         transaction.manager.begin()
