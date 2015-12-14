@@ -35,6 +35,7 @@ define([
 
         _bindEvents: function () {
             var $domNode = jQuery(this.domNode),
+                $buttonArrow = $domNode.find('div.dijitArrowButton')
                 $treeWrapper = $domNode.find('div.tree-wrapper');
 
             this.$input.focus(function () {
@@ -47,8 +48,15 @@ define([
                 }, 1000);
             });
 
+            $buttonArrow.click(function () {
+                $treeWrapper.toggleClass('visible');
+            });
+
             this.$domNodeTree.on('select_node.jstree', lang.hitch(this, function (e, data) {
                 this._selectNode(data.node);
+                setTimeout(function () {
+                    $treeWrapper.removeClass('visible');
+                }, 1000);
             }));
 
             this.$domNodeTree.on('loaded.jstree', lang.hitch(this, function () {
