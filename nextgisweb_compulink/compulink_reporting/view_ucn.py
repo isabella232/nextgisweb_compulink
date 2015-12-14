@@ -343,18 +343,18 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
         # set cable plan
         focl_plan_val = 0
         for const_obj in plan_data:
-            total_plan_length = const_obj.cabling_plan
-            start_date = const_obj.start_build_date
-            end_date = const_obj.end_build_date
+            co_total_plan_length = const_obj.cabling_plan
+            co_start_date = const_obj.start_build_date
+            co_end_date = const_obj.end_build_date
 
-            if total_plan_length and start_date and end_date and (end_date-start_date).days != 0 and (active_date >= start_date):
-                if active_date > end_date:
-                    focl_plan_val += total_plan_length
+            if co_total_plan_length and co_start_date and co_end_date and (co_end_date-co_start_date).days != 0 and (active_date >= co_start_date):
+                if active_date >= co_end_date:
+                    focl_plan_val += co_total_plan_length
                 else:
-                    base_date = active_date if active_date < end_date else end_date
-                    obj_plan_val = total_plan_length * (float((base_date - start_date).days) / (end_date - start_date).days)
+                    base_date = active_date if active_date < co_end_date else co_end_date
+                    obj_plan_val = co_total_plan_length * (float((base_date - co_start_date).days) / (co_end_date - co_start_date).days)
                     focl_plan_val += obj_plan_val
-
+        focl_plan_val = round(focl_plan_val, 3)
         res['cable_plan'].append(focl_plan_val)
 
         # set cable fact
@@ -362,7 +362,7 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
             f = filter(lambda x: x[0] == active_date, cable_data)
             if len(f) > 0:
                 val = f[0][1]/1000.0
-                cable_fact_val += val
+                cable_fact_val += round(val, 3)
             res['cable_fact'].append(cable_fact_val)
         else:
             res['cable_fact'].append(None)
