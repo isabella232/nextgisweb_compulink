@@ -165,19 +165,7 @@ def get_charts_data(request):
     res_dyn = _get_dynamic_values(years, suitable_constr_obj, aggr_filter)
 
     # execution charts
-    res = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
-    exec_labels = []
-    ap_plan = []
-    ap_fact = []
-    focl_plan = []
-    focl_fact = []
-    for k, (ap_p, ap_f, focl_p, focl_f) in res.iteritems():
-        exec_labels.append(k)
-        ap_plan.append(ap_p or 0)
-        ap_fact.append(ap_f or 0)
-        focl_plan.append(focl_p or 0)
-        focl_fact.append(focl_f or 0)
-
+    res_exec = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
 
     #return
     return Response(json.dumps({
@@ -193,14 +181,14 @@ def get_charts_data(request):
             }
         },
         'plan': {
-            'labels': exec_labels,
+            'labels': res_exec['label'],
             'Vols': {
-                'plan': focl_plan,
-                'fact': focl_fact
+                'plan': res_exec['cable_plan'],
+                'fact': res_exec['cable_fact'],
             },
             'Td': {
-                'plan': ap_plan,
-                'fact': ap_fact
+                'plan': res_exec['ap_plan'],
+                'fact': res_exec['ap_fact']
             }
         }
     }))
@@ -211,6 +199,7 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
 
     today = date.today()
     res = {}
+    res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
 
     for aggr_el in aggr_elements:
         if division_type == DIVISION_TYPE.ROOT:
@@ -268,10 +257,13 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
                 BuiltCable.resource_id.in_(aggr_filter),
                 BuiltCable.resource_id.in_(el_filter),
             ).scalar()
-        focl_fact_val = focl_fact_val/1000 if focl_fact_val else 0
+        focl_fact_val = focl_fact_val/1000.0 if focl_fact_val else 0
 
-
-        res[aggr_el.name] = (ap_plan_val, ap_fact_val, focl_plan_val, focl_fact_val)
+        res['label'].append(aggr_el.name)
+        res['ap_plan'].append(ap_plan_val or 0)
+        res['ap_fact'].append(ap_fact_val or 0)
+        res['cable_plan'].append(round(focl_plan_val, 3) if focl_plan_val else 0)
+        res['cable_fact'].append(round(focl_fact_val, 3) if focl_fact_val else 0)
     return res
 
 
