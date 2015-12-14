@@ -7,12 +7,14 @@ define([
     'dojo/on',
     'dojox/lang/functional',
     'dojox/charting/Chart',
+    'dojox/charting/action2d/Tooltip',
     'dojox/charting/widget/Legend',
     'dojox/charting/themes/Minty',
     'dojox/charting/axis2d/Default',
     'dojox/charting/plot2d/Default',
+    'dojox/charting/plot2d/Markers',
     'dojox/charting/plot2d/ClusteredColumns'
-], function (declare, lang, array, domGeometry, topic, on, df, Chart, Legend, theme) {
+], function (declare, lang, array, domGeometry, topic, on, df, Chart, Tooltip, Legend, theme) {
 
     return declare([], {
         _compulinkServiceFacade: null,
@@ -98,7 +100,9 @@ define([
                     this._clearSeries(chart);
                     this._addSeries(chart, chartsData[dataKeys[0]][dataKeys[1]],
                         this._params[idChart].seriesSettings);
-
+                    if (!chartItem.tooltip) {
+                        chartItem.tooltip = new Tooltip(chart, 'default');
+                    }
                     chartDivSize = domGeometry.position(chart.node, false);
                     chart.resize(chartDivSize.w, chartDivSize.h);
                     chart.setTheme(theme).fullRender();
