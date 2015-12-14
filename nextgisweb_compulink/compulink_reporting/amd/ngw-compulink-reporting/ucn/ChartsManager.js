@@ -84,7 +84,7 @@ define([
         },
 
         _updateCharts: function (chartsData) {
-            var idChart, chartItem, chart, dataKeys, chartDivSize;
+            var idChart, chartItem, chart, dataKeys, chartDivSize, xSettings;
 
             for (idChart in this._charts) {
                 if (this._charts.hasOwnProperty(idChart)) {
@@ -92,14 +92,9 @@ define([
                     chart = chartItem.chart;
                     dataKeys = this._params[idChart].dataKeys;
                     chart.removeAxis('x');
-                    chart.addAxis('x', {
-                        fixLower: 'minor', fixUpper: 'minor', natural: true,
-                        labels: array.map(chartsData[dataKeys[0]].labels,
-                            function (item, index) {
-                                return {value: index + 1, text: item}
-                            })
-                    });
-
+                    xSettings = this._params[idChart].axisSettings.x;
+                    xSettings.labels = chartsData[dataKeys[0]].labels;
+                    chart.addAxis('x', xSettings);
                     this._clearSeries(chart);
                     this._addSeries(chart, chartsData[dataKeys[0]][dataKeys[1]],
                         this._params[idChart].seriesSettings);

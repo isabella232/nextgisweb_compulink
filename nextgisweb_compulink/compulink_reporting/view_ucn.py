@@ -178,11 +178,22 @@ def get_charts_data(request):
         focl_plan.append(focl_p or 0)
         focl_fact.append(focl_f or 0)
 
+    dynamic_labels = []
+    j = 0
+    for i, label in enumerate(res_dyn['label']):
+        if label:
+            dynamic_labels.append({'value': 31 * j, 'text': label})
+            j += 1
+
+    plan_labels = []
+    for i, label in enumerate(exec_labels):
+        plan_labels.append({'value': i, 'text': label})
+
 
     #return
     return Response(json.dumps({
         'dynamics': {
-            'labels': res_dyn['label'],
+            'labels': dynamic_labels,
             'Vols': {
                 'plan': res_dyn['cable_plan'],
                 'fact': res_dyn['cable_fact']
@@ -193,7 +204,7 @@ def get_charts_data(request):
             }
         },
         'plan': {
-            'labels': exec_labels,
+            'labels': plan_labels,
             'Vols': {
                 'plan': focl_plan,
                 'fact': focl_fact
@@ -316,7 +327,6 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
     cable_plan_val = 0
     cable_fact_val = 0
     res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
-
 
     while active_date <= end_date:
         # set label

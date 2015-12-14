@@ -9,8 +9,24 @@
                 type: 'Default'
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
-                y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+                x: {
+                    fixLower: 'minor', fixUpper: 'minor',
+                    majorLabels: true,
+                    microTicks: false,
+                    minorLabels: false,
+                    minorTicks: false,
+                    natural: false,
+                    majorTickStep: 31,
+                    rotation: -30,
+                    includeZero: true
+                },
+                y: {
+                    title: 'Проложенные ВОЛС, км',
+                    vertical: true,
+                    fixLower: 'major',
+                    fixUpper: 'major',
+                    includeZero: true
+                }
             },
             seriesSettings: {
                 plan: {name: 'План', stroke: '#5692c9'},
@@ -28,8 +44,14 @@
                 maxBarSize: 20
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
-                y: {title: 'Проложенные ВОЛС, км', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true, includeZero: true},
+                y: {
+                    title: 'Проложенные ВОЛС, км',
+                    vertical: true,
+                    fixLower: 'major',
+                    fixUpper: 'major',
+                    includeZero: true
+                }
             },
             seriesSettings: {
                 plan: {name: 'План', stroke: '#5692c9', fill: '#5692c9'},
@@ -45,8 +67,24 @@
                 type: 'Default'
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
-                y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+                x: {
+                    fixLower: 'minor', fixUpper: 'minor',
+                    majorLabels: true,
+                    microTicks: false,
+                    minorLabels: false,
+                    minorTicks: false,
+                    natural: false,
+                    majorTickStep: 31,
+                    rotation: -30,
+                    includeZero: true
+                },
+                y: {
+                    title: 'Смонтированные ТД, шт',
+                    vertical: true,
+                    fixLower: 'major',
+                    fixUpper: 'major',
+                    includeZero: true
+                }
             },
             seriesSettings: {
                 plan: {name: 'План', stroke: '#5692c9'},
@@ -64,8 +102,14 @@
                 maxBarSize: 20
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true},
-                y: {title: 'Смонтированные ТД, шт', vertical: true, fixLower: 'major', fixUpper: 'major', includeZero: true}
+                x: {fixLower: 'minor', fixUpper: 'minor', natural: true, includeZero: true},
+                y: {
+                    title: 'Смонтированные ТД, шт',
+                    vertical: true,
+                    fixLower: 'major',
+                    fixUpper: 'major',
+                    includeZero: true
+                }
             },
             seriesSettings: {
                 plan: {name: 'План', stroke: '#5692c9', fill: '#5692c9'},
