@@ -326,8 +326,9 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
             res['label'].append(None)
 
         # set ap plan
-        #TODO
-        res['ap_plan'].append(ap_plan_val)
+        on_date_built_co = filter(lambda x: x.end_build_date <= active_date, plan_data)
+        val = sum([x.access_point_plan for x in on_date_built_co if x.access_point_plan is not None])
+        res['ap_plan'].append(val)
 
         # set ap fact
         if active_date <= today:
