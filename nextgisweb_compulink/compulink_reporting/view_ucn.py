@@ -3,6 +3,7 @@ import json
 from datetime import date
 from random import randint
 
+from dateutil import relativedelta
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
 from sqlalchemy import func, and_, extract
@@ -12,7 +13,7 @@ from nextgisweb import DBSession
 from nextgisweb.pyramid import viewargs
 from nextgisweb_compulink.compulink_admin.model import ConstructObject, Project, District
 from nextgisweb_compulink.compulink_reporting.common import UCN_GROUP_NAME, UCN_PROJECT_KEYNAME
-from .model import RtMacroDivision, RtBranch, RtBranchRegion, BuiltAccessPoint, BuiltCable
+from .model import RtMacroDivision, RtBranch, RtBranchRegion, BuiltAccessPoint, BuiltCable, Calendar
 
 
 class DIVISION_TYPE:
@@ -161,6 +162,7 @@ def get_charts_data(request):
         aggr_filter = db_session.query(ConstructObject.resource_id).filter(ConstructObject.district_id.in_(_dist_filter)).subquery()
 
     # dynamic charts
+    res_dyn = _get_dynamic_values(years, suitable_constr_obj, aggr_filter)
 
     # execution charts
     res = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
@@ -180,14 +182,14 @@ def get_charts_data(request):
     #return
     return Response(json.dumps({
         'dynamics': {
-            'labels': [r for r in xrange(365)],
+            'labels': res_dyn['label'],
             'Vols': {
-                'plan': [randint(0, 1000) for r in xrange(365)],
-                'fact': [randint(0, 1000) for r in xrange(365)]
+                'plan': res_dyn['cable_plan'],
+                'fact': res_dyn['cable_fact']
             },
             'Td': {
-                'plan': [randint(0, 1000) for r in xrange(365)],
-                'fact': [randint(0, 1000) for r in xrange(365)]
+                'plan': res_dyn['ap_plan'],
+                'fact': res_dyn['ap_fact']
             }
         },
         'plan': {
@@ -270,4 +272,87 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
 
 
         res[aggr_el.name] = (ap_plan_val, ap_fact_val, focl_plan_val, focl_fact_val)
+    return res
+
+
+def _get_dynamic_values(years, suit_filter, aggr_filter):
+    db_session = DBSession()
+
+    # date stuff
+    today = date.today()
+    start_date = date(year=years[0], month=1, day=1)
+    end_date = date(year=years[-1], month=12, day=31)
+    one_day_delta = relativedelta.relativedelta(days=+1)
+    active_date = start_date
+
+    # get data
+    calendar_subquery = db_session.query(Calendar.id)\
+        .filter(Calendar.year_number>=years[0], Calendar.year_number<=years[-1]).subquery()
+
+    ap_data = db_session.query(Calendar.full_date, func.sum(BuiltAccessPoint.access_point_count)).filter(
+        BuiltAccessPoint.resource_id.in_(suit_filter),
+        BuiltAccessPoint.resource_id.in_(aggr_filter),
+        BuiltAccessPoint.build_date_id.in_(calendar_subquery)
+    ).join(BuiltAccessPoint.build_date)\
+     .group_by(Calendar.full_date)\
+     .order_by(Calendar.full_date).all()
+
+    cable_data = db_session.query(Calendar.full_date, func.sum(BuiltCable.cable_length)).filter(
+        BuiltCable.resource_id.in_(suit_filter),
+        BuiltCable.resource_id.in_(aggr_filter),
+        BuiltCable.build_date_id.in_(calendar_subquery)
+    ).join(BuiltCable.build_date)\
+     .group_by(Calendar.full_date)\
+     .order_by(Calendar.full_date).all()
+
+    plan_data = db_session.query(ConstructObject).filter(
+        ConstructObject.resource_id.in_(suit_filter),
+        ConstructObject.resource_id.in_(aggr_filter),
+    ).order_by(ConstructObject.start_build_date).all()
+
+    # counters
+    ap_plan_val = 0
+    ap_fact_val = 0
+    cable_plan_val = 0
+    cable_fact_val = 0
+    res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
+
+
+    while active_date <= end_date:
+        # set label
+        if active_date.day == 1:
+            res['label'].append(active_date.strftime('%d.%m.%Y'))
+        else:
+            res['label'].append(None)
+
+        # set ap plan
+        #TODO
+        res['ap_plan'].append(ap_plan_val)
+
+        # set ap fact
+        if active_date <= today:
+            f = filter(lambda x: x[0] == active_date, ap_data)
+            if len(f) > 0:
+                val = f[0][1]
+                ap_fact_val += val
+            res['ap_fact'].append(ap_fact_val)
+        else:
+            res['ap_fact'].append(None)
+
+        # set cable plan
+        #TODO
+        res['cable_plan'].append(cable_plan_val)
+
+        # set cable fact
+        if active_date <= today:
+            f = filter(lambda x: x[0] == active_date, cable_data)
+            if len(f) > 0:
+                val = f[0][1]/1000.0
+                cable_fact_val += val
+            res['cable_fact'].append(cable_fact_val)
+        else:
+            res['cable_fact'].append(None)
+
+        active_date = active_date + one_day_delta
+
     return res
