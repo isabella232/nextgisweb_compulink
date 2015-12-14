@@ -336,8 +336,8 @@ def get_focl_info(request):
                     'is_month_overdue': report_row.is_month_overdue,
                     'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
 
-                    'cabling_plan_today': (report_row.cabling_plan * ((datetime.now() - report_row.start_build_time).seconds/((report_row.end_build_time - report_row.start_build_time).seconds)))
-                        if (report_row.end_build_time and report_row.start_build_time and report_row.cabling_plan) else None,
+                    'cabling_plan_today': (report_row.cabling_plan * (float((datetime.now() - report_row.start_build_time).days)/((report_row.end_build_time - report_row.start_build_time).days)))
+                        if (report_row.end_build_time and report_row.start_build_time and report_row.cabling_plan and (report_row.end_build_time - report_row.start_build_time).days !=0) else None,
                 }
             )
         else:
