@@ -74,7 +74,9 @@ def _get_divisions():
     #get macro regions
     db_session = DBSession()
 
-    macros = db_session.query(RtMacroDivision).options(joinedload_all(RtMacroDivision.branches)).all()
+    macros = db_session.query(RtMacroDivision)\
+        .options(joinedload_all(RtMacroDivision.branches))\
+        .order_by(RtMacroDivision.name).all()
 
     for macro in macros:
         macro_el = {
@@ -85,7 +87,10 @@ def _get_divisions():
         root_el['children'].append(macro_el)
 
         # get filials
-        for branch in macro.branches:
+        branches = macro.branches
+        branches.sort(key=lambda x: x.name)
+
+        for branch in branches:
             branch_el = {
                 'id': '%s.%s' % (DIVISION_TYPE.BRANCH, branch.id),
                 'text': branch.name,
@@ -210,6 +215,8 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
 
     today = date.today()
     res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
+
+    aggr_elements.sort(key=lambda x: x.name)
 
     for aggr_el in aggr_elements:
         if division_type == DIVISION_TYPE.ROOT:
