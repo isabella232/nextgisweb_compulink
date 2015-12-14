@@ -248,6 +248,11 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
                 ConstructObject.resource_id.in_(aggr_filter),
                 ConstructObject.resource_id.in_(el_filter)
             ).all()
+
+        # если в системе нет объектов строительства, не добавляем этот элемент (если только не корень)
+        if division_type != DIVISION_TYPE.ROOT and len(el_objs) < 1:
+            continue
+
         focl_plan_val = 0
         for const_obj in el_objs:
             #план = Общая плановая протяженность ВОЛС / (Плановая дата окончания СМР – Плановая дата начала СМР) * (Текущая дата - Плановая дата начала СМР)
