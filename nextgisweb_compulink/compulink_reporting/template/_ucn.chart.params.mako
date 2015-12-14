@@ -22,7 +22,7 @@
                     includeZero: true
                 },
                 y: {
-                    title: 'Проложенные ВОЛС, км',
+                    title: 'Проложено ВОЛС, км',
                     vertical: true,
                     fixLower: 'major',
                     fixUpper: 'major',
@@ -58,7 +58,7 @@
                     includeZero: false
                 },
                 y: {
-                    title: 'Проложенные ВОЛС, км',
+                    title: 'Проложено ВОЛС, км',
                     vertical: true,
                     fixLower: 'major',
                     fixUpper: 'major',
@@ -92,7 +92,7 @@
                     includeZero: true
                 },
                 y: {
-                    title: 'Смонтированные ТД, шт',
+                    title: 'Смонтировано ТД, шт',
                     vertical: true,
                     fixLower: 'major',
                     fixUpper: 'major',
@@ -128,7 +128,7 @@
                     includeZero: false
                 },
                 y: {
-                    title: 'Смонтированные ТД, шт',
+                    title: 'Смонтировано ТД, шт',
                     vertical: true,
                     fixLower: 'major',
                     fixUpper: 'major',
