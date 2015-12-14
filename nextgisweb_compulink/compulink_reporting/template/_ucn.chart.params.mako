@@ -10,7 +10,8 @@
             },
             axisSettings: {
                 x: {
-                    fixLower: 'minor', fixUpper: 'minor',
+                    fixLower: 'minor',
+                    fixUpper: 'minor',
                     majorLabels: true,
                     microTicks: false,
                     minorLabels: false,
@@ -44,7 +45,18 @@
                 maxBarSize: 20
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true, includeZero: true},
+                x: {
+                    fixLower: 'minor',
+                    fixUpper: 'minor',
+                    majorLabels: true,
+                    microTicks: false,
+                    minorLabels: false,
+                    minorTicks: false,
+                    natural: false,
+                    majorTickStep: 1,
+                    rotation: -30,
+                    includeZero: false
+                },
                 y: {
                     title: 'Проложенные ВОЛС, км',
                     vertical: true,
@@ -68,7 +80,8 @@
             },
             axisSettings: {
                 x: {
-                    fixLower: 'minor', fixUpper: 'minor',
+                    fixLower: 'minor',
+                    fixUpper: 'minor',
                     majorLabels: true,
                     microTicks: false,
                     minorLabels: false,
@@ -102,7 +115,18 @@
                 maxBarSize: 20
             },
             axisSettings: {
-                x: {fixLower: 'minor', fixUpper: 'minor', natural: true, includeZero: true},
+                x: {
+                    fixLower: 'minor',
+                    fixUpper: 'minor',
+                    majorLabels: true,
+                    microTicks: false,
+                    minorLabels: false,
+                    minorTicks: false,
+                    natural: false,
+                    majorTickStep: 1,
+                    rotation: -30,
+                    includeZero: false
+                },
                 y: {
                     title: 'Смонтированные ТД, шт',
                     vertical: true,

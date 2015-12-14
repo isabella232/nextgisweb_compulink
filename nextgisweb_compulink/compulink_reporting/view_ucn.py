@@ -187,7 +187,7 @@ def get_charts_data(request):
 
     plan_labels = []
     for i, label in enumerate(exec_labels):
-        plan_labels.append({'value': i, 'text': label})
+        plan_labels.append({'value': i + 1, 'text': label})
 
 
     #return
