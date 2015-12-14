@@ -165,12 +165,23 @@ def get_charts_data(request):
     res_dyn = _get_dynamic_values(years, suitable_constr_obj, aggr_filter)
 
     # execution charts
-    res_exec = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
+    res = _get_execution_values(division_type, aggr_elements, suitable_constr_obj, aggr_filter)
+    dynamic_labels = []
+    j = 0
+    for i, label in enumerate(res_dyn['label']):
+        if label:
+            dynamic_labels.append({'value': 31 * j, 'text': label})
+            j += 1
+
+    plan_labels = []
+    for i, label in enumerate(res_exec['label']):
+        plan_labels.append({'value': i + 1, 'text': label})
+
 
     #return
     return Response(json.dumps({
         'dynamics': {
-            'labels': res_dyn['label'],
+            'labels': dynamic_labels,
             'Vols': {
                 'plan': res_dyn['cable_plan'],
                 'fact': res_dyn['cable_fact']
@@ -181,7 +192,7 @@ def get_charts_data(request):
             }
         },
         'plan': {
-            'labels': res_exec['label'],
+            'labels': plan_labels,
             'Vols': {
                 'plan': res_exec['cable_plan'],
                 'fact': res_exec['cable_fact'],
@@ -198,7 +209,6 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
     db_session = DBSession()
 
     today = date.today()
-    res = {}
     res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
 
     for aggr_el in aggr_elements:
@@ -308,7 +318,6 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
     cable_plan_val = 0
     cable_fact_val = 0
     res = {'label': [], 'ap_plan': [], 'ap_fact': [], 'cable_plan': [], 'cable_fact': []}
-
 
     while active_date <= end_date:
         # set label
