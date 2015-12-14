@@ -23,7 +23,10 @@ define([
 
             this.$domNodeTree.jstree({
                 'core': {
-                    'data': divisions
+                    'data': divisions,
+                    'themes': {
+                        'icons': false
+                    }
                 }
             });
 
