@@ -375,8 +375,8 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
             f = filter(lambda x: x[0] == active_date, cable_data)
             if len(f) > 0:
                 val = f[0][1]/1000.0
-                cable_fact_val += round(val, 3)
-            res['cable_fact'].append(cable_fact_val)
+                cable_fact_val += val
+            res['cable_fact'].append(round(cable_fact_val, 3))
         else:
             res['cable_fact'].append(None)
 
