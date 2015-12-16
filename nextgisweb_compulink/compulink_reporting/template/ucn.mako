@@ -43,6 +43,15 @@
             left: 45%;
         }
 
+        label.dojoxLegendText {
+            padding-right: 10px;
+        }
+
+        div.control-group-inline {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
         div.ucn-header-wrapper label {
             font-weight: bold;
         }
@@ -88,16 +97,20 @@
     </div>
     <div class="body-wrapper">
         <div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;">
-            <div class="ucn-header-wrapper" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="z-index: 999;">
+            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="z-index: 999;">
                 <h1>Отчет о реализации проекта Устранение цифрового неравенства</h1>
 
-                <div data-dojo-type="dojox/layout/TableContainer"
-                     data-dojo-props="cols: 1, labelWidth: 150" style="width:50%; min-width: 600px">
+                <div class="control-group-inline">
+                    <span>Подразделение Ростелекома</span>
 
                     <div id="selectDivision"
                          data-dojo-attach-point="divisionsSelect"
                          data-dojo-type="ngw-compulink-reporting/ucn/DivisionsSelect"
                          title="Подразделение Ростелекома"></div>
+                </div>
+
+                <div class="control-group-inline">
+                    <span>Период</span>
                     <select id="selectYears"
                             data-dojo-type="ngw-compulink-reporting/ucn/YearsCheckedMultiSelect"
                             name="years" title="Период">
@@ -110,12 +123,13 @@
                         %endfor
                     </select>
                 </div>
-                <button id="buildCharts"
-                        data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
-                        data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
-                        type="button">
-                </button>
-
+                <div class="control-group-inline">
+                    <button id="buildCharts"
+                            data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
+                            data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
+                            type="button">
+                    </button>
+                </div>
             </div>
 
             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
@@ -127,8 +141,7 @@
                         <div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%;">
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'leading'"
                                  style="width: 50%">
-                                <div id="dynamicsVols"
-                                     style="width: 100% !important; height: 100% !important;"></div>
+                                <div id="dynamicsVols" style="width: 100% !important; height: 100% !important;"></div>
                                 <div id="dynamicsVolsLegend"></div>
                             </div>
                             <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
