@@ -5,7 +5,7 @@ define([
     'dojo/dom-construct',
     'dojo/on',
     'dojox/form/CheckedMultiSelect',
-    'xstyle/css!./css/YearsCheckedMultiSelect.css'
+    'xstyle/css!dojox/form/resources/CheckedMultiSelect.css'
 ], function (declare, lang, array, domConstruct, on, CheckedMultiSelect) {
     return declare([CheckedMultiSelect], {
         dropDown: true,

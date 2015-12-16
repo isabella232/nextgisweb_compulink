@@ -3,10 +3,6 @@ div.districts-select {
     min-width: 250px;
 }
 
-div.districts-select inout {
-    border: 1px #b5bcc7 solid;
-}
-
 div.input-wrapper {
     position: relative;
     padding-bottom: 1px;
@@ -26,24 +22,36 @@ div.districts-select {
 div.districts-select input {
     width: 100%;
     height: 15px;
-    padding: 0;
+    padding: 1px;
     border-radius: 0;
-    border: 1px solid gray;
+    border: 1px #b5bcc7 solid;
+}
+
+div.districts-select:hover input {
+    background-color: #e9f4fe;
+    border-color: #769dc0;
 }
 
 div.districts-select div.dijitArrowButton {
     position: absolute;
     display: block;
     top: 0;
-    right: -2px;
-    width: 15px;
-    height: 15px;
-    background-color: white;
+    right: -4px;
+    width: 17px;
+    height: 17px;
+    border: 1px #b5bcc7 solid;
+    background-color: #f7f7f7;
+}
+
+div.districts-select:hover div.dijitArrowButton {
+    background-color: #c1e1ff;
+    border-color: #769dc0;
 }
 
 div.districts-select div.dijitArrowButtonInner {
     width: 15px;
-    height: 16px;
+    height: 15px;
+    opacity: 0.5;
 }
 
 div.tree-wrapper {
@@ -55,6 +63,11 @@ div.tree-wrapper {
 
 div.tree-wrapper.visible {
     display: block;
+}
+
+div.districts-select:hover div.tree-wrapper {
+    background-color: #f9fbff;
+    border-color: #769dc0;
 }
 
 .dojoxCheckedMultiSelectMenuCheckBoxItemIcon {
