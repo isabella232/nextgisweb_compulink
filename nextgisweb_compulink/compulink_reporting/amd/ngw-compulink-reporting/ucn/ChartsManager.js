@@ -10,21 +10,28 @@ define([
     'dojox/charting/action2d/Tooltip',
     'dojox/charting/widget/Legend',
     'dojox/charting/themes/Minty',
+    'dojox/charting/SimpleTheme',
     'dojox/charting/axis2d/Default',
     'dojox/charting/plot2d/Default',
     'dojox/charting/plot2d/Markers',
     'dojox/charting/plot2d/ClusteredColumns'
-], function (declare, lang, array, domGeometry, topic, on, df, Chart, Tooltip, Legend, theme) {
+], function (declare, lang, array, domGeometry, topic, on, df, Chart, Tooltip, Legend, theme, SimpleTheme) {
 
     return declare([], {
         _compulinkServiceFacade: null,
         _params: null,
         _charts: null,
+        _customTheme: null,
 
         constructor: function (compulinkServiceFacade, params) {
             this._compulinkServiceFacade = compulinkServiceFacade;
             this._params = params;
             this._bindEvents();
+
+            this._customTheme = theme;
+            this._customTheme.marker = {
+                symbol: 'm-1,0 c0,-1 1,-1 1,0 m-1,0 c0,1 1,1 1,0'
+            };
         },
 
         _bindEvents: function () {
@@ -49,7 +56,7 @@ define([
                     chart = this._charts[idChart].chart;
                     chartDivSize = domGeometry.position(chart.node, false);
                     chart.resize(chartDivSize.w, chartDivSize.h);
-                    chart.setTheme(theme).fullRender();
+                    chart.setTheme(this._customTheme).fullRender();
                 }
             }
         },
@@ -105,7 +112,7 @@ define([
                     }
                     chartDivSize = domGeometry.position(chart.node, false);
                     chart.resize(chartDivSize.w, chartDivSize.h);
-                    chart.setTheme(theme).fullRender();
+                    chart.setTheme(this._customTheme).fullRender();
 
                     if (!chartItem.legend) {
                         chartItem.legend = new Legend({chart: chart}, idChart + 'Legend');
