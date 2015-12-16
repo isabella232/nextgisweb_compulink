@@ -30,8 +30,8 @@
                 }
             },
             seriesSettings: {
-                plan: {name: 'План', stroke: '#4a79a4', fill: '#5692c9'},
-                fact: {name: 'Факт', stroke: '#b35e25', fill: '#ed7d31'}
+                plan: {name: 'План', stroke: '#5692c9', fill: '#5692c9'},
+                fact: {name: 'Факт', stroke: '#ed7d31', fill: '#ed7d31'}
             }
         },
         planVols: {
@@ -100,8 +100,8 @@
                 }
             },
             seriesSettings: {
-                plan: {name: 'План', stroke: '#4a79a4', fill: '#5692c9'},
-                fact: {name: 'Факт', stroke: '#b35e25', fill: '#ed7d31'}
+                plan: {name: 'План', stroke: '#5692c9', fill: '#5692c9'},
+                fact: {name: 'Факт', stroke: '#ed7d31', fill: '#ed7d31'}
             }
         },
         planTd: {
