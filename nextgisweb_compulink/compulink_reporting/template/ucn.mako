@@ -92,7 +92,7 @@
                 <h1>Отчет о реализации проекта Устранение цифрового неравенства</h1>
 
                 <div data-dojo-type="dojox/layout/TableContainer"
-                     data-dojo-props="cols: 2, labelWidth: 150" style="width:50%; min-width: 600px">
+                     data-dojo-props="cols: 1, labelWidth: 150" style="width:50%; min-width: 600px">
 
                     <div id="selectDivision"
                          data-dojo-attach-point="divisionsSelect"
