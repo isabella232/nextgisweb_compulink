@@ -109,26 +109,11 @@
                                     value="${year['year']}">${year['year']}</option>
                         %endfor
                     </select>
-
-                    <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
-                         data-dojo-attach-point="districtSelect"
-                         title="Район" style="width:90%;"></div>
-
-                    <div data-dojo-type="dijit/form/CheckBox"
-                         data-dojo-attach-point="onlyOverdue"
-                         data-dojo-props="value: true"
-                         title="Только просроченные"></div>
-
                 </div>
                 <button id="buildCharts"
                         data-dojo-type="ngw-compulink-reporting/ucn/BuildChartsButton"
                         data-dojo-props="yearsSelectorId: 'selectYears', divisionSelectorId: 'selectDivision'"
                         type="button">
-                </button>
-
-                <button data-dojo-type="dijit/form/Button"
-                        data-dojo-attach-point="exportExcel"
-                        type="button">Выгрузить в Excel
                 </button>
 
             </div>
