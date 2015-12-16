@@ -118,9 +118,9 @@ define([
             aspect.after(this._grid, 'renderRow', function(row, args) {
 
                 if (args[0]['cabling_plan_today'] &&
-                    args[0]['cabling_fact'] &&
                     args[0]['cabling_plan_today']!=0 &&
-                    !args[0]['is_overdue']
+                    !args[0]['is_overdue'] &&
+                    (args[0]['status_row'] == 'project' || args[0]['status_row'] == 'in_progress')
                 ) {
 
                     var cabling_plan_today = args[0]['cabling_plan_today'];

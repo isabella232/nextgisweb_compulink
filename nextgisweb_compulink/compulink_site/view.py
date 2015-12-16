@@ -338,6 +338,7 @@ def get_focl_info(request):
 
                     'cabling_plan_today': (report_row.cabling_plan * (float((datetime.now() - report_row.start_build_time).days)/((report_row.end_build_time - report_row.start_build_time).days)))
                         if (report_row.end_build_time and report_row.start_build_time and report_row.cabling_plan and (report_row.end_build_time - report_row.start_build_time).days !=0) else None,
+                    'status_row': report_row.status,
                 }
             )
         else:
