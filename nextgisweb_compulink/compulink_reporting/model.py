@@ -13,10 +13,9 @@ from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT
 
 Base = declarative_base()
 
-#TODO: move ConstructionStatusReport to scheme compulink
 
 class ConstructionStatusReport(Base):
-    __tablename__ = 'compulink_status_report'
+    __tablename__ = 'status_report'
     __table_args__ = {'schema': 'compulink'}
 
     id = db.Column(db.Integer, primary_key=True)
@@ -116,7 +115,7 @@ class RtBranchRegion(Base):
 
 
 #---- Metadata and scheme staff
-ConstructionStatusReport.__table__.tometadata = types.MethodType(tometadata_event, Calendar.__table__)
+ConstructionStatusReport.__table__.tometadata = types.MethodType(tometadata_event, ConstructionStatusReport.__table__)
 Calendar.__table__.tometadata = types.MethodType(tometadata_event, Calendar.__table__)
 RtMacroDivision.__table__.tometadata = types.MethodType(tometadata_event, RtMacroDivision.__table__)
 RtBranch.__table__.tometadata = types.MethodType(tometadata_event, RtBranch.__table__)
