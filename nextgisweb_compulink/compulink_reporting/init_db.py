@@ -73,9 +73,10 @@ def init_calendar():
 
     while active_date < max_date:
         cal = Calendar()
+        cal.id = active_date.year * 10000 + active_date.month * 100 + active_date.day
         cal.full_date = active_date
         cal.year_number = active_date.year
-        cal.semester_number = 1 if active_date.month<7 else 2
+        cal.semester_number = 1 if active_date.month < 7 else 2
         cal.semester_name = u'1 полугодие'  if active_date.month<7 else u'2 полугодие'
         cal.quarter_number = (active_date.month-1)//3 + 1
         cal.quarter_name = quarter_names[cal.quarter_number]

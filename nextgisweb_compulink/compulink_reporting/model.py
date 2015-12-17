@@ -61,7 +61,7 @@ class Calendar(Base):
     __tablename__ = 'calendar'
     __table_args__ = {'schema': 'compulink'}
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     full_date = db.Column(db.Date, index=True)
     year_number = db.Column(db.SmallInteger, index=True)
     semester_number = db.Column(db.SmallInteger)
