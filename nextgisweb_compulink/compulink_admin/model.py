@@ -113,6 +113,7 @@ class FoclStructSerializer(Serializer):
         #инсерт объекта в БД
         if not self.obj.id:
             self.create_focl_struct_content(self.obj)
+            self.add_to_registry(self.obj)
 
     @classmethod
     def create_focl_struct_content(cls, focl_struct_obj):
@@ -159,6 +160,13 @@ class FoclStructSerializer(Serializer):
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
 
+    @classmethod
+    def add_to_registry(cls, focl_struct_obj):
+        co = ConstructObject()
+        co.name = focl_struct_obj.display_name
+        co.resource = focl_struct_obj
+        co.project = ModelsUtils.get_project_by_resource(focl_struct_obj)
+        co.persist()
 
 
 class SituationPlan(Base, ResourceGroup):
@@ -270,6 +278,21 @@ class ModelsUtils():
         ms.persist()
 
         return ms
+
+    @classmethod
+    def get_project_by_resource(cls, resource):
+        if '_project_cache' not in cls.__dict__.keys():
+            db_session = DBSession()
+            projects = db_session.query(Project).all()
+            cls._project_cache = {project.root_resource_id: project for project in projects if project.root_resource_id is not None}
+
+        res = resource
+        while res:
+            if res.id in cls._project_cache.keys():
+                return cls._project_cache[res.id]
+            res = res.parent
+
+        return None
 
 
 # ---- DOMAIN MODELS ----

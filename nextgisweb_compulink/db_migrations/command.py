@@ -386,24 +386,9 @@ class DBMigrates():
                     print 'District id not found in layer! Resource %s' % focl_struct.id
 
             #try to get project
-            co.project = cls.get_project_by_resource(focl_struct)
+            co.project = ModelsUtils.get_project_by_resource(focl_struct)
 
             co.persist()
 
         transaction.manager.commit()
         db_session.close()
-
-    @classmethod
-    def get_project_by_resource(cls, resource):
-        if '_project_cache' not in cls.__dict__.keys():
-            db_session = DBSession()
-            projects = db_session.query(Project).all()
-            cls._project_cache = {project.root_resource_id: project for project in projects if project.root_resource_id is not None}
-
-        res = resource
-        while res:
-            if res.id in cls._project_cache.keys():
-                return cls._project_cache[res.id]
-            res = res.parent
-
-        return None
