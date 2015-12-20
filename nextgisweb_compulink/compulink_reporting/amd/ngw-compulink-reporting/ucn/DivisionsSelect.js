@@ -35,7 +35,7 @@ define([
 
         _bindEvents: function () {
             var $domNode = jQuery(this.domNode),
-                $buttonArrow = $domNode.find('div.dijitArrowButton')
+                $buttonArrow = $domNode.find('div.dijitArrowButton'),
                 $treeWrapper = $domNode.find('div.tree-wrapper');
 
             this.$input.focus(function () {
