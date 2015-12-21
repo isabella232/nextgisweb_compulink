@@ -56,7 +56,7 @@
                     majorTickStep: 1,
                     rotation: -30,
                     includeZero: false,
-                    maxLabelCharCount: 15
+                    maxLabelCharCount: 30
                 },
                 y: {
                     title: 'Проложено ВОЛС, км',
@@ -128,7 +128,7 @@
                     rotation: -30,
                     includeZero: false,
                     labelStyle:  'columns',
-                    maxLabelCharCount: 15
+                    maxLabelCharCount: 30
                 },
                 y: {
                     title: 'Смонтировано ТД, шт',
