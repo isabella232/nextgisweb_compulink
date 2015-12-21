@@ -7,6 +7,7 @@ from .reactors.construct_spec_transition_line.construct_spec_transition_line_rea
 from .reactors.status_report.status_report_reactor import StatusReportReactor # NOQA
 from .reactors.ucn_report.ucn_report_reactor import UcnReportReactor # NOQA
 from .reactors.external_update_focl_info.external_update_reactor import ExternalUpdateReactor # NOQA
+from .reactors.internal_update_focl_info.internal_update_reactor import InternalUpdateReactor # NOQA
 
 
 @Command.registry.register

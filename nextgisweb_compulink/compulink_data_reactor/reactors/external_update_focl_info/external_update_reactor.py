@@ -16,7 +16,7 @@ __author__ = 'yellow'
 
 @AbstractReactor.registry.register
 class ExternalUpdateReactor(AbstractReactor):
-    identity = 'external_update_reactor'
+    identity = 'external_update_focl_info'
     priority = 10
 
     @classmethod
@@ -66,6 +66,6 @@ class ExternalUpdateReactor(AbstractReactor):
             const_obj.end_deliver_date = ms_row.Work4.AgreementFinishDateWork if ms_row.Work4 else None
 
         ngw_session.flush()
-        LogEntry.info('StatusReportReactor finished!', component=COMP_ID, group=ExternalUpdateReactor.identity, append_dt=datetime.now())
+        LogEntry.info('ExternalUpdateReactor finished!', component=COMP_ID, group=ExternalUpdateReactor.identity, append_dt=datetime.now())
 
         transaction.manager.commit()
