@@ -1,16 +1,16 @@
 from dateutil.relativedelta import relativedelta
-from nextgisweb import DBSession as NgwSession
+from sqlalchemy import func
+
+from nextgisweb import DBSession
 from datetime import datetime, date
-from nextgisweb_compulink.compulink_mssql_bridge import CompulinkMssqlBridgeComponent, DBSession as MsSqlSession
 import transaction
-from sqlalchemy.orm import joinedload_all
 
 from nextgisweb_compulink.compulink_data_reactor.reactors.abstract_reactor import AbstractReactor
 from nextgisweb_compulink.compulink_data_reactor import COMP_ID
-from nextgisweb_compulink.compulink_admin.model import FoclStruct, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED
-from nextgisweb_compulink.compulink_mssql_bridge.model import ConstructObjects
-from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
-
+from nextgisweb_compulink.compulink_admin.model import FoclStruct, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED, \
+    ConstructObject
+from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport, BuiltCable, BuiltAccessPoint, \
+    BuiltFosc, BuiltOpticalCross, BuiltSpecTransition
 from nextgisweb_log.model import LogEntry
 
 
@@ -24,8 +24,8 @@ class StatusReportReactor(AbstractReactor):
     @classmethod
     def run(cls, env):
 
-        ngw_session = NgwSession()
-        ms_session = MsSqlSession()
+        ngw_session = DBSession()
+
         transaction.manager.begin()
 
         LogEntry.info('StatusReportReactor started!', component=COMP_ID, group=StatusReportReactor.identity, append_dt=datetime.now())
@@ -37,22 +37,6 @@ class StatusReportReactor(AbstractReactor):
         # fix now dt
         now_dt = date.today()
 
-        # get mssql info
-        enabled_sett = env.compulink_mssql_bridge.settings.get('enable', 'false').lower()
-        mssql_enable = enabled_sett in ('true', 'yes', '1')
-
-        ms_info = dict()
-        if mssql_enable:
-            CompulinkMssqlBridgeComponent.configure_db_conn(env.compulink_mssql_bridge.settings.get('conn_str', 'no'))
-
-            fs_external_ids = ngw_session.query(FoclStruct.external_id).all()
-            ms_rows = ms_session.query(ConstructObjects)\
-                .filter(ConstructObjects.ObjectID.in_(fs_external_ids))\
-                .options(joinedload_all(ConstructObjects.Work3), joinedload_all(ConstructObjects.Work4)).all()
-            for row in ms_rows:
-                if row.ObjectID not in ms_info.keys():
-                    ms_info[str(row.ObjectID)] = row
-
         # get all focls
         fs_resources = ngw_session.query(FoclStruct).all()
 
@@ -60,88 +44,99 @@ class StatusReportReactor(AbstractReactor):
             # create new report string
             report_line = ConstructionStatusReport()
 
+            # get gfocl_info
+            try:
+                focl_info = ngw_session.query(ConstructObject).filter(ConstructObject.resource_id == fs.id).one()
+            except:
+                focl_info = None
+            
             # save info from resource
             report_line.focl_res_id = fs.id
             report_line.external_id = fs.external_id
             report_line.focl_name = fs.display_name
-            report_line.region = fs.region
-            report_line.district = fs.district
             report_line.status = fs.status
 
-            # save info from mssql
-            if report_line.external_id and report_line.external_id in ms_info.keys():
-                ms_row = ms_info[report_line.external_id]
-                report_line.cabling_plan = ms_row.PreliminaryLineLength     #new requ TODO: check!
-                report_line.ap_plan = ms_row.AccessPointAmount              #new requ
-                report_line.subcontr_name = ms_row.Work3.SubContractor.ContractorName if ms_row.Work3 and ms_row.Work3.SubContractor else None
-                report_line.start_build_time = ms_row.Work3.AgreementStartDateWork if ms_row.Work3 else None
-                report_line.end_build_time = ms_row.Work3.AgreementFinishDateWork if ms_row.Work3 else None
-                report_line.start_deliver_time = ms_row.Work4.AgreementStartDateWork if ms_row.Work4 else None
-                report_line.end_deliver_time = ms_row.Work4.AgreementFinishDateWork if ms_row.Work4 else None
+            # save info from focl_info
+            if focl_info:
+                report_line.cabling_plan = focl_info.cabling_plan
+                report_line.ap_plan = focl_info.access_point_plan
+                report_line.subcontr_name = focl_info.subcontr_name
+                report_line.start_build_time = focl_info.start_build_date
+                report_line.end_build_time = focl_info.end_build_date
+                report_line.start_deliver_time = focl_info.start_deliver_date
+                report_line.end_deliver_time = focl_info.end_deliver_date
+                
+                report_line.fosc_plan = focl_info.fosc_plan
+                report_line.cross_plan = focl_info.cross_plan
+                report_line.spec_trans_plan = focl_info.spec_trans_plan
+
+                report_line.region = focl_info.region_id
+                report_line.district = focl_info.district_id
             else:
-                LogEntry.warning('Not found mssql info for resource %s (external_id is %s)' % (report_line.id, report_line.external_id),
-                              component=COMP_ID,
-                              group=StatusReportReactor.identity)
+                LogEntry.warning('Not found ConstructObject info for resource %s' % fs.id,
+                              component=COMP_ID, group=StatusReportReactor.identity)
 
 
-            # save statistics
+            # save from built
             # --- cabling
-            # --- plan already set from mssql!
-            # --- get fact
-            fact_lyr = cls.get_layer_by_type(fs, 'real_optical_cable')
-            if fact_lyr:
-                fact_len = round(cls.get_feat_length(fact_lyr)/1000, 3)  # in km
-            else:
-                fact_len = None
-            report_line.cabling_fact = fact_len
-            # --- get percenatage
+            # --- --- get fact
+            focl_fact_val = ngw_session.query(func.sum(BuiltCable.cable_length))\
+                .filter(BuiltCable.resource_id == fs.id).scalar()
+            report_line.cabling_fact = round(focl_fact_val/1000.0, 3) if focl_fact_val else 0
+
+            # --- --- get percenatage
             if not report_line.cabling_plan:
                 report_line.cabling_plan = None
-            if report_line.cabling_plan is None or report_line.cabling_fact is None:
-                percent = None
-            elif report_line.cabling_plan == 0:
-                percent = None
-            else:
-                percent = round(report_line.cabling_fact/report_line.cabling_plan * 100)
-            report_line.cabling_percent = percent
+            report_line.cabling_percent = cls._get_percentage(report_line.cabling_plan, report_line.cabling_fact)
+
 
             # --- fosc
-            plan, fact, percent = cls.get_plan_fact_counts(fs, 'fosc', 'real_fosc')
-            report_line.fosc_plan = plan
-            report_line.fosc_fact = fact
-            report_line.fosc_percent = percent
+            # --- --- get fact
+            fosc_fact_val = ngw_session.query(func.sum(BuiltFosc.fosc_count))\
+                .filter(BuiltFosc.resource_id == fs.id).scalar()
+            report_line.fosc_fact = fosc_fact_val
+
+            # --- --- get percenatage
+            if not report_line.fosc_plan:
+                report_line.fosc_plan = None
+            report_line.fosc_percent = cls._get_percentage(report_line.fosc_plan, report_line.fosc_fact)
+
 
             # --- cross
-            plan, fact, percent = cls.get_plan_fact_counts(fs, 'optical_cross', 'real_optical_cross')
-            report_line.cross_plan = plan
-            report_line.cross_fact = fact
-            report_line.cross_percent = percent
+            # --- --- get fact
+            cross_fact_val = ngw_session.query(func.sum(BuiltOpticalCross.optical_cross_count))\
+                .filter(BuiltOpticalCross.resource_id == fs.id).scalar()
+            report_line.cross_fact = cross_fact_val
+
+            # --- --- get percenatage
+            if not report_line.cross_plan:
+                report_line.cross_plan = None
+            report_line.cross_percent = cls._get_percentage(report_line.cross_plan, report_line.cross_fact)
+
 
             # --- spec_trans
-            plan, fact, percent = cls.get_plan_fact_counts(fs, 'special_transition', 'real_special_transition')
-            report_line.spec_trans_plan = plan
-            report_line.spec_trans_fact = fact
-            report_line.spec_trans_percent = percent
+            # --- --- get fact
+            st_fact_val = ngw_session.query(func.sum(BuiltSpecTransition.spec_trans_count))\
+                .filter(BuiltSpecTransition.resource_id == fs.id).scalar()
+            report_line.spec_trans_fact = st_fact_val
+
+            # --- --- get percenatage
+            if not report_line.spec_trans_plan:
+                report_line.spec_trans_plan = None
+            report_line.spec_trans_percent = cls._get_percentage(report_line.spec_trans_plan, report_line.spec_trans_fact)
+
 
             # --- ap
-            # --- plan already set from mssql!
-            # --- get fact
-            fact_lyr = cls.get_layer_by_type(fs, 'real_access_point')
-            if fact_lyr:
-                fact_count = cls.get_feat_count(fact_lyr)
-            else:
-                fact_count = None
-            report_line.ap_fact = fact_count
-            # --- get percenatage
+            # --- --- get fact
+            ap_fact_val = ngw_session.query(func.sum(BuiltAccessPoint.access_point_count))\
+                .filter(BuiltAccessPoint.resource_id == fs.id).scalar()
+            report_line.ap_fact = ap_fact_val
+
+            # --- --- get percenatage
             if not report_line.ap_plan:
                 report_line.ap_plan = None
-            if report_line.ap_plan is None or report_line.ap_fact is None:
-                percent = None
-            elif report_line.ap_plan == 0:
-                percent = None
-            else:
-                percent = round(report_line.ap_fact/report_line.ap_plan * 100)
-            report_line.ap_percent = percent
+            report_line.ap_percent = cls._get_percentage(report_line.ap_plan, report_line.ap_fact)
+
 
             # save overdue status
             if report_line.end_build_time and \
@@ -157,89 +152,14 @@ class StatusReportReactor(AbstractReactor):
             ngw_session.flush()
 
         LogEntry.info('StatusReportReactor finished!', component=COMP_ID, group=StatusReportReactor.identity, append_dt=datetime.now())
-
         transaction.manager.commit()
 
     @classmethod
-    def get_layer_by_type(cls, focl_struct, lyr_type):
-        lyrs = [lyr for lyr in focl_struct.children if lyr.keyname and '_'.join(lyr.keyname.rsplit('_')[:-1]) == lyr_type]
-        lyr = lyrs[0] if len(lyrs) else None
-        return lyr
-
-
-    @classmethod
-    def get_feat_count(cls, layer):
-        #tableinfo = TableInfo.from_layer(layer)
-        #tableinfo.setup_metadata(tablename=layer._tablename)
-        #NgwSession.query(tableinfo.model).count()
-
-        query = layer.feature_query()
-        result = query()
-        return result.total_count or None
-
-
-    @classmethod
-    def get_plan_fact_counts(cls, focl_struct, plan_layer_name, fact_layer_name):
-        plan_lyr = cls.get_layer_by_type(focl_struct, plan_layer_name)
-        real_lyr = cls.get_layer_by_type(focl_struct, fact_layer_name)
-
-        if plan_lyr:
-            plan_count = cls.get_feat_count(plan_lyr)
-        else:
-            plan_count = None
-
-        if real_lyr:
-            real_count = cls.get_feat_count(real_lyr)
-        else:
-            real_count = None
-
-        if not plan_count:
-            plan_count = None
-        if real_count is None or plan_count is None:
+    def _get_percentage(cls, plan, fact):
+        if plan is None or fact is None:
             percent = None
-        elif plan_count == 0:
+        elif plan == 0:
             percent = None
         else:
-            percent = round(real_count/plan_count * 100)
-
-        return plan_count, real_count, percent
-
-
-    @classmethod
-    def get_feat_length(cls, layer):
-        query = layer.feature_query()
-        query.geom_length()
-        result = query()
-
-        if result.total_count < 1:
-            return 0  # or None?
-        else:
-            total_length = 0
-            for feat in result:
-                total_length += feat.calculations['geom_len']
-            return total_length
-
-
-    @classmethod
-    def get_plan_fact_length(cls, focl_struct, plan_layer_name, fact_layer_name):
-        plan_lyr = cls.get_layer_by_type(focl_struct, plan_layer_name)
-        real_lyr = cls.get_layer_by_type(focl_struct, fact_layer_name)
-
-        if plan_lyr:
-            plan_length = cls.get_feat_length(plan_lyr)
-        else:
-            plan_length = None
-
-        if real_lyr:
-            real_length = cls.get_feat_length(real_lyr)
-        else:
-            real_length = None
-
-        if real_length is None or plan_length is None:
-            percent = None
-        elif plan_length == 0:
-             percent = None
-        else:
-             percent = round(real_length/plan_length * 100)
-
-        return plan_length, real_length, percent
+            percent = round(fact/float(plan) * 100.0)
+        return percent
