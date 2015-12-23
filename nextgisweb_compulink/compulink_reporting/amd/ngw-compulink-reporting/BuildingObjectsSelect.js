@@ -49,11 +49,6 @@ define([
                         'Loading ...': 'Загружается...'
                     }
                 }
-                //'checkbox': {
-                //    'keep_selected_style': false,
-                //    'two_state': true
-                //}
-                //'plugins': ['checkbox', 'types', 'ui']
             });
 
             this._bindEvents();
