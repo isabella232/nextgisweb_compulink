@@ -64,7 +64,7 @@ define([
 ) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
     var GridClass = declare([Grid, DijitRegistry, CompoundColumns, ColumnResizer], {});
-    
+
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
         templateString: template,
@@ -228,10 +228,20 @@ define([
             domStyle.set(this._grid.domNode, "border", "none");
         },
 
+        _parametersType: 'district',
         _initializeTabs: function () {
-            jQuery('.tabs').tabtab({
-                startSlide: 1
+            var context = this,
+                $tabs = jQuery('.tabs').tabtab({
+                startSlide: 1,
+                useAnimations: false,
+                tabSwitched: function () {
+                    context._changeParametersType($tabs);
+                }
             });
+        },
+
+        _changeParametersType: function ($tabs) {
+            this._parametersType = $tabs.find('li.tabs__menu-item.active').data('parameters-type');
         },
 
         startup: function () {
@@ -297,10 +307,18 @@ define([
                 this.statusSelect.get('value'),
                 function(status) { return status !== '-'});
 
-            if (this.regionSelect.get('value') !== '-') {
-                value['region'] = this.regionSelect.get('value');
-                if (this.districtSelect.get('value') !== '-') {
-                    value['district'] = this.districtSelect.get('value');
+            value['parameters_type'] = this._parametersType;
+            if (this._parametersType === 'district') {
+                if (this.regionSelect.get('value') !== '-') {
+                    value['region'] = this.regionSelect.get('value');
+                    if (this.districtSelect.get('value') !== '-') {
+                        value['district'] = this.districtSelect.get('value');
+                    }
+                }
+            } else if (this._parametersType === 'project') {
+                if (this.buildingObjectsSelect.get('value')) {
+                    var resource_id = this.buildingObjectsSelect.get('value');
+                    value['resource_id'] = resource_id.replace('res_', '');
                 }
             }
 
