@@ -35,7 +35,8 @@ define([
     "ngw-compulink-reporting/DistrictSelect",
     "ngw-compulink-reporting/StatusSelect",
     "ngw-compulink-site/DisplayHeader",
-    "dijit/Toolbar"
+    "dijit/Toolbar",
+    "ngw-compulink-libs/tabtab/tabtab.min"
 ], function (
     declare,
     lang,
@@ -75,6 +76,8 @@ define([
 
         postCreate: function () {
             this.inherited(arguments);
+
+            this._initializeTabs();
 
             var w = this,
                 rs = w.regionSelect, rss = rs.store,
@@ -223,6 +226,12 @@ define([
 
             domStyle.set(this._grid.domNode, "height", "100%");
             domStyle.set(this._grid.domNode, "border", "none");
+        },
+
+        _initializeTabs: function () {
+            jQuery('.tabs').tabtab({
+                startSlide: 1
+            });
         },
 
         startup: function () {
