@@ -12,7 +12,7 @@ define([
     return declare([_WidgetBase, _TemplatedMixin], {
         templateString: template,
         $domNodeTree: null,
-        _selectedDivisionId: null,
+        value: null,
         $input: null,
         $treeWrapper: null,
 
@@ -112,7 +112,7 @@ define([
         _selectNode: function (node) {
             if (!node || !node.text) return false;
             this.$input.val(node.text);
-            this._selectedDivisionId = node.id;
+            this.value = node.id;
         },
 
         _showTree: function ($treeWrapper) {
@@ -129,10 +129,6 @@ define([
             $treeWrapperClick = $treeWrapper.on('click', function (event) {
                 event.stopPropagation();
             });
-        },
-
-        getDivision: function () {
-            return this._selectedDivisionId;
         }
     });
 });
