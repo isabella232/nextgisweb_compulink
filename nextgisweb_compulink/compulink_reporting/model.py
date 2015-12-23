@@ -20,11 +20,10 @@ class ConstructionStatusReport(Base):
 
     id = db.Column(db.Integer, primary_key=True)
     focl_res_id = db.Column(db.Integer, nullable=True)      # ИД ресурса объекта строительства
-    external_id = db.Column(db.Unicode, nullable=True)      # Внешний ИД (MSSQL)
 
     focl_name = db.Column(db.Unicode, nullable=True)        # Наименование ВОЛС
-    region = db.Column(db.Unicode, nullable=True)           # Субъект РФ
-    district = db.Column(db.Unicode, nullable=True)         # Муниципальный район
+    region = db.Column(db.Integer, nullable=True)           # Субъект РФ
+    district = db.Column(db.Integer, nullable=True)         # Муниципальный район
     status = db.Column(db.VARCHAR, nullable=True)           # Статус строительства
 
     subcontr_name = db.Column(db.Unicode, nullable=True)        # Подрядчик строительства

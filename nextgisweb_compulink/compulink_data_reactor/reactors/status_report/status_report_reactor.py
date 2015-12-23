@@ -52,7 +52,6 @@ class StatusReportReactor(AbstractReactor):
             
             # save info from resource
             report_line.focl_res_id = fs.id
-            report_line.external_id = fs.external_id
             report_line.focl_name = fs.display_name
             report_line.status = fs.status
 
