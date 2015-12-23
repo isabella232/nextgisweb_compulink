@@ -1,9 +1,20 @@
-.dijitTableLayout label { font-weight: bold; }
+.dijitTableLayout label {
+    font-weight: bold;
+}
 
-.dgrid-row  { height: 3em; }
-.dgrid-cell { white-space: normal; width: 5em; }
+.dgrid-row {
+    height: 3em;
+}
 
-.dgrid-header .dgrid-cell { text-align: center; }
+.dgrid-cell {
+    white-space: normal;
+    width: 5em;
+}
+
+.dgrid-header .dgrid-cell {
+    text-align: center;
+}
+
 .dgrid-content .dgrid-cell.field-start_build_time,
 .dgrid-content .dgrid-cell.field-end_build_time,
 .dgrid-content .dgrid-cell.field-cabling_plan,
@@ -20,15 +31,37 @@
 .dgrid-content .dgrid-cell.field-spec_trans_percent,
 .dgrid-content .dgrid-cell.field-ap_plan,
 .dgrid-content .dgrid-cell.field-ap_fact,
-.dgrid-content .dgrid-cell.field-ap_percent { text-align: center; }
+.dgrid-content .dgrid-cell.field-ap_percent {
+    text-align: center;
+}
 
-.field-focl_name { width: 14em; }
-.field-region { width: 14em; }
-.field-district { width: 14em; }
-.field-status { width: 10em; }
-.field-subcontr_name { width: 8em; }
-.field-start_build_time { width: 9em; }
-.field-end_build_time { width: 9em; }
+.field-focl_name {
+    width: 14em;
+}
+
+.field-region {
+    width: 14em;
+}
+
+.field-district {
+    width: 14em;
+}
+
+.field-status {
+    width: 10em;
+}
+
+.field-subcontr_name {
+    width: 8em;
+}
+
+.field-start_build_time {
+    width: 9em;
+}
+
+.field-end_build_time {
+    width: 9em;
+}
 
 .summary-row {
     font-weight: bold;
@@ -40,4 +73,75 @@
 .summary-row .dgrid-cell {
     text-align: center;
     border-color: #bbb !important;
+}
+
+/* controls pane styles */
+
+table.parameters-table td {
+    padding-right: 5px;
+}
+
+div.control-tabs ul.tabs__menu {
+    display: table;
+    padding: 0;
+    margin: 0 0 0 7px;
+ }
+
+div.control-tabs ul.tabs__menu li.tabs__menu-item {
+    display: table-cell;
+    padding-right: 5px;
+}
+
+div.control-tabs ul.tabs__menu li.tabs__menu-item a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 5px;
+    border: 1px #b5bcc7 solid;
+}
+
+div.control-tabs li.tabs__menu-item a {
+    background-color: white;
+}
+
+div.control-tabs li.tabs__menu-item.active a {
+    background: #ebf0f5; /* Old browsers */
+    background: -moz-linear-gradient(top, #ebf0f5 0%, #d5e0ea 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ebf0f5), color-stop(100%, #d5e0ea)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #ebf0f5 0%, #d5e0ea 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #ebf0f5 0%, #d5e0ea 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #ebf0f5 0%, #d5e0ea 100%); /* IE10+ */
+    background: linear-gradient(top, #ebf0f5 0%, #d5e0ea 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ebf0f5', endColorstr='#d5e0ea', GradientType=0); /* IE6-9 */
+}
+
+div.tabs__content-item {
+    position: relative !important;
+}
+
+div.tabs__content {
+    width: 337px;
+    border: 1px #b5bcc7 solid;
+    padding: 14px 4px 4px 4px;
+    margin-top: -12px;
+}
+
+div.control-block-group {
+    display: block;
+    margin: 2px 0;
+}
+
+div.control-inline-group {
+    display: inline-block;
+    margin: 2px 0;
+}
+
+div.control-block-group label,
+div.control-inline-group label {
+    display: inline-block;
+    min-width: 150px;
+}
+
+div.controls-right {
+    display: inline-block;
 }
