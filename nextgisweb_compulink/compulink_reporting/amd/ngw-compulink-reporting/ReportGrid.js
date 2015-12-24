@@ -35,8 +35,7 @@ define([
     "ngw-compulink-reporting/DistrictSelect",
     "ngw-compulink-reporting/StatusSelect",
     "ngw-compulink-site/DisplayHeader",
-    "dijit/Toolbar",
-    "ngw-compulink-libs/tabtab/tabtab.min"
+    "dijit/Toolbar"
 ], function (
     declare,
     lang,
@@ -76,8 +75,6 @@ define([
 
         postCreate: function () {
             this.inherited(arguments);
-
-            this._initializeTabs();
 
             var w = this,
                 rs = w.regionSelect, rss = rs.store,
@@ -228,22 +225,6 @@ define([
             domStyle.set(this._grid.domNode, "border", "none");
         },
 
-        _parametersType: 'district',
-        _initializeTabs: function () {
-            var context = this,
-                $tabs = jQuery('.tabs').tabtab({
-                startSlide: 1,
-                useAnimations: false,
-                tabSwitched: function () {
-                    context._changeParametersType($tabs);
-                }
-            });
-        },
-
-        _changeParametersType: function ($tabs) {
-            this._parametersType = $tabs.find('li.tabs__menu-item.active').data('parameters-type');
-        },
-
         startup: function () {
             this.inherited(arguments);
 
@@ -300,26 +281,25 @@ define([
             return totals;
         },
 
-        _getValueAttr: function() {
+        _getValueAttr: function () {
             var value = {};
 
             value['status'] = array.filter(
                 this.statusSelect.get('value'),
-                function(status) { return status !== '-'});
+                function (status) {
+                    return status !== '-'
+                });
 
-            value['parameters_type'] = this._parametersType;
-            if (this._parametersType === 'district') {
-                if (this.regionSelect.get('value') !== '-') {
-                    value['region'] = this.regionSelect.get('value');
-                    if (this.districtSelect.get('value') !== '-') {
-                        value['district'] = this.districtSelect.get('value');
-                    }
+            if (this.regionSelect.get('value') !== '-') {
+                value['region'] = this.regionSelect.get('value');
+                if (this.districtSelect.get('value') !== '-') {
+                    value['district'] = this.districtSelect.get('value');
                 }
-            } else if (this._parametersType === 'project') {
-                if (this.buildingObjectsSelect.get('value')) {
-                    var resource_id = this.buildingObjectsSelect.get('value');
-                    value['resource_id'] = resource_id.replace('res_', '');
-                }
+            }
+
+            if (this.buildingObjectsSelect.get('value')) {
+                var resource_id = this.buildingObjectsSelect.get('value');
+                value['resource_id'] = resource_id.replace('res_', '');
             }
 
             if (this.onlyOverdue.checked) {
