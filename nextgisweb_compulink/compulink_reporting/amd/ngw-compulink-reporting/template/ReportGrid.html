@@ -13,7 +13,13 @@
         <table class="parameters-table">
             <tr>
                 <td>
+                    <div class="control-block-group">
+                        <label for="buildingObjectsSelect">Проект</label>
 
+                        <div id="buildingObjectsSelect"
+                             data-dojo-attach-point="buildingObjectsSelect"
+                             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
+                    </div>
                     <div class="control-block-group">
                         <label for="regionSelect">Субъект РФ</label>
 
@@ -29,14 +35,6 @@
                              data-dojo-props="districts: dlist"
                              data-dojo-attach-point="districtSelect"
                              id="districtSelect" style=""></div>
-                    </div>
-
-                    <div class="control-block-group">
-                        <label for="buildingObjectsSelect">Проект</label>
-
-                        <div id="buildingObjectsSelect"
-                             data-dojo-attach-point="buildingObjectsSelect"
-                             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
                     </div>
                 </td>
                 <td>
