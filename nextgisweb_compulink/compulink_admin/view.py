@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from nextgisweb.resource import Widget, Resource
 from nextgisweb.vector_layer import VectorLayer
+from nextgisweb import dynmenu as dm
 
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED
@@ -33,6 +34,33 @@ def setup_pyramid(comp, config):
        is_applicable=lambda obj: isinstance(obj, FoclProject),
        template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
 
+
+    # menu in admin
+    class CompulinkAdminMenu(dm.DynItem):
+        def build(self, kwargs):
+            yield dm.Link(
+                self.sub('region_dict'), u'Справочник регионов',
+                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+            )
+            yield dm.Link(
+                self.sub('district_dict'), u'Справочник районов',
+                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+            )
+            yield dm.Link(
+                self.sub('project_dict'), u'Справочник проектов',
+                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+            )
+            yield dm.Link(
+                self.sub('const_obj_dict'), u'Справочник объектов строительства',
+                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+            )
+
+    CompulinkAdminMenu.__dynmenu__ = comp.env.pyramid.control_panel
+
+    comp.env.pyramid.control_panel.add(
+        dm.Label('compulink_admin', u'Компьюлинк. Администрирование'),
+        CompulinkAdminMenu('compulink_admin'),
+    )
 
 # TODO: NEED BIG REFACTORING!!!!
 
