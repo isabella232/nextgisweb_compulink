@@ -21,7 +21,6 @@ div.districts-select {
 div.districts-select input {
     width: 100%;
     height: 15px;
-    padding: 1px;
     border-radius: 0;
     border: 1px #b5bcc7 solid;
 }
@@ -35,7 +34,7 @@ div.districts-select div.dijitArrowButton {
     position: absolute;
     display: block;
     top: 0;
-    right: -4px;
+    right: -2px;
     width: 17px;
     height: 17px;
     border: 1px #b5bcc7 solid;
