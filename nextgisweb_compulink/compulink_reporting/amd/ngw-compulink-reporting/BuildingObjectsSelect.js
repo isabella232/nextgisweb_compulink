@@ -31,7 +31,7 @@ define([
                         'icons': false
                     },
                     'data': {
-                        'url': ngwConfig.applicationUrl + '/compulink/resources/child',
+                        'url': ngwConfig.applicationUrl + '/compulink/reporting/resources/child',
                         'data': lang.hitch(this, function (node) {
                             return this._getJsTreeQuery(node);
                         }),
