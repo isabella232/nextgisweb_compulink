@@ -10,102 +10,33 @@
          data-dojo-props="region: 'top'"
          style="margin-bottom: 0; overflow:auto">
 
-        <!--<div class="control-tabs">-->
-        <!--<div class="tabs" role="tabs">-->
-        <!--<ul class="tabs__menu">-->
-        <!--<li class="tabs__menu-item"><a href="#">По району</a></li>-->
-        <!--<li class="tabs__menu-item"><a href="#">По проекту</a></li>-->
-        <!--</ul>-->
-        <!--<div class="tabs__content">-->
-        <!--<div class="tabs__content-item">-->
-        <!--<div class="control-block-group">-->
-        <!--<label for="regionSelect">Субъект РФ</label>-->
-
-        <!--<div data-dojo-attach-point="regionSelect"-->
-        <!--data-dojo-type="ngw-compulink-reporting/RegionSelect"-->
-        <!--data-dojo-props="regions: rlist"-->
-        <!--id="regionSelect" style=""></div>-->
-        <!--</div>-->
-        <!--<div class="control-block-group">-->
-        <!--<label for="regionSelect">Район</label>-->
-
-        <!--<div data-dojo-type="ngw-compulink-reporting/DistrictSelect"-->
-        <!--data-dojo-props="districts: dlist"-->
-        <!--data-dojo-attach-point="districtSelect"-->
-        <!--id="districtSelect" style=""></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--<div class="tabs__content-item">-->
-        <!--<div class="control-block-group">-->
-        <!--<label for="buildingObjectsSelect">Проект</label>-->
-
-        <!--<div id="buildingObjectsSelect"-->
-        <!--data-dojo-attach-point="buildingObjectsSelect"-->
-        <!--data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</div>-->
-
-        <!--<div class="controls-right">-->
-        <!--<div class="control-block-group">-->
-        <!--<label for="statusSelect">Статус</label>-->
-
-        <!--<div data-dojo-attach-point="statusSelect"-->
-        <!--data-dojo-type="ngw-compulink-reporting/StatusSelect"-->
-        <!--id="statusSelect" style=""></div>-->
-        <!--</div>-->
-        <!--<div class="control-block-group">-->
-        <!--<label for="onlyOverdue">Только просроченные</label>-->
-
-        <!--<div data-dojo-type="dijit/form/CheckBox"-->
-        <!--data-dojo-attach-point="onlyOverdue"-->
-        <!--data-dojo-props="value: true"-->
-        <!--id="onlyOverdue"></div>-->
-        <!--</div>-->
-        <!--</div>-->
-
-
         <table class="parameters-table">
             <tr>
                 <td>
-                    <div class="control-tabs">
-                        <div class="tabs" role="tabs">
-                            <ul class="tabs__menu">
-                                <li class="tabs__menu-item" data-parameters-type="district"><a href="#">По району</a></li>
-                                <li class="tabs__menu-item" data-parameters-type="project"><a href="#">По проекту</a></li>
-                            </ul>
-                            <div class="tabs__content">
-                                <div class="tabs__content-item">
-                                    <div class="control-block-group">
-                                        <label for="regionSelect">Субъект РФ</label>
 
-                                        <div data-dojo-attach-point="regionSelect"
-                                             data-dojo-type="ngw-compulink-reporting/RegionSelect"
-                                             data-dojo-props="regions: rlist"
-                                             id="regionSelect" style=""></div>
-                                    </div>
-                                    <div class="control-block-group">
-                                        <label for="regionSelect">Район</label>
+                    <div class="control-block-group">
+                        <label for="regionSelect">Субъект РФ</label>
 
-                                        <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
-                                             data-dojo-props="districts: dlist"
-                                             data-dojo-attach-point="districtSelect"
-                                             id="districtSelect" style=""></div>
-                                    </div>
-                                </div>
-                                <div class="tabs__content-item">
-                                    <div class="control-block-group">
-                                        <label for="buildingObjectsSelect">Проект</label>
+                        <div data-dojo-attach-point="regionSelect"
+                             data-dojo-type="ngw-compulink-reporting/RegionSelect"
+                             data-dojo-props="regions: rlist"
+                             id="regionSelect" style=""></div>
+                    </div>
+                    <div class="control-block-group">
+                        <label for="regionSelect">Район</label>
 
-                                        <div id="buildingObjectsSelect"
-                                             data-dojo-attach-point="buildingObjectsSelect"
-                                             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
+                             data-dojo-props="districts: dlist"
+                             data-dojo-attach-point="districtSelect"
+                             id="districtSelect" style=""></div>
+                    </div>
+
+                    <div class="control-block-group">
+                        <label for="buildingObjectsSelect">Проект</label>
+
+                        <div id="buildingObjectsSelect"
+                             data-dojo-attach-point="buildingObjectsSelect"
+                             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
                     </div>
                 </td>
                 <td>
@@ -134,13 +65,7 @@
                             type="button">Выгрузить в Excel
                     </button>
                 </td>
-                <td>
-
-                </td>
             </tr>
         </table>
-
-
     </div>
-
 </div>
