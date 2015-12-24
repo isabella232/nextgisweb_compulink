@@ -8,6 +8,7 @@ from openpyxl.styles.numbers import FORMAT_PERCENTAGE
 from os import path
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response, FileResponse
+from pyramid.view import view_config
 from sqlalchemy import func
 from nextgisweb import DBSession
 from sqlalchemy.orm import joinedload_all
@@ -21,6 +22,7 @@ from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, 
 from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from view_ucn import add_routes
+from nextgisweb_compulink.compulink_site import view as compulink_site_view
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -43,6 +45,12 @@ def setup_pyramid(comp, config):
         '/compulink/reporting/export_status_report',
         client=()) \
         .add_view(export_status_report)
+
+    config.add_route(
+        'compulink.reporting.building_objects',
+        '/compulink/reporting/resources/child',
+        client=()) \
+        .add_view(get_child_resx_by_parent)
 
     add_routes(config)
 
@@ -400,3 +408,31 @@ def get_user_accessible_structs(user):
             districts.append(district)
 
     return regions, districts
+
+
+@view_config(renderer='json')
+def get_child_resx_by_parent(request):
+    response = compulink_site_view.get_child_resx_by_parent(request)
+
+    if request.params.get('id', None) != '#':
+        return response
+
+    response_json = response.json
+
+    for res_item in response_json:
+        res_item['state'] = {'disabled': False}
+
+    root_object = [{
+        'res_type': 'focl_project',
+        'text': u'Все',
+        'has_children': True,
+        'a_attr': {'chb': True},
+        'children': response_json,
+        'id': 'res_root',
+        'icon': 'focl_project',
+        'state': {
+            'opened': True
+        }
+    }]
+
+    return Response(json.dumps(root_object))
