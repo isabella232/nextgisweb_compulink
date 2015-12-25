@@ -15,10 +15,11 @@ from sqlalchemy.orm import joinedload_all
 from .model import ConstructionStatusReport
 from nextgisweb.pyramid import viewargs
 from nextgisweb.resource import DataScope, ResourceGroup
-from nextgisweb.resource.model import ResourceACLRule
+from nextgisweb.resource.model import ResourceACLRule, Resource
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
-from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED
+from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED, \
+    ConstructObject
 from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from view_ucn import add_routes
@@ -347,6 +348,7 @@ def construct_query(request):
     district_filter = request.params.get('district', None)
     overdue_filter = request.params.get('only_overdue', False)
     status_filter = request.params.getall('status')
+    project_filter = request.params.get('resource_id', None)
 
     report_query = DBSession.query(ConstructionStatusReport)
     if region_filter:
@@ -358,6 +360,10 @@ def construct_query(request):
 
     report_query = report_query.filter(ConstructionStatusReport.status.in_(status_filter))
 
+    if project_filter and project_filter != 'root':
+        project_res_ids = get_project_focls(project_filter)
+        report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(project_res_ids))
+
     if not request.user.is_administrator:
         allowed_res_ids = get_user_writable_focls(request.user)
         report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
@@ -366,6 +372,23 @@ def construct_query(request):
 
     return report_query
 
+def get_project_focls(resource_id):
+    try:
+        root_res = DBSession.query(Resource).\
+            filter(Resource.id == resource_id).\
+            options(joinedload_all(Resource.children)).one()
+    except:
+        return []
+
+    focl_ids = []
+    def get_childs_recursive(resource):
+        focl_ids.append(resource.id)
+        if resource.identity in [ResourceGroup.identity, FoclProject.identity]:
+            for child in resource.children:
+                get_childs_recursive(child)
+    get_childs_recursive(root_res)
+
+    return focl_ids
 
 def get_user_writable_focls(user):
     # get explicit rules
@@ -392,11 +415,11 @@ def get_user_writable_focls(user):
 
 
 def get_user_accessible_structs(user):
-    query = DBSession.query(FoclStruct.region, FoclStruct.district)
+    query = DBSession.query(ConstructObject.region_id, ConstructObject.district_id)
 
     if not user.is_administrator:
         res_ids = get_user_writable_focls(user)
-        query = query.filter(FoclStruct.id.in_(res_ids))
+        query = query.filter(ConstructObject.id.in_(res_ids))
 
     regions = []
     districts = []

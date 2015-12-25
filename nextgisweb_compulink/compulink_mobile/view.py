@@ -10,8 +10,7 @@ from sqlalchemy.orm import joinedload
 
 from nextgisweb import DBSession
 from ..compulink_admin.model import FoclStruct, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT, PROJECT_STATUS_BUILT, \
-    PROJECT_STATUSES
-from ..compulink_admin.view import get_region_name, get_district_name
+    PROJECT_STATUSES, ConstructObject, Region, District
 from nextgisweb.resource import DataScope
 from nextgisweb_lookuptable.model import LookupTable
 
@@ -76,21 +75,33 @@ def get_user_focl_list(request):
     resources = dbsession.query(FoclStruct).options(joinedload('children'))\
         .filter(FoclStruct.status.in_([PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_PROJECT])).all()
 
+
+    co = dbsession.query(ConstructObject.resource_id, Region.name, District.name)\
+            .join(ConstructObject.region)\
+            .join(ConstructObject.district)\
+            .all()
+
+    co_dict = {c[0]: (c[1], c[2]) for c in co}
+
     focl_list = []
     for resource in resources:
         if not resource.has_permission(DataScope.write, request.user):
             continue
 
         #name shorter
-        region_name = get_region_name(resource.region)
-        if region_name:
-            for shortcut in regions_shortcuts:
-                region_name = region_name.replace(shortcut[0], shortcut[1])
+        if resource.id in co_dict.keys():
+            region_name = co_dict[resource.id][0]
+            if region_name:
+                for shortcut in regions_shortcuts:
+                    region_name = region_name.replace(shortcut[0], shortcut[1])
 
-        dist_name = get_district_name(resource.district)
-        if dist_name:
-            for shortcut in district_shortcuts:
-                dist_name = dist_name.replace(shortcut[0], shortcut[1])
+            dist_name = co_dict[resource.id][1]
+            if dist_name:
+                for shortcut in district_shortcuts:
+                    dist_name = dist_name.replace(shortcut[0], shortcut[1])
+        else:
+            region_name = ''
+            dist_name = ''
 
         focl = {
             'id': resource.id,
