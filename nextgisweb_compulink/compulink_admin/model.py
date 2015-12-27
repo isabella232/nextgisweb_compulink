@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-
 import types
 import uuid
 import codecs
 from sqlalchemy import ForeignKey, event
 from sqlalchemy.orm import relationship
-
 from nextgisweb import db
-
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer, DataScope, ResourceScope, Resource)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
@@ -19,12 +16,9 @@ from nextgisweb.wfsserver import Service as WfsService
 from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
 from nextgisweb_mapserver.model import MapserverStyle
-
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
     PROJECT_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT
-
 from nextgisweb.resource import SerializedProperty as SP, SerializedRelationship as SR
-
 
 Base = declarative_base()
 
@@ -39,13 +33,14 @@ _PROJECT_STATUS_FINISHED = 'finished'
 
 PROJECT_STATUSES = (PROJECT_STATUS_PROJECT, PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED)
 
+
 class FoclProject(Base, ResourceGroup):
     identity = 'focl_project'
     cls_display_name = "Проект"
 
     @classmethod
     def check_parent(cls, parent):
-        #tree review for unsupported parents
+        # tree review for unsupported parents
         parent_temp = parent
         while parent_temp:
             for unsupported_res in [FoclProject, FoclStruct, SituationPlan]:
@@ -62,7 +57,7 @@ class FoclProjectSerializer(Serializer):
     def deserialize(self, *args, **kwargs):
         super(FoclProjectSerializer, self).deserialize(*args, **kwargs)
 
-        #инсерт объекта в БД
+        # object insert in db
         if not self.obj.id:
             self.create_focl_project_content(self.obj)
 
@@ -83,14 +78,15 @@ class FoclStruct(Base, ResourceGroup):
     region = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Регионы
     district = db.Column(db.Unicode, nullable=True)  # Справочник, как слой: Муниципальный район
     external_id = db.Column(db.Unicode, nullable=True)  # Внешний идентификатор
-    status = db.Column(db.Enum(PROJECT_STATUSES, native_enum=False), default=PROJECT_STATUS_PROJECT, nullable=True)  # Статус (проект, идет строительство, построена)
+    status = db.Column(db.Enum(PROJECT_STATUSES, native_enum=False), default=PROJECT_STATUS_PROJECT,
+                       nullable=True)  # Статус (проект, идет строительство, построена)
     status_upd_user = db.Column(db.Boolean, default=False)  # Статус обновлен пользователем
     status_upd_dt = db.Column(db.DateTime, nullable=True)
-
 
     @classmethod
     def check_parent(cls, parent):
         return isinstance(parent, FoclProject)
+
 
 P_DS_READ = DataScope.read
 P_DS_WRITE = DataScope.write
@@ -110,7 +106,7 @@ class FoclStructSerializer(Serializer):
     def deserialize(self, *args, **kwargs):
         super(FoclStructSerializer, self).deserialize(*args, **kwargs)
 
-        #инсерт объекта в БД
+        # object insert in db
         if not self.obj.id:
             self.create_focl_struct_content(self.obj)
             self.add_to_registry(self.obj)
@@ -136,11 +132,12 @@ class FoclStructSerializer(Serializer):
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 ModelsUtils.append_lyr_to_wfs(wfs_service, vector_layer, vl_name)
                 mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
-                web_map_items.append(ModelsUtils.create_web_map_item(mapserver_style, json_layer_struct['resource']['display_name']))
+                web_map_items.append(
+                    ModelsUtils.create_web_map_item(mapserver_style, json_layer_struct['resource']['display_name']))
 
         wfs_service.persist()
 
-        #add inverted list of layers to webmap
+        # add inverted list of layers to webmap
         web_map_items.reverse()
         i = 1
         for item in web_map_items:
@@ -188,7 +185,7 @@ class SituationPlanSerializer(Serializer):
     def deserialize(self, *args, **kwargs):
         super(SituationPlanSerializer, self).deserialize(*args, **kwargs)
 
-        #инсерт объекта в БД
+        # инсерт объекта в БД
         if not self.obj.id:
             self.create_situation_plan_content(self.obj)
 
@@ -211,10 +208,7 @@ class SituationPlanSerializer(Serializer):
         wfs_service.persist()
 
 
-
-
 class ModelsUtils():
-
     @classmethod
     def create_vector_layer(cls, parent_obj, json_layer_struct, layer_name):
         from nextgisweb.resource.serialize import CompositeSerializer  # only where!!!
@@ -246,7 +240,7 @@ class ModelsUtils():
         wfs_layer.service = wfs_service
         wfs_layer.resource = vector_layer
         wfs_service.layers.append(wfs_layer)
-        #wfs_layer.persist()
+        # wfs_layer.persist()
 
     @classmethod
     def create_web_map_item(cls, mapserver_style, display_name):
@@ -260,14 +254,14 @@ class ModelsUtils():
 
     @classmethod
     def set_default_style(cls, vector_layer, keyname, style_name):
-        def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname+'.xml')
+        def_style_path = os.path.join(LAYERS_DEF_STYLES_PATH, keyname + '.xml')
 
         if not os.path.exists(def_style_path):
             return  # Need to set common point\line\polygon style
 
-        #elem = etree.parse(def_style_path).getroot()
-        #dst = qml.transform(elem)
-        #mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
+        # elem = etree.parse(def_style_path).getroot()
+        # dst = qml.transform(elem)
+        # mapserver_xml = etree.tostring(dst, pretty_print=True, encoding=unicode)
 
         with open(def_style_path) as f:
             mapserver_xml = f.read()
@@ -284,7 +278,8 @@ class ModelsUtils():
         if '_project_cache' not in cls.__dict__.keys():
             db_session = DBSession()
             projects = db_session.query(Project).all()
-            cls._project_cache = {project.root_resource_id: project for project in projects if project.root_resource_id is not None}
+            cls._project_cache = {project.root_resource_id: project for project in projects if
+                                  project.root_resource_id is not None}
 
         res = resource
         while res:
@@ -332,8 +327,8 @@ class Project(Base):
 
     root_resource = relationship(
         Resource,
-        foreign_keys=[root_resource_id,],
-        primaryjoin= root_resource_id == Resource.id,
+        foreign_keys=[root_resource_id, ],
+        primaryjoin=root_resource_id == Resource.id,
         lazy='joined'
     )
 
@@ -371,13 +366,13 @@ class ConstructObject(Base):
     project = relationship(Project)
 
 
-
-#---- Metadata and scheme staff
+# ---- Metadata and scheme staff
 
 def tometadata_event(self, metadata):
     result = db.Table.tometadata(self, metadata)
     event.listen(result, "before_create", db.DDL('CREATE SCHEMA IF NOT EXISTS compulink;'))
     return result
+
 
 Region.__table__.tometadata = types.MethodType(tometadata_event, Region.__table__)
 District.__table__.tometadata = types.MethodType(tometadata_event, District.__table__)
