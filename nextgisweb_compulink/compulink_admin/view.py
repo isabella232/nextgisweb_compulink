@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from sqlalchemy import and_
-
 from nextgisweb import DBSession
 from nextgisweb.resource import Widget, Resource
 from nextgisweb import dynmenu as dm
-
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED, Region, District
 
@@ -30,12 +27,11 @@ class SituationPlanWidget(Widget):
 
 
 def setup_pyramid(comp, config):
-    #Регистрируем секцую Проект строительства ВОЛС в Групповом ресурсе
+    # Регистрируем секцую Проект строительства ВОЛС в Групповом ресурсе
     Resource.__psection__.register(
-       key='focl_project', priority=10,
-       is_applicable=lambda obj: isinstance(obj, FoclProject),
-       template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
-
+        key='focl_project', priority=10,
+        is_applicable=lambda obj: isinstance(obj, FoclProject),
+        template='nextgisweb_compulink:compulink_admin/template/focl_project_section.mako')
 
     # menu in admin
     class CompulinkAdminMenu(dm.DynItem):
@@ -64,8 +60,8 @@ def setup_pyramid(comp, config):
         CompulinkAdminMenu('compulink_admin'),
     )
 
-# TODO: NEED BIG REFACTORING!!!!
 
+# todo: NEED BIG REFACTORING!!!!
 def get_regions_from_resource(as_dict=False, sort=False):
     session = DBSession()
     regions = session.query(Region).all()
@@ -80,7 +76,6 @@ def get_regions_from_resource(as_dict=False, sort=False):
 
 
 def get_region_name(reg_id):
-
     if not reg_id:
         return ''
 
@@ -92,7 +87,6 @@ def get_region_name(reg_id):
         return region.name if region else None
     except:
         return None
-
 
 
 def get_region_id(reg_short_name):
@@ -109,9 +103,7 @@ def get_region_id(reg_short_name):
         return None
 
 
-
 def get_districts_from_resource(as_dict=False, sort=False):
-
     session = DBSession()
     districts = session.query(District).all()
     features = [{'name': dist.name, 'id': dist.id, 'parent_id': dist.region_id} for dist in districts]
@@ -138,7 +130,6 @@ def get_district_name(distr_id):
         return None
 
 
-
 def get_district_id(distr_short_name, parent_id):
     if not distr_short_name:
         return None
@@ -147,17 +138,19 @@ def get_district_id(distr_short_name, parent_id):
 
     # receive values
     try:
-        dist = session.query(District).filter(and_(District.short_name == distr_short_name, District.region_id==parent_id)).one()
+        dist = session.query(District).filter(
+            and_(District.short_name == distr_short_name, District.region_id == parent_id)).one()
         return dist.id if dist else None
     except:
         return None
 
+
 def get_project_statuses(as_dict=False):
     statuses = [
-            {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
-            {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
-            {'name': 'Построено', 'id': PROJECT_STATUS_BUILT},
-            {'name': 'Сдано заказчику', 'id': PROJECT_STATUS_DELIVERED},
+        {'name': 'Строительство не начато', 'id': PROJECT_STATUS_PROJECT},
+        {'name': 'Идет строительство', 'id': PROJECT_STATUS_IN_PROGRESS},
+        {'name': 'Построено', 'id': PROJECT_STATUS_BUILT},
+        {'name': 'Сдано заказчику', 'id': PROJECT_STATUS_DELIVERED},
     ]
 
     if as_dict:
