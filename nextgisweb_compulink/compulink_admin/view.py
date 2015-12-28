@@ -4,6 +4,7 @@ from sqlalchemy import and_
 from nextgisweb import DBSession
 from nextgisweb.resource import Widget, Resource
 from nextgisweb import dynmenu as dm
+from .view_reference_books import add_routes
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED, Region, District
 
@@ -38,19 +39,19 @@ def setup_pyramid(comp, config):
         def build(self, kwargs):
             yield dm.Link(
                 self.sub('region_dict'), u'Справочник регионов',
-                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.region', page=0)
             )
             yield dm.Link(
                 self.sub('district_dict'), u'Справочник районов',
-                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.district', page=0)
             )
             yield dm.Link(
                 self.sub('project_dict'), u'Справочник проектов',
-                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.project', page=0)
             )
             yield dm.Link(
                 self.sub('const_obj_dict'), u'Справочник объектов строительства',
-                lambda kwargs: kwargs.request.route_url('log.message.browse', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.construct_object', page=0)
             )
 
     CompulinkAdminMenu.__dynmenu__ = comp.env.pyramid.control_panel
@@ -59,6 +60,8 @@ def setup_pyramid(comp, config):
         dm.Label('compulink_admin', u'Компьюлинк. Администрирование'),
         CompulinkAdminMenu('compulink_admin'),
     )
+
+    add_routes(config)
 
 
 # todo: NEED BIG REFACTORING!!!!
