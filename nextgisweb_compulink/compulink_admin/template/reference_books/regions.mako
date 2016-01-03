@@ -3,7 +3,7 @@
 <% import json %>
 
 <script>
-    var gridConfigStore = ${gridConfigStore | json.dumps, n};
+    var columnsSettings = ${columnsSettings | json.dumps, n};
     require([
         'dojo/parser',
         'dojo/ready'
@@ -18,4 +18,4 @@
 <h1>${title}</h1>
 
 <div data-dojo-type="ngw-compulink-admin/reference_books/Regions"
-     data-dojo-props="config: gridConfigStore"></div>
+     data-dojo-props="config: columnsSettings"></div>
