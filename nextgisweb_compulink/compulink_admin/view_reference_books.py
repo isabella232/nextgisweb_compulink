@@ -37,9 +37,9 @@ regions_data_grid = [
     {
         'data-property': 'id',
         'grid-property': 'id',
-        'name': 'Номер',
+        'name': 'Идентификатор',
         'cell-prop': {
-            'width': '20%'
+
         }
     },
     {
@@ -47,7 +47,9 @@ regions_data_grid = [
         'grid-property': 'name',
         'name': 'Название',
         'cell-prop': {
-            'width': '20%'
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
         }
     },
     {
@@ -55,7 +57,9 @@ regions_data_grid = [
         'grid-property': 'short_name',
         'name': 'Краткое название',
         'cell-prop': {
-            'width': '20%'
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
         }
     },
     {
@@ -63,7 +67,9 @@ regions_data_grid = [
         'grid-property': 'region_code',
         'name': 'Код региона',
         'cell-prop': {
-            'width': '20%'
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
         }
     }
 ]
@@ -71,18 +77,18 @@ regions_data_grid = [
 
 @viewargs(renderer='nextgisweb_compulink:compulink_admin/template/reference_books/regions.mako')
 def get_region_page(request):
-    grid_config_store = []
+    columns_settings = []
     for config_item in regions_data_grid:
         grid_config_store_item = {
-            'name': config_item['name'],
+            'label': config_item['name'],
             'field': config_item['grid-property']
         }
         grid_config_store_item.update(config_item['cell-prop'])
-        grid_config_store.append(grid_config_store_item)
+        columns_settings.append(grid_config_store_item)
 
     return {
         'title': u'Справочник регионов',
-        'gridConfigStore': grid_config_store,
+        'columnsSettings': columns_settings,
         'dynmenu': request.env.pyramid.control_panel
     }
 
@@ -91,16 +97,17 @@ def get_region_page(request):
 def get_regions(request):
     session = DBSession()
 
-    regions = session.query(Region)
+    domain_class = Region
+    regions = session.query(domain_class)
 
     sort_keys = filter(lambda k: 'sort(' in k, request.GET.keys())
     if sort_keys:
         dojo_order, grid_field_name = re.findall('.+([+,-])(\w+)', request.query_string)[0]
         field_name = filter(lambda x: x['grid-property'] == grid_field_name, regions_data_grid)[0]['data-property']
         if dojo_order == '+':
-            regions = regions.order_by(Region.__table__.c[field_name].asc())
+            regions = regions.order_by(domain_class.__table__.c[field_name].asc())
         elif dojo_order == '-':
-            regions = regions.order_by(Region.__table__.c[field_name].desc())
+            regions = regions.order_by(domain_class.__table__.c[field_name].desc())
 
     grid_range = None
     if 'Range' in request.headers:
@@ -118,7 +125,7 @@ def get_regions(request):
     response = Response(json.dumps(result))
 
     if grid_range:
-        count_all_rows = session.query(func.count(Region.id)).scalar()
+        count_all_rows = session.query(func.count(domain_class.id)).scalar()
         response.headers[str('Content-Range')] = str(grid_range + '/' + str(count_all_rows))
 
     return response
