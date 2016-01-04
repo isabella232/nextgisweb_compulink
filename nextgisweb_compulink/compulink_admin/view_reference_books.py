@@ -37,7 +37,7 @@ regions_data_grid = [
     {
         'data-property': 'id',
         'grid-property': 'id',
-        'name': 'Идентификатор',
+        'label': 'Идентификатор',
         'cell-prop': {
 
         }
@@ -45,7 +45,7 @@ regions_data_grid = [
     {
         'data-property': 'name',
         'grid-property': 'name',
-        'name': 'Название',
+        'label': 'Название',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -55,7 +55,7 @@ regions_data_grid = [
     {
         'data-property': 'short_name',
         'grid-property': 'short_name',
-        'name': 'Краткое название',
+        'label': 'Краткое название',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -65,7 +65,7 @@ regions_data_grid = [
     {
         'data-property': 'region_code',
         'grid-property': 'region_code',
-        'name': 'Код региона',
+        'label': 'Код региона',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -80,7 +80,7 @@ def get_region_page(request):
     columns_settings = []
     for config_item in regions_data_grid:
         grid_config_store_item = {
-            'label': config_item['name'],
+            'label': config_item['label'],
             'field': config_item['grid-property']
         }
         grid_config_store_item.update(config_item['cell-prop'])
