@@ -4,7 +4,7 @@ from sqlalchemy import and_
 from nextgisweb import DBSession
 from nextgisweb.resource import Widget, Resource
 from nextgisweb import dynmenu as dm
-from .view_reference_books import add_routes
+from reference_books import routes as reference_books_routes
 from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED, Region, District
 
@@ -61,7 +61,7 @@ def setup_pyramid(comp, config):
         CompulinkAdminMenu('compulink_admin'),
     )
 
-    add_routes(config)
+    reference_books_routes.initialize(config)
 
 
 # todo: NEED BIG REFACTORING!!!!
