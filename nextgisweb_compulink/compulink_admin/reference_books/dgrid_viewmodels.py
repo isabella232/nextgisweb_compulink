@@ -42,3 +42,35 @@ regions_dgrid_viewmodel = [
         }
     }
 ]
+
+
+districts_dgrid_viewmodel = [
+    {
+        'data-property': 'id',
+        'grid-property': 'id',
+        'label': 'Идентификатор',
+        'cell-prop': {
+
+        }
+    },
+    {
+        'data-property': 'name',
+        'grid-property': 'name',
+        'label': 'Название',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'short_name',
+        'grid-property': 'short_name',
+        'label': 'Краткое название',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    }
+]

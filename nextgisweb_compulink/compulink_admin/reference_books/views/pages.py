@@ -5,7 +5,8 @@ from nextgisweb import DBSession
 from nextgisweb.resource import Widget, Resource
 from nextgisweb import dynmenu as dm
 from nextgisweb.pyramid import viewargs
-from ..viewmodels.regions import regions_dgrid_viewmodel
+
+from ..dgrid_viewmodels import *
 from pyramid.response import Response
 from nextgisweb_compulink.compulink_admin.model import Region
 import re
@@ -15,6 +16,25 @@ import transaction
 
 @viewargs(renderer='nextgisweb_compulink:compulink_admin/reference_books/templates/regions.mako')
 def get_region_page(request):
+    dgrid_columns_config = []
+    regions = []
+    for field_config_item in regions_dgrid_viewmodel:
+        dgrid_column_config = {
+            'label': field_config_item['label'],
+            'field': field_config_item['grid-property']
+        }
+        dgrid_column_config.update(field_config_item['cell-prop'])
+        dgrid_columns_config.append(dgrid_column_config)
+
+    return {
+        'title': u'Справочник регионов',
+        'columnsSettings': dgrid_columns_config,
+        'dynmenu': request.env.pyramid.control_panel
+    }
+
+
+@viewargs(renderer='nextgisweb_compulink:compulink_admin/reference_books/templates/districts.mako')
+def get_district_page(request):
     columns_settings = []
     for config_item in regions_dgrid_viewmodel:
         grid_config_store_item = {
@@ -28,13 +48,6 @@ def get_region_page(request):
         'title': u'Справочник регионов',
         'columnsSettings': columns_settings,
         'dynmenu': request.env.pyramid.control_panel
-    }
-
-
-@viewargs(renderer='nextgisweb_compulink:compulink_admin/reference_books/templates/districts.mako')
-def get_district_page(request):
-    return {
-        'title': u'Справочник районов'
     }
 
 

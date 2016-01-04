@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from sqlalchemy import and_, func
+
+import json
+import re
+
+import transaction
 from nextgisweb import DBSession
-from nextgisweb.resource import Widget, Resource
-from nextgisweb import dynmenu as dm
 from nextgisweb.pyramid import viewargs
 from pyramid.response import Response
+from sqlalchemy import func
+
 from nextgisweb_compulink.compulink_admin.model import Region
-from ..viewmodels.regions import regions_dgrid_viewmodel
-import re
-import json
-import transaction
+from ..dgrid_viewmodels import *
 
 
 @viewargs(renderer='json')
@@ -40,7 +41,8 @@ def get_regions(request):
     for region in regions:
         result_item = {}
         for item_config in regions_dgrid_viewmodel:
-            result_item[item_config['grid-property']] = region.__getattribute__(item_config['data-property'])
+            result_item[item_config['grid-property']] = \
+                region.__getattribute__(item_config['data-property'])
         result.append(result_item)
 
     response = Response(json.dumps(result))
@@ -67,7 +69,8 @@ def get_region(request):
 
     result = {}
     for item_config in regions_dgrid_viewmodel:
-        result[item_config['grid-property']] = region.__getattribute__(item_config['data-property'])
+        result[item_config['grid-property']] = \
+            region.__getattribute__(item_config['data-property'])
 
     return Response(json.dumps(result))
 
@@ -78,7 +81,8 @@ def put_region(request):
 
     item_updatable = {}
     for item_config in regions_dgrid_viewmodel:
-        item_updatable[item_config['data-property']] = request.json[item_config['grid-property']]
+        item_updatable[item_config['data-property']] = \
+            request.json[item_config['grid-property']]
 
     session = DBSession()
     session.query(Region).filter(Region.id == region_id).update(item_updatable)
