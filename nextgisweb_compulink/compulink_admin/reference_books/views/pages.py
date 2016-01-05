@@ -36,7 +36,7 @@ def get_region_page(request):
 @viewargs(renderer='nextgisweb_compulink:compulink_admin/reference_books/templates/districts.mako')
 def get_district_page(request):
     columns_settings = []
-    for config_item in regions_dgrid_viewmodel:
+    for config_item in districts_dgrid_viewmodel:
         grid_config_store_item = {
             'label': config_item['label'],
             'field': config_item['grid-property']
@@ -45,7 +45,7 @@ def get_district_page(request):
         columns_settings.append(grid_config_store_item)
 
     return {
-        'title': u'Справочник регионов',
+        'title': u'Справочник районов',
         'columnsSettings': columns_settings,
         'dynmenu': request.env.pyramid.control_panel
     }

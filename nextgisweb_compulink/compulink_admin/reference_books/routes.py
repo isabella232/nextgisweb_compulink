@@ -1,4 +1,4 @@
-from views import pages, regions
+from views import pages, regions, districts
 
 
 def initialize(config):
@@ -14,6 +14,9 @@ def initialize(config):
     config.add_route(
         'compulink_admin.reference_books.district',
         '/compulink/admin/reference_books/district').add_view(pages.get_district_page)
+    config.add_route(
+        'compulink_admin.services.reference_books.district.get',
+        'compulink/services/reference_books/district/').add_view(districts.get_districts)
     config.add_route(
         'compulink_admin.reference_books.project',
         '/compulink/admin/reference_books/project').add_view(pages.get_project_page)
