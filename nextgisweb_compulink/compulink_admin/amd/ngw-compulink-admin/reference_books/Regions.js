@@ -18,7 +18,8 @@ define([
 
         postCreate: function () {
             var regionsStore = new Rest({
-                target: ngwConfig.applicationUrl + '/compulink/services/reference_books/region/'
+                target: ngwConfig.applicationUrl + '/compulink/services/reference_books/region/',
+                useRangeHeaders: true
             });
 
             var grid = new (declare([OnDemandGrid, Keyboard, Selection, Editor]))({

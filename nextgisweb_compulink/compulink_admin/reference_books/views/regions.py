@@ -32,8 +32,8 @@ def get_regions(request):
             regions = regions.order_by(domain_class.__table__.c[field_name].desc())
 
     grid_range = None
-    if 'Range' in request.headers:
-        grid_range = request.headers['Range']
+    if 'X-Range' in request.headers:
+        grid_range = request.headers['X-Range']
         start, stop = re.findall('items=(\d+)-(\d+)', grid_range)[0]
         regions = regions.slice(int(start), int(stop) + 1)
 
