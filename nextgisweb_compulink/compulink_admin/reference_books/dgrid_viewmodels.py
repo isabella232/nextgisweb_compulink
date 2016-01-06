@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from ..model import *
 
 regions_dgrid_viewmodel = [
     {
@@ -43,7 +43,6 @@ regions_dgrid_viewmodel = [
     }
 ]
 
-
 districts_dgrid_viewmodel = [
     {
         'data-property': 'id',
@@ -71,6 +70,23 @@ districts_dgrid_viewmodel = [
             'editor': 'text',
             'editOn': 'dblclick',
             'autoSave': True
+        }
+    },
+    {
+        'data-property': 'region',
+        'grid-property': 'region',
+        'relation': {
+            'id': 'id',
+            'label': 'name',
+            'relation-field': District.region,
+            'sort-field': Region.name
+        },
+        'label': 'Регион',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True,
+            'sortable': False
         }
     }
 ]
