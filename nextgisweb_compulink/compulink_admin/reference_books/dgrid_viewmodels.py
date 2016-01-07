@@ -85,8 +85,7 @@ districts_dgrid_viewmodel = [
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
-            'autoSave': True,
-            'sortable': False
+            'autoSave': True
         }
     }
 ]

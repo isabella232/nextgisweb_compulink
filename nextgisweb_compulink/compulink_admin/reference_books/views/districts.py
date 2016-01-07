@@ -20,7 +20,8 @@ def get_districts(request):
 
     rel_attrs = filter(lambda c: 'relation' in c, districts_dgrid_viewmodel)
     for rel_attr in rel_attrs:
-        items_query = items_query.options(joinedload(rel_attr['relation']['relation-field']))
+        relation_field = rel_attr['relation']['relation-field']
+        items_query = items_query.outerjoin(relation_field).options(joinedload(relation_field))
 
     sort_keys = filter(lambda k: 'sort(' in k, request.GET.keys())
     if sort_keys:
