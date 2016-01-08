@@ -42,3 +42,9 @@ class ReferenceBooksView(ReferenceBookViewBase):
         reference_book_domain_route = self.request.matchdict['reference_book_type']
         reference_book_type, dgrid_viewmodel, template = self.get_domain_type(reference_book_domain_route)
         return self._get_page(dgrid_viewmodel, template)
+
+    @view_config(route_name='compulink_admin.services.reference_books.get_items', renderer='json')
+    def get_items_by_type(self):
+        reference_book_domain_route = self.request.matchdict['reference_book_type']
+        reference_book_type, dgrid_viewmodel, template = self.get_domain_type(reference_book_domain_route)
+        return self._get_items(reference_book_type, dgrid_viewmodel)
