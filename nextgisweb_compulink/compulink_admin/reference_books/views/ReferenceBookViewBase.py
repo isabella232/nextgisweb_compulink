@@ -11,6 +11,7 @@ from pyramid.renderers import render_to_response
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from ..dgrid_viewmodels import *
+import transaction
 
 
 class ReferenceBookViewBase(object):
@@ -90,3 +91,32 @@ class ReferenceBookViewBase(object):
             response.headers[str('Content-Range')] = str(grid_range + '/' + str(count_all_rows))
 
         return response
+
+    def _get_item(self, reference_book_type, dgrid_viewmodel, item_id):
+        session = DBSession()
+        item_query = session.query(reference_book_type)
+        item_query = item_query.filter_by(id=item_id)
+
+        rel_attrs = filter(lambda c: 'relation' in c, dgrid_viewmodel)
+        for rel_attr in rel_attrs:
+            relation_field = rel_attr['relation']['relation-field']
+            item_query = item_query.outerjoin(relation_field).options(joinedload(relation_field))
+
+        item_db = item_query.one()
+
+        result_item = {}
+        for item_config in dgrid_viewmodel:
+            if 'relation' in item_config:
+                rel_attr_name = item_config['data-property']
+                rel_attr = item_db.__getattribute__(rel_attr_name)
+                if rel_attr:
+                    result_item[rel_attr_name] = rel_attr.__getattribute__(item_config['relation']['label'])
+                    result_item[rel_attr_name + '_id'] = rel_attr.__getattribute__(item_config['relation']['id'])
+                else:
+                    result_item[rel_attr_name] = None
+                    result_item[rel_attr_name + '_id'] = None
+            else:
+                result_item[item_config['grid-property']] = \
+                    item_db.__getattribute__(item_config['data-property'])
+
+        return Response(json.dumps(result_item))
