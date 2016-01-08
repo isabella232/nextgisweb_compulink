@@ -67,21 +67,8 @@ class ReferenceBookViewBase(object):
             items_query = items_query.slice(int(start), int(stop) + 1)
 
         result = []
-        for item_query in items_query:
-            result_item = {}
-            for item_config in dgrid_viewmodel:
-                if 'relation' in item_config:
-                    rel_attr_name = item_config['data-property']
-                    rel_attr = item_query.__getattribute__(rel_attr_name)
-                    if rel_attr:
-                        result_item[rel_attr_name] = rel_attr.__getattribute__(item_config['relation']['label'])
-                        result_item[rel_attr_name + '_id'] = rel_attr.__getattribute__(item_config['relation']['id'])
-                    else:
-                        result_item[rel_attr_name] = None
-                        result_item[rel_attr_name + '_id'] = None
-                else:
-                    result_item[item_config['grid-property']] = \
-                        item_query.__getattribute__(item_config['data-property'])
+        for item_db in items_query:
+            result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
             result.append(result_item)
 
         response = Response(json.dumps(result))
@@ -104,6 +91,11 @@ class ReferenceBookViewBase(object):
 
         item_db = item_query.one()
 
+        result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
+
+        return Response(json.dumps(result_item))
+
+    def _build_item_for_response(self, dgrid_viewmodel, item_db):
         result_item = {}
         for item_config in dgrid_viewmodel:
             if 'relation' in item_config:
@@ -118,5 +110,4 @@ class ReferenceBookViewBase(object):
             else:
                 result_item[item_config['grid-property']] = \
                     item_db.__getattribute__(item_config['data-property'])
-
-        return Response(json.dumps(result_item))
+        return result_item
