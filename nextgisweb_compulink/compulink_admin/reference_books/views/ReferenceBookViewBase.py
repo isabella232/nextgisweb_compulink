@@ -14,6 +14,9 @@ from ..dgrid_viewmodels import *
 import transaction
 
 
+dgrid_widget_name_regex = re.compile(r'[\"\']widget=>(\w+)[\"\']', re.IGNORECASE)
+
+
 class ReferenceBookViewBase(object):
     def __init__(self, request):
         self.request = request
@@ -26,7 +29,24 @@ class ReferenceBookViewBase(object):
                 'field': config_item['grid-property']
             }
             grid_config_store_item.update(config_item['cell-prop'])
+
+            if 'relation' in config_item:
+                relation_section = config_item['relation']
+                grid_config_store_item['editorArgs'] = []
+                session = DBSession()
+                relation_items = session\
+                    .query(relation_section['type'])\
+                    .order_by(relation_section['sort-field'])
+                for relation_item in relation_items:
+                    grid_config_store_item['editorArgs'].append([
+                        relation_item.__getattribute__(relation_section['id']),
+                        relation_item.__getattribute__(relation_section['label'])
+                    ])
+
             columns_settings.append(grid_config_store_item)
+
+        columns_settings = json.dumps(columns_settings)
+        columns_settings = dgrid_widget_name_regex.sub(lambda m: m.group(1), columns_settings)
 
         view_data = {
             'columnsSettings': columns_settings,

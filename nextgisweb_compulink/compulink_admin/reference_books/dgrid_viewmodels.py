@@ -79,11 +79,12 @@ districts_dgrid_viewmodel = [
             'id': 'id',
             'label': 'name',
             'relation-field': District.region,
-            'sort-field': Region.name
+            'sort-field': Region.name,
+            'type': Region
         },
         'label': 'Регион',
         'cell-prop': {
-            'editor': 'text',
+            'editor': 'widget=>RelationSelect',
             'editOn': 'dblclick',
             'autoSave': True
         }
