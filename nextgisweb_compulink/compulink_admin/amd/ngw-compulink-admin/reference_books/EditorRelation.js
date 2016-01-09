@@ -35,7 +35,13 @@ define([
                     if (on.emit(cellElement, 'dgrid-datachange', eventObject)) {
                         if (this.updateDirty) {
                             // for OnDemandGrid: update dirty data, and save if autoSave is true
-                            this.updateDirty(row.id, column.field, value);
+                            if (typeof value === 'object') {
+                                this.updateDirty(row.id, column.field + '_id', value.id);
+                                this.updateDirty(row.id, column.field, value.label);
+                                value = value.label;
+                            } else {
+                                this.updateDirty(row.id, column.field, value);
+                            }
                             // perform auto-save (if applicable) in next tick to avoid
                             // unintentional mishaps due to order of handler execution
                             if (column.autoSave) {
