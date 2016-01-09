@@ -100,6 +100,11 @@ class ReferenceBookViewBase(object):
         return response
 
     def _get_item(self, reference_book_type, dgrid_viewmodel, item_id):
+        item_db = self._get_item_db_with_joinedload(reference_book_type, dgrid_viewmodel, item_id)
+        result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
+        return Response(json.dumps(result_item))
+
+    def _get_item_db_with_joinedload(self, reference_book_type, dgrid_viewmodel, item_id):
         session = DBSession()
         item_query = session.query(reference_book_type)
         item_query = item_query.filter_by(id=item_id)
@@ -109,11 +114,7 @@ class ReferenceBookViewBase(object):
             relation_field = rel_attr['relation']['relation-field']
             item_query = item_query.outerjoin(relation_field).options(joinedload(relation_field))
 
-        item_db = item_query.one()
-
-        result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
-
-        return Response(json.dumps(result_item))
+        return item_query.one()
 
     def _build_item_for_response(self, dgrid_viewmodel, item_db):
         result_item = {}
