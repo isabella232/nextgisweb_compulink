@@ -10,9 +10,9 @@ define([
     'ngw-compulink-libs/dgrid-0.4.0/dgrid/OnDemandGrid',
     'ngw-compulink-libs/dgrid-0.4.0/dgrid/Keyboard',
     'ngw-compulink-libs/dgrid-0.4.0/dgrid/Selection',
-    'ngw-compulink-libs/dgrid-0.4.0/dgrid/Editor'
+    'ngw-compulink-admin/reference_books/EditorRelation'
 ], function (declare, lang, topic, on, array, _WidgetBase, _TemplatedMixin,
-             Rest, OnDemandGrid, Keyboard, Selection, Editor) {
+             Rest, OnDemandGrid, Keyboard, Selection, EditorRelation) {
     return declare([_WidgetBase, _TemplatedMixin], {
         templateString: '<div></div>',
 
@@ -22,7 +22,7 @@ define([
                 useRangeHeaders: true
             });
 
-            var grid = new (declare([OnDemandGrid, Keyboard, Selection, Editor]))({
+            new (declare([OnDemandGrid, Keyboard, Selection, EditorRelation]))({
                 collection: regionsStore,
                 columns: this.config
             }, this.domNode);
