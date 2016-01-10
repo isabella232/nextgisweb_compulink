@@ -25,10 +25,10 @@ class ReferenceBooksView(ReferenceBookViewBase):
     def mapper_dict(self):
         return {
             'region': (Region, regions_dgrid_viewmodel,
-                       'nextgisweb_compulink:compulink_admin/reference_books/templates/region.mako'),
+                       'nextgisweb_compulink:compulink_admin/reference_books/templates/regions.mako'),
             'district': (District, districts_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/districts.mako'),
-            'project': (Project, regions_dgrid_viewmodel,
+            'project': (Project, projects_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/projects.mako'),
             'construct_object': (ConstructObject, districts_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/construct_objects.mako')
@@ -48,3 +48,18 @@ class ReferenceBooksView(ReferenceBookViewBase):
         reference_book_domain_route = self.request.matchdict['reference_book_type']
         reference_book_type, dgrid_viewmodel, template = self.get_domain_type(reference_book_domain_route)
         return self._get_items(reference_book_type, dgrid_viewmodel)
+
+    @view_config(route_name='compulink_admin.services.reference_books.item_handler', renderer='json')
+    def handle_item_query(self):
+        reference_book_domain_route = self.request.matchdict['reference_book_type']
+        reference_book_type, dgrid_viewmodel, template = self.get_domain_type(reference_book_domain_route)
+        item_id = self.request.matchdict['id']
+
+        if item_id == 'undefined':
+            return self._get_items(reference_book_type, dgrid_viewmodel)
+
+        if self.request.method == 'PUT':
+            return self._update_item(reference_book_type, dgrid_viewmodel, item_id)
+
+        if self.request.method == 'GET':
+            return self._get_item(reference_book_type, dgrid_viewmodel, item_id)
