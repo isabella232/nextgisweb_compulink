@@ -100,12 +100,41 @@ class ReferenceBookViewBase(object):
         return response
 
     def _get_item(self, reference_book_type, dgrid_viewmodel, item_id):
-        item_db = self._get_item_db_with_joinedload(reference_book_type, dgrid_viewmodel, item_id)
+        item_db = self._get_query_item_joinedload(reference_book_type, dgrid_viewmodel, item_id, None).one()
         result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
         return Response(json.dumps(result_item))
 
-    def _get_item_db_with_joinedload(self, reference_book_type, dgrid_viewmodel, item_id):
+    def _update_item(self, reference_book_type, dgrid_viewmodel, item_id):
+        session, relation_items = DBSession(), {}
+        for config_item in dgrid_viewmodel:
+            if 'relation' in config_item:
+                new_relation_item_id = self.request.json[config_item['grid-property'] + '_id']
+                new_relation_item = session.query(config_item['relation']['type'])\
+                    .filter_by(id=new_relation_item_id).one()
+                relation_items[config_item['data-property']] = new_relation_item
+
+        transaction.commit()
+
         session = DBSession()
+        item_db = self._get_query_item_joinedload(reference_book_type, dgrid_viewmodel, item_id, session).one()
+
+        for config_item in dgrid_viewmodel:
+            if 'relation' in config_item:
+                setattr(item_db, config_item['data-property'], relation_items[config_item['data-property']])
+            elif 'id' in config_item and config_item['id'] == True:
+                pass
+            else:
+                setattr(item_db, config_item['data-property'], self.request.json[config_item['grid-property']])
+
+        transaction.commit()
+
+        return self._get_item(reference_book_type, dgrid_viewmodel, item_id)
+
+    def _get_query_item_joinedload(self, reference_book_type, dgrid_viewmodel, item_id, session):
+        session_close = False
+        if not session:
+            session = DBSession()
+            session_close = True
         item_query = session.query(reference_book_type)
         item_query = item_query.filter_by(id=item_id)
 
@@ -114,7 +143,10 @@ class ReferenceBookViewBase(object):
             relation_field = rel_attr['relation']['relation-field']
             item_query = item_query.outerjoin(relation_field).options(joinedload(relation_field))
 
-        return item_query.one()
+        if session_close:
+            session.close()
+
+        return item_query
 
     def _build_item_for_response(self, dgrid_viewmodel, item_db):
         result_item = {}
