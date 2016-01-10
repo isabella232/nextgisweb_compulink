@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from ..model import *
+from nextgisweb.resource.model import Resource
 
 regions_dgrid_viewmodel = [
     {
         'data-property': 'id',
         'grid-property': 'id',
+        'id': True,
         'label': 'Идентификатор',
         'cell-prop': {
 
@@ -47,6 +49,7 @@ districts_dgrid_viewmodel = [
     {
         'data-property': 'id',
         'grid-property': 'id',
+        'id': True,
         'label': 'Идентификатор',
         'cell-prop': {
 
@@ -90,3 +93,4 @@ districts_dgrid_viewmodel = [
         }
     }
 ]
+
