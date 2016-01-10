@@ -39,19 +39,23 @@ def setup_pyramid(comp, config):
         def build(self, kwargs):
             yield dm.Link(
                 self.sub('region_dict'), u'Справочник регионов',
-                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.region', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
+                                                        reference_book_type='region')
             )
             yield dm.Link(
                 self.sub('district_dict'), u'Справочник районов',
-                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.district', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
+                                                        reference_book_type='district')
             )
             yield dm.Link(
                 self.sub('project_dict'), u'Справочник проектов',
-                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.project', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
+                                                        reference_book_type='project')
             )
             yield dm.Link(
                 self.sub('const_obj_dict'), u'Справочник объектов строительства',
-                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.construct_object', page=0)
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
+                                                        reference_book_type='construct_object')
             )
 
     CompulinkAdminMenu.__dynmenu__ = comp.env.pyramid.control_panel
