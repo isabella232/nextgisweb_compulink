@@ -89,6 +89,7 @@ districts_dgrid_viewmodel = [
         'cell-prop': {
             'editor': 'widget=>RelationSelect',
             'editOn': 'dblclick',
+            'editorArgs': '[data]',
             'autoSave': True
         }
     }
