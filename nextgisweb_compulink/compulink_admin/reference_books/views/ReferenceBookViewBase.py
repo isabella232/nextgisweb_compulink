@@ -32,16 +32,17 @@ class ReferenceBookViewBase(object):
 
             if 'relation' in config_item:
                 relation_section = config_item['relation']
-                grid_config_store_item['editorArgs'] = []
-                session = DBSession()
-                relation_items = session\
-                    .query(relation_section['type'])\
-                    .order_by(relation_section['sort-field'])
-                for relation_item in relation_items:
-                    grid_config_store_item['editorArgs'].append([
-                        relation_item.__getattribute__(relation_section['id']),
-                        relation_item.__getattribute__(relation_section['label'])
-                    ])
+                if 'editorArgs' in grid_config_store_item and grid_config_store_item['editorArgs'] == '[data]':
+                    grid_config_store_item['editorArgs'] = []
+                    session = DBSession()
+                    relation_items = session\
+                        .query(relation_section['type'])\
+                        .order_by(relation_section['sort-field'])
+                    for relation_item in relation_items:
+                        grid_config_store_item['editorArgs'].append([
+                            relation_item.__getattribute__(relation_section['id']),
+                            relation_item.__getattribute__(relation_section['label'])
+                        ])
 
             columns_settings.append(grid_config_store_item)
 
