@@ -15,6 +15,7 @@ import transaction
 
 
 dgrid_widget_name_regex = re.compile(r'[\"\']widget=>(\w+)[\"\']', re.IGNORECASE)
+dgrid_object_regex = re.compile(r'[\"\']object=>(.+)=end[\"\']', re.IGNORECASE)
 
 
 class ReferenceBookViewBase(object):
@@ -48,6 +49,7 @@ class ReferenceBookViewBase(object):
 
         columns_settings = json.dumps(columns_settings)
         columns_settings = dgrid_widget_name_regex.sub(lambda m: m.group(1), columns_settings)
+        columns_settings = dgrid_object_regex.sub(lambda m: m.group(1), columns_settings)
 
         view_data = {
             'columnsSettings': columns_settings,

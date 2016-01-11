@@ -155,9 +155,10 @@ projects_dgrid_viewmodel = [
             'sort-field': Resource.display_name,
             'type': Resource
         },
-        'label': 'Регион',
+        'label': 'Объект строительства',
         'cell-prop': {
-            'editor': 'widget=>RelationSelect',
+            'editor': 'widget=>BuildingObjectsSelect',
+            'editorArgs': 'object=>{url: \'/compulink/reporting/resources/child\'}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
