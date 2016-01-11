@@ -111,7 +111,10 @@ class ReferenceBookViewBase(object):
                 new_relation_item_id = self.request.json[config_item['grid-property'] + '_id']
                 new_relation_item = session.query(config_item['relation']['type'])\
                     .filter_by(id=new_relation_item_id).one()
-                relation_items[config_item['data-property']] = new_relation_item
+                relation_items[config_item['data-property']] = {
+                    'id': new_relation_item.id,
+                    'item': new_relation_item
+                }
 
         transaction.commit()
 
@@ -120,7 +123,13 @@ class ReferenceBookViewBase(object):
 
         for config_item in dgrid_viewmodel:
             if 'relation' in config_item:
-                setattr(item_db, config_item['data-property'], relation_items[config_item['data-property']])
+                current_relation_item_id = item_db.\
+                    __getattribute__(config_item['data-property']).\
+                    __getattribute__(config_item['relation']['id'])
+                new_relation_item_id = relation_items[config_item['data-property']]['id']
+                if current_relation_item_id != new_relation_item_id:
+                    setattr(item_db, config_item['data-property'],
+                            relation_items[config_item['data-property']]['item'])
             elif 'id' in config_item and config_item['id'] == True:
                 pass
             else:
