@@ -15,6 +15,12 @@ define([
         value: null,
         $input: null,
         $treeWrapper: null,
+        getResourcesUrl: null,
+
+        constructor: function (params) {
+            this.inherited(arguments);
+            this.getResourcesUrl = ngwConfig.applicationUrl + params.url;
+        },
 
         postCreate: function () {
             var domNode = this.domNode;
@@ -31,7 +37,7 @@ define([
                         'icons': false
                     },
                     'data': {
-                        'url': ngwConfig.applicationUrl + '/compulink/reporting/resources/child',
+                        'url': this.getResourcesUrl,
                         'data': lang.hitch(this, function (node) {
                             return this._getJsTreeQuery(node);
                         }),
