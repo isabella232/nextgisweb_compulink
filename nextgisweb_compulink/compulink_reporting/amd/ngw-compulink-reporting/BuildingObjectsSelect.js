@@ -2,13 +2,14 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/topic',
+    'dojo/Evented',
     'dojo/_base/array',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dojo/text!./template/BuildingObjectsSelect.html',
     'ngw-compulink-libs/jstree-3.0.9/jstree',
     'xstyle/css!./resource/BuildingObjectsSelect.css'
-], function (declare, lang, topic, array, _WidgetBase, _TemplatedMixin, template) {
+], function (declare, lang, topic, Evented, array, _WidgetBase, _TemplatedMixin, template) {
     return declare([_WidgetBase, _TemplatedMixin], {
         templateString: template,
         $domNodeTree: null,
@@ -18,7 +19,6 @@ define([
         getResourcesUrl: null,
 
         constructor: function (params) {
-            this.inherited(arguments);
             this.getResourcesUrl = ngwConfig.applicationUrl + params.url;
         },
 
@@ -92,9 +92,10 @@ define([
 
             this.$domNodeTree.on('select_node.jstree', lang.hitch(this, function (e, data) {
                 this._selectNode(data.node);
-                setTimeout(function () {
+                setTimeout(lang.hitch(this, function () {
                     $treeWrapper.removeClass('visible');
-                }, 1000);
+                    this.emit('blur', {});
+                }), 1000);
             }));
 
             this.$domNodeTree.on('loaded.jstree', lang.hitch(this, function () {
