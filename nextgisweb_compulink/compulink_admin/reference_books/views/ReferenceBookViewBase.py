@@ -96,8 +96,12 @@ class ReferenceBookViewBase(object):
 
         response = Response(json.dumps(result, cls=DateTimeJSONEncoder), content_type=b'application/json')
 
+        id_config_item = filter(lambda c: 'id' in c and c['id'] == True, dgrid_viewmodel)[0]
         if grid_range:
-            count_all_rows = session.query(func.count(reference_book_type.id)).scalar()
+            count_all_rows = session\
+                .query(func.count(reference_book_type
+                                  .__getattribute__(reference_book_type, id_config_item['data-property'])))\
+                .scalar()
             response.headers[str('Content-Range')] = str(grid_range + '/' + str(count_all_rows))
 
         return response
