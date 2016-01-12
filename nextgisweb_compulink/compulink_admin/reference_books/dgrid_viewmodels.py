@@ -157,7 +157,7 @@ projects_dgrid_viewmodel = [
         },
         'label': 'Объект строительства',
         'cell-prop': {
-            'editor': 'widget=>BuildingObjectsSelect',
+            'editor': 'widget=>BuildingObjectsRelationSelect',
             'editorArgs': 'object=>{url: \'/compulink/reporting/resources/child\'}=end',
             'editOn': 'dblclick',
             'autoSave': True
