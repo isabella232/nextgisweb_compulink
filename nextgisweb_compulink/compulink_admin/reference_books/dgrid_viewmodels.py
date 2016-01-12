@@ -164,3 +164,147 @@ projects_dgrid_viewmodel = [
         }
     }
 ]
+
+construct_objects_dgrid_viewmodel = [
+    {
+        'data-property': 'resource_id',
+        'grid-property': 'id',
+        'id': True,
+        'label': 'Идентификатор',
+        'cell-prop': {
+
+        }
+    },
+    {
+        'data-property': 'name',
+        'grid-property': 'name',
+        'label': 'Название',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'subcontr_name',
+        'grid-property': 'subcontr_name',
+        'label': 'Субподрядчик',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'start_build_date',
+        'grid-property': 'start_build_date',
+        'label': 'Начало СМР',
+        'cell-prop': {
+            'editor': 'widget=>DateTextBox',
+            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'end_build_date',
+        'grid-property': 'end_build_date',
+        'label': 'Окончание СМР',
+        'cell-prop': {
+            'editor': 'widget=>DateTextBox',
+            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'start_deliver_date',
+        'grid-property': 'start_deliver_date',
+        'label': 'Начало сдачи заказчику',
+        'cell-prop': {
+            'editor': 'widget=>DateTextBox',
+            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'end_deliver_date',
+        'grid-property': 'end_deliver_date',
+        'label': 'Окончание сдачи заказчику',
+        'cell-prop': {
+            'editor': 'widget=>DateTextBox',
+            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'cabling_plan',
+        'grid-property': 'cabling_plan',
+        'label': 'Плановая протяженность (км)',
+        'cell-prop': {
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'fosc_plan',
+        'grid-property': 'fosc_plan',
+        'label': 'Ключ',
+        'cell-prop': {
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'cross_plan',
+        'grid-property': 'cross_plan',
+        'label': 'Ключ',
+        'cell-prop': {
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'spec_trans_plan',
+        'grid-property': 'spec_trans_plan',
+        'label': 'Ключ',
+        'cell-prop': {
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'access_point_plan',
+        'grid-property': 'access_point_plan',
+        'label': 'Ключ',
+        'cell-prop': {
+            'editor': 'number',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'region',
+        'grid-property': 'region',
+        'relation': {
+            'id': 'id',
+            'label': 'name',
+            'relation-field': ConstructObject.region,
+            'sort-field': Region.name,
+            'type': Region
+        },
+        'label': 'Субъект РФ',
+        'cell-prop': {
+            'editor': 'widget=>RelationSelect',
+            'editOn': 'dblclick',
+            'editorArgs': '[data]',
+            'autoSave': True
+        }
+    }
+]
