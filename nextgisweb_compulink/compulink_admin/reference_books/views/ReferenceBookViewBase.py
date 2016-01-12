@@ -15,7 +15,7 @@ import transaction
 
 
 dgrid_widget_name_regex = re.compile(r'[\"\']widget=>(\w+)[\"\']', re.IGNORECASE)
-dgrid_object_regex = re.compile(r'[\"\']object=>(.+)=end[\"\']', re.IGNORECASE)
+dgrid_object_regex = re.compile(r'[\"\']object=>(.*?)=end[\"\']', re.IGNORECASE)
 
 
 class ReferenceBookViewBase(object):
