@@ -152,7 +152,11 @@ class ReferenceBookViewBase(object):
             session = DBSession()
             session_close = True
         item_query = session.query(reference_book_type)
-        item_query = item_query.filter_by(id=item_id)
+
+        id_config_item = filter(lambda c: 'id' in c and c['id'] == True, dgrid_viewmodel)[0]
+        id_attribute = reference_book_type.__getattribute__(reference_book_type, id_config_item['data-property'])
+
+        item_query = item_query.filter(id_attribute == item_id)
 
         rel_attrs = filter(lambda c: 'relation' in c, dgrid_viewmodel)
         for rel_attr in rel_attrs:
