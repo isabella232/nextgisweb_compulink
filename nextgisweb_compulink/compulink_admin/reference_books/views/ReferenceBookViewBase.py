@@ -109,7 +109,7 @@ class ReferenceBookViewBase(object):
     def _get_item(self, reference_book_type, dgrid_viewmodel, item_id):
         item_db = self._get_query_item_joinedload(reference_book_type, dgrid_viewmodel, item_id, None).one()
         result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
-        return Response(json.dumps(result_item))
+        return Response(json.dumps(result_item, cls=DateTimeJSONEncoder), content_type=b'application/json')
 
     def _update_item(self, reference_book_type, dgrid_viewmodel, item_id):
         session, relation_items = DBSession(), {}
