@@ -12,7 +12,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from ..dgrid_viewmodels import *
 import transaction
-
+from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 
 dgrid_widget_name_regex = re.compile(r'[\"\']widget=>(\w+)[\"\']', re.IGNORECASE)
 dgrid_object_regex = re.compile(r'[\"\']object=>(.*?)=end[\"\']', re.IGNORECASE)
@@ -94,7 +94,7 @@ class ReferenceBookViewBase(object):
             result_item = self._build_item_for_response(dgrid_viewmodel, item_db)
             result.append(result_item)
 
-        response = Response(json.dumps(result))
+        response = Response(json.dumps(result, cls=DateTimeJSONEncoder), content_type=b'application/json')
 
         if grid_range:
             count_all_rows = session.query(func.count(reference_book_type.id)).scalar()
