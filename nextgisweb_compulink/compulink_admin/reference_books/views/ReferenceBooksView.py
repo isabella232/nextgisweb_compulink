@@ -30,7 +30,7 @@ class ReferenceBooksView(ReferenceBookViewBase):
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/districts.mako'),
             'project': (Project, projects_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/projects.mako'),
-            'construct_object': (ConstructObject, districts_dgrid_viewmodel,
+            'construct_object': (ConstructObject, construct_objects_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/construct_objects.mako')
         }
 
