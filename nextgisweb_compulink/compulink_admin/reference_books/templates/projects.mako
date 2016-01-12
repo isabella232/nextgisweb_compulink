@@ -11,10 +11,10 @@
     var columnsSettings = null;
     require([
         'ngw-compulink-admin/reference_books/RelationSelect',
-        'ngw-compulink-reporting/BuildingObjectsSelect',
+        'ngw-compulink-admin/reference_books/BuildingObjectsRelationSelect',
         'dojo/parser',
         'dojo/ready'
-    ], function (RelationSelect, BuildingObjectsSelect, parser, ready) {
+    ], function (RelationSelect, BuildingObjectsRelationSelect, parser, ready) {
         ready(function () {
             columnsSettings = ${columnsSettings | n};
             parser.parse();
@@ -23,5 +23,5 @@
 </script>
 
 
-<div data-dojo-type="ngw-compulink-admin/reference_books/Districts"
+<div data-dojo-type="ngw-compulink-admin/reference_books/Projects"
      data-dojo-props="config: columnsSettings"></div>
