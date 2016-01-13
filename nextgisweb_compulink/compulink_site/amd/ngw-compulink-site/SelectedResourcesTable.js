@@ -106,6 +106,13 @@ define([
                 })
             }));
 
+            this._menu.addChild(new MenuItem({
+                label: 'Редактировать атрибуты',
+                onClick: lang.hitch(this, function (evt) {
+                    var itemId = Object.getOwnPropertyNames( this._grid.selection )[0];
+                })
+            }));
+
             //this._menu.addChild(new MenuSeparator());
             //this._menu.addChild(new MenuItem({
             //    label: 'Редактировать',
