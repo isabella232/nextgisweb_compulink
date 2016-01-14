@@ -28,7 +28,7 @@ from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT
+    PROJECT_STATUS_BUILT, FoclStructScope
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
@@ -340,6 +340,7 @@ def get_focl_info(request):
                     'cabling_plan_today': (report_row.cabling_plan * (float((datetime.now() - report_row.start_build_time).days)/((report_row.end_build_time - report_row.start_build_time).days)))
                         if (report_row.end_build_time and report_row.start_build_time and report_row.cabling_plan and (report_row.end_build_time - report_row.start_build_time).days !=0) else None,
                     'status_row': report_row.status,
+                    'editable': request.user.is_administrator or res.has_permission(FoclStructScope.edit_prop, request.user)
                 }
             )
         else:
@@ -367,7 +368,9 @@ def get_focl_info(request):
                     'is_month_overdue': False,
                     'is_focl_delivered': False,
 
-                    'cabling_plan_today': None
+                    'cabling_plan_today': None,
+                    'status_row': None,
+                    'editable': request.user.is_administrator or res.has_permission(FoclStructScope.edit_prop, request.user)
                 }
             )
 

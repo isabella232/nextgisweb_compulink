@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey, event
 from sqlalchemy.orm import relationship
 from nextgisweb import db
 from nextgisweb.models import declarative_base, DBSession
-from nextgisweb.resource import (ResourceGroup, Serializer, DataScope, ResourceScope, Resource)
+from nextgisweb.resource import (ResourceGroup, Serializer, DataScope, ResourceScope, Resource, Scope, Permission)
 from nextgisweb.vector_layer.model import VectorLayer, TableInfo
 from nextgisweb.webmap.adapter import ImageAdapter
 from nextgisweb.webmap.model import WebMap, WebMapItem
@@ -69,8 +69,15 @@ class FoclProjectSerializer(Serializer):
         doc_res.persist()
 
 
+class FoclStructScope(Scope):
+    identity = 'focl_struct'
+    label = u'Объект строительства'
+
+    edit_prop = Permission(u'Изменение свойств')
+
+
 class FoclStruct(Base, ResourceGroup):
-    __scope__ = DataScope
+    __scope__ = (DataScope, FoclStructScope)
 
     identity = 'focl_struct'
     cls_display_name = "Объект строительства"
