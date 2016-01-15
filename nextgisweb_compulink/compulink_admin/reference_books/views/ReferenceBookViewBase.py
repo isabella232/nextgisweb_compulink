@@ -23,6 +23,15 @@ class ReferenceBookViewBase(object):
         self.request = request
 
     def _get_page(self, dgrid_viewmodel, template):
+        view_data = {
+            'columnsSettings': ReferenceBookViewBase._get_json_column_settings(dgrid_viewmodel),
+            'dynmenu': self.request.env.pyramid.control_panel
+        }
+
+        return render_to_response(template, view_data, request=self.request)
+
+    @staticmethod
+    def _get_json_column_settings(dgrid_viewmodel):
         columns_settings = []
         for config_item in dgrid_viewmodel:
             grid_config_store_item = {
@@ -51,12 +60,7 @@ class ReferenceBookViewBase(object):
         columns_settings = dgrid_widget_name_regex.sub(lambda m: m.group(1), columns_settings)
         columns_settings = dgrid_object_regex.sub(lambda m: m.group(1), columns_settings)
 
-        view_data = {
-            'columnsSettings': columns_settings,
-            'dynmenu': self.request.env.pyramid.control_panel
-        }
-
-        return render_to_response(template, view_data, request=self.request)
+        return columns_settings
 
     def _get_items(self, reference_book_type, dgrid_viewmodel):
         session = DBSession()
