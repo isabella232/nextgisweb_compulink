@@ -20,10 +20,11 @@ define([
     'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog',
     'ngw-compulink-site/InfoDialog',
+    'ngw-compulink-site/ConstructObjectEditor',
     'xstyle/css!./resource/SelectedResourcesTable.css'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
-             ConfirmDialog, InfoDialog) {
+             ConfirmDialog, InfoDialog, ConstructObjectEditor) {
     return declare(null, {
 
         _columns: {
@@ -109,7 +110,11 @@ define([
             this._menu.addChild(new MenuItem({
                 label: 'Редактировать атрибуты',
                 onClick: lang.hitch(this, function (evt) {
-                    var itemId = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
+                        item = this._grid.store.query({id: itemId});
+                    if (item && item[0].editable) {
+                        ConstructObjectEditor.run(itemId);
+                    }
                 })
             }));
 
