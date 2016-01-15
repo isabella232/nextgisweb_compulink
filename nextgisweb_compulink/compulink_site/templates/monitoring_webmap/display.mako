@@ -88,10 +88,14 @@
         require([
             "dojo/parser",
             "dojo/ready",
+            "ngw-compulink-admin/reference_books/RelationSelect",
+            "ngw-compulink-admin/reference_books/BuildingObjectsRelationSelect",
+            "dijit/form/DateTextBox",
             "ngw-compulink-site/Display",
             "ngw-compulink-site/DisplayHeader"
-        ], function (parser, ready) {
+        ], function (parser, ready, RelationSelect, BuildingObjectsRelationSelect, DateTextBox) {
             ready(function () {
+                construct_object_editor_settings = ${construct_objects_attr_settings | n};
                 parser.parse();
             });
         });

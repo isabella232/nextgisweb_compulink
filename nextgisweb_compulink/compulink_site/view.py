@@ -37,6 +37,8 @@ from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusRep
 from nextgisweb_compulink.compulink_site import COMP_ID
 from nextgisweb_log.model import LogEntry, LogLevels
 from nextgisweb_lookuptable.model import LookupTable
+from nextgisweb_compulink.compulink_admin.reference_books.views.ReferenceBookViewBase import ReferenceBookViewBase
+from nextgisweb_compulink.compulink_admin.reference_books.dgrid_viewmodels import construct_objects_dgrid_viewmodel
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
@@ -199,6 +201,8 @@ def show_map(request):
     sit_plan_layers_type = get_sit_plan_layers_list()
     values = dict(
         show_header=True,
+        construct_objects_attr_settings=ReferenceBookViewBase\
+            ._get_json_column_settings(construct_objects_dgrid_viewmodel),
         focl_layers_type=focl_layers['focl'],
         objects_layers_type=focl_layers['objects'],
         real_layers_type=focl_layers['real'],
