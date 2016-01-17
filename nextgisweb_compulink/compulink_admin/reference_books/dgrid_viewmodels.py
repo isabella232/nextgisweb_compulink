@@ -252,7 +252,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'fosc_plan',
         'grid-property': 'fosc_plan',
-        'label': 'Ключ',
+        'label': 'Разварка муфт План (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -262,7 +262,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'cross_plan',
         'grid-property': 'cross_plan',
-        'label': 'Ключ',
+        'label': 'Разварка муфт Факт (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -272,7 +272,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'spec_trans_plan',
         'grid-property': 'spec_trans_plan',
-        'label': 'Ключ',
+        'label': 'Строительство ГНБ переходов План (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -282,7 +282,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'access_point_plan',
         'grid-property': 'access_point_plan',
-        'label': 'Ключ',
+        'label': 'Монтаж точек доступа План (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
