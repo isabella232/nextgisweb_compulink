@@ -201,7 +201,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Начало СМР',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -212,7 +212,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Окончание СМР',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -223,7 +223,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Начало сдачи заказчику',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -234,7 +234,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Окончание сдачи заказчику',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', datePattern: \'yyyy-mm-dd\', locale: \'en-us\'}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
