@@ -306,5 +306,23 @@ construct_objects_dgrid_viewmodel = [
             'editorArgs': '[data]',
             'autoSave': True
         }
+    },
+    {
+        'data-property': 'project',
+        'grid-property': 'project',
+        'relation': {
+            'id': 'id',
+            'label': 'name',
+            'relation-field': ConstructObject.project,
+            'sort-field': Project.name,
+            'type': Project
+        },
+        'label': 'Проект строительства',
+        'cell-prop': {
+            'editor': 'widget=>RelationSelect',
+            'editOn': 'dblclick',
+            'editorArgs': '[data]',
+            'autoSave': True
+        }
     }
 ]
