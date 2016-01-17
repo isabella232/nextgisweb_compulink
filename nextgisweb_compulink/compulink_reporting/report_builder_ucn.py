@@ -144,7 +144,7 @@ class ReportBuilderUcn():
                 for (build_dt, lay_meth), cable_len in cable_aggregation.iteritems():
                     row = BuiltCable()
                     row.resource_id = fs.id
-                    row.cable_length = cable_len
+                    row.cable_length = round(cable_len/1000.0, 3) if cable_len else 0
 
                     if lay_meth:
                         if lay_meth not in cable_laying_methods.keys():
@@ -176,7 +176,8 @@ class ReportBuilderUcn():
                 for (build_dt, spec_lay_meth), specs in spec_trans_aggregation.iteritems():
                     row = BuiltSpecTransition()
                     row.resource_id = fs.id
-                    row.spec_trans_length = sum(x[2] for x in specs)
+                    length = sum(x[2] for x in specs)
+                    row.spec_trans_length = round(length/1000.0, 3) if length else 0
                     row.spec_trans_count = len(specs)
 
                     if spec_lay_meth:

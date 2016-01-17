@@ -81,7 +81,7 @@ class StatusReportReactor(AbstractReactor):
             # --- --- get fact
             focl_fact_val = ngw_session.query(func.sum(BuiltCable.cable_length))\
                 .filter(BuiltCable.resource_id == fs.id).scalar()
-            report_line.cabling_fact = round(focl_fact_val/1000.0, 3) if focl_fact_val else 0
+            report_line.cabling_fact = round(focl_fact_val, 3) if focl_fact_val else 0
 
             # --- --- get percenatage
             if not report_line.cabling_plan:

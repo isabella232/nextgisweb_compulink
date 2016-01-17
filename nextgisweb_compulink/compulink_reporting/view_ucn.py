@@ -279,7 +279,7 @@ def _get_execution_values(division_type, aggr_elements, suit_filter, aggr_filter
                 BuiltCable.resource_id.in_(aggr_filter),
                 BuiltCable.resource_id.in_(el_filter),
             ).scalar()
-        focl_fact_val = focl_fact_val/1000.0 if focl_fact_val else 0
+        focl_fact_val = focl_fact_val if focl_fact_val else 0
 
         res['label'].append(aggr_el.name)
         res['ap_plan'].append(ap_plan_val or 0)
@@ -374,7 +374,7 @@ def _get_dynamic_values(years, suit_filter, aggr_filter):
         if active_date <= today:
             f = filter(lambda x: x[0] == active_date, cable_data)
             if len(f) > 0:
-                val = f[0][1]/1000.0
+                val = f[0][1]
                 cable_fact_val += val
             res['cable_fact'].append(round(cable_fact_val, 3))
         else:
