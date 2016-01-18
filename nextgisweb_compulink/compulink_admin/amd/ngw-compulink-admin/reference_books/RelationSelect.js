@@ -8,6 +8,7 @@ define([
 ], function (declare, lang, topic, on, array, Select) {
     return declare([Select], {
         constructor: function (data) {
+            this.inherited(arguments);
             this.options = [];
             array.forEach(data, function (dataItem) {
                 this.options.push({label: dataItem[1], value: dataItem[0]})
