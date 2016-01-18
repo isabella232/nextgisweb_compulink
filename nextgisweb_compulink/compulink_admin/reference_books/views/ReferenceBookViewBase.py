@@ -134,13 +134,18 @@ class ReferenceBookViewBase(object):
 
         for config_item in dgrid_viewmodel:
             if 'relation' in config_item:
-                current_relation_item_id = item_db.\
-                    __getattribute__(config_item['data-property']).\
-                    __getattribute__(config_item['relation']['id'])
-                new_relation_item_id = relation_items[config_item['data-property']]['id']
-                if current_relation_item_id != new_relation_item_id:
-                    setattr(item_db, config_item['data-property'],
-                            relation_items[config_item['data-property']]['item'])
+                current_relation_item = item_db.__getattribute__(config_item['data-property'])
+                if current_relation_item:
+                    current_relation_item_id = current_relation_item.__getattribute__(config_item['relation']['id'])
+                    new_relation_item_id = relation_items[config_item['data-property']]['id']
+                    if current_relation_item_id != new_relation_item_id:
+                        setattr(item_db, config_item['data-property'],
+                                relation_items[config_item['data-property']]['item'])
+                else:
+                    new_relation_item_id = relation_items[config_item['data-property']]['id']
+                    if new_relation_item_id:
+                        setattr(item_db, config_item['data-property'],
+                                relation_items[config_item['data-property']]['item'])
             elif 'id' in config_item and config_item['id'] == True:
                 pass
             else:
