@@ -324,5 +324,23 @@ construct_objects_dgrid_viewmodel = [
             'editorArgs': '[data]',
             'autoSave': True
         }
+    },
+    {
+        'data-property': 'resource',
+        'grid-property': 'resource',
+        'relation': {
+            'id': 'id',
+            'label': 'display_name',
+            'relation-field': ConstructObject.resource,
+            'sort-field': Resource.display_name,
+            'type': Resource
+        },
+        'label': 'Ссылка на ресурс',
+        'cell-prop': {
+            'editor': 'widget=>BuildingObjectsRelationSelect',
+            'editorArgs': 'object=>{url: \'/compulink/reporting/resources/child\'}=end',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
     }
 ]
