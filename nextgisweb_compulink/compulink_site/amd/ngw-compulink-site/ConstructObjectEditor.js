@@ -38,13 +38,15 @@ define([
             this.handlerOk = lang.hitch(this, function () {
                 this._saveChanges().then(
                     lang.hitch(this, function () {
-                        this.updateDataStore(this._lastGridState);
+                        if (this.afterSave) {
+                            this.afterSave.call();
+                        }
                     }),
                     lang.hitch(this, function () {
                         new InfoDialog({
                             isDestroyedAfterHiding: true,
-                            title: 'Изменение статуса объекта строительства',
-                            message: 'Изменить статус не удалось.<br/>Попробуйте еще раз.'
+                            title: 'Изменение атрибутов объекта строительства',
+                            message: 'Изменить атрибуты не удалось.<br/>Попробуйте еще раз.'
                         }).show();
                     }));
                 this._changeStatusDialog = null;
@@ -59,15 +61,6 @@ define([
 
         postCreate: function () {
             this.inherited(arguments);
-            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
-
-            if (this.handlerOk) {
-                on(this.content.okButton, 'click', lang.hitch(this, function () {
-                    this.handlerOk.call();
-                    if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
-                }));
-            }
 
             var pStatus = domConstruct.create('p', {
                 innerHTML: 'Загрузка атрибутов...',
@@ -122,7 +115,11 @@ define([
                         if (construct_object[cSetting.field + '_id']) {
                             element.set('value', construct_object[cSetting.field + '_id'], construct_object[cSetting.field]);
                         } else {
-                            element.set('value', construct_object[cSetting.field]);
+                            if (construct_object[cSetting.field]) {
+                                element.set('value', construct_object[cSetting.field]);
+                            } else {
+                                element.set('value', null);
+                            }
                         }
                         element.set('style', {width: '200px'});
                         tableContainer.addChild(element);
@@ -158,93 +155,6 @@ define([
             if (this.isDestroyedAfterHiding) this.destroyRecursive();
         },
 
-        _changeStatusDialog: null,
-        _statusesSelector: null,
-        _showChangeStatusDialog: function (itemId) {
-            this._changeStatusDialog = new ConfirmDialog({
-                title: 'Изменение статуса объекта строительства',
-                message: '',
-                buttonOk: 'Сохранить',
-                buttonCancel: 'Отменить',
-                isDestroyedAfterHiding: true,
-                handlerOk: lang.hitch(this, function () {
-                    this._saveSelectedStatus().then(
-                        lang.hitch(this, function () {
-                            this.updateDataStore(this._lastGridState);
-                        }),
-                        lang.hitch(this, function () {
-                            new InfoDialog({
-                                isDestroyedAfterHiding: true,
-                                title: 'Изменение статуса объекта строительства',
-                                message: 'Изменить статус не удалось.<br/>Попробуйте еще раз.'
-                            }).show();
-                        }));
-                    this._changeStatusDialog = null;
-                    this._statusesSelector = null;
-                }),
-                handlerCancel: lang.hitch(this, function () {
-                    this._changeStatusDialog = null;
-                    this._statusesSelector = null;
-                })
-            });
-
-            this._changeStatusDialog._itemId = itemId;
-
-            var pStatus = domConstruct.create('p', {
-                innerHTML: 'Загрузка статусов...',
-                class: 'loading-statuses'
-            });
-            domConstruct.place(pStatus, this._changeStatusDialog.contentNode);
-
-            this._changeStatusDialog.show();
-        },
-
-        _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{{id}}/focl_status',
-        _loadStatuses: function (itemId) {
-            var get_statuses_url = mustache.render(this._get_statuses_url, {id: itemId});
-
-            xhr.get(get_statuses_url, {handleAs: 'json'})
-                .then(lang.hitch(this, function (statusesInfo) {
-                    this._buildStatusesSelector(statusesInfo);
-                }));
-        },
-
-        _buildStatusesSelector: function (statusesInfo) {
-            var availableStatuses = statusesInfo.statuses,
-                countStatuses = availableStatuses.length,
-                statusesOptions = [],
-                statusesOptionItem,
-                statusInfo, i;
-
-            for (i = 0; i < countStatuses; i++) {
-                statusInfo = availableStatuses[i];
-                statusesOptionItem = {
-                    label: statusInfo.name, value: statusInfo.id
-                };
-
-                if (statusInfo.id === statusesInfo.focl_status) {
-                    statusesOptionItem.selected = true;
-                }
-
-                statusesOptions.push(statusesOptionItem);
-            }
-
-            this._removeLoadingStatusesMessage();
-
-            domConstruct.place('<label for="statusesSelector">Выберите статус </label>',
-                this._changeStatusDialog.contentNode);
-
-            this._statusesSelector = new Select({
-                id: "statusesSelector",
-                options: statusesOptions
-            });
-            this._statusesSelector.placeAt(this._changeStatusDialog.contentNode).startup()
-        },
-
-        _removeLoadingStatusesMessage: function () {
-            query('p.loading-statuses', this._changeStatusDialog.contentNode).forEach(domConstruct.destroy);
-        },
-
         _saveChangesUrl: 'compulink/services/reference_books/construct_object/{{id}}',
         _saveChanges: function () {
             var editedConstructObject = this.getValue(),
@@ -263,7 +173,7 @@ define([
                 element,
                 editedConstructObject = {};
 
-            array.forEach(this.controlsSettings, function (cSetting) {
+            array.forEach(this.controlsSettings, lang.hitch(this, function (cSetting) {
                 if (cSetting.editor) {
                     element = this._editorElements[cSetting.field];
                     value = element.get('value');
@@ -276,20 +186,21 @@ define([
                         editedConstructObject[cSetting.field] = value;
                     }
                 }
-            }, this);
+            }));
 
             return editedConstructObject;
         }
     });
 
     return {
-        run: function (id) {
+        run: function (id, afterSave) {
             if (!construct_object_editor_settings) {
                 throw 'ConstructObjectEditor: construct_object_editor_settings is not defined!';
             }
             var editor = new widget({
                 constructObjectId: id,
-                controlsSettings: construct_object_editor_settings
+                controlsSettings: construct_object_editor_settings,
+                afterSave: afterSave
             });
             editor.show();
         }

@@ -113,7 +113,9 @@ define([
                     var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
                         item = this._grid.store.query({id: itemId});
                     if (item && item[0].editable) {
-                        ConstructObjectEditor.run(itemId);
+                        ConstructObjectEditor.run(itemId, lang.hitch(this, function () {
+                            this.updateDataStore(this._lastGridState);
+                        }));
                     }
                 })
             }));
