@@ -1,10 +1,12 @@
 define([
     'dojo/_base/declare',
     'dojo/query',
+    'dojo/Deferred',
     'dojo/dom-construct',
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/html',
+    'dojo/request/xhr',
     'dijit/_Widget',
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin',
@@ -13,10 +15,11 @@ define([
     'dojox/layout/TableContainer',
     'dijit/form/TextBox',
     'dijit/form/NumberTextBox',
+    'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/ConstructObjectEditor.html'
-], function (declare, query, domConstruct, array, lang, html, _Widget,
+], function (declare, query, Deferred, domConstruct, array, lang, html, xhr, _Widget,
              _TemplatedMixin, _WidgetsInTemplateMixin,
-             ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, template) {
+             ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, mustache, template) {
     var widget = declare([ConfirmDialog], {
         title: 'Изменение объекта строительства',
         message: '',
@@ -33,7 +36,7 @@ define([
             lang.mixin(this, settings);
 
             this.handlerOk = lang.hitch(this, function () {
-                this._saveSelectedStatus().then(
+                this._saveChanges().then(
                     lang.hitch(this, function () {
                         this.updateDataStore(this._lastGridState);
                     }),
@@ -72,10 +75,25 @@ define([
             });
             domConstruct.place(pStatus, this.contentNode);
 
-            this._buildControls();
+            this._loadObject().then(lang.hitch(this, function (construct_object) {
+                this._buildControls(construct_object);
+            }));
         },
 
-        _buildControls: function () {
+        _loadObject: function () {
+            var url = ngwConfig.applicationUrl + '/compulink/services/reference_books/construct_object/'
+                    + this.constructObjectId,
+                deferred = new Deferred();
+            xhr(url, {
+                handleAs: 'json'
+            }).then(lang.hitch(this, function (construct_object) {
+                deferred.resolve(construct_object);
+            }));
+            return deferred.promise;
+        },
+
+        _editorElements: {},
+        _buildControls: function (construct_object) {
             var element,
                 elementArgs,
                 tableContainer = new TableContainer(
@@ -91,29 +109,36 @@ define([
                         element = new TextBox({
                             label: cSetting.label
                         });
-
                     } else if (cSetting.editor === 'number') {
                         element = new NumberTextBox({
                             label: cSetting.label
                         });
                     } else if (typeof cSetting.editor == 'function') {
+                        cSetting.editorArgs['autoWidth'] = false;
                         element = new cSetting.editor(cSetting.editorArgs);
                         element.label = cSetting.label;
                     }
                     if (element) {
+                        if (construct_object[cSetting.field + '_id']) {
+                            element.set('value', construct_object[cSetting.field + '_id'], construct_object[cSetting.field]);
+                        } else {
+                            element.set('value', construct_object[cSetting.field]);
+                        }
+                        element.set('style', {width: '200px'});
                         tableContainer.addChild(element);
+                        this._editorElements[cSetting.field] = element;
                         element = null;
                     }
-
                 }
-                console.log(cSetting);
-            });
-
+            }, this);
 
             query('p.loading-statuses', this.contentNode).forEach(domConstruct.destroy);
 
             tableContainer.placeAt(this.contentNode);
             tableContainer.startup();
+            this._tableContainer = tableContainer;
+
+            this.resize();
         },
 
         disableButtons: function () {
@@ -220,18 +245,41 @@ define([
             query('p.loading-statuses', this._changeStatusDialog.contentNode).forEach(domConstruct.destroy);
         },
 
-        _set_status_url: '/compulink/resources/{{id}}/set_focl_status?status={{status}}',
-        _saveSelectedStatus: function () {
-            var status = this._statusesSelector.get("value"),
-                setStatusUrl = mustache.render(this._set_status_url, {
-                    id: this._changeStatusDialog._itemId,
-                    status: status
-                });
+        _saveChangesUrl: 'compulink/services/reference_books/construct_object/{{id}}',
+        _saveChanges: function () {
+            var editedConstructObject = this.getValue(),
+                saveChangesUrl = ngwConfig.applicationUrl + '/compulink/services/reference_books/construct_object/'
+                    + this.constructObjectId;
 
-            return xhr.get(setStatusUrl, {handleAs: 'json'});
+            return xhr(saveChangesUrl, {
+                handleAs: 'json',
+                method: 'PUT',
+                data: JSON.stringify(editedConstructObject)
+            });
+        },
+
+        getValue: function () {
+            var value,
+                element,
+                editedConstructObject = {};
+
+            array.forEach(this.controlsSettings, function (cSetting) {
+                if (cSetting.editor) {
+                    element = this._editorElements[cSetting.field];
+                    value = element.get('value');
+                    if (value instanceof Date) {
+                        editedConstructObject[cSetting.field] = value;
+                    } else if (typeof value === 'object') {
+                        editedConstructObject[cSetting.field] = value.label;
+                        editedConstructObject[cSetting.field + '_id'] = value.id;
+                    } else {
+                        editedConstructObject[cSetting.field] = value;
+                    }
+                }
+            }, this);
+
+            return editedConstructObject;
         }
-
-
     });
 
     return {
