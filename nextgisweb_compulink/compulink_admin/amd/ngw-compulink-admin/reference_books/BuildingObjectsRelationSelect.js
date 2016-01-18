@@ -18,6 +18,16 @@ define([
             return this.inherited(arguments);
         },
 
+        set: function (name, id, text) {
+            if (name === 'value') {
+                this.value = 'res_' + id;
+                this.$input.val(text);
+            } else {
+                this.inherited(arguments);
+            }
+        },
+
+
         destroyRecursive: function () {
             domConstruct.destroy(this.domNode);
         }
