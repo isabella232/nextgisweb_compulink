@@ -2,12 +2,12 @@ div.districts-select {
     width: 15em;
 }
 
-div.input-wrapper {
+div.districts-select div.input-wrapper {
     position: relative;
     padding-bottom: 1px;
 }
 
-div.tree-wrapper {
+div.districts-select div.tree-wrapper {
     width: 300px;
     height: 300px;
     overflow: auto;
@@ -53,14 +53,14 @@ div.districts-select div.dijitArrowButtonInner {
     opacity: 0.5;
 }
 
-div.tree-wrapper {
+div.districts-select div.tree-wrapper {
     display: none;
     position: fixed;
     background-color: white;
     border: 1px #b5bcc7 solid;
 }
 
-div.tree-wrapper.visible {
+div.districts-select div.tree-wrapper.visible {
     display: block;
 }
 
