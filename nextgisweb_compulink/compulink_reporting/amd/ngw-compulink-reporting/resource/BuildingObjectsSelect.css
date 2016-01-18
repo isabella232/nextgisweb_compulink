@@ -11,6 +11,7 @@ div.tree-wrapper {
     width: 300px;
     height: 300px;
     overflow: auto;
+    z-index: 999;
 }
 
 div.districts-select {
