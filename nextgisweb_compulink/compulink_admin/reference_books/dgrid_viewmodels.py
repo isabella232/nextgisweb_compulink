@@ -16,7 +16,7 @@ regions_dgrid_viewmodel = [
     {
         'data-property': 'name',
         'grid-property': 'name',
-        'label': 'Название',
+        'label': 'Наименование',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -58,7 +58,7 @@ districts_dgrid_viewmodel = [
     {
         'data-property': 'name',
         'grid-property': 'name',
-        'label': 'Название',
+        'label': 'Наименование',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -108,7 +108,7 @@ projects_dgrid_viewmodel = [
     {
         'data-property': 'name',
         'grid-property': 'name',
-        'label': 'Название',
+        'label': 'Наименование',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -178,7 +178,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'name',
         'grid-property': 'name',
-        'label': 'Название',
+        'label': 'Наименование',
         'cell-prop': {
             'editor': 'text',
             'editOn': 'dblclick',
@@ -201,7 +201,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Начало СМР',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -212,7 +212,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Окончание СМР',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -223,7 +223,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Начало сдачи заказчику',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -234,7 +234,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Окончание сдачи заказчику',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
-            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'yyyy-MM-dd\'}}=end',
+            'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
             'editOn': 'dblclick',
             'autoSave': True
         }
@@ -252,7 +252,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'fosc_plan',
         'grid-property': 'fosc_plan',
-        'label': 'Разварка муфт, План (шт)',
+        'label': 'Количество муфт (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -272,7 +272,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'spec_trans_plan',
         'grid-property': 'spec_trans_plan',
-        'label': 'Строительство ГНБ переходов, План (шт)',
+        'label': 'Количество спецпереходов (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
@@ -282,7 +282,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'access_point_plan',
         'grid-property': 'access_point_plan',
-        'label': 'Монтаж точек доступа, План (шт)',
+        'label': 'Количество точек доступа (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
