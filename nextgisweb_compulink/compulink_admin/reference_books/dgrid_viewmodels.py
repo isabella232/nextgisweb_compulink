@@ -262,7 +262,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'cross_plan',
         'grid-property': 'cross_plan',
-        'label': 'Разварка кроссов, План (шт)',
+        'label': 'Количество кроссов (шт)',
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
