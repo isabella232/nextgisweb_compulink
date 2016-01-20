@@ -186,16 +186,6 @@ construct_objects_dgrid_viewmodel = [
         }
     },
     {
-        'data-property': 'subcontr_name',
-        'grid-property': 'subcontr_name',
-        'label': 'Субподрядчик',
-        'cell-prop': {
-            'editor': 'text',
-            'editOn': 'dblclick',
-            'autoSave': True
-        }
-    },
-    {
         'data-property': 'start_build_date',
         'grid-property': 'start_build_date',
         'label': 'Начало СМР',
@@ -317,7 +307,7 @@ construct_objects_dgrid_viewmodel = [
             'sort-field': Project.name,
             'type': Project
         },
-        'label': 'Проект строительства',
+        'label': 'Проект',
         'cell-prop': {
             'editor': 'widget=>RelationSelect',
             'editOn': 'dblclick',
@@ -326,21 +316,31 @@ construct_objects_dgrid_viewmodel = [
         }
     },
     {
-        'data-property': 'resource',
-        'grid-property': 'resource',
-        'relation': {
-            'id': 'id',
-            'label': 'display_name',
-            'relation-field': ConstructObject.resource,
-            'sort-field': Resource.display_name,
-            'type': Resource
-        },
-        'label': 'Ссылка на ресурс',
+        'data-property': 'subcontr_name',
+        'grid-property': 'subcontr_name',
+        'label': 'Субподрядчик',
         'cell-prop': {
-            'editor': 'widget=>BuildingObjectsRelationSelect',
-            'editorArgs': 'object=>{url: \'/compulink/reporting/resources/child\'}=end',
+            'editor': 'text',
             'editOn': 'dblclick',
             'autoSave': True
         }
     }
+    # {
+    #     'data-property': 'resource',
+    #     'grid-property': 'resource',
+    #     'relation': {
+    #         'id': 'id',
+    #         'label': 'display_name',
+    #         'relation-field': ConstructObject.resource,
+    #         'sort-field': Resource.display_name,
+    #         'type': Resource
+    #     },
+    #     'label': 'Ссылка на ресурс',
+    #     'cell-prop': {
+    #         'editor': 'widget=>BuildingObjectsRelationSelect',
+    #         'editorArgs': 'object=>{url: \'/compulink/reporting/resources/child\'}=end',
+    #         'editOn': 'dblclick',
+    #         'autoSave': True
+    #     }
+    # }
 ]
