@@ -16,13 +16,15 @@ define([
     'dijit/form/TextBox',
     'dijit/form/NumberTextBox',
     'ngw-compulink-libs/mustache/mustache',
-    'dojo/text!./templates/ConstructObjectEditor.html'
+    'dojo/text!./templates/ConstructObjectEditor.html',
+    'xstyle/css!./templates/css/ConstructObjectEditor.css'
 ], function (declare, query, Deferred, domConstruct, array, lang, html, xhr, _Widget,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, mustache, template) {
     var widget = declare([ConfirmDialog], {
         title: 'Изменение объекта строительства',
         message: '',
+        id: 'constructObjectEditor',
         buttonOk: 'Сохранить',
         buttonCancel: 'Отменить',
         isDestroyedAfterHiding: true,
@@ -93,7 +95,7 @@ define([
                     {
                         cols: 1,
                         customClass: 'labelsAndValues',
-                        'labelWidth': '150'
+                        labelWidth: '150'
                     });
 
             array.forEach(this.controlsSettings, function (cSetting) {
@@ -107,7 +109,6 @@ define([
                             label: cSetting.label
                         });
                     } else if (typeof cSetting.editor == 'function') {
-                        cSetting.editorArgs['autoWidth'] = false;
                         element = new cSetting.editor(cSetting.editorArgs);
                         element.label = cSetting.label;
                     }
