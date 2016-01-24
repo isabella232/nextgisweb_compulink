@@ -108,7 +108,7 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Редактировать атрибуты',
+                label: 'Открыть карточку',
                 onClick: lang.hitch(this, function (evt) {
                     var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
                         item = this._grid.store.query({id: itemId});
