@@ -17,6 +17,7 @@ define([
         message: 'Are you sure?',
         buttonOk: 'OK',
         buttonCancel: 'Cancel',
+        id: 'confirmDialog',
         handlerOk: function () {},
         handlerCancel: function () {},
         isDestroyedAfterHiding: false,
@@ -28,6 +29,7 @@ define([
             var contentWidget = new (declare([_Widget, _TemplatedMixin, _WidgetsInTemplateMixin], {
                 templateString: template,
                 message: this.message,
+                id: this.divTopAttributes,
                 buttonOk: this.buttonOk,
                 buttonCancel: this.buttonCancel
             }));
