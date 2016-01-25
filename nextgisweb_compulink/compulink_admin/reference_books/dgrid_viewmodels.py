@@ -299,7 +299,7 @@ construct_objects_dgrid_viewmodel = [
     # },
     {
         'complex': True,
-        'label': 'Субъект РФ',
+        'label': 'Местоположение',
         'grid-property': 'region_complex',
         'sort-field': ConstructObject.region,
         'value': lambda reg, dist: (reg.name if reg else '') +
