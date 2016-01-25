@@ -114,10 +114,12 @@ define([
                     }
                     if (element) {
                         if (construct_object[cSetting.field + '_id']) {
-                            element.set('value', construct_object[cSetting.field + '_id'], construct_object[cSetting.field]);
+                            element.set('value', construct_object[cSetting.field + '_id'],
+                                construct_object[cSetting.field]);
                         } else {
                             if (construct_object[cSetting.field]) {
-                                element.set('value', construct_object[cSetting.field]);
+                                element.set('value', construct_object[cSetting.field],
+                                    construct_object);
                             } else {
                                 element.set('value', null);
                             }
@@ -181,8 +183,13 @@ define([
                     if (value instanceof Date) {
                         editedConstructObject[cSetting.field] = value;
                     } else if (typeof value === 'object') {
-                        editedConstructObject[cSetting.field] = value.label;
-                        editedConstructObject[cSetting.field + '_id'] = value.id;
+                        if (value.full) {
+                            lang.mixin(editedConstructObject, value);
+                        } else {
+                            editedConstructObject[cSetting.field] = value.label;
+                            editedConstructObject[cSetting.field + '_id'] = value.id;
+                        }
+
                     } else {
                         editedConstructObject[cSetting.field] = value;
                     }
