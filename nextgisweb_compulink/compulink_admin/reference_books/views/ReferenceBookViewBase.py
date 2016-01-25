@@ -140,6 +140,17 @@ class ReferenceBookViewBase(object):
                     'id': new_relation_item.id,
                     'item': new_relation_item
                 }
+            if 'complex' in config_item:
+                for field in config_item['fields']:
+                    if 'relation' in field:
+                        new_relation_item_id = self.request.json[field['data-property'] + '_id']
+                        if new_relation_item_id:
+                            new_relation_item = session.query(field['type'])\
+                                .filter_by(id=new_relation_item_id).one()
+                            relation_items[field['data-property']] = {
+                                'id': new_relation_item.id,
+                                'item': new_relation_item
+                            }
 
         transaction.commit()
 
@@ -160,6 +171,24 @@ class ReferenceBookViewBase(object):
                     if new_relation_item_id:
                         setattr(item_db, config_item['data-property'],
                                 relation_items[config_item['data-property']]['item'])
+            elif 'complex' in config_item:
+                for field in config_item['fields']:
+                    current_relation_item = item_db.__getattribute__(field['data-property'])
+                    if current_relation_item:
+                        current_relation_item_id = current_relation_item.\
+                            __getattribute__(field['id'])
+                        if field['data-property'] in relation_items:
+                            new_relation_item_id = relation_items[field['data-property']]['id']
+                            relation_item_value = relation_items[field['data-property']]['item']
+                        else:
+                            relation_item_value = None
+                        if current_relation_item_id != new_relation_item_id:
+                            setattr(item_db, field['data-property'], relation_item_value)
+                    else:
+                        new_relation_item_id = relation_items[field['data-property']]['id']
+                        if new_relation_item_id:
+                            setattr(item_db, field['data-property'],
+                                    relation_items[field['data-property']]['item'])
             elif 'id' in config_item and config_item['id'] == True:
                 pass
             else:
