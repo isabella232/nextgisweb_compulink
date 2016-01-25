@@ -185,7 +185,8 @@ class ReferenceBookViewBase(object):
                         if current_relation_item_id != new_relation_item_id:
                             setattr(item_db, field['data-property'], relation_item_value)
                     else:
-                        new_relation_item_id = relation_items[field['data-property']]['id']
+                        new_relation_item_id = relation_items[field['data-property']]['id']\
+                            if field['data-property'] in relation_items else None
                         if new_relation_item_id:
                             setattr(item_db, field['data-property'],
                                     relation_items[field['data-property']]['item'])
