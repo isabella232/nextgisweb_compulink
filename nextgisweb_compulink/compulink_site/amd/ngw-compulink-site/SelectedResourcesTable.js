@@ -112,8 +112,8 @@ define([
                 onClick: lang.hitch(this, function (evt) {
                     var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
                         item = this._grid.store.query({id: itemId});
-                    if (item && item[0].editable) {
-                        ConstructObjectEditor.run(itemId, lang.hitch(this, function () {
+                    if (item) {
+                        ConstructObjectEditor.run(itemId, item[0].editable, lang.hitch(this, function () {
                             this.updateDataStore(this._lastGridState);
                         }));
                     }
