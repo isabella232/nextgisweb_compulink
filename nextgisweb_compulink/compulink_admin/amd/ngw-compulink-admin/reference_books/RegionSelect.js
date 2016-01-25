@@ -170,11 +170,18 @@ define([
 
         set: function (name, text, object) {
             if (name === 'value') {
-                this.value = {
-                    region_id: 'reg_' + object.region_id,
-                    district_id: 'reg_' + object.district_id
-                };
-                this.$input.val(text);
+                if (!text) {
+                    this.value = {
+                        region_id: null,
+                        district_id: null
+                    };
+                } else {
+                    this.value = {
+                        region_id: 'reg_' + object.region_id,
+                        district_id: 'reg_' + object.district_id
+                    };
+                    this.$input.val(text);
+                }
             } else if (name === 'disabled' && text === true) {
                 this.disable();
             } else {
