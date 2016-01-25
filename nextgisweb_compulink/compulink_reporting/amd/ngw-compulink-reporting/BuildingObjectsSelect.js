@@ -25,7 +25,7 @@ define([
         postCreate: function () {
             var domNode = this.domNode;
 
-            this.$treeWrapper = jQuery(domNode).find('div.tree-wrapper');
+            this.$treeWrapper = jQuery(domNode).find('div.districts-tree-wrapper');
 
             this.$treeWrapper.appendTo('body');
             this.$domNodeTree = this.$treeWrapper.find('div.tree');

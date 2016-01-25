@@ -7,13 +7,6 @@ div.districts-select div.input-wrapper {
     padding-bottom: 1px;
 }
 
-div.districts-select div.tree-wrapper {
-    width: 300px;
-    height: 300px;
-    overflow: auto;
-    z-index: 999;
-}
-
 div.districts-select {
     display: inline-block;
     z-index: 999;
@@ -53,18 +46,25 @@ div.districts-select div.dijitArrowButtonInner {
     opacity: 0.5;
 }
 
-div.districts-select div.tree-wrapper {
+div.districts-tree-wrapper {
+    width: 300px;
+    height: 300px;
+    overflow: auto;
+    z-index: 999;
+}
+
+div.districts-tree-wrapper {
     display: none;
     position: fixed;
     background-color: white;
     border: 1px #b5bcc7 solid;
 }
 
-div.districts-select div.tree-wrapper.visible {
+div.districts-tree-wrapper.visible {
     display: block;
 }
 
-div.districts-select:hover div.tree-wrapper {
+div.districts-select:hover div.districts-tree-wrapper {
     background-color: #f9fbff;
     border-color: #769dc0;
 }
