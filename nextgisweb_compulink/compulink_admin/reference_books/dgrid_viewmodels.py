@@ -298,34 +298,6 @@ construct_objects_dgrid_viewmodel = [
     #     }
     # },
     {
-        'data-property': 'project',
-        'grid-property': 'project',
-        'relation': {
-            'id': 'id',
-            'label': 'name',
-            'relation-field': ConstructObject.project,
-            'sort-field': Project.name,
-            'type': Project
-        },
-        'label': 'Проект',
-        'cell-prop': {
-            'editor': 'widget=>RelationSelect',
-            'editOn': 'dblclick',
-            'editorArgs': '[data]',
-            'autoSave': True
-        }
-    },
-    {
-        'data-property': 'subcontr_name',
-        'grid-property': 'subcontr_name',
-        'label': 'Субподрядчик',
-        'cell-prop': {
-            'editor': 'text',
-            'editOn': 'dblclick',
-            'autoSave': True
-        }
-    },
-    {
         'complex': True,
         'label': 'Субъект РФ',
         'grid-property': 'region_complex',
@@ -356,6 +328,34 @@ construct_objects_dgrid_viewmodel = [
             'editor': 'widget=>RegionSelect',
             'editOn': 'dblclick',
             'editorArgs': 'object=>{url: \'/compulink/regions/tree\'}=end',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'project',
+        'grid-property': 'project',
+        'relation': {
+            'id': 'id',
+            'label': 'name',
+            'relation-field': ConstructObject.project,
+            'sort-field': Project.name,
+            'type': Project
+        },
+        'label': 'Проект',
+        'cell-prop': {
+            'editor': 'widget=>RelationSelect',
+            'editOn': 'dblclick',
+            'editorArgs': '[data]',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'subcontr_name',
+        'grid-property': 'subcontr_name',
+        'label': 'Субподрядчик',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
             'autoSave': True
         }
     }
