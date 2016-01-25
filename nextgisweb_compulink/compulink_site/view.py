@@ -25,10 +25,11 @@ from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
+from nextgisweb_compulink.compulink_reporting.utils import OverdueStatusCalculator
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT, FoclStructScope, Region, District
+    PROJECT_STATUS_BUILT, FoclStructScope, Region, District, ConstructObject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
@@ -302,11 +303,20 @@ def get_focl_info(request):
     if not res_ids:
         return Response('[]')
 
+    now_dt = date.today()
+
     dbsession = DBSession()
     resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
 
+    # get rows from registry
+    focl_info_rows = {
+        row.resource_id: row for row in dbsession.query(ConstructObject).filter(ConstructObject.resource_id.in_(res_ids)).all()
+    }
+
     # get rows from reporting
-    reporting_rows = {row.focl_res_id: row for row in dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id.in_(res_ids)).all() }
+    reporting_rows = {
+        row.focl_res_id: row for row in dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id.in_(res_ids)).all()
+    }
 
     resp = []
 
@@ -320,34 +330,67 @@ def get_focl_info(request):
             continue
 
         # try to get data from status report
-        if res.id in reporting_rows.keys():
+        if res.id in reporting_rows.keys() and res.id in focl_info_rows.keys():
             report_row = reporting_rows[res.id]
+            focl_info = focl_info_rows[res.id]
             resp.append(
                 {
-                    'id': report_row.focl_res_id,
-                    'display_name': report_row.focl_name,
-                    'district': districts.get(report_row.district, report_row.district),
-                    'region': regions.get(report_row.region, report_row.region),
-                    'status': statuses.get(report_row.status, report_row.status),
+                    'id': res.id,
+                    'display_name': focl_info.name,
+                    'district': districts.get(focl_info.district_id, focl_info.district_id),
+                    'region': regions.get(focl_info.region_id, focl_info.region_id),
+                    'status': statuses.get(res.status, res.status),
 
-                    'cabling_plan': report_row.cabling_plan,
+                    'cabling_plan': focl_info.cabling_plan,
                     'cabling_fact': report_row.cabling_fact,
                     'cabling_percent': report_row.cabling_percent,
 
-                    'start_build_time': report_row.start_build_time.strftime('%d.%m.%Y') if report_row.start_build_time else '',
-                    'end_build_time': report_row.end_build_time.strftime('%d.%m.%Y') if report_row.end_build_time else '',
-                    'start_deliver_time': report_row.start_deliver_time.strftime('%d.%m.%Y') if report_row.start_deliver_time else '',
-                    'end_deliver_time': report_row.end_deliver_time.strftime('%d.%m.%Y') if report_row.end_deliver_time else '',
+                    'start_build_time': focl_info.start_build_date.strftime('%d.%m.%Y') if focl_info.start_build_date else '',
+                    'end_build_time': focl_info.end_build_date.strftime('%d.%m.%Y') if focl_info.end_build_date else '',
+                    'start_deliver_time': focl_info.start_deliver_date.strftime('%d.%m.%Y') if focl_info.start_deliver_date else '',
+                    'end_deliver_time': focl_info.end_deliver_date.strftime('%d.%m.%Y') if focl_info.end_deliver_date else '',
 
-                    'subcontr': report_row.subcontr_name,
+                    'subcontr': focl_info.subcontr_name,
 
-                    'is_overdue': report_row.is_overdue,
-                    'is_month_overdue': report_row.is_month_overdue,
-                    'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
+                    'is_overdue': OverdueStatusCalculator.overdue_status(focl_info.end_build_date, res.status),
+                    'is_month_overdue': OverdueStatusCalculator.month_overdue_status(focl_info.end_build_date, res.status),
+                    'is_focl_delivered': res.status == PROJECT_STATUS_DELIVERED,
 
-                    'cabling_plan_today': (report_row.cabling_plan * (float((datetime.now() - report_row.start_build_time).days)/((report_row.end_build_time - report_row.start_build_time).days)))
-                        if (report_row.end_build_time and report_row.start_build_time and report_row.cabling_plan and (report_row.end_build_time - report_row.start_build_time).days !=0) else None,
-                    'status_row': report_row.status,
+                    'cabling_plan_today': (focl_info.cabling_plan * (float((now_dt - focl_info.start_build_date).days)/((focl_info.end_build_date - focl_info.start_build_date).days)))
+                        if (focl_info.end_build_date and focl_info.start_build_date and focl_info.cabling_plan and (focl_info.end_build_date - focl_info.start_build_date).days !=0) else None,
+                    'status_row': res.status,
+                    'editable': request.user.is_administrator or res.has_permission(FoclStructScope.edit_prop, request.user)
+                }
+            )
+        # else get from registry
+        elif res.id in focl_info_rows.keys():
+            focl_info = focl_info_rows[res.id]
+            resp.append(
+                {
+                    'id': res.id,
+                    'display_name': focl_info.name,
+                    'district': districts.get(focl_info.district_id, focl_info.district_id),
+                    'region': regions.get(focl_info.region_id, focl_info.region_id),
+                    'status': statuses.get(res.status, res.status),
+
+                    'cabling_plan': focl_info.cabling_plan,
+                    'cabling_fact': None,
+                    'cabling_percent': None,
+
+                    'start_build_time': focl_info.start_build_date.strftime('%d.%m.%Y') if focl_info.start_build_time else '',
+                    'end_build_time': focl_info.end_build_date.strftime('%d.%m.%Y') if focl_info.end_build_date else '',
+                    'start_deliver_time': focl_info.start_deliver_date.strftime('%d.%m.%Y') if focl_info.start_deliver_date else '',
+                    'end_deliver_time': focl_info.end_deliver_date.strftime('%d.%m.%Y') if focl_info.end_deliver_date else '',
+
+                    'subcontr': focl_info.subcontr_name,
+
+                    'is_overdue': OverdueStatusCalculator.overdue_status(focl_info.end_build_date, res.status),
+                    'is_month_overdue': OverdueStatusCalculator.month_overdue_status(focl_info.end_build_date, res.status),
+                    'is_focl_delivered': res.status == PROJECT_STATUS_DELIVERED,
+
+                    'cabling_plan_today': (focl_info.cabling_plan * (float((now_dt - focl_info.start_build_date).days)/((focl_info.end_build_date - focl_info.start_build_date).days)))
+                        if (focl_info.end_build_date and focl_info.start_build_date and focl_info.cabling_plan and (focl_info.end_build_date - focl_info.start_build_date).days !=0) else None,
+                    'status_row': res.status,
                     'editable': request.user.is_administrator or res.has_permission(FoclStructScope.edit_prop, request.user)
                 }
             )
@@ -374,10 +417,10 @@ def get_focl_info(request):
 
                     'is_overdue': False,
                     'is_month_overdue': False,
-                    'is_focl_delivered': False,
+                    'is_focl_delivered': res.status == PROJECT_STATUS_DELIVERED,
 
                     'cabling_plan_today': None,
-                    'status_row': None,
+                    'status_row': res.status,
                     'editable': request.user.is_administrator or res.has_permission(FoclStructScope.edit_prop, request.user)
                 }
             )
