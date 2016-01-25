@@ -1,8 +1,8 @@
-div.districts-select {
+div.region-select {
     width: 15em;
 }
 
-div.districts-select div.input-wrapper {
+div.region-select div.input-wrapper {
     position: relative;
     padding-bottom: 1px;
 }
@@ -14,24 +14,29 @@ body div.districts-tree-wrapper {
     z-index: 999;
 }
 
-div.districts-select {
+div.region-select {
     display: inline-block;
     z-index: 999;
 }
 
-div.districts-select input {
+div.region-select input {
+    color: #757575;
     width: 100%;
     height: 15px;
     border-radius: 0;
     border: 1px #b5bcc7 solid;
 }
 
-div.districts-select:hover input {
+div.region-select.active input {
+    color: #000000;
+}
+
+div.region-select.active:hover input {
     background-color: #e9f4fe;
     border-color: #769dc0;
 }
 
-div.districts-select div.dijitArrowButton {
+div.region-select div.dijitArrowButton {
     position: absolute;
     display: block;
     top: 0;
@@ -42,12 +47,12 @@ div.districts-select div.dijitArrowButton {
     background-color: #f7f7f7;
 }
 
-div.districts-select:hover div.dijitArrowButton {
+div.region-select.active:hover div.dijitArrowButton {
     background-color: #c1e1ff;
     border-color: #769dc0;
 }
 
-div.districts-select div.dijitArrowButtonInner {
+div.region-select.active div.dijitArrowButtonInner {
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -64,7 +69,7 @@ body  div.districts-tree-wrapper.visible {
     display: block;
 }
 
-div.districts-select:hover div.districts-tree-wrapper {
+div.region-select.active:hover div.districts-tree-wrapper {
     background-color: #f9fbff;
     border-color: #769dc0;
 }

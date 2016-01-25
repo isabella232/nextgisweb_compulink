@@ -86,7 +86,8 @@ define([
                 }, 1000);
             });
 
-            $buttonArrow.click(lang.hitch(this, function () {
+            this.$buttonArrow = $buttonArrow;
+            this.$buttonArrow.click(lang.hitch(this, function () {
                 $treeWrapper.toggleClass('visible');
                 if ($treeWrapper.hasClass('visible')) {
                     this._renderTreeWrapper();
@@ -173,13 +174,20 @@ define([
                     region_id: 'reg_' + object.region_id,
                     district_id: 'reg_' + object.district_id
                 };
-
                 this.$input.val(text);
+            } else if (name === 'disabled' && text === true) {
+                this.disable();
             } else {
                 this.inherited(arguments);
             }
         },
 
+        disable: function () {
+            this.$input.prop('disabled', true);
+            $(this.domNode).removeClass('active').addClass('dijitDisabled');
+            this.$input.off('focus');
+            this.$buttonArrow.off('click');
+        },
 
         destroyRecursive: function () {
             domConstruct.destroy(this.domNode);
