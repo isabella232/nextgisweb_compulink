@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/query',
+    'dojo/dom-style',
     'dojo/Deferred',
     'dojo/dom-construct',
     'dojo/_base/array',
@@ -18,7 +19,7 @@ define([
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/ConstructObjectEditor.html',
     'xstyle/css!./templates/css/ConstructObjectEditor.css'
-], function (declare, query, Deferred, domConstruct, array, lang, html, xhr, _Widget,
+], function (declare, query, domStyle, Deferred, domConstruct, array, lang, html, xhr, _Widget,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, mustache, template) {
     var widget = declare([ConfirmDialog], {
@@ -63,6 +64,12 @@ define([
 
         postCreate: function () {
             this.inherited(arguments);
+
+            if (!this.editable) {
+                array.forEach(query('#constructObjectEditor span.dijitButton'), function (button) {
+                    domStyle.set(button, 'display', 'none');
+                });
+            }
 
             var pStatus = domConstruct.create('p', {
                 innerHTML: 'Загрузка атрибутов...',
@@ -125,6 +132,7 @@ define([
                             }
                         }
                         element.set('style', {width: '200px'});
+                        if (!this.editable) { element.set('disabled', true); }
                         tableContainer.addChild(element);
                         this._editorElements[cSetting.field] = element;
                         element = null;
@@ -204,12 +212,13 @@ define([
     });
 
     return {
-        run: function (id, afterSave) {
+        run: function (id, editable, afterSave) {
             if (!construct_object_editor_settings) {
                 throw 'ConstructObjectEditor: construct_object_editor_settings is not defined!';
             }
             var editor = new widget({
                 constructObjectId: id,
+                editable: editable,
                 controlsSettings: construct_object_editor_settings,
                 afterSave: afterSave
             });
