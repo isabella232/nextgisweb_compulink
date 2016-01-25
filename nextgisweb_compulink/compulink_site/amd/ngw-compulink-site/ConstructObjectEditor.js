@@ -183,7 +183,10 @@ define([
                     if (value instanceof Date) {
                         editedConstructObject[cSetting.field] = value;
                     } else if (typeof value === 'object') {
-                        if (value.full) {
+                        if (!value) {
+                            editedConstructObject[cSetting.field] = null;
+                            editedConstructObject[cSetting.field + '_id'] = null;
+                        } else if (value.full) {
                             lang.mixin(editedConstructObject, value);
                         } else {
                             editedConstructObject[cSetting.field] = value.label;
