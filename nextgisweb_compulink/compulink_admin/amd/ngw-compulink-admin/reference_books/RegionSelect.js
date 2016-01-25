@@ -152,10 +152,16 @@ define([
         },
 
         get: function (name) {
-            var result = {};
+            var result,
+                currentValue;
             if (name === 'value') {
+                result = {};
                 result['full'] = true;
-                lang.mixin(result, this.value);
+                currentValue = this.value;
+                lang.mixin(result, {
+                    region_id: currentValue.region_id ? currentValue.region_id.replace('reg_', '') : null,
+                    district_id: currentValue.district_id ? currentValue.district_id.replace('reg_', '') : null
+                });
                 return result;
             }
             return this.inherited(arguments);
@@ -164,8 +170,8 @@ define([
         set: function (name, text, object) {
             if (name === 'value') {
                 this.value = {
-                    region_id: object.region_id,
-                    district_id: object.district_id
+                    region_id: 'reg_' + object.region_id,
+                    district_id: 'reg_' + object.district_id
                 };
 
                 this.$input.val(text);
