@@ -28,7 +28,7 @@ from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT, FoclStructScope
+    PROJECT_STATUS_BUILT, FoclStructScope, Region, District
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
@@ -64,6 +64,10 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.site.layers_by_type',
         '/compulink/resources/layers_by_type').add_view(get_layers_by_type)
+
+    config.add_route(
+        'compulink.site.regions_tree',
+        '/compulink/regions/tree').add_view(get_regions_tree)
 
     config.add_static_view(
         name='compulink/static',
@@ -692,3 +696,43 @@ def set_focl_status(request):
         report_line.persist()
 
     return Response(json.dumps({'status': 'ok'}))
+
+
+@view_config(renderer='json')
+def get_regions_tree(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    parent_region_id = request.params.get('id', None)
+    if parent_region_id is None:
+        raise HTTPBadRequest('Set "id" param!')
+    else:
+        parent_region_id = parent_region_id.replace('reg_', '')
+    is_root_node_requsted = parent_region_id == '#'
+
+    dbsession = DBSession()
+    if is_root_node_requsted:
+        children = dbsession.query(Region).order_by(Region.name).all()
+    else:
+        children = dbsession.query(District)\
+            .filter(District.region_id == parent_region_id)\
+            .order_by(District.name)\
+            .all()
+
+    child_json = []
+    for child in children:
+        has_children = type(child) is Region
+        is_need_checkbox = False
+        child_json.append({
+            'id': 'reg_' + str(child.id),
+            'text': child.name,
+            'children': has_children,
+            'has_children': has_children,
+            # 'icon': child_resource.identity,
+            # 'res_type': child_resource.identity,
+            'a_attr': {'chb': is_need_checkbox}
+        })
+
+    dbsession.close()
+
+    return Response(json.dumps(child_json))
