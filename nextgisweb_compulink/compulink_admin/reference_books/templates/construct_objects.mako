@@ -21,11 +21,13 @@
     var columnsSettings = null;
     require([
         'ngw-compulink-admin/reference_books/RelationSelect',
+        'ngw-compulink-admin/reference_books/RegionSelect',
         'ngw-compulink-admin/reference_books/BuildingObjectsRelationSelect',
         'dijit/form/DateTextBox',
         'dojo/parser',
         'dojo/ready'
-    ], function (RelationSelect, BuildingObjectsRelationSelect, DateTextBox, parser, ready) {
+    ], function (RelationSelect, RegionSelect, BuildingObjectsRelationSelect,
+                 DateTextBox, parser, ready) {
         ready(function () {
             columnsSettings = ${columnsSettings | n};
             parser.parse();
