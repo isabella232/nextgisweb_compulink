@@ -42,7 +42,8 @@ class ReferenceBookViewBase(object):
 
             if 'relation' in config_item:
                 relation_section = config_item['relation']
-                if 'editorArgs' in grid_config_store_item and grid_config_store_item['editorArgs'] == '[data]':
+                if 'editorArgs' in grid_config_store_item and \
+                                grid_config_store_item['editorArgs'] == '[data]':
                     grid_config_store_item['editorArgs'] = []
                     session = DBSession()
                     relation_items = session\
@@ -70,7 +71,18 @@ class ReferenceBookViewBase(object):
         rel_attrs = filter(lambda c: 'relation' in c, dgrid_viewmodel)
         for rel_attr in rel_attrs:
             relation_field = rel_attr['relation']['relation-field']
-            items_query = items_query.outerjoin(relation_field).options(joinedload(relation_field))
+            items_query = items_query\
+                .outerjoin(relation_field)\
+                .options(joinedload(relation_field))
+
+        complex_attrs = filter(lambda c: 'complex' in c, dgrid_viewmodel)
+        for complex_attr in complex_attrs:
+            for field in complex_attr['fields']:
+                if 'relation' in field:
+                    relation_field = field['relation-field']
+                    items_query = items_query\
+                        .outerjoin(relation_field)\
+                        .options(joinedload(relation_field))
 
         sort_keys = filter(lambda k: 'sort(' in k, self.request.GET.keys())
         if sort_keys:
@@ -78,6 +90,8 @@ class ReferenceBookViewBase(object):
             item_config = filter(lambda x: x['grid-property'] == grid_field_name, dgrid_viewmodel)[0]
             if 'relation' in item_config:
                 sorting_field = item_config['relation']['sort-field']
+            elif 'complex' in item_config:
+                sorting_field = item_config['sort-field']
             else:
                 field_name = item_config['data-property']
                 sorting_field = reference_book_type.__table__.c[field_name]
@@ -189,7 +203,29 @@ class ReferenceBookViewBase(object):
                 else:
                     result_item[rel_attr_name] = None
                     result_item[rel_attr_name + '_id'] = None
+            elif 'complex' in item_config:
+                self._build_complex_property_value(item_config, result_item, item_db)
             else:
                 result_item[item_config['grid-property']] = \
                     item_db.__getattribute__(item_config['data-property'])
         return result_item
+
+    def _build_complex_property_value(self, item_config, result_item, item_db):
+        fields_values = []
+
+        for field_config in item_config['fields']:
+            if 'relation' in field_config:
+                rel_attr_name = field_config['data-property']
+                rel_attr = item_db.__getattribute__(rel_attr_name)
+                fields_values.append(rel_attr)
+                if rel_attr:
+                    result_item[rel_attr_name + '_id'] = rel_attr.__getattribute__(field_config['id'])
+                else:
+                    result_item[rel_attr_name] = None
+                    result_item[rel_attr_name + '_id'] = None
+            else:
+                result_item[item_config['grid-property']] = \
+                    item_db.__getattribute__(item_config['data-property'])
+                fields_values.append(item_db.__getattribute__(item_config['data-property']))
+
+        result_item[item_config['grid-property']] = item_config['value'](*fields_values)
