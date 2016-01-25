@@ -204,6 +204,7 @@ define([
         _showChangeStatusDialog: function (itemId) {
             this._changeStatusDialog = new ConfirmDialog({
                 title: 'Изменение статуса объекта строительства',
+                id: 'changeStatusDialog',
                 message: '',
                 buttonOk: 'Сохранить',
                 buttonCancel: 'Отменить',
