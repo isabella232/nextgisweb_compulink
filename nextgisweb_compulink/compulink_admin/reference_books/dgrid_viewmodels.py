@@ -279,24 +279,24 @@ construct_objects_dgrid_viewmodel = [
             'autoSave': True
         }
     },
-    {
-        'data-property': 'region',
-        'grid-property': 'region',
-        'relation': {
-            'id': 'id',
-            'label': 'name',
-            'relation-field': ConstructObject.region,
-            'sort-field': Region.name,
-            'type': Region
-        },
-        'label': 'Субъект РФ',
-        'cell-prop': {
-            'editor': 'widget=>RelationSelect',
-            'editOn': 'dblclick',
-            'editorArgs': '[data]',
-            'autoSave': True
-        }
-    },
+    # {
+    #     'data-property': 'region',
+    #     'grid-property': 'region',
+    #     'relation': {
+    #         'id': 'id',
+    #         'label': 'name',
+    #         'relation-field': ConstructObject.region,
+    #         'sort-field': Region.name,
+    #         'type': Region
+    #     },
+    #     'label': 'Субъект РФ',
+    #     'cell-prop': {
+    #         'editor': 'widget=>RelationSelect',
+    #         'editOn': 'dblclick',
+    #         'editorArgs': '[data]',
+    #         'autoSave': True
+    #     }
+    # },
     {
         'data-property': 'project',
         'grid-property': 'project',
@@ -324,7 +324,42 @@ construct_objects_dgrid_viewmodel = [
             'editOn': 'dblclick',
             'autoSave': True
         }
+    },
+    {
+        'complex': True,
+        'label': 'Субъект РФ',
+        'grid-property': 'region_complex',
+        'sort-field': ConstructObject.region,
+        'value': lambda reg, dist: (reg.name if reg else '') +
+                                   (', ' + dist.name if dist else ''),
+        'fields': [
+            {
+                'relation': True,
+                'data-property': 'region',
+                'id': 'id',
+                'label': 'name',
+                'relation-field': ConstructObject.region,
+                'sort-field': Region.name,
+                'type': Region
+            },
+            {
+                'relation': True,
+                'data-property': 'district',
+                'id': 'id',
+                'label': 'name',
+                'relation-field': ConstructObject.district,
+                'sort-field': District.name,
+                'type': District
+            }
+        ],
+        'cell-prop': {
+            'editor': 'widget=>RegionSelect',
+            'editOn': 'dblclick',
+            'editorArgs': 'object=>{url: \'/compulink/regions/tree\'}=end',
+            'autoSave': True
+        }
     }
+
     # {
     #     'data-property': 'resource',
     #     'grid-property': 'resource',
