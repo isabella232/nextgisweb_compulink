@@ -35,7 +35,9 @@ define([
             });
             domConstruct.empty(this.containerNode);
             var self = this,
-                template, labels = [];
+                template,
+                labels = [],
+                values = [];
             array.forEach(this.value, function (item) {
                 var opt = domConstruct.create('option', {
                     'value': item,
@@ -50,6 +52,7 @@ define([
                     if (option.selected) {
                         i++;
                         label = option.label;
+                        values.push(option.value);
                         labels.push(label);
                     }
                 });
@@ -59,6 +62,8 @@ define([
                 } else if (i > 0) {
                     template = labels.join(',');
                 }
+
+                this.value = values;
 
                 this.dropDownButton.set('label', this.multiple ?
                     template :
