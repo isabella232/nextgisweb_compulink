@@ -344,6 +344,7 @@ construct_objects_dgrid_viewmodel = [
         'label': 'Проект',
         'cell-prop': {
             'editor': 'widget=>RelationSelect',
+            'nullable': 'Проект не выбран',
             'editOn': 'dblclick',
             'editorArgs': '[data]',
             'autoSave': True

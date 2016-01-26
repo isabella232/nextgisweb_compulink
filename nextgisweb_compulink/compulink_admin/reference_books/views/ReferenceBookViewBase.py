@@ -49,6 +49,8 @@ class ReferenceBookViewBase(object):
                     relation_items = session\
                         .query(relation_section['type'])\
                         .order_by(relation_section['sort-field'])
+                    if 'nullable' in grid_config_store_item and grid_config_store_item['nullable']:
+                        grid_config_store_item['editorArgs'].append(['', grid_config_store_item['nullable']])
                     for relation_item in relation_items:
                         grid_config_store_item['editorArgs'].append([
                             relation_item.__getattribute__(relation_section['id']),
@@ -134,12 +136,13 @@ class ReferenceBookViewBase(object):
         for config_item in dgrid_viewmodel:
             if 'relation' in config_item:
                 new_relation_item_id = self.request.json[config_item['grid-property'] + '_id']
-                new_relation_item = session.query(config_item['relation']['type'])\
-                    .filter_by(id=new_relation_item_id).one()
-                relation_items[config_item['data-property']] = {
-                    'id': new_relation_item.id,
-                    'item': new_relation_item
-                }
+                if new_relation_item_id:
+                    new_relation_item = session.query(config_item['relation']['type'])\
+                        .filter_by(id=new_relation_item_id).one()
+                    relation_items[config_item['data-property']] = {
+                        'id': new_relation_item.id,
+                        'item': new_relation_item
+                    }
             if 'complex' in config_item:
                 for field in config_item['fields']:
                     if 'relation' in field:
@@ -162,12 +165,16 @@ class ReferenceBookViewBase(object):
                 current_relation_item = item_db.__getattribute__(config_item['data-property'])
                 if current_relation_item:
                     current_relation_item_id = current_relation_item.__getattribute__(config_item['relation']['id'])
-                    new_relation_item_id = relation_items[config_item['data-property']]['id']
-                    if current_relation_item_id != new_relation_item_id:
+                    new_relation_item_id = relation_items[config_item['data-property']]['id']\
+                        if config_item['data-property'] in relation_items else None
+                    if new_relation_item_id and current_relation_item_id != new_relation_item_id:
                         setattr(item_db, config_item['data-property'],
                                 relation_items[config_item['data-property']]['item'])
+                    elif not new_relation_item_id:
+                        setattr(item_db, config_item['data-property'], None)
                 else:
-                    new_relation_item_id = relation_items[config_item['data-property']]['id']
+                    new_relation_item_id = relation_items[config_item['data-property']]['id']\
+                        if config_item['data-property'] in relation_items else None
                     if new_relation_item_id:
                         setattr(item_db, config_item['data-property'],
                                 relation_items[config_item['data-property']]['item'])
