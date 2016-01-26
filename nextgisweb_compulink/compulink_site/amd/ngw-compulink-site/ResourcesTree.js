@@ -144,6 +144,10 @@ define([
                 this.settings.type = resourceType === 'all' ? null : resourceType;
                 this.$tree.jstree('refresh');
             }));
+
+            topic.subscribe('resources/tree/refresh', lang.hitch(this, function () {
+                this.$tree.jstree('refresh');
+            }));
         },
 
         addValidator: function (validator) {
