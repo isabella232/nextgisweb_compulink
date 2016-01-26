@@ -161,7 +161,7 @@ define([
                 currentValue = this.value;
                 lang.mixin(result, {
                     region_id: currentValue.region_id ? currentValue.region_id.replace('reg_', '') : null,
-                    district_id: currentValue.district_id ? currentValue.district_id.replace('reg_', '') : null
+                    district_id: currentValue.district_id ? currentValue.district_id.replace('distr_', '') : null
                 });
                 return result;
             }
@@ -178,7 +178,7 @@ define([
                 } else {
                     this.value = {
                         region_id: object.region_id ? 'reg_' + object.region_id : null,
-                        district_id: object.district_id ? 'reg_' + object.district_id : null
+                        district_id: object.district_id ? 'distr_' + object.district_id : null
                     };
                     this.$input.val(text);
                 }

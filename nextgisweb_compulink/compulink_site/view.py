@@ -754,7 +754,9 @@ def get_regions_tree(request):
     is_root_node_requsted = parent_region_id == '#'
 
     dbsession = DBSession()
+    is_region = False
     if is_root_node_requsted:
+        is_region = True
         children = dbsession.query(Region).order_by(Region.name).all()
     else:
         children = dbsession.query(District)\
@@ -767,7 +769,7 @@ def get_regions_tree(request):
         has_children = type(child) is Region
         is_need_checkbox = False
         child_json.append({
-            'id': 'reg_' + str(child.id),
+            'id': ('reg_' if is_region else 'distr_') + str(child.id),
             'text': child.name,
             'children': has_children,
             'has_children': has_children,
