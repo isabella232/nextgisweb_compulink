@@ -177,8 +177,8 @@ define([
                     };
                 } else {
                     this.value = {
-                        region_id: 'reg_' + object.region_id,
-                        district_id: 'reg_' + object.district_id
+                        region_id: object.region_id ? 'reg_' + object.region_id : null,
+                        district_id: object.district_id ? 'reg_' + object.district_id : null
                     };
                     this.$input.val(text);
                 }
