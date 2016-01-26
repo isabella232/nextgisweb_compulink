@@ -8,6 +8,7 @@ define([
     'dojo/_base/lang',
     'dojo/_base/html',
     'dojo/request/xhr',
+    'dojo/date/locale',
     'dijit/_Widget',
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin',
@@ -19,7 +20,7 @@ define([
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/ConstructObjectEditor.html',
     'xstyle/css!./templates/css/ConstructObjectEditor.css'
-], function (declare, query, domStyle, Deferred, domConstruct, array, lang, html, xhr, _Widget,
+], function (declare, query, domStyle, Deferred, domConstruct, array, lang, html, xhr, locale, _Widget,
              _TemplatedMixin, _WidgetsInTemplateMixin,
              ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, mustache, template) {
     var widget = declare([ConfirmDialog], {
@@ -189,7 +190,7 @@ define([
                     element = this._editorElements[cSetting.field];
                     value = element.get('value');
                     if (value instanceof Date) {
-                        editedConstructObject[cSetting.field] = value;
+                        editedConstructObject[cSetting.field] = locale.format(value, {datePattern: "yyyy-MM-dd", selector: "date"});
                     } else if (typeof value === 'object') {
                         if (!value) {
                             editedConstructObject[cSetting.field] = null;
