@@ -115,6 +115,7 @@ define([
                     if (item) {
                         ConstructObjectEditor.run(itemId, item[0].editable, lang.hitch(this, function () {
                             this.updateDataStore(this._lastGridState);
+                            topic.publish('resources/tree/refresh');
                         }));
                     }
                 })
