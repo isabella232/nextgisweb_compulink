@@ -5,7 +5,7 @@ import types
 import uuid
 import codecs
 from sqlalchemy import ForeignKey, event
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from nextgisweb import db
 from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import (ResourceGroup, Serializer, DataScope, ResourceScope, Resource, Scope, Permission)
@@ -371,6 +371,13 @@ class ConstructObject(Base):
     region = relationship(Region)
 
     project = relationship(Project)
+
+    @validates('name', include_backrefs=False)
+    def update_name(self, key, name):
+        session = DBSession
+        focl_struct = session.query(FoclStruct).get(self.resource_id)
+        focl_struct.display_name = name
+        return name
 
 
 # ---- Metadata and scheme staff
