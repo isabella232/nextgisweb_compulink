@@ -11,6 +11,7 @@ define([
         dropDown: true,
         multiple: true,
         required: false,
+        sortByLabel: false,
         templateFromTo: '{from} - {to}',
         templateSingleValue: '{value}',
 
