@@ -6,10 +6,10 @@ from sqlalchemy.orm import relationship
 
 from nextgisweb import db
 from nextgisweb.file_storage import FileObj
-from nextgisweb.models import declarative_base
+from nextgisweb.models import declarative_base, DBSession
 from nextgisweb.resource import Resource
 from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUSES, PROJECT_STATUS_PROJECT, Region, \
-    tometadata_event
+    tometadata_event, FoclStruct, ConstructObject
 
 Base = declarative_base()
 
@@ -54,6 +54,44 @@ class ConstructionStatusReport(Base):
 
     is_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены
     is_month_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены более чем на месяц
+
+    @event.listens_for(ConstructObject.name, 'set')
+    @event.listens_for(ConstructObject.access_point_plan, 'set')
+    @event.listens_for(ConstructObject.cabling_plan, 'set')
+    @event.listens_for(ConstructObject.fosc_plan, 'set')
+    @event.listens_for(ConstructObject.spec_trans_plan, 'set')
+    @event.listens_for(ConstructObject.cross_plan, 'set')
+
+    @event.listens_for(ConstructObject.start_build_date, 'set')
+    @event.listens_for(ConstructObject.end_build_date, 'set')
+    @event.listens_for(ConstructObject.start_deliver_date, 'set')
+    @event.listens_for(ConstructObject.end_deliver_date, 'set')
+
+    @event.listens_for(ConstructObject.subcontr_name, 'set')
+    @event.listens_for(ConstructObject.region_id, 'set')
+    @event.listens_for(ConstructObject.district_id, 'set')
+    def update_report(focl_info, value, oldvalue, initiator):
+        try:
+            session = DBSession
+            report_line = session.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id == focl_info.resource_id).one()
+
+            report_line.focl_name = focl_info.name
+            report_line.cabling_plan = focl_info.cabling_plan
+            report_line.ap_plan = focl_info.access_point_plan
+            report_line.subcontr_name = focl_info.subcontr_name
+            report_line.start_build_time = focl_info.start_build_date
+            report_line.end_build_time = focl_info.end_build_date
+            report_line.start_deliver_time = focl_info.start_deliver_date
+            report_line.end_deliver_time = focl_info.end_deliver_date
+
+            report_line.fosc_plan = focl_info.fosc_plan
+            report_line.cross_plan = focl_info.cross_plan
+            report_line.spec_trans_plan = focl_info.spec_trans_plan
+
+            report_line.region = focl_info.region_id
+            report_line.district = focl_info.district_id
+        except:
+            pass  # TODO
 
 
 class Calendar(Base):
