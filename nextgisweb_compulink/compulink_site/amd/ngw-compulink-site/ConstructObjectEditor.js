@@ -13,6 +13,7 @@ define([
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin',
     'ngw-compulink-site/ConfirmDialog',
+    'ngw-compulink-site/InfoDialog',
     'dojo/on',
     'dojox/layout/TableContainer',
     'dijit/form/TextBox',
@@ -21,8 +22,8 @@ define([
     'dojo/text!./templates/ConstructObjectEditor.html',
     'xstyle/css!./templates/css/ConstructObjectEditor.css'
 ], function (declare, query, domStyle, Deferred, domConstruct, array, lang, html, xhr, locale, _Widget,
-             _TemplatedMixin, _WidgetsInTemplateMixin,
-             ConfirmDialog, on, TableContainer, TextBox, NumberTextBox, mustache, template) {
+             _TemplatedMixin, _WidgetsInTemplateMixin, ConfirmDialog, InfoDialog, on, TableContainer,
+             TextBox, NumberTextBox, mustache, template) {
     var widget = declare([ConfirmDialog], {
         title: 'Изменение объекта строительства',
         message: '',
@@ -49,8 +50,8 @@ define([
                     lang.hitch(this, function () {
                         new InfoDialog({
                             isDestroyedAfterHiding: true,
-                            title: 'Изменение атрибутов объекта строительства',
-                            message: 'Изменить атрибуты не удалось.<br/>Попробуйте еще раз.'
+                            title: 'Ошибка при сохранении',
+                            message: 'Изменить объект строительства не удалось.<br/>Попробуйте еще раз.'
                         }).show();
                     }));
                 this._changeStatusDialog = null;
