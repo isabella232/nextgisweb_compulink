@@ -55,6 +55,7 @@ class ConstructionStatusReport(Base):
     is_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены
     is_month_overdue = db.Column(db.Boolean, nullable=True)   # Работы по линии просрочены более чем на месяц
 
+    # Обновление записей в отчете, при изменении данных в реестре ОС
     @event.listens_for(ConstructObject.name, 'set')
     @event.listens_for(ConstructObject.access_point_plan, 'set')
     @event.listens_for(ConstructObject.cabling_plan, 'set')
@@ -71,25 +72,26 @@ class ConstructionStatusReport(Base):
     @event.listens_for(ConstructObject.region_id, 'set')
     @event.listens_for(ConstructObject.district_id, 'set')
     def update_report(focl_info, value, oldvalue, initiator):
+        fields_mapping = {
+            'name': 'focl_name',
+            'cabling_plan': 'cabling_plan',
+            'access_point_plan': 'ap_plan',
+            'subcontr_name': 'subcontr_name',
+            'start_build_time': 'start_build_time',
+            'end_build_time': 'end_build_time',
+            'start_deliver_date': 'start_deliver_time',
+            'end_deliver_date': 'end_deliver_time',
+            'fosc_plan': 'fosc_plan',
+            'cross_plan': 'cross_plan',
+            'spec_trans_plan': 'spec_trans_plan',
+            'region_id': 'region',
+            'district_id': 'district',
+        }
         try:
             session = DBSession
             report_line = session.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id == focl_info.resource_id).one()
+            setattr(report_line, fields_mapping[initiator.key], value)
 
-            report_line.focl_name = focl_info.name
-            report_line.cabling_plan = focl_info.cabling_plan
-            report_line.ap_plan = focl_info.access_point_plan
-            report_line.subcontr_name = focl_info.subcontr_name
-            report_line.start_build_time = focl_info.start_build_date
-            report_line.end_build_time = focl_info.end_build_date
-            report_line.start_deliver_time = focl_info.start_deliver_date
-            report_line.end_deliver_time = focl_info.end_deliver_date
-
-            report_line.fosc_plan = focl_info.fosc_plan
-            report_line.cross_plan = focl_info.cross_plan
-            report_line.spec_trans_plan = focl_info.spec_trans_plan
-
-            report_line.region = focl_info.region_id
-            report_line.district = focl_info.district_id
         except:
             pass  # TODO
 

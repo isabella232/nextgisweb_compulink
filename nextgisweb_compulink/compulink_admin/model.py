@@ -372,16 +372,34 @@ class ConstructObject(Base):
 
     project = relationship(Project)
 
+    _internal_name_update = False
+
     @validates('name', include_backrefs=False)
     def update_name(self, key, name):
-        session = DBSession
-        focl_struct = session.query(FoclStruct).get(self.resource_id)
-        focl_struct.display_name = name
+        if not ConstructObject._internal_name_update:
+            session = DBSession
+            focl_struct = session.query(FoclStruct).get(self.resource_id)
+            focl_struct.display_name = name
         return name
+
+    @event.listens_for(FoclStruct.display_name, 'set')
+    def update_from_name(focl_struct, value, oldvalue, initiator):
+        try:
+            ConstructObject._internal_name_update = True
+            session = DBSession
+
+            const_obj = session.query(ConstructObject).filter(ConstructObject.resource_id == focl_struct.id).one()
+            const_obj.name = value
+
+            #report_line = session.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id == focl_info.resource_id).one()
+            #report_line.focl_name = focl_struct.display_name
+        except:
+            pass  # TODO
+        finally:
+            ConstructObject._internal_name_update = False
 
 
 # ---- Metadata and scheme staff
-
 def tometadata_event(self, metadata):
     result = db.Table.tometadata(self, metadata)
     event.listen(result, "before_create", db.DDL('CREATE SCHEMA IF NOT EXISTS compulink;'))
