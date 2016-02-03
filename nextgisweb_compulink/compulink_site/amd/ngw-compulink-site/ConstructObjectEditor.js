@@ -50,7 +50,7 @@ define([
                     lang.hitch(this, function () {
                         new InfoDialog({
                             isDestroyedAfterHiding: true,
-                            title: 'Сохранить объекта строительства',
+                            title: 'Ошибка при сохранении',
                             message: 'Изменить объект строительства не удалось.<br/>Попробуйте еще раз.'
                         }).show();
                     }));
