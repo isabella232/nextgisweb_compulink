@@ -18,10 +18,10 @@
     <link href="${request.static_url('nextgisweb:static/css/pure-0.6.0-min.css')}"
           rel="stylesheet" type="text/css"/>
 
-    <link href="${request.static_url('nextgisweb:static/css/layout.css')}"
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/layout_ngw.css')}"
           rel="stylesheet" type="text/css"/>
 
-    <link href="${request.static_url('nextgisweb:static/css/default.css')}"
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/default.css')}"
           rel="stylesheet" type="text/css" media="screen"/>
 
     <link href="${request.static_url('nextgisweb:static/css/icon.css')}"

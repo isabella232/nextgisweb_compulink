@@ -1,0 +1,80 @@
+div.caption { font-size: 20px; padding-top: 8px; font-weight: bold;}
+
+
+h1 { font-size: 18px; border-bottom: 1px solid #ddd; margin-top: 1ex; padding-bottom: 8px;}
+h2 { font-size: 16px; border-bottom: 1px solid #ddd; margin-top: 1ex; padding-bottom: 6px;}
+
+
+ul.ngwModelWidgetError { border: 1px solid #D46464; margin: 0 0 1ex 0;}
+ul.ngwModelWidgetError li { padding: .5ex 0;}
+
+
+.dijitTableLayout td.tableContainer-labelCell { padding: 4px; }
+.dijitTableLayout td.tableContainer-valueCell { padding: 4px; }
+
+.dijitTableLayout tr td.tableContainer-labelCell:first-child { padding-left: 2px; }
+.dijitTableLayout tr td.tableContainer-valueCell:last-child { padding-right: 2px; }
+
+.dijitTabContainerTopChildWrapper.dijitVisible { height: 100%; }
+
+.CodeMirror { font-size: 12px; border: 1px solid #eee; }
+
+.CodeMirror-autoHeight .CodeMirror {
+  height: auto;    
+}
+
+.CodeMirror-autoHeight .CodeMirror-scroll {
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+
+/* Не очень понятно почему так происходит, но user-select для dijit.Tree
+автоматически не выставляется, хотя для других элементов управления
+выставляется вполне корректно. Пока добавляем его вручную. */
+.dijitTree {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+}
+
+
+/* Возможность указать ширину dojox/form/CheckedMultiSelect в явном виде.*/
+.dojoxCheckedMultiSelect .dojoxCheckedMultiSelectWrapper {
+    width: 100%;
+    margin: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Убираем обводку */
+*:focus {
+    outline: none;
+}
+
+/* Двигаем OL ScaleLine в центр в низ */
+.olMap .olControlScaleLine {
+    position: relative;
+    left: 50%; bottom: 0;
+    padding: 4px;
+}
+
+.olMap .olControlScaleLine .olControlScaleLineTop {
+    position: relative;
+    left: -50%;
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Копирайты опускаем до низу */
+.olMap .olControlAttribution {
+    right: 0px; bottom: 0px;
+    padding: 4px;
+}
+
+
+table.data {}
+
+table.data tr th { background-color: #eee; font-weight: bold; }
+table.data tr th, table.data tr td { padding: 0.2ex 0.5ex; }
+
+a.action {text-decoration: none; border-bottom: 1px dashed blue; cursor: pointer; }

@@ -1,0 +1,104 @@
+
+/* -- BASE STYLES -- */
+
+body { font-size: 12px; }
+
+/* -- LAYOUT STYLES -- */
+
+.header { }
+
+    .header .pure-menu {
+        background: #2D3E50;
+        overflow: auto;
+        white-space: normal; }
+
+    .header li a:hover,
+    .header li a:focus {
+        background: none;
+        border: none;
+        color: #AECFE5; }
+
+    .header .pure-menu a {
+        padding: 0.5ex 1ex;
+        color: #6FBEF3; }
+
+    .header .pure-menu .pure-menu-heading {
+        color: white;
+        font-weight: 400;
+        font-size: 14px;
+        text-transform: none;
+        margin-top: 0;
+        border: 0; }
+
+    .header .pure-menu ul { float: right; }
+
+    .header .pure-menu ul li.user { color: white; }
+
+    .header img.logo { float: left; }
+
+.title {
+    padding: 0.5ex 1ex;
+    background: #F1F3F9;
+    border-bottom: 1px solid #CBCBCB; }
+
+    .title h1, .title h2, .title h3 {
+        margin: 0; padding: 0;
+        border: none;
+        font-weight: normal;
+        vertical-align: middle; }
+
+    .title h1 { font-size: 14pt; }
+
+/* -- MENU STYLES -- */
+
+.pure-menu a {
+    color: inherit;
+    border: 1px solid transparent;
+    border-left: 0;
+    border-right:0; }
+
+.pure-menu li a, .pure-menu .pure-menu-heading {
+    line-height: 1.5em;
+    padding: 0.25ex 0.25ex; }
+
+.pure-menu .pure-menu-item.pure-menu-selected { background-color: #eee; }
+
+.pure-menu .pure-menu-heading {
+    font-size: 90%;
+    margin-top: 0.5em;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #dfdfdf; }
+
+
+/* -- TABLES -- */
+
+.pure-table tbody th { background: none repeat scroll 0 0 #E0E0E0; }
+
+/* -- CONTENT STYLES -- */
+
+.content { padding: 6px; }
+
+.content-wrapper { max-width: 1280px; margin: 0 auto; }
+
+.content-wrapper.maxwidth { max-width: none; margin: 0; }
+
+.content-maxheight {
+    position: absolute;
+    left: 0; top: 0;
+    bottom: 0; right: 0;
+    padding: 6px 0; }
+
+    .content-maxheight .expand {
+        height: 100%;
+        padding-top: 0px;
+        padding-bottom: 0px; }
+
+.content h2 {
+    font-weight: normal;
+    text-transform: uppercase;
+    color: #555;
+    margin: 2ex 0ex 1ex;
+    padding: 0ex 0ex 4px; }
+
+    .content h2:first-child { margin-top: 0; }
