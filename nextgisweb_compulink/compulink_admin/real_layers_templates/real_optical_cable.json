@@ -55,6 +55,14 @@
                 "display_name": "Комментарий к утверждению отклонения",
                 "label_field": false,
                 "grid_visibility": true
+            },
+            {
+                "keyname": "feat_guid",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Глобальный идентификатор",
+                "label_field": false,
+                "grid_visibility": false
             }
         ]
     },
