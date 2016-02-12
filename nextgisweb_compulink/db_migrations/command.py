@@ -11,13 +11,16 @@ import transaction
 from nextgisweb.feature_layer import FIELD_TYPE
 from nextgisweb.resource import Base
 from nextgisweb.vector_layer import VectorLayer
-from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT
+from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS
+from nextgisweb_compulink.db_migrations.add_guid_field import add_guid_field
+from nextgisweb_compulink.db_migrations.append_actual_layers import append_actual_layers
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
 from nextgisweb import DBSession
 from nextgisweb.command import Command
 from nextgisweb_compulink.db_migrations.fill_construct_obj import fill_construct_obj_12_10
+from nextgisweb_compulink.db_migrations.fill_guid_field import fill_guid_field
 
 
 @Command.registry.register
@@ -38,7 +41,10 @@ class DBMigrates():
                                 'real_layers_date_to_dt',
                                 'update_aliases_01_08',
                                 'update_statuses_05_11',
-                                'fill_construct_obj_12_10'
+                                'fill_construct_obj_12_10',
+                                'add_guid_field',
+                                'fill_guid_field',
+                                'append_actual_layers',
                             ])
 
     @classmethod
@@ -63,6 +69,12 @@ class DBMigrates():
             cls.update_statuses_05_11()
         if args.migration == 'fill_construct_obj_12_10':    # 10.12.2015
             fill_construct_obj_12_10(args)
+        if args.migration == 'add_guid_field':          # 12.02.2016
+            add_guid_field(args)
+        if args.migration == 'fill_guid_field':         # 12.02.2016
+            fill_guid_field(args)
+        if args.migration == 'append_actual_layers':    # 12.02.2016
+            append_actual_layers(args)
 
 
     @classmethod

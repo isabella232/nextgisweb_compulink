@@ -19,6 +19,7 @@ def pkginfo():
             compulink_reporting='nextgisweb_compulink.compulink_reporting',
             compulink_data_reactor='nextgisweb_compulink.compulink_data_reactor',
             compulink_editor='nextgisweb_compulink.compulink_editor',
+            compulink_internal_mirroring='nextgisweb_compulink.compulink_internal_mirroring',
         )
     )
 
