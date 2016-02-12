@@ -1,0 +1,85 @@
+{
+    "resource": {
+        "permissions": [],
+        "keyname": null,
+        "display_name": "Оптические кроссы (актуальный факт)",
+        "description": null,
+        "identify_name": "Оптический кросс"
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "type_optical_cross",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Тип",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "built_date",
+                "datatype": "DATETIME",
+                "typemod": null,
+                "display_name": "Дата строительства",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "description",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Комментарий в процессе строительства",
+                "label_field": false,
+                "grid_visibility": true
+            },
+
+
+            {
+                "keyname": "is_deviation",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Есть отклонение от проекта",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "deviation_distance",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Отклонение от проекта, м",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "deviation_approved",
+                "datatype": "INTEGER",
+                "typemod": null,
+                "display_name": "Отклонение от проекта утверждено",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "approval_comment",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Комментарий к утверждению отклонения",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "feat_guid",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Глобальный идентификатор",
+                "label_field": false,
+                "grid_visibility": false
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
