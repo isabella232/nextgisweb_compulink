@@ -49,6 +49,8 @@ def copy_existing_real_features(args):
                 query.geom()
 
                 for feat in query():
+                    feat.fields['change_author'] = u'Мобильное приложение'
+                    feat.fields['change_date'] = feat.fields['built_date']
                     actual_layer.feature_put(feat)
 
                 print "Layers %s was updated!" % actual_layer.keyname
