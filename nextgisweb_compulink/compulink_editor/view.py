@@ -58,10 +58,6 @@ def setup_pyramid(comp, config):
         '/compulink/editor/resources/child').add_view(get_child_resx_by_parent)
 
     config.add_route(
-        'compulink.editor.focl_info',
-        '/compulink/editor/resources/focl_info').add_view(get_focl_info)
-
-    config.add_route(
         'compulink.editor.focl_extent',
         '/compulink/editor/resources/focl_extent').add_view(get_focl_extent)
 
@@ -73,19 +69,6 @@ def setup_pyramid(comp, config):
         name='compulink/editor/static',
         path='nextgisweb_compulink:compulink_editor/static', cache_max_age=3600)
 
-    config.add_route(
-        'compulink.editor.export_kml',
-        '/compulink/editor/resources/{id:\d+}/export_kml', client=('id',)) \
-        .add_view(export_focl_to_kml)
-
-    config.add_route(
-        'compulink.editor.export_geojson',
-        '/compulink/editor/resources/{id:\d+}/export_geojson', client=('id',)) \
-        .add_view(export_focl_to_geojson)
-    config.add_route(
-        'compulink.editor.export_csv',
-        '/compulink/editor/resources/{id:\d+}/export_csv', client=('id',)) \
-        .add_view(export_focl_to_csv)
     config.add_route(
         'compulink.editor.get_focl_status',
         '/compulink/editor/resources/{id:\d+}/focl_status', client=('id',)) \
@@ -344,81 +327,6 @@ def get_sit_plan_layers_list():
     return layers
 
 
-@view_config(renderer='json')
-def get_focl_info(request):
-    if request.user.keyname == 'guest':
-        raise HTTPForbidden()
-
-    res_ids = request.POST.getall('ids')
-    if not res_ids:
-        return Response('[]')
-
-    dbsession = DBSession()
-    resources = dbsession.query(Resource).filter(Resource.id.in_(res_ids)).all()
-
-    # get rows from reporting
-    reporting_rows = {row.focl_res_id: row for row in dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id.in_(res_ids)).all() }
-
-    resp = []
-
-    #dicts
-    regions = get_regions_from_resource(as_dict=True)
-    districts = get_districts_from_resource(as_dict=True)
-    statuses = get_project_statuses(as_dict=True)
-
-    for res in resources:
-        if res.identity not in (FoclStruct.identity, SituationPlan.identity):
-            continue
-
-        # try to get data from status report
-        if res.id in reporting_rows.keys():
-            report_row = reporting_rows[res.id]
-            resp.append(
-                {
-                    'id': report_row.focl_res_id,
-                    'display_name': report_row.focl_name,
-                    'district': districts.get(report_row.district, report_row.district),
-                    'region': regions.get(report_row.region, report_row.region),
-                    'status': statuses.get(report_row.status, report_row.status),
-                    'cabling_plan': report_row.cabling_plan,
-
-                    'start_build_time': report_row.start_build_time.strftime('%d.%m.%Y') if report_row.start_build_time else '',
-                    'end_build_time': report_row.end_build_time.strftime('%d.%m.%Y') if report_row.end_build_time else '',
-                    'start_deliver_time': report_row.start_deliver_time.strftime('%d.%m.%Y') if report_row.start_deliver_time else '',
-                    'end_deliver_time': report_row.end_deliver_time.strftime('%d.%m.%Y') if report_row.end_deliver_time else '',
-
-                    'subcontr': report_row.subcontr_name,
-
-                    'is_overdue': report_row.is_overdue,
-                    'is_month_overdue': report_row.is_month_overdue,
-                    'is_focl_delivered': report_row.status == PROJECT_STATUS_DELIVERED,
-                }
-            )
-        else:
-            # else get from resource
-            resp.append(
-                {
-                    'id': res.id,
-                    'display_name': res.display_name,
-                    'district': districts.get(res.district, res.district),
-                    'region': regions.get(res.region, res.region),
-                    'status': statuses.get(res.status, res.status),
-
-                    'cabling_plan': None,
-                    'start_build_time': None,
-                    'end_build_time': None,
-                    'start_deliver_time': None,
-                    'end_deliver_time': None,
-                    'subcontr': None,
-                    'is_overdue': False,
-                    'is_month_overdue': False,
-                    'is_focl_delivered': False,
-                }
-            )
-
-    dbsession.close()
-
-    return Response(json.dumps(resp))
 
 
 def extent_union(extent, new_extent):
@@ -548,113 +456,6 @@ def get_all_dicts():
     dbsession.close()
 
     return dicts
-
-
-def export_focl_to_kml(request):
-    return export_focl_struct(request, 'kml')
-
-
-def export_focl_to_geojson(request):
-    return export_focl_struct(request, 'geojson')
-
-
-def export_focl_to_csv(request):
-    return export_focl_struct(request, 'csv')
-
-
-def export_focl_struct(request, export_type):
-    res_id = request.matchdict['id']
-    dbsession = DBSession()
-
-    try:
-        focl_resource = dbsession.query(FoclStruct).get(res_id)
-    except:
-        raise HTTPNotFound()
-
-    if not focl_resource.has_permission(DataScope.read, request.user):
-        raise HTTPForbidden()
-
-    LogEntry.info('Export resource %s to %s' % (res_id, export_type), component=COMP_ID)
-
-    #create temporary dir
-    zip_dir = tempfile.mkdtemp()
-
-    # save layers to geojson (FROM FEATURE_LAYER)
-    for layer in focl_resource.children:
-        if layer.identity == VectorLayer.identity and layer.feature_query()().total_count > 0:
-            json_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'json'))
-            _save_resource_to_file(layer, json_path, single_geom=export_type == 'csv')
-            if export_type == 'kml':
-                kml_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'kml'))
-                _json_to_kml(json_path, kml_path)
-                # remove json
-                os.remove(json_path.encode('utf-8'))
-            if export_type == 'csv':
-                csv_path = path.join(zip_dir, '%s.%s' % (layer.display_name, 'csv'))
-                _json_to_csv(json_path, csv_path)
-                # remove json
-                os.remove(json_path.encode('utf-8'))
-
-    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
-        # write archive
-        zip_file = ZipFile(temp_file, mode="w", compression=ZIP_DEFLATED)
-        zip_subpath = focl_resource.display_name + '/'
-
-        for file_name in os.listdir(zip_dir):
-            src_file = path.join(zip_dir, file_name)
-            zip_file.write(src_file, (zip_subpath+unicode(file_name, 'utf-8')).encode('cp866'))
-        zip_file.close()
-
-        # remove temporary dir
-        rmtree(zip_dir)
-
-        # send
-        temp_file.seek(0, 0)
-        response = FileResponse(
-            path.abspath(temp_file.name),
-            content_type=bytes('application/zip'),
-            request=request
-        )
-        # response.content_disposition = 'attachment; filename="%s"' % focl_resource.display_name.encode('utf-8')
-        return response
-
-
-def _save_resource_to_file(vector_resource, file_path, single_geom=False):
-    #resource_permission(PD_READ)
-
-    class CRSProxy(object):
-        def __init__(self, query):
-            self.query = query
-
-        @property
-        def __geo_interface__(self):
-            result = self.query.__geo_interface__
-            result['crs'] = dict(type='name', properties=dict(
-                name='EPSG:3857'))
-            return result
-
-    query = vector_resource.feature_query()
-    query.geom(single_part=single_geom)
-    result = CRSProxy(query())
-
-    gj = geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder)
-    with codecs.open(file_path.encode('utf-8'), 'w', encoding='utf-8') as f:
-        f.write(gj)
-
-
-def _json_to_kml(in_file_path, out_file_path):
-    subprocess.check_call(['ogr2ogr', '-f', 'KML', out_file_path.encode('utf-8'), in_file_path.encode('utf-8')])
-
-
-def _json_to_csv(in_file_path, out_file_path):
-    subprocess.check_call(['ogr2ogr',
-                           '-f', 'CSV',
-                           out_file_path.encode('utf-8'),
-                           in_file_path.encode('utf-8'),
-                           '-lco', 'GEOMETRY=AS_XY',
-                           '-s_srs', 'EPSG:3857',
-                           '-t_srs', 'EPSG:4326'])
-
 
 @view_config(renderer='json')
 def get_focl_status(request):
