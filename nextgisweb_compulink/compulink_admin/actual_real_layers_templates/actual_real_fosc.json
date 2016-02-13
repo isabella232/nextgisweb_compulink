@@ -81,6 +81,22 @@
                 "display_name": "Глобальный идентификатор",
                 "label_field": false,
                 "grid_visibility": false
+            },
+            {
+                "keyname": "change_author",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Автор изменений",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "change_date",
+                "datatype": "DATETIME",
+                "typemod": null,
+                "display_name": "Дата изменений",
+                "label_field": false,
+                "grid_visibility": true
             }
         ]
     },
