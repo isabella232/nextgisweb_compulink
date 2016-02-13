@@ -17,7 +17,7 @@ from nextgisweb.wfsserver.model import Layer as WfsLayer
 from nextgisweb_rekod.file_bucket.model import FileBucket, os
 from nextgisweb_mapserver.model import MapserverStyle
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, \
-    PROJECT_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT
+    PROJECT_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
 from nextgisweb.resource import SerializedProperty as SP, SerializedRelationship as SR
 
 Base = declarative_base()
@@ -163,6 +163,15 @@ class FoclStructSerializer(Serializer):
                 json_layer_struct = json.load(json_file, encoding='utf-8')
                 vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
                 mapserver_style = ModelsUtils.set_default_style(vector_layer, vl_name, 'default')
+
+        # add actual layers
+        real_layers_template_path = os.path.join(BASE_PATH, 'actual_real_layers_templates/')
+        for vl_name in ACTUAL_FOCL_REAL_LAYER_STRUCT:
+            style_name = vl_name.split('actual_')[1]
+            with codecs.open(os.path.join(real_layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
+                json_layer_struct = json.load(json_file, encoding='utf-8')
+                vector_layer = ModelsUtils.create_vector_layer(focl_struct_obj, json_layer_struct, vl_name)
+                mapserver_style = ModelsUtils.set_default_style(vector_layer, style_name, 'default')
 
     @classmethod
     def add_to_registry(cls, focl_struct_obj):
@@ -376,11 +385,13 @@ class ConstructObject(Base):
 
     @validates('name', include_backrefs=False)
     def update_name(self, key, name):
-        if not ConstructObject._internal_name_update:
-            session = DBSession
-            focl_struct = session.query(FoclStruct).get(self.resource_id)
-            focl_struct.display_name = name
-        return name
+        try:
+            if not ConstructObject._internal_name_update:
+                session = DBSession
+                focl_struct = session.query(FoclStruct).get(self.resource_id)
+                focl_struct.display_name = name
+        finally:
+            return name
 
     @event.listens_for(FoclStruct.display_name, 'set')
     def update_from_name(focl_struct, value, oldvalue, initiator):
