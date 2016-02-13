@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 import json
 from datetime import date
+
+import transaction
 from dateutil.relativedelta import relativedelta
 import os
 from os import path, mkdir
@@ -526,3 +528,57 @@ def set_focl_status(request):
         report_line.persist()
 
     return Response(json.dumps({'status': 'ok'}))
+
+
+def reset_all_layers(request):
+    focl_struct_id = None #TODO: need getting request params
+
+    #TODO: need rights check!
+
+    db_session = DBSession()
+    transaction.manager.begin()
+
+    focl_struct = db_session.query(FoclStruct).get(id==focl_struct_id)
+
+    layers = focl_struct.children
+    real_layer = None
+    actual_layer = None
+
+    for real_layer_name in FOCL_REAL_LAYER_STRUCT:
+        # get real layer and actual layer
+        for lyr in layers:
+            if lyr.keyname:
+                lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
+            else:
+                continue
+
+            if real_layer_name == lyr_name:
+                real_layer = lyr
+
+            if 'actual_' + real_layer_name == lyr_name:
+                actual_layer = lyr
+
+        if not real_layer or not actual_layer:
+            print 'Ops! Needed layers not found!'
+            return
+
+        try:
+            #clear actual layer
+            actual_layer.feature_delete_all()
+            #copy
+            query = real_layer.feature_query()
+            query.geom()
+
+            for feat in query():
+                feat.fields['change_author'] = u'Мобильное приложение'
+                feat.fields['change_date'] = feat.fields['built_date']
+                actual_layer.feature_put(feat)
+
+            print "Layers %s was updated!" % actual_layer.keyname
+
+        except Exception, ex:
+            print "Error on update %s: %s" % (actual_layer.keyname, ex.message)
+        db_session.flush()
+
+    transaction.manager.commit()
+    db_session.close()
