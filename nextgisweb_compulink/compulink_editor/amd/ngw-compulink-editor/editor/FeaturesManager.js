@@ -225,7 +225,6 @@ define([
             });
 
             this._ngwServiceFacade.saveEditorFeatures(objectsForSaving);
-            console.log(objectsForSaving);
         }
     });
 });
