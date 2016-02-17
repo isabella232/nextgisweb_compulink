@@ -9,7 +9,7 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/icons.css')}"
           rel="stylesheet" type="text/css" media="screen"/>
 
-    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/layout.css')}"
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/layout_ngw.css')}"
           rel="stylesheet" type="text/css" media="screen"/>
 
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/dgrid.css')}"
