@@ -13,6 +13,7 @@ define([
         GET_FEATURE: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}', true),
         GET_ALL_FEATURES: new dtlBase.Template('/api/resource/{{resourceId}}/feature/', true),
         GET_RESOURCE: new dtlBase.Template('/api/resource/{{resourceId}}', true),
+        SAVE_EDITOR_FEATURES: '/editor/features/save',
 
         ngwApplicationUrl: null,
 
@@ -37,6 +38,18 @@ define([
                 url = this.ngwApplicationUrl + this.GET_RESOURCE.render(dtlContext);
             return xhr.get(url, {
                 handleAs: 'json'
+            });
+        },
+
+        /**
+         * Represents a facade for saving modified features in editor.
+         * @features {array of objects} Object should have following properties: wkt - wkt string, id - feature Id in NGW, layer - layer (or resource) Id in NGW
+         */
+        saveEditorFeatures: function (features) {
+            var url = this.ngwApplicationUrl + this.SAVE_EDITOR_FEATURES;
+            return xhr.post(url, {
+                handleAs: 'json',
+                data: JSON.stringify(features)
             });
         }
     });
