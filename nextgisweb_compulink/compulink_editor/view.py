@@ -556,9 +556,10 @@ def editor_save_geom(request):
             if not parent_res:
                 resp = {'status': 'error', 'message': u'Редактируемый слой некорректный (Слой вне объекта строительства)'}
                 return Response(json.dumps(resp), status=400)
-            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
-                resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
-                return Response(json.dumps(resp))
+            # TODO: set check!
+            # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+            #     resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
+            #     return Response(json.dumps(resp))
             #  request.resource_permission(PERM_WRITE) ADD check
 
             query = res.feature_query()
