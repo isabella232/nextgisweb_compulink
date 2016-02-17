@@ -234,6 +234,26 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     background: url('../img/layers-type-sprite.png') -32px 0;
 }
 
+
+#rightPanel i.actual_real_special_transition,
+#rightPanel i.actual_real_fosc {
+    background: url('../img/layers-type-sprite.png') 0 0;
+}
+
+#rightPanel i.actual_real_special_transition_point,
+#rightPanel i.actual_real_optical_cross {
+    background: url('../img/layers-type-sprite.png') -16px 0;
+}
+
+#rightPanel i.actual_real_optical_cable,
+#rightPanel i.actual_real_access_point {
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
+#rightPanel i.actual_real_optical_cable_point {
+    background: url('../img/layers-type-sprite.png') -32px 0;
+}
+
 /* map styles */
 /* for identification popup */
 div.ngwPopup {
