@@ -11,6 +11,7 @@ define([
         },
 
         GET_FEATURE: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}', true),
+        EDIT_FEATURE: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}', true),
         GET_ALL_FEATURES: new dtlBase.Template('/api/resource/{{resourceId}}/feature/', true),
         GET_RESOURCE: new dtlBase.Template('/api/resource/{{resourceId}}', true),
         SAVE_EDITOR_FEATURES: '/editor/features/save',
@@ -48,6 +49,15 @@ define([
         saveEditorFeatures: function (features) {
             var url = this.ngwApplicationUrl + this.SAVE_EDITOR_FEATURES;
             return xhr.post(url, {
+                handleAs: 'json',
+                data: JSON.stringify(features)
+            });
+        },
+
+        changeFeature: function (layerId, featureId, geom, fields) {
+            var dtlContext = new dtlBase.Context({resourceId: layerId, featureId: featureId}),
+                url = this.ngwApplicationUrl + this.EDIT_FEATURE.render(dtlContext);
+            return xhr.put(url, {
                 handleAs: 'json',
                 data: JSON.stringify(features)
             });
