@@ -39,6 +39,10 @@ def after_feature_create_handler(resource=None, feature_id=None):
         return
     real_layer_name = '_'.join(resource.keyname.rsplit('_')[0:-1])
 
+    # do not mirroring generated features
+    if real_layer_name in ['real_optical_cable', 'real_special_transition']:
+        return
+
     # get parent and children
     focl_struct = resource.parent
     layers = focl_struct.children
