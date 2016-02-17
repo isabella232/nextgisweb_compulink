@@ -2,24 +2,41 @@
 <form>
     <input type="hidden" name="id" value="{{resource.id}}"/>
     {{#fields}}
-        <div class="control-group">
-            <label>{{displayName}}</label>
+        <div class="control-group" style="margin: 5px 5px 10px 5px">
+            <label {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{displayName}}</label>
 
             {{#IS_STRING}}
-                <textarea type="text" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}}>{{value}}</textarea>
+                <textarea type="text" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{value}}</textarea>
             {{/IS_STRING}}
 
             {{#IS_FLOAT}}
-                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
+                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_FLOAT}}
 
             {{#IS_INTEGER}}
-                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
+                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_INTEGER}}
 
             {{#IS_DATETIME}}
-                <input type="datetime-local" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
+                <input type="datetime-local" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_DATETIME}}
+
+            {{#IS_BOOL}}
+                <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
+                    <option {{#value}}selected{{/value}} value=1>Да</option>
+                    <option {{^value}}selected{{/value}} value=0>Нет</option>
+                </select>
+            {{/IS_BOOL}}
+
+            {{#IS_DICT}}
+                <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
+                    {{#valsDict}}
+                    <option value="test">"test"</option>
+                    {{/valsDict}}
+                </select>
+            {{/IS_DICT}}
+
+            <br>
         </div>
     {{/fields}}
     <input class="save" type="button" value="Сохранить"/>

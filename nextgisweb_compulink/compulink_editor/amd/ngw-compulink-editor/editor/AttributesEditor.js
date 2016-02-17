@@ -11,13 +11,14 @@ define([
     'dojo/topic',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
+    'ngw/settings!compulink_site',
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/AttributesEditorWrapper.mustache',
     'dojo/text!./templates/AttributesEditor.mustache',
     'xstyle/css!./templates/css/AttributesEditor.css',
     'dojox/dtl/tag/logic'
 ], function (declare, lang, array, html, dom, query, domClass, domConstruct, all, topic, _WidgetBase, _TemplatedMixin,
-             mustache, templateWrapper, templateAttributes) {
+             siteSettings, mustache, templateWrapper, templateAttributes) {
 
     return declare([_WidgetBase, _TemplatedMixin], {
         _ngwServiceFacade: null,
@@ -71,6 +72,9 @@ define([
                 'start_point'
             ];
 
+            var all_dicts = siteSettings.dicts;
+            var bool_fields = siteSettings.bool_fields;
+
             if (layerFields) {
                 array.forEach(layerFields, function (field) {
                     if (ngwFeatureInfo.fields.hasOwnProperty(field.keyname)) {
@@ -82,14 +86,35 @@ define([
                             fieldValue = fieldValue.toISOString().replace('Z', '');
                         }
 
+                        var isDictField = false;
+                        var isBoolField = false;
+                        var valsDict = null;
+
+                        if (all_dicts.hasOwnProperty(field.keyname)) {
+                            isDictField = true;
+                            valsDict = all_dicts[field.keyname];
+                            if(valsDict.hasOwnProperty(fieldValue)) fieldValue = valsDict[fieldValue];
+                        }
+
+                        if (bool_fields.indexOf(field.keyname) >= 0) {
+                            isBoolField = true;
+                        }
+
                         viewModelField = {
                             displayName: field.display_name,
                             keyname: field.keyname,
-                            value: fieldValue
+                            value: fieldValue,
+                            valsDict: valsDict
                         };
-                        viewModelField['IS_' + field.datatype] = true;
 
                         viewModelField['IS_DISABLED'] = disabledFields.indexOf(field.keyname) > -1;
+
+                        viewModelField['IS_DICT'] = isDictField;
+                        viewModelField['IS_BOOL'] = isBoolField;
+
+                        if (!isBoolField && !isDictField) {
+                                viewModelField['IS_' + field.datatype] = true;
+                        }
 
                         viewModel.fields.push(viewModelField);
                     }
