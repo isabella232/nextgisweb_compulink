@@ -14,7 +14,7 @@ define([
         EDIT_FEATURE: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}', true),
         GET_ALL_FEATURES: new dtlBase.Template('/api/resource/{{resourceId}}/feature/', true),
         GET_RESOURCE: new dtlBase.Template('/api/resource/{{resourceId}}', true),
-        SAVE_EDITOR_FEATURES: '/editor/features/save',
+        SAVE_EDITOR_FEATURES: '/compulink/editor/features/save',
 
         ngwApplicationUrl: null,
 
