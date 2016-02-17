@@ -215,6 +215,8 @@ def show_map(request):
 
 
 def _extent_3857_to_4326(extent3857):
+    if not extent3857:
+        return [-179, -82, 180, 82]
     projection_3857 = Proj(init='EPSG:3857')
     projection_4326 = Proj(init='EPSG:4326')
     x1, y1 = tuple(extent3857[0:2])
