@@ -377,7 +377,7 @@ def get_focl_info(request):
                     'cabling_fact': None,
                     'cabling_percent': None,
 
-                    'start_build_time': focl_info.start_build_date.strftime('%d.%m.%Y') if focl_info.start_build_time else '',
+                    'start_build_time': focl_info.start_build_date.strftime('%d.%m.%Y') if focl_info.start_build_date else '',
                     'end_build_time': focl_info.end_build_date.strftime('%d.%m.%Y') if focl_info.end_build_date else '',
                     'start_deliver_time': focl_info.start_deliver_date.strftime('%d.%m.%Y') if focl_info.start_deliver_date else '',
                     'end_deliver_time': focl_info.end_deliver_date.strftime('%d.%m.%Y') if focl_info.end_deliver_date else '',
