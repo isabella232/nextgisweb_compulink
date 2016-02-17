@@ -1,43 +1,90 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+import uuid
+
 from nextgisweb import DBSession
 from nextgisweb.vector_layer import VectorLayer
+from nextgisweb_compulink.compulink_admin.layers_struct_group import FOCL_REAL_LAYER_STRUCT
+from nextgisweb_compulink.compulink_admin.model import FoclStruct
+from nextgisweb_compulink.compulink_internal_mirroring import COMP_ID
+from nextgisweb_log.model import LogEntry
 
 
 def setup_events():
-    return
-    #VectorLayer.after_feature_create += after_feature_create_handler
+    VectorLayer.before_feature_create += before_feature_create_handler
+    VectorLayer.after_feature_create += after_feature_create_handler
+
+
+
+def before_feature_create_handler(resource=None, feature=None):
+    # check layer (only real layers)
+    if not resource.keyname or not resource.keyname.startswith('real_'):
+        return
+
+    # add guid
+    try:
+        feature.fields['feat_guid'] = str(uuid.uuid4().hex)
+    except Exception, ex:
+        LogEntry.error('Error on set feat guid! (%s, %s) %s' % (resource.keyname, feature, ex.message),
+                       component=COMP_ID,
+                       group='Mirroring',
+                       append_dt=datetime.now())
 
 
 def after_feature_create_handler(resource=None, feature_id=None):
-    # check layer
-    if resource.id == 8040:
+    # check layer (only real layers)
+    if not resource.keyname or not resource.keyname.startswith('real_'):
+        return
+    real_layer_name = '_'.join(resource.keyname.rsplit('_')[0:-1])
+
+    # get parent and children
+    focl_struct = resource.parent
+    layers = focl_struct.children
+
+    if not isinstance(focl_struct, FoclStruct) or not layers:
+        LogEntry.warning('Parent is not FoclStruct!', component=COMP_ID, group='Mirroring', append_dt=datetime.now())
         return
 
-    # get orig feature
-    query = resource.feature_query()
-    query.filter_by(id=feature_id)
-    query.geom()
-    features = query()
+    # get mirror layer
+    actual_layer = None
 
-    if features.total_count < 1:
-        # TODO: Logging
+    for lyr in layers:
+        if lyr.keyname:
+            lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
+        else:
+            continue
+        if 'actual_' + real_layer_name == lyr_name:
+            actual_layer = lyr
+
+    if not actual_layer:
+        LogEntry.error('Mirror layer was not found! (%s)' % resource.keyname, component=COMP_ID, group='Mirroring', append_dt=datetime.now())
         return
 
-    feature = next(features.__iter__())
 
+    try:
+        query = resource.feature_query()
+        query.filter_by(id=feature_id)
+        query.geom()
 
-    # get target feature layer
-    db_session = DBSession()
-    lyr = db_session.query(VectorLayer).get(8040)
+        features = query()
 
-    new_id = lyr.feature_create(feature)
+        if features.total_count < 1:
+            LogEntry.error('Feature not found in orig layer! (%s, %s)' % (resource.keyname, feature_id), component=COMP_ID, group='Mirroring', append_dt=datetime.now())
+            return
 
-    print 'Feature # %s was created for resource # %s' % (feature.id, resource.id)
-    print 'New feature id %s. Old: %s' % (new_id, feature.id)
+        feat = next(features.__iter__())
 
-def create_layers_copy():
-    pass
+        feat.fields['change_author'] = u'Мобильное приложение'
+        feat.fields['change_date'] = feat.fields['built_date']
+        actual_layer.feature_put(feat)
 
+        print "Layers %s was updated!" % actual_layer.keyname
+
+    except Exception, ex:
+                LogEntry.error('Error on set feat guid! (%s, %s) %s' % (resource.keyname, feature_id, ex.message),
+                       component=COMP_ID,
+                       group='Mirroring',
+                       append_dt=datetime.now())
 
