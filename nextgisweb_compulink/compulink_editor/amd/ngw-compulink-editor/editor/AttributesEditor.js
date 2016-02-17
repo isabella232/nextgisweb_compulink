@@ -64,6 +64,13 @@ define([
                 divAttributes = query('div.attributes', this.domNode)[0],
                 htmlContent;
 
+            // TODO: need more flexible!
+            var disabledFields = [
+                'built_date', 'feat_guid', 'change_author', 'change_date',
+                'is_deviation', 'deviation_distance', 'deviation_approved', 'approval_comment',
+                'start_point'
+            ];
+
             if (layerFields) {
                 array.forEach(layerFields, function (field) {
                     if (ngwFeatureInfo.fields.hasOwnProperty(field.keyname)) {
@@ -81,6 +88,8 @@ define([
                             value: fieldValue
                         };
                         viewModelField['IS_' + field.datatype] = true;
+
+                        viewModelField['IS_DISABLED'] = disabledFields.indexOf(field.keyname) > -1;
 
                         viewModel.fields.push(viewModelField);
                     }

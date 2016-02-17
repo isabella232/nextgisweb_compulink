@@ -6,19 +6,19 @@
             <label>{{displayName}}</label>
 
             {{#IS_STRING}}
-                <textarea type="text" name="{{keyname}}" >{{value}}</textarea>
+                <textarea type="text" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}}>{{value}}</textarea>
             {{/IS_STRING}}
 
             {{#IS_FLOAT}}
-                <input type="number" name="{{keyname}}" value="{{value}}"/>
+                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_FLOAT}}
 
             {{#IS_INTEGER}}
-                <input type="number" name="{{keyname}}" value="{{value}}"/>
+                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_INTEGER}}
 
             {{#IS_DATETIME}}
-                <input type="datetime-local" name="{{keyname}}" value="{{value}}"/>
+                <input type="datetime-local" name="{{keyname}}" {{#IS_DISABLED}}disabled=disabled{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_DATETIME}}
         </div>
     {{/fields}}
