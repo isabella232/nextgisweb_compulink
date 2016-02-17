@@ -1,5 +1,5 @@
 EDITABLE_LAYERS = {
-    'real_special_transition': {
+    'actual_real_special_transition': {
         'style': {
             'strokeColor': '#ff3300',
             'pointRadius': 10,
@@ -10,7 +10,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_special_transition_point': {
+    'actual_real_special_transition_point': {
         'style': {
             'strokeColor': '#ff3300',
             'pointRadius': 10,
@@ -21,7 +21,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_optical_cable': {
+    'actual_real_optical_cable': {
         'style': {
             'strokeColor': '#0066ff',
             'pointRadius': 10,
@@ -32,7 +32,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_optical_cable_point': {
+    'actual_real_optical_cable_point': {
         'style': {
             'strokeColor': '#0066ff',
             'pointRadius': 10,
@@ -43,7 +43,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_fosc': {
+    'actual_real_fosc': {
         'style': {
             'strokeColor': '#ff00ff',
             'pointRadius': 10,
@@ -54,7 +54,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_optical_cross': {
+    'actual_real_optical_cross': {
         'style': {
             'strokeColor': '#ff00ff',
             'pointRadius': 10,
@@ -65,7 +65,7 @@ EDITABLE_LAYERS = {
             'fillOpacity': 0.6
         }
     },
-    'real_access_point': {
+    'actual_real_access_point': {
         'style': {
             'strokeColor': '#ff00ff',
             'pointRadius': 10,
