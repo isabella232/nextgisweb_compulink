@@ -226,13 +226,13 @@ define([
             });
 
             this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(function (result) {
-                if (result.status === 'ok') {
-                    new InfoDialog({
-                        isDestroyedAfterHiding: true,
-                        title: 'Изменения сохранены',
-                        message: 'Изменения сохранены успешно'
-                    }).show();
-                }
+                //if (result.status === 'ok') {
+                //    new InfoDialog({
+                //        isDestroyedAfterHiding: true,
+                //        title: 'Изменения сохранены',
+                //        message: 'Изменения сохранены успешно'
+                //    }).show();
+                //}
 
                 if (result.status === 'error') {
                     new InfoDialog({
