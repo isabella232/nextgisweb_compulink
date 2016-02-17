@@ -30,7 +30,7 @@ from nextgisweb.vector_layer import VectorLayer, TableInfo
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT
+    PROJECT_STATUS_BUILT, FoclStructScope
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
@@ -179,10 +179,17 @@ def _get_user_resources_tree(user):
 
 
 def show_map(request):
+    resource_id = int(request.GET['resource_id'])
+    dbsession = DBSession()
+    resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
+
+    # checks
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    resource_id = int(request.GET['resource_id'])
+    if not request.user.is_administrator or not resource.has_permission(FoclStructScope.edit_prop, request.user):
+        raise HTTPForbidden()
+
     extent3857 = get_extent_by_resource_id(resource_id)
     extent4326 = _extent_3857_to_4326(extent3857)
 

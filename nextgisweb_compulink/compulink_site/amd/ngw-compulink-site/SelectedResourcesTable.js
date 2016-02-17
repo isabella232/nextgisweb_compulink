@@ -62,7 +62,11 @@ define([
             //context menu
             this._menu = new Menu({
                 targetNodeIds: [this._grid.domNode],
-                selector: 'div.dgrid-row'
+                selector: 'div.dgrid-row',
+                onShow: lang.hitch(this, function(evt) {
+                    evt.preventDefault();
+                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                })
 
             });
 
@@ -121,13 +125,14 @@ define([
                 })
             }));
 
-            //this._menu.addChild(new MenuSeparator());
-            //this._menu.addChild(new MenuItem({
-            //    label: 'Редактировать',
-            //    onClick: lang.hitch(this, function (evt) {
-            //        window.open(displayConfig.editorUrl + '?resource_id=' + Object.getOwnPropertyNames( this._grid.selection )[0], '_blank');
-            //    })
-            //}));
+            this._menu.addChild(new MenuSeparator());
+            this._menu.addChild(new MenuItem({
+                label: 'Редактировать',
+                onClick: lang.hitch(this, function (evt) {
+                    // TODO: need check!
+                    window.open(displayConfig.editorUrl + '?resource_id=' + Object.getOwnPropertyNames( this._grid.selection )[0], '_blank');
+                })
+            }));
 
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
             aspect.after(this._grid, 'renderRow', function(row, args) {
