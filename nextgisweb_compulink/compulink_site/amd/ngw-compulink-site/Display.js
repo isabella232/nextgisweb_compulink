@@ -319,8 +319,9 @@ define([
                     var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
                     resourcesTypeSelector.selectResourceType('vols');
                     this.LayersSelector.selectLayers([
-                        'real_special_transition', 'real_special_transition_point',  'real_optical_cable',
-                        'real_optical_cable_point', 'real_fosc', 'real_optical_cross', 'real_access_point'
+                        'actual_real_special_transition', 'actual_real_special_transition_point',
+                        'actual_real_optical_cable', 'actual_real_optical_cable_point',
+                        'actual_real_fosc', 'actual_real_optical_cross', 'actual_real_access_point'
                     ], 'focl_struct');
                     new EventsMediator(this);
                 })

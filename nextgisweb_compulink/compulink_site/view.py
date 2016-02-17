@@ -27,7 +27,7 @@ from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
 from nextgisweb_compulink.compulink_reporting.utils import OverdueStatusCalculator
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
-    OBJECTS_LAYER_STRUCT
+    OBJECTS_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
     PROJECT_STATUS_BUILT, FoclStructScope, Region, District, ConstructObject
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
@@ -218,7 +218,7 @@ def show_map(request):
 
 
 def get_focl_layers_list():
-    layer_order = len(FOCL_LAYER_STRUCT) + len(OBJECTS_LAYER_STRUCT) + len(FOCL_REAL_LAYER_STRUCT) +\
+    layer_order = len(FOCL_LAYER_STRUCT) + len(OBJECTS_LAYER_STRUCT) + len(ACTUAL_FOCL_REAL_LAYER_STRUCT) +\
                   len(SIT_PLAN_LAYER_STRUCT)
 
     focl_layers_for_jstree = []
@@ -252,8 +252,8 @@ def get_focl_layers_list():
         layer_order -= 1
 
     real_layers_for_jstree = []
-    layers_template_path = path.join(ADMIN_BASE_PATH, 'real_layers_templates/')
-    for vl_name in reversed(FOCL_REAL_LAYER_STRUCT):
+    layers_template_path = path.join(ADMIN_BASE_PATH, 'actual_real_layers_templates/')
+    for vl_name in reversed(ACTUAL_FOCL_REAL_LAYER_STRUCT):
         with codecs.open(path.join(layers_template_path, vl_name + '.json'), encoding='utf-8') as json_file:
             json_layer_struct = json.load(json_file, encoding='utf-8')
             real_layers_for_jstree.append({
