@@ -93,7 +93,16 @@ define([
                         if (all_dicts.hasOwnProperty(field.keyname)) {
                             isDictField = true;
                             valsDict = all_dicts[field.keyname];
-                            if(valsDict.hasOwnProperty(fieldValue)) fieldValue = valsDict[fieldValue];
+                            fieldValue = [];
+                            for (var keyname in valsDict) {
+                                if (valsDict.hasOwnProperty(keyname)) {
+                                    fieldValue.push({
+                                        val: keyname,
+                                        text: valsDict[keyname],
+                                        selected: fieldValue === keyname
+                                    });
+                                }
+                            }
                         }
 
                         if (bool_fields.indexOf(field.keyname) >= 0) {
@@ -109,7 +118,7 @@ define([
 
                         viewModelField['IS_DISABLED'] = disabledFields.indexOf(field.keyname) > -1;
 
-                        viewModelField['IS_DICT'] = isDictField;
+                        viewModelField['IS_REF_BOOK'] = isDictField;
                         viewModelField['IS_BOOL'] = isBoolField;
 
                         if (!isBoolField && !isDictField) {

@@ -6,7 +6,7 @@
             <label {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{displayName}}</label>
 
             {{#IS_STRING}}
-                <textarea type="text" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{value}}</textarea>
+                <textarea name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{value}}</textarea>
             {{/IS_STRING}}
 
             {{#IS_FLOAT}}
@@ -23,18 +23,18 @@
 
             {{#IS_BOOL}}
                 <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
-                    <option {{#value}}selected{{/value}} value=1>Да</option>
-                    <option {{^value}}selected{{/value}} value=0>Нет</option>
+                    <option {{#value}}selected{{/value}} value="1">Да</option>
+                    <option {{^value}}selected{{/value}} value="0">Нет</option>
                 </select>
             {{/IS_BOOL}}
 
-            {{#IS_DICT}}
+            {{#IS_REF_BOOK}}
                 <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
-                    {{#valsDict}}
-                    <option value="test">"test"</option>
-                    {{/valsDict}}
+                    {{#value}}
+                        <option value="{{val}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                    {{/value}}
                 </select>
-            {{/IS_DICT}}
+            {{/IS_REF_BOOK}}
 
             <br>
         </div>
