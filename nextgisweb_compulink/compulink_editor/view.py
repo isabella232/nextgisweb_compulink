@@ -1,48 +1,38 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import json
-from datetime import date
 
+import json
+from datetime import date, datetime
+
+import codecs
+import sqlalchemy.sql as sql
 import transaction
 from dateutil.relativedelta import relativedelta
-import os
-from os import path, mkdir
-from shutil import rmtree
-import tempfile
-from zipfile import ZipFile, ZIP_DEFLATED
-import codecs
-import geojson
-from osgeo import ogr
-from shapely.geometry import shape, mapping
-from shapely.wkt import loads
+from os import path
+from pyproj import Proj, transform
 from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPBadRequest
 from pyramid.renderers import render_to_response
-from pyramid.response import Response, FileResponse
+from pyramid.response import Response
 from pyramid.view import view_config
+from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
-import sqlalchemy.sql as sql
-import subprocess
+
+from config import EDITABLE_LAYERS
 from nextgisweb import DBSession, db
-from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
+from nextgisweb.feature_layer import IWritableFeatureLayer
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
+from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
+from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
+from nextgisweb_lookuptable.model import LookupTable
+from .. import compulink_admin
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
     PROJECT_STATUS_BUILT, FoclStructScope
+from ..compulink_admin.view import get_project_statuses
 from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
-from .. import compulink_admin
-from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
-    get_districts_from_resource, get_project_statuses
-from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
-from nextgisweb_compulink.compulink_site import COMP_ID
-from nextgisweb_log.model import LogEntry, LogLevels
-from nextgisweb_lookuptable.model import LookupTable
-
-from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
-from pyproj import Proj, transform
-from config import EDITABLE_LAYERS
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
@@ -79,6 +69,12 @@ def setup_pyramid(comp, config):
         'compulink.editor.set_focl_status',
         '/compulink/editor/resources/{id:\d+}/set_focl_status', client=('id',)) \
         .add_view(set_focl_status)
+
+    config.add_route(
+        'compulink.editor.save_geom',
+        '/compulink/editor/features/save') \
+        .add_view(editor_save_geom)
+
 
 
 @view_config(renderer='json')
@@ -187,7 +183,7 @@ def show_map(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    if not request.user.is_administrator or not resource.has_permission(FoclStructScope.edit_prop, request.user):
+    if not(request.user.is_administrator or resource.has_permission(FoclStructScope.edit_prop, request.user)):
         raise HTTPForbidden()
 
     extent3857 = get_extent_by_resource_id(resource_id)
@@ -537,6 +533,67 @@ def set_focl_status(request):
         report_line.persist()
 
     return Response(json.dumps({'status': 'ok'}))
+
+
+
+@view_config(renderer='json')
+def editor_save_geom(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    try:
+        updates = request.json_body
+
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        for update in updates:
+            res = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==update['layer']).first()
+            if not res:
+                resp = {'status': 'error', 'message': u'Редактируемый слой не найден'}
+                return Response(json.dumps(resp), status=400)
+            parent_res = res.parent
+            if not parent_res:
+                resp = {'status': 'error', 'message': u'Редактируемый слой некорректный (Слой вне объекта строительства)'}
+                return Response(json.dumps(resp), status=400)
+            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+                resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
+                return Response(json.dumps(resp))
+            #  request.resource_permission(PERM_WRITE) ADD check
+
+            query = res.feature_query()
+            query.geom()
+
+            query.filter_by(id=update['id'])
+            query.limit(1)
+
+            feature = None
+            for f in query():
+                feature = f
+
+            if not feature:
+                resp = {'status': 'error', 'message': u'Редактируемый объект не найден'}
+                return Response(json.dumps(resp), status=400)
+
+            feature.geom = update['wkt']
+            feature.fields['change_author'] = request.user.display_name or request.user.keyname
+            feature.fields['change_date'] = datetime.now()
+
+            if IWritableFeatureLayer.providedBy(res):
+                res.feature_put(feature)
+            else:
+                resp = {'status': 'error', 'message': u'Ресурс не поддерживает хранение геометрий'}
+                return Response(json.dumps(resp), status=400)
+
+        transaction.manager.commit()
+    except Exception, ex:
+        resp = {'status': 'error', 'message': ex.message}
+        return Response(json.dumps(resp), status=400)
+
+    resp = {'status': 'ok'}
+    return Response(json.dumps(resp))
+
+
 
 
 def reset_all_layers(request):
