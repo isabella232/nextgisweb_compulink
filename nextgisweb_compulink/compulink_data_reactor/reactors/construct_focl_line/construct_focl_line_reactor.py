@@ -47,14 +47,18 @@ class ConstructFoclLineReactor(AbstractReactor):
 
             # Output layer
             lines_lyr = [lyr for lyr in fs.children if lyr.keyname and
-                         not lyr.keyname.startswith('real_optical_cable_point') and
-                         lyr.keyname.startswith('real_optical_cable')]
+                         not lyr.keyname.startswith('actual_real_optical_cable_point') and
+                         lyr.keyname.startswith('actual_real_optical_cable')]
             lines_lyr = lines_lyr[0] if len(lines_lyr) else None
 
 
             # Collect features for processing
             features = []
-            processing_layers_name = ['real_optical_cable_point', 'real_special_transition_point', 'real_fosc', 'real_optical_cross', 'real_access_point']
+            processing_layers_name = ['actual_real_optical_cable_point',
+                                      'actual_real_special_transition_point',
+                                      'actual_real_fosc',
+                                      'actual_real_optical_cross',
+                                      'actual_real_access_point']
 
             for lyr_name in processing_layers_name:
                 points_lyr = [lyr for lyr in fs.children if lyr.keyname and lyr.keyname.startswith(lyr_name)]

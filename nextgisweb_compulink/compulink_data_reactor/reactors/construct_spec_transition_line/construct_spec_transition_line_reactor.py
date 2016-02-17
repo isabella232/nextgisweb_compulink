@@ -35,12 +35,12 @@ class ConstructSpecTransitionLineReactor(AbstractReactor):
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
-            points_lyr = [lyr for lyr in fs.children if lyr.keyname and lyr.keyname.startswith('real_special_transition_point')]
+            points_lyr = [lyr for lyr in fs.children if lyr.keyname and lyr.keyname.startswith('actual_real_special_transition_point')]
             points_lyr = points_lyr[0] if len(points_lyr) else None
 
             lines_lyr = [lyr for lyr in fs.children if lyr.keyname and
-                         not lyr.keyname.startswith('real_special_transition_point') and
-                         lyr.keyname.startswith('real_special_transition')]
+                         not lyr.keyname.startswith('actual_real_special_transition_point') and
+                         lyr.keyname.startswith('actual_real_special_transition')]
             lines_lyr = lines_lyr[0] if len(lines_lyr) else None
 
             query = points_lyr.feature_query()
