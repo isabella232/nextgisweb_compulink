@@ -89,9 +89,143 @@ define([
                 }))
             }, this);
 
-            this.getLayer().events.register('beforefeaturemodified', this.getLayer(), function (event) {
-                topic.publish('/editor/feature/select', event.feature);
+            this.getLayer().events.register('beforefeaturemodified', this.getLayer(), lang.hitch(this, function (event) {
+                this._beforeFeatureModified(event);
+            }));
+
+            this.getLayer().events.register('afterfeaturemodified', this.getLayer(), lang.hitch(this, function (event) {
+                this._afterFeatureModified(event);
+            }));
+        },
+
+        _oldFeature: null,
+        _beforeFeatureModified: function (beforeFeatureModifiedEvent) {
+            this._oldFeature = beforeFeatureModifiedEvent.feature;
+            topic.publish('/editor/feature/select', beforeFeatureModifiedEvent.feature);
+        },
+
+        _afterFeatureModified: function (afterFeatureModifiedEvent) {
+            if (!afterFeatureModifiedEvent.modified) {
+                return false;
+            }
+
+            var pointsAffected,
+                relativeFeatures;
+
+            var geometryId = afterFeatureModifiedEvent.feature.geometry.id;
+            if (geometryId.indexOf('Point') > -1) {
+                pointsAffected = this._getPointAffected(afterFeatureModifiedEvent);
+            } else if (geometryId.indexOf('Line') > -1) {
+                pointsAffected = this._getPointsAffectedFromLine(afterFeatureModifiedEvent);
+            }
+
+            relativeFeatures = this._processRelativeFeatures(pointsAffected);
+            afterFeatureModifiedEvent.feature.modified = false;
+            relativeFeatures.push(afterFeatureModifiedEvent.feature);
+
+            this._saveFeaturesModified(relativeFeatures);
+        },
+
+        _getPointAffected: function (afterFeatureModifiedEvent) {
+            return [{
+                current: afterFeatureModifiedEvent.feature.geometry.components[0],
+                old: afterFeatureModifiedEvent.feature.modified.geometry.components[0]
+            }];
+        },
+
+        _getPointsAffectedFromLine: function (afterFeatureModifiedEvent) {
+            var pointsAffected = [],
+                line = afterFeatureModifiedEvent.feature.geometry.components[0],
+                oldLine = afterFeatureModifiedEvent.feature.modified.geometry.components[0];
+
+            for (var pointIndex = 0, countPoint = 2; pointIndex < countPoint; pointIndex++) {
+                if (!line.components[pointIndex].equals(oldLine.components[pointIndex])) {
+                    pointsAffected.push({
+                        current: line.components[pointIndex],
+                        old: oldLine.components[pointIndex]
+                    });
+                }
+            }
+
+            return pointsAffected;
+        },
+
+        _processRelativeFeatures: function (pointsAffected) {
+            var relativeFeatures = [];
+            array.forEach(this.getLayer().features, function (feature) {
+                var geometryId = feature.geometry.id,
+                    relativeFeature = null;
+                if (geometryId.indexOf('Point') > -1) {
+                    if (this.checkRelativePoint(feature.geometry.components[0], pointsAffected)) {
+                        relativeFeature = feature;
+                    }
+                } else if (geometryId.indexOf('Line') > -1) {
+                    if (this.checkRelativeLine(feature.geometry.components[0], pointsAffected)) {
+                        relativeFeature = feature;
+                    }
+                }
+                if (relativeFeature) relativeFeatures.push(relativeFeature);
+            }, this);
+            return relativeFeatures;
+        },
+
+        checkRelativePoint: function (point, pointsAffected) {
+            var pointEqualsResult = this._pointEquals(point, pointsAffected);
+            if (pointEqualsResult) {
+                point.x = pointEqualsResult.current.x;
+                point.y = pointEqualsResult.current.y;
+                this._layer.redraw();
+                return true;
+            }
+            return false;
+        },
+
+        checkRelativeLine: function (line, pointsAffected) {
+            var pointStartEqualsResult = this._pointEquals(line.components[0], pointsAffected),
+                pointEndEqualsResult = this._pointEquals(line.components[1], pointsAffected),
+                needRedraw = false;
+
+            if (pointStartEqualsResult) {
+                line.components[0].x = pointStartEqualsResult.current.x;
+                line.components[0].y = pointStartEqualsResult.current.y;
+                needRedraw = true;
+            }
+
+            if (pointEndEqualsResult) {
+                line.components[1].x = pointEndEqualsResult.current.x;
+                line.components[1].y = pointEndEqualsResult.current.y;
+                needRedraw = true;
+            }
+
+            if (needRedraw) {
+                this._layer.redraw();
+                return true;
+            }
+            return false;
+        },
+
+        _pointEquals: function (point, pointTargetArray) {
+            for (var i = 0, l = pointTargetArray.length; i < l; i++) {
+                if (point.equals(pointTargetArray[i].old)) {
+                    return pointTargetArray[i];
+                }
+            }
+            return false;
+        },
+
+        _saveFeaturesModified: function (features) {
+            var objectsForSaving = [],
+                wktParser = new openlayers.Format.WKT();
+            array.forEach(features, function (feature) {
+                objectsForSaving.push({
+                    wkt: wktParser.write(feature),
+                    id: feature.ngwFeatureId,
+                    layer: feature.ngwLayerId
+                });
             });
+
+            //this._ngwServiceFacade.saveEditorFeatures(objectsForSaving);
+            console.log(objectsForSaving);
         }
     });
 });
