@@ -51,13 +51,6 @@
                     "opened": true
                 },
                 "children": ${json.dumps(real_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n}
-            },
-            {
-                "order": 12,
-                "text": "Текущие фактические данные",
-                "icon": "sp_optical_cross",
-                "id": "current_fact_data_layers",
-                "children": false
             }
         ];
         var sit_plan_layers_type = ${json.dumps(sit_plan_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n};
