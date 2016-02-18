@@ -106,8 +106,7 @@ define([
             if (geometryId.indexOf('Point') > -1) {
                 pointsAffected.push(feature.geometry.components[0]);
             } else if (geometryId.indexOf('Line') > -1) {
-                pointsAffected.push(feature.geometry.components[0].components[0]);
-                pointsAffected.push(feature.geometry.components[0].components[1]);
+                return [feature];
             }
 
             var removingFeatures = [];
