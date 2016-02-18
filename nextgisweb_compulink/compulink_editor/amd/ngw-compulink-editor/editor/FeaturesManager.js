@@ -128,7 +128,6 @@ define([
                 }
                 if (relativeFeature) removingFeatures.push(relativeFeature);
             }, this);
-            removingFeatures.push(feature);
             return removingFeatures;
         },
 
