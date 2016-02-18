@@ -108,6 +108,15 @@
 
                         <div data-dojo-type="dijit/ToolbarSeparator"></div>
 
+
+                        <div data-dojo-attach-point="removeFeatureButton"
+                             data-dojo-attach-event="onClick: removeFeature"
+                             data-dojo-type="dijit/form/Button"
+                             data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: true, title: 'Удалить выбранный объект'">
+                        </div>
+
+                        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
                         <div data-dojo-attach-point="infoNode"
                              style="display: inline-block; vertical-align: middle; float: right; padding: 0 4px;">
 
@@ -123,8 +132,6 @@
                             <span data-dojo-attach-point="scaleInfoNode"></span>
 
                         </div>
-
-
                     </div>
 
                     <div data-dojo-attach-point="mapPane"

@@ -486,6 +486,10 @@ define([
                 mainContainer.removeChild(panel);
         },
 
+        removeFeature: function () {
+            topic.publish('/compulink/editor/features/remove');
+        },
+
         startup: function () {
             this.inherited(arguments);
 
