@@ -56,10 +56,17 @@ define([
 
         changeFeature: function (layerId, featureId, geom, fields) {
             var dtlContext = new dtlBase.Context({resourceId: layerId, featureId: featureId}),
-                url = this.ngwApplicationUrl + this.EDIT_FEATURE.render(dtlContext);
+                url = this.ngwApplicationUrl + this.EDIT_FEATURE.render(dtlContext),
+                feature = {
+                    id: featureId
+                };
+
+            if (geom) feature.geom = geom;
+            if (fields) feature.fields = fields;
+
             return xhr.put(url, {
                 handleAs: 'json',
-                data: JSON.stringify(features)
+                data: JSON.stringify(feature)
             });
         }
     });
