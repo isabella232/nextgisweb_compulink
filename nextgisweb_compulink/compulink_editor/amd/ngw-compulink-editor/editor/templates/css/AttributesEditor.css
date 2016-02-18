@@ -49,8 +49,10 @@
 #attributesEditor input.save {
     width: auto;
     border: 1px solid #FF5656;
+    color: #740101;
     background: #FFD4D2 none;
     padding: 5px 12px;
+    margin-left: 5px;
     font-size: 1.2em;
     line-height: 1.3333333;
     text-align: center;
@@ -73,4 +75,12 @@
 
 #attributesEditor div.control-group {
     margin: 2px 0;
+}
+
+#attributesEditor input:disabled,
+#attributesEditor textarea:disabled,
+#attributesEditor select:disabled {
+    background: #dddddd;
+    opacity: 0.8;
+    color: #4F4F4F;
 }
