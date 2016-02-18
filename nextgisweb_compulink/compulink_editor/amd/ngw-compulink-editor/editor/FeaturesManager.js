@@ -5,8 +5,9 @@ define([
     'dojo/promise/all',
     'dojo/topic',
     'ngw-compulink-site/InfoDialog',
+    'ngw-compulink-site/ConfirmDialog',
     'ngw/openlayers'
-], function (declare, lang, array, all, topic, InfoDialog, openlayers) {
+], function (declare, lang, array, all, topic, InfoDialog, ConfirmDialog, openlayers) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
@@ -64,10 +65,30 @@ define([
             return this._getLayer();
         },
 
+        _removeConfirmDialog: null,
         _bindEvents: function () {
             topic.subscribe('/compulink/editor/features/remove', lang.hitch(this, function () {
                 if (this._selectedFeature) {
+                    var geometryId = this._selectedFeature.geometry.id,
+                        removingFeatures;
 
+                    removingFeatures = this._getRemovingFeatures(this._selectedFeature);
+
+                    this._removeConfirmDialog = new ConfirmDialog({
+                        title: 'Удаление объектов',
+                        id: 'removeFeatures',
+                        message: 'Удалить выбранный объект?',
+                        buttonOk: 'Да',
+                        buttonCancel: 'Отменить',
+                        isDestroyedAfterHiding: true,
+                        handlerOk: lang.hitch(this, function() {
+                            this._removeFeatures(removingFeatures);
+                        }),
+                        handlerCancel: lang.hitch(this, function () {
+                            this._removeConfirmDialog = null;
+                        })
+                    });
+                    this._removeConfirmDialog.show();
                 } else {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
@@ -76,6 +97,39 @@ define([
                     }).show();
                 }
             }));
+        },
+
+        _getRemovingFeatures: function (feature) {
+            var geometryId = feature.geometry.id,
+                pointsAffected = [];
+
+            if (geometryId.indexOf('Point') > -1) {
+                pointsAffected.push(feature.geometry.components[0]);
+            } else if (geometryId.indexOf('Line') > -1) {
+                pointsAffected.push(feature.geometry.components[0].components[0]);
+                pointsAffected.push(feature.geometry.components[0].components[1]);
+            }
+
+            var removingFeatures = [];
+            array.forEach(this.getLayer().features, function (feature) {
+                var geometryId = feature.geometry.id,
+                    relativeFeature = null;
+                if (geometryId.indexOf('Point') > -1 && feature.geometry.components) {
+                    if (this._pointSimpleEquals(feature.geometry.components[0], pointsAffected)) {
+                        relativeFeature = feature;
+                    }
+                } else if (geometryId.indexOf('Line') > -1 && feature.geometry.components) {
+                    if (this._pointSimpleEquals(feature.geometry.components[0].components[0], pointsAffected)) {
+                        relativeFeature = feature;
+                    }
+                    if (this._pointSimpleEquals(feature.geometry.components[0].components[1], pointsAffected)) {
+                        relativeFeature = feature;
+                    }
+                }
+                if (relativeFeature) removingFeatures.push(relativeFeature);
+            }, this);
+            removingFeatures.push(feature);
+            return removingFeatures;
         },
 
         fillObjects: function () {
@@ -221,6 +275,15 @@ define([
             return false;
         },
 
+        _pointSimpleEquals: function (point, pointTargetArray) {
+            for (var i = 0, l = pointTargetArray.length; i < l; i++) {
+                if (point.equals(pointTargetArray[i])) {
+                    return pointTargetArray[i];
+                }
+            }
+            return false;
+        },
+
         _pointEquals: function (point, pointTargetArray) {
             for (var i = 0, l = pointTargetArray.length; i < l; i++) {
                 if (point.equals(pointTargetArray[i].old)) {
@@ -242,13 +305,45 @@ define([
             });
 
             this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(function (result) {
-                //if (result.status === 'ok') {
-                //    new InfoDialog({
-                //        isDestroyedAfterHiding: true,
-                //        title: 'Изменения сохранены',
-                //        message: 'Изменения сохранены успешно'
-                //    }).show();
-                //}
+                if (result.status === 'ok') {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Изменения сохранены',
+                        message: 'Изменения сохранены успешно'
+                    }).show();
+                }
+
+                if (result.status === 'error') {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Ошибка сохранения!',
+                        message: result.message
+                    }).show();
+                }
+            });
+        },
+
+        _removeFeatures: function (features) {
+            var objectsForRemoving = [];
+            array.forEach(features, function (feature) {
+                objectsForRemoving.push({
+                    id: feature.ngwFeatureId,
+                    layer: feature.ngwLayerId
+                });
+
+            });
+
+            this._modify.unselectFeature();
+            this.getLayer().removeFeatures(features);
+
+            this._ngwServiceFacade.removeFeatures(objectsForRemoving).then(function (result) {
+                if (result.status === 'ok') {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Изменения сохранены',
+                        message: 'Изменения сохранены успешно'
+                    }).show();
+                }
 
                 if (result.status === 'error') {
                     new InfoDialog({
