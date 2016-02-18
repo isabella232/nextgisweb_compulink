@@ -97,15 +97,16 @@ define([
                         var valsDict = null;
 
                         if (all_dicts.hasOwnProperty(field.keyname)) {
-                            isDictField = true;
-                            valsDict = all_dicts[field.keyname];
+                            var isDictField = true;
+                            var valsDict = all_dicts[field.keyname];
+                            var selVal = ngwFeatureInfo.fields[field.keyname];
                             fieldValue = [];
                             for (var keyname in valsDict) {
                                 if (valsDict.hasOwnProperty(keyname)) {
                                     fieldValue.push({
                                         val: keyname,
                                         text: valsDict[keyname],
-                                        selected: fieldValue === keyname
+                                        selected: selVal === keyname
                                     });
                                 }
                             }
