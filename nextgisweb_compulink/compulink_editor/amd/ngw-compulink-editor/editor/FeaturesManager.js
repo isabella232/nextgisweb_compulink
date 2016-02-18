@@ -15,6 +15,7 @@ define([
             this._ngwServiceFacade = ngwServiceFacade;
             if (isCreateLayer) this.getLayer();
             if (isFillObjects) this.fillObjects();
+            this._bindEvents();
         },
 
         _editableLayersInfo: null,
@@ -63,6 +64,20 @@ define([
             return this._getLayer();
         },
 
+        _bindEvents: function () {
+            topic.subscribe('/compulink/editor/features/remove', lang.hitch(this, function () {
+                if (this._selectedFeature) {
+
+                } else {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Внимание!',
+                        message: 'Выберите объект для удаления!'
+                    }).show();
+                }
+            }));
+        },
+
         fillObjects: function () {
             var getFeaturesPromises = [];
 
@@ -99,9 +114,9 @@ define([
             }));
         },
 
-        _oldFeature: null,
+        _selectedFeature: null,
         _beforeFeatureModified: function (beforeFeatureModifiedEvent) {
-            this._oldFeature = beforeFeatureModifiedEvent.feature;
+            this._selectedFeature = beforeFeatureModifiedEvent.feature;
             topic.publish('/editor/feature/select', beforeFeatureModifiedEvent.feature);
         },
 
@@ -125,6 +140,7 @@ define([
             relativeFeatures.push(afterFeatureModifiedEvent.feature);
 
             this._saveFeaturesModified(relativeFeatures);
+            this._selectedFeature = null;
         },
 
         _getPointAffected: function (afterFeatureModifiedEvent) {
