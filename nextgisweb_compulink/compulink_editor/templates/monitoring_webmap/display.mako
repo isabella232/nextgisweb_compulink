@@ -44,7 +44,7 @@
             },
             {
                 "order": 12,
-                "text": "Фактические данные",
+                "text": "Исходные фактические данные",
                 "icon": "sp_optical_cross",
                 "id": "fact_data_layers",
                 "state": {
