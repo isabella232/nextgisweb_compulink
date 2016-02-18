@@ -4,6 +4,7 @@ define([
     'dojo/_base/array',
     'dojo/html',
     'dojo/dom',
+    'dojo/on',
     'dojo/query',
     'dojo/dom-class',
     'dojo/dom-construct',
@@ -12,19 +13,22 @@ define([
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'ngw/settings!compulink_site',
+    'ngw-compulink-site/InfoDialog',
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/AttributesEditorWrapper.mustache',
     'dojo/text!./templates/AttributesEditor.mustache',
     'xstyle/css!./templates/css/AttributesEditor.css',
     'dojox/dtl/tag/logic'
-], function (declare, lang, array, html, dom, query, domClass, domConstruct, all, topic, _WidgetBase, _TemplatedMixin,
-             siteSettings, mustache, templateWrapper, templateAttributes) {
+], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic, _WidgetBase, _TemplatedMixin,
+             siteSettings, InfoDialog, mustache, templateWrapper, templateAttributes) {
 
     return declare([_WidgetBase, _TemplatedMixin], {
         _ngwServiceFacade: null,
         widgetsInTemplate: false,
         templateString: templateWrapper,
         templateAttributes: templateAttributes,
+        ngwLayerId: null,
+        ngwFeatureId: null,
 
         constructor: function () {
             mustache.parse(this.templateString);
@@ -40,6 +44,8 @@ define([
             topic.subscribe('/editor/feature/select', lang.hitch(this, function (feature) {
                 if (!this._ngwServiceFacade) return false;
                 this._setEditorState('wait');
+                this.ngwLayerId = feature.ngwLayerId;
+                this.ngwFeatureId = feature.ngwFeatureId;
                 var getFeatureInfo = this._ngwServiceFacade.getFeature(feature.ngwLayerId, feature.ngwFeatureId),
                     resourceInfo = this._ngwServiceFacade.getResourceInfo(feature.ngwLayerId);
                 all([resourceInfo, getFeatureInfo]).then(lang.hitch(this, function (results) {
@@ -122,7 +128,7 @@ define([
                         viewModelField['IS_BOOL'] = isBoolField;
 
                         if (!isBoolField && !isDictField) {
-                                viewModelField['IS_' + field.datatype] = true;
+                            viewModelField['IS_' + field.datatype] = true;
                         }
 
                         viewModel.fields.push(viewModelField);
@@ -133,10 +139,30 @@ define([
             htmlContent = mustache.render(this.templateAttributes, viewModel);
             this._setEditorState('fill');
             html.set(divAttributes, htmlContent);
+
+            on(query('input.save', this.domNode)[0], 'click', lang.hitch(this, function () {
+                this._save();
+            }));
         },
 
         _stringRepl: function (template) {
             return mustache.render(template, this);
+        },
+
+        _save: function () {
+            var fields = {};
+            $(this.domNode).find('.field_value:enabled').each(function () {
+                var $element = $(this);
+                fields[$element.attr('name')] = $element.val();
+            });
+
+            this._ngwServiceFacade.changeFeature(this.ngwLayerId, this.ngwFeatureId, null, fields).then(function () {
+                new InfoDialog({
+                    isDestroyedAfterHiding: true,
+                    title: 'Изменения сохранены',
+                    message: 'Значения атрибутов успешно сохранены'
+                }).show();
+            });
         }
     });
 });

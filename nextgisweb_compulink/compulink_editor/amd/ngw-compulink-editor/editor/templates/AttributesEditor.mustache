@@ -6,30 +6,30 @@
             <label {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{displayName}}</label>
 
             {{#IS_STRING}}
-                <textarea name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{value}}</textarea>
+                <textarea class="field_value" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>{{value}}</textarea>
             {{/IS_STRING}}
 
             {{#IS_FLOAT}}
-                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
+                <input class="field_value" type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_FLOAT}}
 
             {{#IS_INTEGER}}
-                <input type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
+                <input class="field_value" type="number" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_INTEGER}}
 
             {{#IS_DATETIME}}
-                <input type="datetime-local" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
+                <input class="field_value" type="datetime-local" name="{{keyname}}" {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}} value="{{value}}"/>
             {{/IS_DATETIME}}
 
             {{#IS_BOOL}}
-                <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
+                <select class="field_value" name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
                     <option {{#value}}selected{{/value}} value="1">Да</option>
                     <option {{^value}}selected{{/value}} value="0">Нет</option>
                 </select>
             {{/IS_BOOL}}
 
             {{#IS_REF_BOOK}}
-                <select name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
+                <select class="field_value" name="{{keyname}}"  {{#IS_DISABLED}}disabled="disabled"{{/IS_DISABLED}}>
                     {{#value}}
                         <option value="{{val}}" {{#selected}}selected{{/selected}}>{{text}}</option>
                     {{/value}}
