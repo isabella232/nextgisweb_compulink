@@ -4,7 +4,7 @@ EDITABLE_LAYERS = {
             'strokeColor': '#ff3300',
             'pointRadius': 10,
             'fillColor': '#ff3300',
-            'strokeWidth': 3,
+            'strokeWidth': 5,
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.6
@@ -13,9 +13,9 @@ EDITABLE_LAYERS = {
     'actual_real_special_transition_point': {
         'style': {
             'strokeColor': '#ff3300',
-            'pointRadius': 10,
+            'pointRadius': 13,
             'fillColor': '#ff3300',
-            'strokeWidth': 1,
+            'strokeWidth': 2,
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.6
