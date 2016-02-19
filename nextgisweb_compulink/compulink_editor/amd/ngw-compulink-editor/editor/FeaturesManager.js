@@ -302,7 +302,7 @@ define([
                 });
             });
 
-            this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(function (result) {
+            this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(null, function (result) {
                 if (result.status === 'error') {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
@@ -326,7 +326,7 @@ define([
             this._modify.unselectFeature();
             this.getLayer().removeFeatures(features);
 
-            this._ngwServiceFacade.removeFeatures(objectsForRemoving).then(function (result) {
+            this._ngwServiceFacade.removeFeatures(objectsForRemoving).then(null, function (result) {
                 if (result.status === 'error') {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
