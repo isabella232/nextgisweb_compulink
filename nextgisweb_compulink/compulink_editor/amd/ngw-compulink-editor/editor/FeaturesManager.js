@@ -192,6 +192,11 @@ define([
             relativeFeatures.push(afterFeatureModifiedEvent.feature);
 
             this._saveFeaturesModified(relativeFeatures);
+            this._unselectModifiedFeature();
+        },
+
+        _unselectModifiedFeature: function () {
+            topic.publish('/editor/feature/unselect', this._selectedFeature);
             this._selectedFeature = null;
         },
 
