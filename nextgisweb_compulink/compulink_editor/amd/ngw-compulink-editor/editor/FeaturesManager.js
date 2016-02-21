@@ -132,8 +132,10 @@ define([
 
         _setEditorMode: function (editorMode) {
             if (editorMode === 'createSp' || editorMode === 'createVols') {
+                this._deactivateEditMode();
                 this._setMapCrosshairClass();
             } else if (editorMode === 'edit') {
+                this._activateEditMode();
                 this._removeMapCrosshairClass();
             }
         },
@@ -145,6 +147,16 @@ define([
 
         _removeMapCrosshairClass: function () {
             domClass.remove(this._map.olMap.div, this._classCrosshair);
+        },
+
+        _activateEditMode: function () {
+            this._modify.activate();
+            this._snapping.activate();
+        },
+
+        _deactivateEditMode: function () {
+            this._modify.deactivate();
+            this._snapping.deactivate();
         },
 
         _getRemovingFeatures: function (feature) {
