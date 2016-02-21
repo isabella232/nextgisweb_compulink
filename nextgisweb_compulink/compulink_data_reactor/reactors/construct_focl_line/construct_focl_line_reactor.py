@@ -44,7 +44,7 @@ class ConstructFoclLineReactor(AbstractReactor):
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
-            cls.construct_line(fs)
+            cls.smart_construct_line(fs)
             db_session.flush()
 
         cls.log_info('ConstructFoclLineReactor finished!')
@@ -87,6 +87,80 @@ class ConstructFoclLineReactor(AbstractReactor):
 
         #clear line lyr
         cls.clear_layer(lines_lyr)
+
+        #get clusters
+        clusters = cls.get_clusters(features)
+
+        #merge points in clusters
+        for cluster in clusters:
+            if len(cluster) < 2:
+                cls.log_warning('Line %s has unclustered point!')
+                continue
+            if len(cluster) == 2:
+                # construct segment
+                points = tuple(feat.geom[0].coords[0] for feat in cluster)
+                # write segment
+                info = cls.get_segment_info(points, cluster)
+                cls.write_segment(lines_lyr, points, cluster, info)
+            if len(cluster) > 2:
+                line = cls.make_line(cluster)
+                # write segments
+                for i in range(len(line[0])-1):
+                    points = (line[0][i], line[0][i+1])
+                    info = cls.get_segment_info(points, cluster)
+                    cls.write_segment(lines_lyr, points, cluster, info)
+
+    @classmethod
+    def smart_construct_line(cls, focl_struct_resource):
+        # Output layer
+        lines_lyr = [lyr for lyr in focl_struct_resource.children if lyr.keyname and
+                     not lyr.keyname.startswith('actual_real_optical_cable_point') and
+                     lyr.keyname.startswith('actual_real_optical_cable')]
+        lines_lyr = lines_lyr[0] if len(lines_lyr) else None
+
+        if not lines_lyr:
+            cls.log_debug('Construct line for %s skeeped (no result line layer)!' % focl_struct_resource.display_name)
+            return
+
+        # Get existings lines (for filter points)
+        query = lines_lyr.feature_query()
+        query.geom()
+        lines_feats = query()
+        lines_vertexes = []
+        for line_feat in lines_feats:
+            for coord in line_feat.geom[0].coords:
+                lines_vertexes.append(coord)
+
+        # Collect features for processing
+        features = []
+        processing_layers_name = ['actual_real_optical_cable_point',
+                                  'actual_real_special_transition_point',
+                                  'actual_real_fosc',
+                                  'actual_real_optical_cross',
+                                  'actual_real_access_point']
+
+
+
+        for lyr_name in processing_layers_name:
+            points_lyr = [lyr for lyr in focl_struct_resource.children if lyr.keyname and lyr.keyname.startswith(lyr_name)]
+            points_lyr = points_lyr[0] if len(points_lyr) else None
+
+            if points_lyr:
+                # get all points
+                query = points_lyr.feature_query()
+                query.geom()
+                result = query()
+                features.extend([feature for feature in result if feature.geom[0].coords[0] not in lines_vertexes])
+
+
+        if len(features) > 0:
+            cls.log_debug('Construct line for %s started!' % focl_struct_resource.display_name)
+        else:
+            cls.log_debug('Construct line for %s skeeped (no points)!' % focl_struct_resource.display_name)
+            return
+
+        #clear line lyr
+        #cls.clear_layer(lines_lyr)
 
         #get clusters
         clusters = cls.get_clusters(features)

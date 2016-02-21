@@ -23,6 +23,8 @@ from nextgisweb.feature_layer import IWritableFeatureLayer
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
+from nextgisweb_compulink.compulink_data_reactor.reactors.construct_focl_line.construct_focl_line_reactor import \
+    ConstructFoclLineReactor
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
 from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
 from nextgisweb_lookuptable.model import LookupTable
@@ -655,9 +657,19 @@ def construct_line(request):
     res_id = request.matchdict['id']
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
-    if request.method != 'POST':
-        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим POST'}
+    if request.method != 'GET':
+        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим GET'}
         return Response(json.dumps(resp), status=400)
+
+
+    db_session = DBSession()
+    transaction.manager.begin()
+
+    fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id==int(res_id))  # all()
+    for fs in fs_resources:
+        ConstructFoclLineReactor.smart_construct_line(fs)
+
+    transaction.manager.commit()
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
