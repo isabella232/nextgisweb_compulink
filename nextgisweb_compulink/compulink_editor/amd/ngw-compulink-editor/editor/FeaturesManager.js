@@ -11,9 +11,10 @@ define([
 ], function (declare, lang, array, all, topic, InfoDialog, ConfirmDialog, openlayers) {
 
     return declare([], {
-        constructor: function (map, ngwServiceFacade, editableLayersInfo, isCreateLayer, isFillObjects) {
+        constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
             this._map = map;
-            this._editableLayersInfo = editableLayersInfo;
+            this._editableLayersInfo = editorConfig.editableLayersInfo;
+            this._resourceId = editorConfig.resourceId;
             this._ngwServiceFacade = ngwServiceFacade;
             if (isCreateLayer) this.getLayer();
             if (isFillObjects) this.fillObjects();
@@ -101,6 +102,13 @@ define([
 
             topic.subscribe('/compulink/editor/mode/draw', lang.hitch(this, function (drawMode) {
                 this._activateLineDraw();
+            }));
+
+            topic.subscribe('/compulink/editor/lines/update', lang.hitch(this, function () {
+                this._ngwServiceFacade.updateEditorLines(this._resourceId).then(function () {
+                    this.getLayer().destroyFeatures();
+                    this.fillObjects();
+                });
             }));
         },
 

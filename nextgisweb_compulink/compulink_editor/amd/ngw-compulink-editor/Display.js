@@ -333,7 +333,7 @@ define([
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
-                        editorConfig.editableLayersInfo, true, true);
+                        editorConfig, true, true);
 
                     this.AttributesEditor = registry.byId("attributesEditor");
                     this.AttributesEditor.setNgwServiceFacade(this.NgwServiceFacade);
