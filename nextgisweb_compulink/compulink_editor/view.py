@@ -662,14 +662,18 @@ def construct_line(request):
         return Response(json.dumps(resp), status=400)
 
 
-    db_session = DBSession()
-    transaction.manager.begin()
+    try:
+        db_session = DBSession()
+        transaction.manager.begin()
 
-    fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id==int(res_id))  # all()
-    for fs in fs_resources:
-        ConstructFoclLineReactor.smart_construct_line(fs)
+        fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id==int(res_id))  # all()
+        for fs in fs_resources:
+            ConstructFoclLineReactor.smart_construct_line(fs)
 
-    transaction.manager.commit()
+        transaction.manager.commit()
+    except Exception, ex:
+        resp = {'status': 'error', 'message': ex.message}
+        return Response(json.dumps(resp), status=400)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
