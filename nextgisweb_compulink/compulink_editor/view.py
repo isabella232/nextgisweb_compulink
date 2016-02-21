@@ -80,6 +80,10 @@ def setup_pyramid(comp, config):
         '/compulink/editor/features/remove') \
         .add_view(editor_delete_geom)
 
+    config.add_route(
+        'compulink.editor.construct_line',
+        '/compulink/editor/construct_line/{id:\d+}', client=('id',)) \
+        .add_view(construct_line)
 
 
 @view_config(renderer='json')
@@ -647,6 +651,16 @@ def editor_delete_geom(request):
     return Response(json.dumps(resp))
 
 
+def construct_line(request):
+    res_id = request.matchdict['id']
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+    if request.method != 'POST':
+        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим POST'}
+        return Response(json.dumps(resp), status=400)
+
+    resp = {'status': 'ok'}
+    return Response(json.dumps(resp))
 
 
 def reset_all_layers(request):
