@@ -5,17 +5,23 @@
          id="editorToolbar">
 
         <div data-dojo-attach-point="createVolsButton"
-             data-dojo-attach-event="onChange: createVols"
+             data-dojo-attach-event="onClick: createVols"
              id="createVolsButton"
              data-dojo-type="dijit/form/ToggleButton"
              data-dojo-props="iconClass: 'iconCreateVols', showLabel: false, checked: false, title: 'Создать ВОЛС'">
         </div>
 
         <div data-dojo-attach-point="createSpButton"
-             data-dojo-attach-event="onChange: createSp"
+             data-dojo-attach-event="onClick: createSp"
              id="createSpButton"
              data-dojo-type="dijit/form/ToggleButton"
              data-dojo-props="iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Создать спецпереход'">
+        </div>
+
+        <div data-dojo-attach-point="updateLines"
+             data-dojo-attach-event="onClick: updateLines"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="iconClass: 'updateLines', showLabel: false, checked: true, title: 'Перестроить линии'">
         </div>
 
         <div data-dojo-type="dijit/ToolbarSeparator"></div>
@@ -35,7 +41,7 @@
         </div>
 
         <div data-dojo-attach-point="undoAll"
-             data-dojo-attach-event="onClick: undoAll"
+             data-dojo-attach-event="onClick: updateLines"
              data-dojo-type="dijit/form/Button"
              data-dojo-props="iconClass: 'undoAll', showLabel: false, checked: true, title: 'Откатить весь объект строительства'">
         </div>

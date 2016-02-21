@@ -10,6 +10,7 @@ define([
     'dojo/dom-construct',
     'dojo/promise/all',
     'dojo/topic',
+    'dijit/registry',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'dijit/_WidgetsInTemplateMixin',
@@ -20,7 +21,7 @@ define([
     'dijit/form/Button',
     'dojo/text!./templates/EditorToolbar.html',
     'xstyle/css!./templates/css/EditorToolbar.css'
-], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic,
+], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic, registry,
              _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
              siteSettings, InfoDialog, Toolbar, ToggleButton, Button, editorToolbarTemplate) {
 
@@ -54,14 +55,20 @@ define([
         },
 
         createVols: function (val) {
-            if (val) {
-                registry.byId("createSpButton").set('checked', false);
-                topic.publish('/compulink/editor/mode/draw', 'vols');
-                this._setMapCrosshairClass();
-            } else {
-                topic.publish('/compulink/editor/mode/draw', null);
-                this._removeMapCrosshairClass();
-            }
+            var checked = registry.byId("createVolsButton").get('checked');
+            console.log();
+            //if (val) {
+            //    registry.byId("createSpButton").set('checked', false);
+            //    topic.publish('/compulink/editor/mode/draw', 'vols');
+            //    this._setMapCrosshairClass();
+            //} else {
+            //    topic.publish('/compulink/editor/mode/draw', null);
+            //    this._removeMapCrosshairClass();
+            //}
+        },
+
+        updateLines: function () {
+            topic.publish('/compulink/editor/lines/update');
         },
 
         _classCrosshair: "cursor-crosshair",

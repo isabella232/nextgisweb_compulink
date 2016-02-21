@@ -34,3 +34,7 @@
 #editorToolbar span.undoAll {
     background: url('img/undo-all.png') no-repeat;
 }
+
+#editorToolbar span.updateLines {
+    background: url('img/update_line.png') no-repeat;
+}
