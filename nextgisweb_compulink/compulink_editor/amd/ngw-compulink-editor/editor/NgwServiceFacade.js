@@ -16,6 +16,7 @@ define([
         GET_RESOURCE: new dtlBase.Template('/api/resource/{{resourceId}}', true),
         SAVE_EDITOR_FEATURES: '/compulink/editor/features/save',
         REMOVE_EDITOR_FEATURES: '/compulink/editor/features/remove',
+        UPDATE_EDITOR_LINES: new dtlBase.Template('/compulink/editor/construct_line/{{resourceId}}', true),
 
         ngwApplicationUrl: null,
 
@@ -76,6 +77,15 @@ define([
             return xhr.del(url, {
                 handleAs: 'json',
                 data: JSON.stringify(features)
+            });
+        },
+
+        updateEditorLines: function (resourceId) {
+            var dtlContext = new dtlBase.Context({resourceId: resourceId}),
+                url = this.ngwApplicationUrl + this.UPDATE_EDITOR_LINES.render(dtlContext);
+
+            return xhr.get(url, {
+                handleAs: 'json'
             });
         }
     });
