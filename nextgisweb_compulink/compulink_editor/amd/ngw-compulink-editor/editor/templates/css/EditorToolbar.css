@@ -7,22 +7,22 @@
     background-size: cover; /* Generic*/
 }
 
-.removeFeature {
+#editorToolbar span.removeFeature {
     background: url('img/remove_feature.png') no-repeat;
 }
 
-.iconCreateSp {
+#editorToolbar span.iconCreateSp {
     background: url('img/create_sp.png') no-repeat;
 }
 
-.iconCreateVols {
+#editorToolbar span.iconCreateVols {
     background: url('img/create_vols.png') no-repeat;
 }
 
-.iconCreateVols {
+#editorToolbar span.iconCreateVols {
     background: url('img/create_vols.png') no-repeat;
 }
 
-.iconCreateVols {
+#editorToolbar span.iconCreateVols {
     background: url('img/create_vols.png') no-repeat;
 }
