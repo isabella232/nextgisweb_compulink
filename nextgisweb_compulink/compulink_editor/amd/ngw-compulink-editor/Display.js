@@ -7,6 +7,7 @@ define([
     "dojo/text!./templates/Display.html",
     "dojo/_base/lang",
     "dojo/_base/array",
+    "dojo/dom-class",
     "dojo/Deferred",
     "dojo/promise/all",
     "dojo/number",
@@ -49,6 +50,7 @@ define([
     "ngw-compulink-editor/editor/FeaturesManager",
     "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-compulink-editor/editor/AttributesEditor",
+    "ngw-compulink-editor/editor/EditorToolbar",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -76,6 +78,7 @@ define([
     template,
     lang,
     array,
+    domClass,
     Deferred,
     all,
     number,
@@ -117,6 +120,7 @@ define([
     EditorFeaturesManager,
     NgwServiceFacade,
     AttributesEditor,
+    EditorToolbar,
     Adapter,
     clientSettings
 ) {
@@ -484,10 +488,6 @@ define([
                 mainContainer.addChild(panel);
             else
                 mainContainer.removeChild(panel);
-        },
-
-        removeFeature: function () {
-            topic.publish('/compulink/editor/features/remove');
         },
 
         startup: function () {
