@@ -2,15 +2,17 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/Deferred',
     'dojo/promise/all',
+    'dojo/query',
     'dojo/topic',
     'ngw-compulink-site/InfoDialog',
     'ngw-compulink-site/ConfirmDialog',
     'ngw/openlayers',
-    'dojox/widget/Standby',
+    'ngw-compulink-editor/editor/GlobalStandBy',
     'xstyle/css!./templates/css/FeaturesManager.css'
-], function (declare, lang, array, all, topic, InfoDialog,
-             ConfirmDialog, openlayers, Standby) {
+], function (declare, lang, array, Deferred, all, query, topic, InfoDialog,
+             ConfirmDialog, openlayers, GlobalStandBy) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
@@ -107,12 +109,16 @@ define([
             }));
 
             topic.subscribe('/compulink/editor/lines/update', lang.hitch(this, function () {
+                GlobalStandBy.show();
                 this._ngwServiceFacade.updateEditorLines(this._resourceId).then(
                     lang.hitch(this, function () {
                         this.getLayer().destroyFeatures();
-                        this.fillObjects();
+                        this.fillObjects().then(function () {
+                            GlobalStandBy.hide();
+                        });
                     }),
                     lang.hitch(this, function (result) {
+                        GlobalStandBy.hide();
                         new InfoDialog({
                             isDestroyedAfterHiding: true,
                             title: 'Ошибка!',
@@ -159,7 +165,8 @@ define([
         },
 
         fillObjects: function () {
-            var getFeaturesPromises = [];
+            var deferred = new Deferred(),
+                getFeaturesPromises = [];
 
             array.forEach(this._editableLayersInfo, function (editableLayerInfo) {
                 getFeaturesPromises.push(this._ngwServiceFacade.getAllFeatures(editableLayerInfo.id));
@@ -167,7 +174,10 @@ define([
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
                 this._createFeatures(ngwFeatureItems);
+                deferred.resolve();
             }));
+
+            return deferred.promise;
         },
 
         _createFeatures: function (ngwFeatureItems) {
