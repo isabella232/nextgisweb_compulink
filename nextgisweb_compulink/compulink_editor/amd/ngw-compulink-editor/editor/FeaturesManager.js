@@ -7,8 +7,10 @@ define([
     'ngw-compulink-site/InfoDialog',
     'ngw-compulink-site/ConfirmDialog',
     'ngw/openlayers',
+    'dojox/widget/Standby',
     'xstyle/css!./templates/css/FeaturesManager.css'
-], function (declare, lang, array, all, topic, InfoDialog, ConfirmDialog, openlayers) {
+], function (declare, lang, array, all, topic, InfoDialog,
+             ConfirmDialog, openlayers, Standby) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
@@ -83,7 +85,7 @@ define([
                         buttonOk: 'Да',
                         buttonCancel: 'Отменить',
                         isDestroyedAfterHiding: true,
-                        handlerOk: lang.hitch(this, function() {
+                        handlerOk: lang.hitch(this, function () {
                             this._removeFeatures(removingFeatures);
                         }),
                         handlerCancel: lang.hitch(this, function () {
@@ -105,10 +107,19 @@ define([
             }));
 
             topic.subscribe('/compulink/editor/lines/update', lang.hitch(this, function () {
-                this._ngwServiceFacade.updateEditorLines(this._resourceId).then(function () {
-                    this.getLayer().destroyFeatures();
-                    this.fillObjects();
-                });
+                this._ngwServiceFacade.updateEditorLines(this._resourceId).then(
+                    lang.hitch(this, function () {
+                        this.getLayer().destroyFeatures();
+                        this.fillObjects();
+                    }),
+                    lang.hitch(this, function (result) {
+                        new InfoDialog({
+                            isDestroyedAfterHiding: true,
+                            title: 'Ошибка!',
+                            message: result.message
+                        }).show();
+                    })
+                );
             }));
         },
 
