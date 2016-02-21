@@ -1,0 +1,36 @@
+#editorToolbar span.dijitInline.dijitIcon {
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover; /* Mozilla*/
+    -o-background-size: cover; /* Opera*/
+    background-size: cover; /* Generic*/
+}
+
+#editorToolbar span.removeFeature {
+    background: url('img/remove_feature.png') no-repeat;
+}
+
+#editorToolbar span.iconCreateSp {
+    background: url('img/create_sp.png') no-repeat;
+}
+
+#editorToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#editorToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#editorToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#editorToolbar span.undoOne {
+    background: url('img/undo-one.png') no-repeat;
+}
+
+#editorToolbar span.undoAll {
+    background: url('img/undo-all.png') no-repeat;
+}

@@ -106,8 +106,7 @@ define([
             if (geometryId.indexOf('Point') > -1) {
                 pointsAffected.push(feature.geometry.components[0]);
             } else if (geometryId.indexOf('Line') > -1) {
-                pointsAffected.push(feature.geometry.components[0].components[0]);
-                pointsAffected.push(feature.geometry.components[0].components[1]);
+                return [feature];
             }
 
             var removingFeatures = [];
@@ -193,6 +192,11 @@ define([
             relativeFeatures.push(afterFeatureModifiedEvent.feature);
 
             this._saveFeaturesModified(relativeFeatures);
+            this._unselectModifiedFeature();
+        },
+
+        _unselectModifiedFeature: function () {
+            topic.publish('/editor/feature/unselect', this._selectedFeature);
             this._selectedFeature = null;
         },
 
@@ -303,15 +307,7 @@ define([
                 });
             });
 
-            this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(function (result) {
-                if (result.status === 'ok') {
-                    new InfoDialog({
-                        isDestroyedAfterHiding: true,
-                        title: 'Изменения сохранены',
-                        message: 'Изменения сохранены успешно'
-                    }).show();
-                }
-
+            this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(null, function (result) {
                 if (result.status === 'error') {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
@@ -335,15 +331,7 @@ define([
             this._modify.unselectFeature();
             this.getLayer().removeFeatures(features);
 
-            this._ngwServiceFacade.removeFeatures(objectsForRemoving).then(function (result) {
-                if (result.status === 'ok') {
-                    new InfoDialog({
-                        isDestroyedAfterHiding: true,
-                        title: 'Изменения сохранены',
-                        message: 'Изменения сохранены успешно'
-                    }).show();
-                }
-
+            this._ngwServiceFacade.removeFeatures(objectsForRemoving).then(null, function (result) {
                 if (result.status === 'error') {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
