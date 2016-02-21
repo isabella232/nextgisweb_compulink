@@ -26,3 +26,11 @@
 #editorToolbar span.iconCreateVols {
     background: url('img/create_vols.png') no-repeat;
 }
+
+#editorToolbar span.undoOne {
+    background: url('img/undo-one.png') no-repeat;
+}
+
+#editorToolbar span.undoAll {
+    background: url('img/undo-all.png') no-repeat;
+}

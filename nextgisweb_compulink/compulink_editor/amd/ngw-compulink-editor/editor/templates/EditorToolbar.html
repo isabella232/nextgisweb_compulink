@@ -2,8 +2,8 @@
     <div data-dojo-type="dijit/Toolbar"
          data-dojo-props="region: 'top'"
          style="border-bottom: none"
-         id="editorToolbar"
-         data-dojo-attach-point="mapToolbar2">
+         id="editorToolbar">
+
         <div data-dojo-attach-point="createVolsButton"
              data-dojo-attach-event="onChange: createVols"
              id="createVolsButton"
@@ -18,10 +18,26 @@
              data-dojo-props="iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Создать спецпереход'">
         </div>
 
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
         <div data-dojo-attach-point="removeFeatureButton"
              data-dojo-attach-event="onClick: removeFeature"
              data-dojo-type="dijit/form/Button"
              data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: true, title: 'Удалить выбранный объект'">
+        </div>
+
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
+        <div data-dojo-attach-point="undoOne"
+             data-dojo-attach-event="onClick: undoOne"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="iconClass: 'undoOne', showLabel: false, checked: true, title: 'Откатить выбранный объект'">
+        </div>
+
+        <div data-dojo-attach-point="undoAll"
+             data-dojo-attach-event="onClick: undoAll"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="iconClass: 'undoAll', showLabel: false, checked: true, title: 'Откатить весь объект строительства'">
         </div>
     </div>
 </div>
