@@ -1,0 +1,29 @@
+.removeFeature {
+    background: url('img/remove_feature.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover; /* Mozilla*/
+    -o-background-size: cover; /* Opera*/
+    background-size: cover; /* Generic*/
+}
+
+.iconCreateSp {
+    background: url('img/create_sp.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover; /* Mozilla*/
+    -o-background-size: cover; /* Opera*/
+    background-size: cover; /* Generic*/
+}
+
+.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover; /* Mozilla*/
+    -o-background-size: cover; /* Opera*/
+    background-size: cover; /* Generic*/
+}
