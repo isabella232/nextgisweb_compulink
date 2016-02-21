@@ -84,7 +84,7 @@ define([
             var dtlContext = new dtlBase.Context({resourceId: resourceId}),
                 url = this.ngwApplicationUrl + this.UPDATE_EDITOR_LINES.render(dtlContext);
 
-            return xhr.get(url, {
+            return xhr.post(url, {
                 handleAs: 'json'
             });
         }
