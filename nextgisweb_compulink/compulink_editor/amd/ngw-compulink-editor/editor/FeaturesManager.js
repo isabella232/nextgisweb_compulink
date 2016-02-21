@@ -6,7 +6,8 @@ define([
     'dojo/topic',
     'ngw-compulink-site/InfoDialog',
     'ngw-compulink-site/ConfirmDialog',
-    'ngw/openlayers'
+    'ngw/openlayers',
+    'xstyle/css!./templates/css/FeaturesManager.css'
 ], function (declare, lang, array, all, topic, InfoDialog, ConfirmDialog, openlayers) {
 
     return declare([], {
@@ -97,6 +98,14 @@ define([
                     }).show();
                 }
             }));
+
+            topic.subscribe('/compulink/editor/mode/draw', lang.hitch(this, function (drawMode) {
+                this._activateLineDraw();
+            }));
+        },
+
+        _activateLineDraw: function () {
+
         },
 
         _getRemovingFeatures: function (feature) {
