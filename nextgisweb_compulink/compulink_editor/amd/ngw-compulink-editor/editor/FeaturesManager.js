@@ -2,6 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/dom-class',
     'dojo/Deferred',
     'dojo/promise/all',
     'dojo/query',
@@ -11,7 +12,7 @@ define([
     'ngw/openlayers',
     'ngw-compulink-editor/editor/GlobalStandBy',
     'xstyle/css!./templates/css/FeaturesManager.css'
-], function (declare, lang, array, Deferred, all, query, topic, InfoDialog,
+], function (declare, lang, array, domClass, Deferred, all, query, topic, InfoDialog,
              ConfirmDialog, openlayers, GlobalStandBy) {
 
     return declare([], {
@@ -104,8 +105,8 @@ define([
                 }
             }));
 
-            topic.subscribe('/compulink/editor/mode/draw', lang.hitch(this, function (drawMode) {
-                this._activateLineDraw();
+            topic.subscribe('/compulink/editor/set/mode/', lang.hitch(this, function (editorMode) {
+                this._setEditorMode(editorMode);
             }));
 
             topic.subscribe('/compulink/editor/lines/update', lang.hitch(this, function () {
@@ -129,8 +130,21 @@ define([
             }));
         },
 
-        _activateLineDraw: function () {
+        _setEditorMode: function (editorMode) {
+            if (editorMode === 'createSp' || editorMode === 'createVols') {
+                this._setMapCrosshairClass();
+            } else if (editorMode === 'edit') {
+                this._removeMapCrosshairClass();
+            }
+        },
 
+        _classCrosshair: "cursor-crosshair",
+        _setMapCrosshairClass: function () {
+            domClass.add(this._map.olMap.div, this._classCrosshair);
+        },
+
+        _removeMapCrosshairClass: function () {
+            domClass.remove(this._map.olMap.div, this._classCrosshair);
         },
 
         _getRemovingFeatures: function (feature) {
