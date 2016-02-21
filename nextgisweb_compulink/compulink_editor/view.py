@@ -657,8 +657,8 @@ def construct_line(request):
     res_id = request.matchdict['id']
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
-    if request.method != 'GET':
-        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим GET'}
+    if request.method != 'POST':
+        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим POST'}
         return Response(json.dumps(resp), status=400)
 
 
