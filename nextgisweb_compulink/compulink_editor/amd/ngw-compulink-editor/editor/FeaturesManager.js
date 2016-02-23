@@ -136,14 +136,18 @@ define([
             }));
         },
 
+        _editorMode: 'edit',
         _setEditorMode: function (editorMode) {
             if (editorMode === 'createSp' || editorMode === 'createVols') {
                 this._deactivateEditMode();
                 this._setMapCrosshairClass();
+                this._activateCreateLineMode();
             } else if (editorMode === 'edit') {
+                this._deactivateCreateLineMode();
                 this._activateEditMode();
                 this._removeMapCrosshairClass();
             }
+            this._editorMode = editorMode;
         },
 
         _classCrosshair: "cursor-crosshair",
@@ -163,6 +167,14 @@ define([
         _deactivateEditMode: function () {
             this._modify.deactivate();
             this._snapping.deactivate();
+        },
+
+        _activateCreateLineMode: function () {
+            this._lineDraw.activate();
+        },
+
+        _deactivateCreateLineMode: function () {
+            this._lineDraw.deactivate();
         },
 
         _getRemovingFeatures: function (feature) {
