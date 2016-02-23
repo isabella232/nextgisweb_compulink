@@ -16,6 +16,7 @@ define([
         GET_RESOURCE: new dtlBase.Template('/api/resource/{{resourceId}}', true),
         SAVE_EDITOR_FEATURES: '/compulink/editor/features/save',
         REMOVE_EDITOR_FEATURES: '/compulink/editor/features/remove',
+        CREATE_EDITOR_LINE: '/compulink/editor/lines/create',
         UPDATE_EDITOR_LINES: new dtlBase.Template('/compulink/editor/construct_line/{{resourceId}}', true),
 
         ngwApplicationUrl: null,
@@ -86,6 +87,30 @@ define([
 
             return xhr.post(url, {
                 handleAs: 'json'
+            });
+        },
+
+        /**
+         * Represents a facade for creating new line.
+         * @lineInfo Object should have the following properties:
+         * line: {
+         *    start: {
+         *        ngwLayerId: \d+,
+         *        ngwFeatureId: \d+
+         *    },
+         *    end: {
+         *        ngwLayerId: \d+,
+         *        ngwFeatureId: \d+
+         *    },
+         *    type: '[vols | stp]'
+         * }
+         */
+        createEditorLine: function (lineInfo) {
+            var url = this.ngwApplicationUrl + this.CREATE_EDITOR_LINE;
+
+            return xhr.put(url, {
+                handleAs: 'json',
+                data: JSON.stringify(lineInfo)
             });
         }
     });
