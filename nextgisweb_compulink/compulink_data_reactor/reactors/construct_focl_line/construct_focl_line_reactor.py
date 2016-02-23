@@ -125,14 +125,18 @@ class ConstructFoclLineReactor(AbstractReactor):
         # Get existings lines (for filter points)
         query = lines_lyr.feature_query()
         query.geom()
-        lines_feats = query()
+        lines = query()
+        lines_feats = []
         lines_vertexes = []
-        for line_feat in lines_feats:
+        for line_feat in lines:
+            lines_feats.append(line_feat)
             for coord in line_feat.geom[0].coords:
                 lines_vertexes.append(coord)
 
         # Collect features for processing
         features = []
+        features_in_radius = []
+        on_line = []
         processing_layers_name = ['actual_real_optical_cable_point',
                                   'actual_real_special_transition_point',
                                   'actual_real_fosc',
@@ -150,7 +154,37 @@ class ConstructFoclLineReactor(AbstractReactor):
                 query = points_lyr.feature_query()
                 query.geom()
                 result = query()
-                features.extend([feature for feature in result if feature.geom[0].coords[0] not in lines_vertexes])
+                # filter - only non ~lined~
+                for feature in result:
+                    if feature.geom[0].coords[0] in lines_vertexes:
+                        on_line.append(feature)
+                    else:
+                        features.append(feature)
+
+        # additional - get lined features in radius
+        for on_line_feat in on_line:
+            geom_1 = on_line_feat.geom[0]
+            for without_line_feat in features:
+                real_dist = DistanceUtils.get_spherical_distance(geom_1, without_line_feat.geom[0])
+                if real_dist < cls.DISTANCE_LIMIT:
+                    features_in_radius.append(on_line_feat)
+                    break
+        features.extend(features_in_radius)
+
+        # remove lines betwen in_radius points
+        for i in range(0, len(features_in_radius)):
+            geom_1 = features_in_radius[i].geom[0].coords[0]
+            # try to find line
+            intersect_lines = [line_feat for line_feat in lines_feats if line_feat.geom[0].coords[0] == geom_1 or line_feat.geom[0].coords[1] == geom_1]
+            if intersect_lines:
+                # if second point - in radius = delete it
+                for j in range(i+1, len(features_in_radius)):
+                    geom_2 = features_in_radius[j].geom[0].coords[0]
+                    for intersect_line in intersect_lines:
+                        if intersect_line.geom[0].coords[0] == geom_2 or intersect_line.geom[0].coords[1] == geom_2:
+                            lines_lyr.feature_delete(intersect_line.id)
+                            print 'deleted ', intersect_line.id
+
 
 
         if len(features) > 0:
@@ -159,8 +193,6 @@ class ConstructFoclLineReactor(AbstractReactor):
             cls.log_debug('Construct line for %s skeeped (no points)!' % focl_struct_resource.display_name)
             return
 
-        #clear line lyr
-        #cls.clear_layer(lines_lyr)
 
         #get clusters
         clusters = cls.get_clusters(features)
