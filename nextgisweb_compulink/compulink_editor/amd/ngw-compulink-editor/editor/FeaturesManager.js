@@ -119,10 +119,7 @@ define([
                 GlobalStandBy.show();
                 this._ngwServiceFacade.updateEditorLines(this._resourceId).then(
                     lang.hitch(this, function () {
-                        this.getLayer().destroyFeatures();
-                        this.fillObjects().then(function () {
-                            GlobalStandBy.hide();
-                        });
+                        this._updateEditorLayer(true);
                     }),
                     lang.hitch(this, function (result) {
                         GlobalStandBy.hide();
@@ -136,12 +133,21 @@ define([
             }));
         },
 
+        _updateEditorLayer: function (isGlobalStandBy) {
+            this.getLayer().destroyFeatures();
+            this.fillObjects().then(function () {
+                if (isGlobalStandBy) {
+                    GlobalStandBy.hide();
+                }
+            });
+        },
+
         _editorMode: 'edit',
         _setEditorMode: function (editorMode) {
             if (editorMode === 'createSp' || editorMode === 'createVols') {
                 this._deactivateEditMode();
                 this._setMapCrosshairClass();
-                this._activateCreateLineMode();
+                this._activateCreateLineMode(editorMode);
             } else if (editorMode === 'edit') {
                 this._deactivateCreateLineMode();
                 this._activateEditMode();
@@ -160,6 +166,7 @@ define([
         },
 
         _activateEditMode: function () {
+            this._editorMode = 'edit';
             this._modify.activate();
             this._snapping.activate();
         },
@@ -169,12 +176,112 @@ define([
             this._snapping.deactivate();
         },
 
-        _activateCreateLineMode: function () {
-            this._lineDraw.activate();
+        _checkClickCreateLineCallback: null,
+        _activateCreateLineMode: function (editorMode) {
+            var context = this;
+            this._editorMode = editorMode;
+            this._checkClickCreateLineCallback = function (e) {
+                context._checkClickCreateLine(e)
+            };
+            this.getLayer().events.register('featureclick', this.getLayer(), this._checkClickCreateLineCallback);
         },
 
         _deactivateCreateLineMode: function () {
-            this._lineDraw.deactivate();
+            this._clearCreateLineFeatures();
+            this.getLayer().events.unregister('featureclick', this.getLayer(), this._checkClickCreateLineCallback);
+        },
+
+        _clearCreateLineFeatures: function () {
+            if (this._creatingLine) {
+                this.getLayer().removeFeatures(this._creatingLine);
+                this._creatingLine = null;
+                this._startPoint = null;
+            }
+
+            if (this._mouseMoveHandler) {
+                this._map.olMap.events.unregister('mousemove', this._map.olMap, this._mouseMoveHandler);
+                this._mouseMoveHandler = null;
+            }
+        },
+
+        _startPoint: null,
+        _creatingLine: null,
+        _mouseMoveHandler: null,
+        _checkClickCreateLine: function (e) {
+            if (e.feature.geometry.id.indexOf('Line') > -1) {
+                return false;
+            }
+
+            if (this._startPoint) {
+                if (this._startPoint.geometry.components[0].equals(e.feature.geometry.components[0])) {
+                    return false;
+                } else {
+                    this._createLine(e.feature);
+                }
+            } else {
+                this._startPoint = e.feature;
+                this._createSkecthLine(this._startPoint);
+            }
+        },
+
+        _createSkecthLine: function (startPoint) {
+            this._creatingLine = new openlayers.Feature.Vector(new openlayers.Geometry.LineString([
+                startPoint.geometry.components[0],
+                startPoint.geometry.components[0].clone()
+            ]));
+            this.getLayer().addFeatures([this._creatingLine]);
+
+            this._mouseMoveHandler = lang.hitch(this, function (e) {
+                var lonlat = this._map.olMap.getLonLatFromPixel(e.xy),
+                    endPoint = this._creatingLine.geometry.components[1];
+
+                endPoint.x = lonlat.lon;
+                endPoint.y = lonlat.lat;
+
+                this.getLayer().redraw();
+            });
+
+            this._map.olMap.events.register('mousemove', this._map.olMap, this._mouseMoveHandler);
+        },
+
+        _createLine: function (endPoint) {
+            var lineInfo = {
+                start: {
+                    ngwLayerId: this._startPoint.ngwLayerId,
+                    ngwFeatureId: this._startPoint.ngwFeatureId
+                },
+                end: {
+                    ngwLayerId: endPoint.ngwLayerId,
+                    ngwFeatureId: endPoint.ngwFeatureId
+                }
+            };
+
+            switch (this._editorMode) {
+                case 'createSp':
+                    lineInfo.type = 'stp';
+                    break;
+                case 'createVols':
+                    lineInfo.type = 'vols';
+                    break;
+                default:
+                    throw new Exception('Editor type "' + this._editorMode + '" is not supported.');
+            }
+
+            GlobalStandBy.show();
+            this._ngwServiceFacade.createEditorLine(lineInfo).then(
+                lang.hitch(this, function () {
+                    this._clearCreateLineFeatures();
+                    this._updateEditorLayer(true);
+                }),
+                lang.hitch(this, function (result) {
+                    GlobalStandBy.hide();
+                    new InfoDialog({
+                            isDestroyedAfterHiding: true,
+                            title: 'Ошибка!',
+                            message: result ? result.message : 'На сервера произошла ошибка!'
+                        }).show();
+                })
+            );
         },
 
         _getRemovingFeatures: function (feature) {
