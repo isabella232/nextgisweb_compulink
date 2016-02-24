@@ -7,7 +7,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 6,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.6
+            'fillOpacity': 0.6,
+            'graphicZIndex': 10
         }
     },
     'actual_real_special_transition_point': {
@@ -18,7 +19,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 2,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.6
+            'fillOpacity': 0.6,
+            'graphicZIndex': 9999
         }
     },
     'actual_real_optical_cable': {
@@ -29,7 +31,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 3,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.6
+            'fillOpacity': 0.6,
+            'graphicZIndex': 10
         }
     },
     'actual_real_optical_cable_point': {
@@ -40,7 +43,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 1,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.6
+            'fillOpacity': 0.6,
+            'graphicZIndex': 9999
         }
     },
     'actual_real_fosc': {
@@ -51,7 +55,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 1.5,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.8
+            'fillOpacity': 0.8,
+            'graphicZIndex': 10
         }
     },
     'actual_real_optical_cross': {
@@ -63,7 +68,8 @@ EDITABLE_LAYERS = {
             'stroke': True,
             'fill': True,
             'fillOpacity': 0.8,
-            'graphicName': 'square'
+            'graphicName': 'square',
+            'graphicZIndex': 9999
         }
     },
     'actual_real_access_point': {
@@ -74,7 +80,8 @@ EDITABLE_LAYERS = {
             'strokeWidth': 1,
             'stroke': True,
             'fill': True,
-            'fillOpacity': 0.7
+            'fillOpacity': 0.7,
+            'graphicZIndex': 9999
         }
     }
 }
