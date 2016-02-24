@@ -16,6 +16,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
+from shapely.geometry import MultiLineString
 
 from config import EDITABLE_LAYERS
 from nextgisweb import DBSession, db
@@ -23,6 +24,7 @@ from nextgisweb.feature_layer import IWritableFeatureLayer
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb.vector_layer import VectorLayer, TableInfo
+from nextgisweb.feature_layer import Feature
 from nextgisweb_compulink.compulink_data_reactor.reactors.construct_focl_line.construct_focl_line_reactor import \
     ConstructFoclLineReactor
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
@@ -76,6 +78,12 @@ def setup_pyramid(comp, config):
         'compulink.editor.save_geom',
         '/compulink/editor/features/save') \
         .add_view(editor_save_geom)
+
+
+    config.add_route(
+        'compulink.editor.create_geom',
+        '/compulink/editor/features/create') \
+        .add_view(editor_create_geom)
 
     config.add_route(
         'compulink.editor.remove_geom',
@@ -651,6 +659,115 @@ def editor_delete_geom(request):
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
+
+
+def error_response(mes):
+    resp = {'status': 'error', 'message': mes}
+    return Response(json.dumps(resp), status=400)
+
+
+@view_config(renderer='json')
+def editor_create_geom(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    if request.method != 'PUT':
+        return error_response(u'Метод не поддерживается! Необходим PUT')
+
+    try:
+        create_info = request.json_body['line']
+        start_layer_id = create_info['start']['{ngwLayerId']
+        end_layer_id = create_info['end']['ngwLayerId']
+        start_feat_id = create_info['start']['ngwFeatureId']
+        end_feat_id = create_info['end']['ngwFeatureId']
+        new_obj_type = create_info['type']
+
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        # get source layers
+        start_point_layer = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==start_layer_id).first()
+        end_point_layer = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==end_layer_id).first()
+
+        if not start_point_layer or not end_point_layer:
+            return error_response(u'Cлой с исходными данными не найден')
+
+        if start_point_layer.parent != end_point_layer.parent:
+            return error_response(u'Cлои с исходными данными не в одном проекте строительства')
+
+        # get destination layers
+        parent_res = start_point_layer.parent
+        if not parent_res:
+            return error_response(u'Не найден объект строительства')
+
+        if new_obj_type == 'vols':
+            target_layer_type = 'actual_real_optical_cable'
+        elif new_obj_type == 'stp':
+            target_layer_type = 'actual_real_special_transition'
+        else:
+            target_layer_type = None
+
+        target_layer = None
+        for child_resource in parent_res.children:
+            if len(child_resource.keyname) < (GUID_LENGTH + 1):
+                continue
+            layer_keyname_without_guid = child_resource.keyname[0:-(GUID_LENGTH + 1)]
+            if target_layer_type == layer_keyname_without_guid:
+                target_layer = child_resource
+                break
+
+        if not target_layer:
+            return error_response(u'Не найден слой для сохранения нового объекта')
+
+        # TODO: set check!
+        # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+        #     resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
+        #     return Response(json.dumps(resp))
+        #  request.resource_permission(PERM_WRITE) ADD check
+
+        # get source points
+        query = start_point_layer.feature_query()
+        query.geom()
+
+        query.filter_by(id=start_feat_id)
+        query.limit(1)
+
+        start_point_feat = None
+        for f in query():
+            start_point_feat = f
+
+        if not start_point_feat:
+            return error_response(u'Стартовая точка не найдена')
+
+        query = end_point_layer.feature_query()
+        query.geom()
+
+        query.filter_by(id=end_feat_id)
+        query.limit(1)
+
+        end_point_feat = None
+        for f in query():
+            end_point_feat = f
+
+        if not start_point_feat:
+            return error_response(u'Конечная точка не найдена')
+
+        # generate new feat and save it
+        info = ConstructFoclLineReactor.get_segment_info([start_point_feat, end_point_feat])
+        feature = Feature(fields=info, geom=MultiLineString([start_point_feat.geom[0].coords[0], end_point_feat.geom[0].coords[0]]))
+
+        if IWritableFeatureLayer.providedBy(target_layer):
+            feature_id = target_layer.feature_create(feature)
+        else:
+            return error_response(u'Ресурс не поддерживает хранение геометрий')
+
+        transaction.manager.commit()
+    except Exception, ex:
+        return error_response(ex.message)
+
+    resp = {'status': 'ok'}
+    return Response(json.dumps(resp))
+
 
 
 def construct_line(request):

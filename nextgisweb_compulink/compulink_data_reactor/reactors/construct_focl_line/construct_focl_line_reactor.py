@@ -100,14 +100,14 @@ class ConstructFoclLineReactor(AbstractReactor):
                 # construct segment
                 points = tuple(feat.geom[0].coords[0] for feat in cluster)
                 # write segment
-                info = cls.get_segment_info(points, cluster)
+                info = cls.get_segment_info_helper(points, cluster)
                 cls.write_segment(lines_lyr, points, cluster, info)
             if len(cluster) > 2:
                 line = cls.make_line(cluster)
                 # write segments
                 for i in range(len(line[0])-1):
                     points = (line[0][i], line[0][i+1])
-                    info = cls.get_segment_info(points, cluster)
+                    info = cls.get_segment_info_helper(points, cluster)
                     cls.write_segment(lines_lyr, points, cluster, info)
 
     @classmethod
@@ -206,14 +206,14 @@ class ConstructFoclLineReactor(AbstractReactor):
                 # construct segment
                 points = tuple(feat.geom[0].coords[0] for feat in cluster)
                 # write segment
-                info = cls.get_segment_info(points, cluster)
+                info = cls.get_segment_info_helper(points, cluster)
                 cls.write_segment(lines_lyr, points, cluster, info)
             if len(cluster) > 2:
                 line = cls.make_line(cluster)
                 # write segments
                 for i in range(len(line[0])-1):
                     points = (line[0][i], line[0][i+1])
-                    info = cls.get_segment_info(points, cluster)
+                    info = cls.get_segment_info_helper(points, cluster)
                     cls.write_segment(lines_lyr, points, cluster, info)
 
 
@@ -295,7 +295,7 @@ class ConstructFoclLineReactor(AbstractReactor):
 
 
     @classmethod
-    def get_segment_info(cls, segment_points, cluster):
+    def get_segment_info_helper(cls, segment_points, cluster):
         #print 'Get segmet info: %s' % str(segment_points)
 
         # get features by coord
@@ -305,7 +305,10 @@ class ConstructFoclLineReactor(AbstractReactor):
                 feat_coords = feature.geom[0].coords[0]
                 if segment_point[0] == feat_coords[0] and segment_point[1] == feat_coords[1]:
                     feature_points.append(feature)
+        return cls.get_segment_info(feature_points)
 
+    @classmethod
+    def get_segment_info(cls, feature_points):
         # get laying_method
         laying_methods = []
         field_name = 'laying_method'
@@ -316,6 +319,7 @@ class ConstructFoclLineReactor(AbstractReactor):
         if laying_methods:
             order = ['transmission_towers', 'ground', 'canalization', 'building', 'other']
 
+            laying_method = None
             for selected_lay_met in order:
                 if selected_lay_met in laying_methods:
                     laying_method = selected_lay_met
