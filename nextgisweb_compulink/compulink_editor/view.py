@@ -82,7 +82,7 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink.editor.create_geom',
-        '/compulink/editor/features/create') \
+        '/compulink/editor/lines/create') \
         .add_view(editor_create_geom)
 
     config.add_route(
@@ -675,8 +675,8 @@ def editor_create_geom(request):
         return error_response(u'Метод не поддерживается! Необходим PUT')
 
     try:
-        create_info = request.json_body['line']
-        start_layer_id = create_info['start']['{ngwLayerId']
+        create_info = request.json_body
+        start_layer_id = create_info['start']['ngwLayerId']
         end_layer_id = create_info['end']['ngwLayerId']
         start_feat_id = create_info['start']['ngwFeatureId']
         end_feat_id = create_info['end']['ngwFeatureId']
@@ -709,6 +709,8 @@ def editor_create_geom(request):
 
         target_layer = None
         for child_resource in parent_res.children:
+            if not child_resource.keyname:
+                continue
             if len(child_resource.keyname) < (GUID_LENGTH + 1):
                 continue
             layer_keyname_without_guid = child_resource.keyname[0:-(GUID_LENGTH + 1)]
@@ -754,7 +756,7 @@ def editor_create_geom(request):
 
         # generate new feat and save it
         info = ConstructFoclLineReactor.get_segment_info([start_point_feat, end_point_feat])
-        feature = Feature(fields=info, geom=MultiLineString([start_point_feat.geom[0].coords[0], end_point_feat.geom[0].coords[0]]))
+        feature = Feature(fields=info, geom=MultiLineString([[start_point_feat.geom[0].coords[0], end_point_feat.geom[0].coords[0]]]))
 
         if IWritableFeatureLayer.providedBy(target_layer):
             feature_id = target_layer.feature_create(feature)
