@@ -19,6 +19,7 @@ define([
         constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
             this._map = map;
             this._editableLayersInfo = editorConfig.editableLayersInfo;
+            this._editorStyles = editorConfig.styles;
             this._resourceId = editorConfig.resourceId;
             this._ngwServiceFacade = ngwServiceFacade;
             if (isCreateLayer) this.getLayer();
@@ -36,7 +37,9 @@ define([
         _getLayer: function () {
             if (this._layer) return this._layer;
 
-            this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer');
+            this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer', {
+                styleMap: this._getStyleMap()
+            });
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
             this._bindAddLayerEvent(this._map.olMap);
@@ -44,6 +47,16 @@ define([
             this._createSnapping();
             this._createLineDraw();
             return this._layer;
+        },
+
+        _getStyleMap: function () {
+            var selectedStyle = new openlayers.Style(this._editorStyles.selected),
+                styleMap = new openlayers.StyleMap({
+                    default: selectedStyle,
+                    select: selectedStyle
+            });
+
+            return styleMap;
         },
 
         _createModify: function () {
@@ -276,10 +289,10 @@ define([
                 lang.hitch(this, function (result) {
                     GlobalStandBy.hide();
                     new InfoDialog({
-                            isDestroyedAfterHiding: true,
-                            title: 'Ошибка!',
-                            message: result ? result.message : 'На сервера произошла ошибка!'
-                        }).show();
+                        isDestroyedAfterHiding: true,
+                        title: 'Ошибка!',
+                        message: result ? result.message : 'На сервера произошла ошибка!'
+                    }).show();
                 })
             );
         },
