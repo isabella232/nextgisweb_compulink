@@ -85,3 +85,20 @@ EDITABLE_LAYERS = {
         }
     }
 }
+
+
+def GET_STYLES(request):
+    return {
+        'selected': {
+            'externalGraphic': request.route_url('amd_package', subpath="") +
+                               'ngw-compulink-editor/editor/templates/css/img/cross.png',
+            'strokeColor': '#FF0000',
+            'pointRadius': 10,
+            'fillColor': '#FF0000',
+            'strokeWidth': 4,
+            'stroke': True,
+            'fill': True,
+            'fillOpacity': 1,
+            'graphicZIndex': 999999
+        }
+    }
