@@ -19,7 +19,6 @@ define([
         constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
             this._map = map;
             this._editableLayersInfo = editorConfig.editableLayersInfo;
-            this._editorStyles = editorConfig.styles;
             this._resourceId = editorConfig.resourceId;
             this._ngwServiceFacade = ngwServiceFacade;
             if (isCreateLayer) this.getLayer();
@@ -50,13 +49,32 @@ define([
         },
 
         _getStyleMap: function () {
-            var selectedStyle = new openlayers.Style(this._editorStyles.selected),
-                styleMap = new openlayers.StyleMap({
-                    default: selectedStyle,
-                    select: selectedStyle
-            });
+            var defaultStyle = new openlayers.Style({
+                    strokeColor: "#ff3300",
+                    strokeOpacity: .9,
+                    strokeWidth: 2,
+                    fillColor: "#ff3300",
+                    fillOpacity: .3,
+                    cursor: "pointer",
+                    pointRadius: 10
+                }),
+                styleMap;
 
+            styleMap = new openlayers.StyleMap({
+                default: defaultStyle
+            });
             return styleMap;
+        },
+
+        _createRule: function (editableLayersInfoItem) {
+            return new openlayers.Rule({
+                filter: new openlayers.Filter.Comparison({
+                    type: openlayers.Filter.Comparison.EQUAL_TO,
+                    property: "keyname",
+                    value: editableLayersInfoItem.layerKeyname
+                }),
+                symbolizer: editableLayersInfoItem.styles
+            });
         },
 
         _createModify: function () {
@@ -332,7 +350,7 @@ define([
             var deferred = new Deferred(),
                 getFeaturesPromises = [];
 
-            array.forEach(this._editableLayersInfo, function (editableLayerInfo) {
+            array.forEach(this._editableLayersInfo.default, function (editableLayerInfo) {
                 getFeaturesPromises.push(this._ngwServiceFacade.getAllFeatures(editableLayerInfo.id));
             }, this);
 
@@ -349,10 +367,11 @@ define([
                 editableLayerInfo;
 
             array.forEach(ngwFeatureItems, function (ngwFeatures, getFeaturesPromiseIndex) {
-                editableLayerInfo = this._editableLayersInfo[getFeaturesPromiseIndex];
+                editableLayerInfo = this._editableLayersInfo.default[getFeaturesPromiseIndex];
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
                     feature = this._wkt.read(ngwFeature.geom);
-                    feature.style = editableLayerInfo.style;
+                    feature.attributes.keyname = editableLayerInfo.layerKeyname;
+                    feature.style = editableLayerInfo.styles;
                     feature.ngwLayerId = editableLayerInfo.id;
                     feature.ngwFeatureId = ngwFeature.id;
                     this.getLayer().addFeatures(feature);
@@ -371,7 +390,18 @@ define([
         _selectedFeature: null,
         _beforeFeatureModified: function (beforeFeatureModifiedEvent) {
             this._selectedFeature = beforeFeatureModifiedEvent.feature;
+            this._applySelectStyle(this._selectedFeature);
             topic.publish('/editor/feature/select', beforeFeatureModifiedEvent.feature);
+        },
+
+        _applySelectStyle: function (feature) {
+            var keyname = feature.attributes.keyname,
+                selectStyle;
+
+            if (keyname) {
+                selectStyle = this._editableLayersInfo.select[keyname];
+                this._layer.styleMap.styles.default.defaultStyle = selectStyle;
+            }
         },
 
         _afterFeatureModified: function (afterFeatureModifiedEvent) {
