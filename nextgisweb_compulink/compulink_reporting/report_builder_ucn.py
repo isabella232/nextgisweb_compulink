@@ -34,7 +34,7 @@ class ReportBuilderUcn():
         for fs in fs_resources:
 
             # fosc handler
-            fact_lyr = cls.get_layer_by_type(fs, 'real_fosc')
+            fact_lyr = cls.get_layer_by_type(fs, 'actual_real_fosc')
             if fact_lyr:
                 # get all rows and aggregate
                 fosc_values = []
@@ -66,7 +66,7 @@ class ReportBuilderUcn():
 
 
             # cross handler
-            fact_lyr = cls.get_layer_by_type(fs, 'real_optical_cross')
+            fact_lyr = cls.get_layer_by_type(fs, 'actual_real_optical_cross')
             if fact_lyr:
                 # get all rows and aggregate
                 cross_values = []
@@ -97,7 +97,7 @@ class ReportBuilderUcn():
                 db_session.flush()
 
             # ap handler
-            fact_lyr = cls.get_layer_by_type(fs, 'real_access_point')
+            fact_lyr = cls.get_layer_by_type(fs, 'actual_real_access_point')
             if fact_lyr:
                 # get all rows and aggregate
                 ap_values = []
@@ -128,7 +128,7 @@ class ReportBuilderUcn():
                 db_session.flush()
 
             # cabling handler
-            fact_lyr = cls.get_layer_by_type(fs, 'real_optical_cable')
+            fact_lyr = cls.get_layer_by_type(fs, 'actual_real_optical_cable')
             if fact_lyr:
                 # get all rows and aggregate
                 cable_values = []
@@ -160,7 +160,7 @@ class ReportBuilderUcn():
                 db_session.flush()
 
             # spec trans handler
-            fact_lyr = cls.get_layer_by_type(fs, 'real_special_transition')
+            fact_lyr = cls.get_layer_by_type(fs, 'actual_real_special_transition')
             if fact_lyr:
                 # get all rows and aggregate
                 spec_trans_values = []
