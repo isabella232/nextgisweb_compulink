@@ -37,7 +37,8 @@ define([
             if (this._layer) return this._layer;
 
             this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer', {
-                styleMap: this._getStyleMap()
+                styleMap: this._getStyleMap(),
+                rendererOptions: { zIndexing: true }
             });
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
