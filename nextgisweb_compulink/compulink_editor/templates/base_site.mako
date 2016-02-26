@@ -78,8 +78,7 @@
 
         var editorConfig = {
             resourceId: '${request.GET['resource_id']}',
-            editableLayersInfo: ${json.dumps(editable_layers_info)|n},
-            styles: ${json.dumps(styles)|n}
+            editableLayersInfo: ${json.dumps(editable_layers_info)|n}
         }
     </script>
 
