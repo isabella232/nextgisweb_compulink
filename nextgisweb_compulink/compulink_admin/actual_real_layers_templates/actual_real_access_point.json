@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Точки доступа (актуальный факт)",
+        "display_name": "Точки доступа (факт)",
         "description": null,
         "identify_name": "Точка доступа"
     },

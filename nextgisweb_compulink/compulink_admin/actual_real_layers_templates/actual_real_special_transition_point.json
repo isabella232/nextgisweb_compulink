@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Отметки спецпереходов (актуальный факт)",
+        "display_name": "Отметки спецпереходов (факт)",
         "description": null,
         "identify_name": "Отметка спецперехода"
     },

@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Отметки трассы оптического кабеля (факт)",
+        "display_name": "Отметки трассы оптического кабеля (исходный факт)",
         "description": null,
         "identify_name": "Отметка трассы ВОЛС"
     },

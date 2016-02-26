@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Трасса оптического кабеля (факт)",
+        "display_name": "Трасса оптического кабеля (исходный факт)",
         "description": null,
         "identify_name": "Трасса ВОЛС"
     },

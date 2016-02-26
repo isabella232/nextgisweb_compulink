@@ -2,7 +2,7 @@
     "resource": {
         "permissions": [],
         "keyname": null,
-        "display_name": "Оптические кроссы (факт)",
+        "display_name": "Оптические кроссы (исходный факт)",
         "description": null,
         "identify_name": "Оптический кросс"
     },

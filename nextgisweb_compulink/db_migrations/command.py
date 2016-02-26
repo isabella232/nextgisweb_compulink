@@ -22,6 +22,7 @@ from nextgisweb.command import Command
 from nextgisweb_compulink.db_migrations.copy_existing_real_features import copy_existing_real_features
 from nextgisweb_compulink.db_migrations.fill_construct_obj import fill_construct_obj_12_10
 from nextgisweb_compulink.db_migrations.fill_guid_field import fill_guid_field
+from nextgisweb_compulink.db_migrations.update_actual_lyr_names import update_actual_lyr_names
 
 
 @Command.registry.register
@@ -43,6 +44,7 @@ class DBMigrates():
                                 'update_aliases_01_08',
                                 'update_statuses_05_11',
                                 'fill_construct_obj_12_10',
+                                'update_actual_lyr_names',
                                 'add_guid_field',
                                 'fill_guid_field',
                                 'append_actual_layers',
@@ -71,13 +73,15 @@ class DBMigrates():
             cls.update_statuses_05_11()
         if args.migration == 'fill_construct_obj_12_10':    # 10.12.2015
             fill_construct_obj_12_10(args)
-        if args.migration == 'add_guid_field':          # 12.02.2016
+        if args.migration == 'update_actual_lyr_names':         # 12.02.2016
+            update_actual_lyr_names(args)
+        if args.migration == 'add_guid_field':                  # 12.02.2016
             add_guid_field(args)
-        if args.migration == 'fill_guid_field':         # 12.02.2016
+        if args.migration == 'fill_guid_field':                 # 12.02.2016
             fill_guid_field(args)
-        if args.migration == 'append_actual_layers':    # 12.02.2016
+        if args.migration == 'append_actual_layers':            # 12.02.2016
             append_actual_layers(args)
-        if args.migration == 'copy_existing_real_features': # 12.02.2016
+        if args.migration == 'copy_existing_real_features':     # 12.02.2016
             copy_existing_real_features(args)
 
 
