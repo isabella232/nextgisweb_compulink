@@ -67,17 +67,6 @@ define([
             return styleMap;
         },
 
-        _createRule: function (editableLayersInfoItem) {
-            return new openlayers.Rule({
-                filter: new openlayers.Filter.Comparison({
-                    type: openlayers.Filter.Comparison.EQUAL_TO,
-                    property: "keyname",
-                    value: editableLayersInfoItem.layerKeyname
-                }),
-                symbolizer: editableLayersInfoItem.styles
-            });
-        },
-
         _createModify: function () {
             this._modify = new openlayers.Control.ModifyFeature(this._layer);
             this._modify.mode = openlayers.Control.ModifyFeature.RESHAPE;
