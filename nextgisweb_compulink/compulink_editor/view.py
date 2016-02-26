@@ -18,7 +18,7 @@ from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
 from shapely.geometry import MultiLineString
 
-from config import EDITABLE_LAYERS
+from config import EDITABLE_LAYERS, GET_STYLES
 from nextgisweb import DBSession, db
 from nextgisweb.feature_layer import IWritableFeatureLayer
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
@@ -221,7 +221,8 @@ def show_map(request):
         real_layers_type=focl_layers['real'],
         sit_plan_layers_type=sit_plan_layers_type,
         extent=extent4326,
-        editable_layers_info=editable_layers_view_model
+        editable_layers_info=editable_layers_view_model,
+        styles=GET_STYLES(request)
     )
 
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
