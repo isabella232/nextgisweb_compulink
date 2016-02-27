@@ -92,14 +92,15 @@ define([
                             fieldValue = fieldValue.toISOString().replace('Z', '');
                         }
 
-                        var isDictField = false;
-                        var isBoolField = false;
-                        var valsDict = null;
+                        var isDictField = false,
+                            isBoolField = false,
+                            valsDict = null,
+                            selVal = null;
 
                         if (all_dicts.hasOwnProperty(field.keyname)) {
-                            var isDictField = true;
-                            var valsDict = all_dicts[field.keyname];
-                            var selVal = ngwFeatureInfo.fields[field.keyname];
+                            isDictField = true;
+                            valsDict = all_dicts[field.keyname];
+                            selVal = ngwFeatureInfo.fields[field.keyname];
                             fieldValue = [];
                             for (var keyname in valsDict) {
                                 if (valsDict.hasOwnProperty(keyname)) {
