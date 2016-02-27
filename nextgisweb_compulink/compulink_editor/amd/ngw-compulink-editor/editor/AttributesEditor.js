@@ -86,7 +86,7 @@ define([
                     if (ngwFeatureInfo.fields.hasOwnProperty(field.keyname)) {
                         var fieldValue = ngwFeatureInfo.fields[field.keyname];
 
-                        if (field.datatype === 'DATETIME') {
+                        if (field.datatype === 'DATETIME' && fieldValue) {
                             fieldValue = new Date(fieldValue.year, fieldValue.month, fieldValue.day,
                                 fieldValue.hour, fieldValue.minute, fieldValue.second);
                             fieldValue = fieldValue.toISOString().replace('Z', '');
