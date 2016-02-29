@@ -41,17 +41,21 @@ def copy_existing_real_features(args):
                     actual_layer = lyr
 
             if not real_layer or not actual_layer:
-                print 'Ops! Needed layers not found!'
+                print 'Ops!!!!!!!!!!!!!!!! Needed layers not found!'
                 return
 
             try:
+                # clean actual layer
+                actual_layer.feature_delete_all()
+
+                # copy data from real layer
                 query = real_layer.feature_query()
                 query.geom()
 
                 for feat in query():
                     feat.fields['change_author'] = u'Мобильное приложение'
                     feat.fields['change_date'] = feat.fields['built_date']
-                    actual_layer.feature_put(feat)
+                    actual_layer.feature_create(feat)
 
                 print "Layers %s was updated!" % actual_layer.keyname
 
