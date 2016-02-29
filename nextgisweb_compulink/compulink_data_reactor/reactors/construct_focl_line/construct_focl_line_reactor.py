@@ -311,14 +311,20 @@ class ConstructFoclLineReactor(AbstractReactor):
     def get_segment_info(cls, feature_points):
         # get laying_method
         laying_methods = []
+        special_laying_methods = []
+
         field_name = 'laying_method'
+        spec_trans_field_name = 'special_laying_method'
         for feat in feature_points:
             if field_name in feat.fields and feat.fields[field_name] and feat.fields[field_name] not in laying_methods:
                 laying_methods.append(feat.fields[field_name])
+            if spec_trans_field_name in feat.fields and feat.fields[spec_trans_field_name] and feat.fields[spec_trans_field_name] not in laying_methods:
+                special_laying_methods.append(feat.fields[spec_trans_field_name])
+                laying_methods.append('other')
+
 
         if laying_methods:
             order = ['transmission_towers', 'ground', 'canalization', 'building', 'other']
-
             laying_method = None
             for selected_lay_met in order:
                 if selected_lay_met in laying_methods:
@@ -330,6 +336,20 @@ class ConstructFoclLineReactor(AbstractReactor):
         else:
             laying_method = None
 
+
+        if special_laying_methods:
+            order = ['hdd', 'towers', 'bottom']
+            spec_laying_method = None
+            for selected_lay_met in order:
+                if selected_lay_met in special_laying_methods:
+                    spec_laying_method = selected_lay_met
+                    break
+            # set first
+            if not spec_laying_method:
+                spec_laying_method = special_laying_methods[0]
+        else:
+            spec_laying_method = None
+
         # get built_date
         built_date = feature_points[0].fields['built_date']
         for feat in feature_points:
@@ -338,4 +358,4 @@ class ConstructFoclLineReactor(AbstractReactor):
             elif (feat.fields['built_date'] and built_date) and feat.fields['built_date'] > built_date:
                 built_date = feat.fields['built_date']
 
-        return {'laying_method': laying_method, 'built_date': built_date}
+        return {'laying_method': laying_method, 'built_date': built_date, 'special_laying_method': spec_laying_method}
