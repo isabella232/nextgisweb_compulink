@@ -5,15 +5,17 @@ def get_editable_layers_styles(request):
     return {
         'actual_real_special_transition': {
             'select': {
-                'externalGraphic': cross_icon_path,
-                'strokeColor': '#FF00FF',
-                'pointRadius': 8,
-                'fillColor': '#FF00FF',
-                'strokeWidth': 6,
+                'graphicName': 'x',
+                'strokeColor': '#FF0000',
+                'pointRadius': 7,
+                'fillColor': '#FF0000',
+                'strokeWidth': 1,
                 'stroke': True,
                 'fill': True,
                 'fillOpacity': 1,
-                'graphicZIndex': 10
+                'strokeOpacity': 1,
+                'graphicZIndex': 99999,
+                'graphicOpacity': 1
             },
             'default': {
                 'strokeColor': '#FF00FF',
@@ -50,16 +52,17 @@ def get_editable_layers_styles(request):
         },
         'actual_real_optical_cable': {
             'select': {
-                'externalGraphic': cross_icon_path,
+                'graphicName': 'x',
                 'strokeColor': '#FF0000',
-                'pointRadius': 10,
+                'pointRadius': 7,
                 'fillColor': '#FF0000',
-                'strokeWidth': 5,
+                'strokeWidth': 1,
                 'stroke': True,
                 'fill': True,
                 'fillOpacity': 1,
                 'strokeOpacity': 1,
-                'graphicZIndex': 50
+                'graphicZIndex': 99999,
+                'graphicOpacity': 1
             },
             'default': {
                 'strokeColor': '#0066ff',
