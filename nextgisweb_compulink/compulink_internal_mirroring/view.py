@@ -82,7 +82,7 @@ def after_feature_create_handler(resource=None, feature_id=None):
 
         feat.fields['change_author'] = u'Мобильное приложение'
         feat.fields['change_date'] = feat.fields['built_date']
-        actual_layer.feature_put(feat)
+        actual_layer.feature_create(feat)
 
         print "Layers %s was updated!" % actual_layer.keyname
 
