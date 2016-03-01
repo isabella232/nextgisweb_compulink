@@ -569,29 +569,24 @@ def editor_save_geom(request):
         raise HTTPForbidden()
 
     if request.method != 'POST':
-        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим POST'}
-        return Response(json.dumps(resp), status=400)
+        return error_response(u'Метод не поддерживается! Необходим POST')
 
     try:
         updates = request.json_body
 
-        db_session = DBSession()
+        db_session = DBSession
         transaction.manager.begin()
 
         for update in updates:
             res = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==update['layer']).first()
             if not res:
-                resp = {'status': 'error', 'message': u'Редактируемый слой не найден'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Редактируемый слой не найден')
             parent_res = res.parent
             if not parent_res:
-                resp = {'status': 'error', 'message': u'Редактируемый слой некорректный (Слой вне объекта строительства)'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Редактируемый слой некорректный (Слой вне объекта строительства)')
             # TODO: set check!
-            # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
-            #     resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
-            #     return Response(json.dumps(resp))
-            #  request.resource_permission(PERM_WRITE) ADD check
+            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+                return error_response(u'У вас недостаточно прав для редактирования данных')
 
             query = res.feature_query()
             query.geom()
@@ -604,8 +599,7 @@ def editor_save_geom(request):
                 feature = f
 
             if not feature:
-                resp = {'status': 'error', 'message': u'Редактируемый объект не найден'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Редактируемый объект не найден')
 
             feature.geom = update['wkt']
             feature.fields['change_author'] = request.user.display_name or request.user.keyname
@@ -614,13 +608,11 @@ def editor_save_geom(request):
             if IWritableFeatureLayer.providedBy(res):
                 res.feature_put(feature)
             else:
-                resp = {'status': 'error', 'message': u'Ресурс не поддерживает хранение геометрий'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Ресурс не поддерживает хранение геометрий')
 
         transaction.manager.commit()
     except Exception, ex:
-        resp = {'status': 'error', 'message': ex.message}
-        return Response(json.dumps(resp), status=400)
+        return error_response(ex.message)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
@@ -631,8 +623,7 @@ def editor_delete_geom(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
     if request.method != 'DELETE':
-        resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим DELETE'}
-        return Response(json.dumps(resp), status=400)
+        return error_response(u'Метод не поддерживается! Необходим DELETE')
     try:
         deletes = request.json_body
 
@@ -642,28 +633,21 @@ def editor_delete_geom(request):
         for del_feat in deletes:
             res = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==del_feat['layer']).first()
             if not res:
-                resp = {'status': 'error', 'message': u'Редактируемый слой не найден'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Редактируемый слой не найден')
             parent_res = res.parent
             if not parent_res:
-                resp = {'status': 'error', 'message': u'Редактируемый слой некорректный (Слой вне объекта строительства)'}
-                return Response(json.dumps(resp), status=400)
-            # TODO: set check!
-            # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
-            #     resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
-            #     return Response(json.dumps(resp))
-            #  request.resource_permission(PERM_WRITE) ADD check
+                return error_response(u'Редактируемый слой некорректный (Слой вне объекта строительства)')
+            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+                return error_response(u'У вас недостаточно прав для редактирования данных')
 
             if IWritableFeatureLayer.providedBy(res):
                 res.feature_delete(del_feat['id'])
             else:
-                resp = {'status': 'error', 'message': u'Ресурс не поддерживает работу с геометриями'}
-                return Response(json.dumps(resp), status=400)
+                return error_response(u'Ресурс не поддерживает работу с геометриями')
 
         transaction.manager.commit()
     except Exception, ex:
-        resp = {'status': 'error', 'message': ex.message}
-        return Response(json.dumps(resp), status=400)
+        return error_response(ex.message)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
@@ -707,6 +691,8 @@ def editor_create_geom(request):
         parent_res = start_point_layer.parent
         if not parent_res:
             return error_response(u'Не найден объект строительства')
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+            return error_response(u'У вас недостаточно прав для редактирования данных')
 
         if new_obj_type == 'vols':
             target_layer_type = 'actual_real_optical_cable'
@@ -728,12 +714,6 @@ def editor_create_geom(request):
 
         if not target_layer:
             return error_response(u'Не найден слой для сохранения нового объекта')
-
-        # TODO: set check!
-        # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
-        #     resp = {'status': 'error', 'message': u'У вас недостаточно прав для редактирования данных'}
-        #     return Response(json.dumps(resp))
-        #  request.resource_permission(PERM_WRITE) ADD check
 
         # get source points
         query = start_point_layer.feature_query()
