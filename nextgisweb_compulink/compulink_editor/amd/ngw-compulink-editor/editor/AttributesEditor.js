@@ -52,6 +52,12 @@ define([
                     this.renderAttributes(results[0], results[1]);
                 }));
             }));
+
+            topic.subscribe('/editor/attributes/clear', lang.hitch(this, function () {
+                var divAttributes = query('div.attributes', this.domNode)[0];
+                html.set(divAttributes, '');
+                this._setEditorState('empty');
+            }));
         },
 
         _setEditorState: function (state) {

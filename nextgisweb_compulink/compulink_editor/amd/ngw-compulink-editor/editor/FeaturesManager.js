@@ -144,6 +144,7 @@ define([
                     feature.style = style.styles;
                     feature.layer.redraw();
                 }
+                topic.publish('/editor/attributes/clear');
             }));
         },
 
