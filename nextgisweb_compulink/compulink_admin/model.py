@@ -74,6 +74,7 @@ class FoclStructScope(Scope):
     label = u'Объект строительства'
 
     edit_prop = Permission(u'Изменение свойств')
+    edit_data = Permission(u'Изменение фактических данных')
 
 
 class FoclStruct(Base, ResourceGroup):

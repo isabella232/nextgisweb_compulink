@@ -202,7 +202,7 @@ def show_map(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    if not(request.user.is_administrator or resource.has_permission(FoclStructScope.edit_prop, request.user)):
+    if not(request.user.is_administrator or resource.has_permission(FoclStructScope.edit_data, request.user)):
         raise HTTPForbidden()
 
     extent3857 = get_extent_by_resource_id(resource_id)
@@ -585,7 +585,7 @@ def editor_save_geom(request):
             if not parent_res:
                 return error_response(u'Редактируемый слой некорректный (Слой вне объекта строительства)')
             # TODO: set check!
-            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
                 return error_response(u'У вас недостаточно прав для редактирования данных')
 
             query = res.feature_query()
@@ -637,7 +637,7 @@ def editor_delete_geom(request):
             parent_res = res.parent
             if not parent_res:
                 return error_response(u'Редактируемый слой некорректный (Слой вне объекта строительства)')
-            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+            if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
                 return error_response(u'У вас недостаточно прав для редактирования данных')
 
             if IWritableFeatureLayer.providedBy(res):
@@ -691,7 +691,7 @@ def editor_create_geom(request):
         parent_res = start_point_layer.parent
         if not parent_res:
             return error_response(u'Не найден объект строительства')
-        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_prop, request.user)):
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
             return error_response(u'У вас недостаточно прав для редактирования данных')
 
         if new_obj_type == 'vols':
