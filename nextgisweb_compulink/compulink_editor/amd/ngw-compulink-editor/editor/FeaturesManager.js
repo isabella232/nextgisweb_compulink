@@ -37,7 +37,6 @@ define([
             if (this._layer) return this._layer;
 
             this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer', {
-                styleMap: this._getStyleMap(),
                 rendererOptions: { zIndexing: true }
             });
             this._map.olMap.addLayer(this._layer);
@@ -47,24 +46,6 @@ define([
             this._createSnapping();
             this._createLineDraw();
             return this._layer;
-        },
-
-        _getStyleMap: function () {
-            var defaultStyle = new openlayers.Style({
-                    strokeColor: "#ff3300",
-                    strokeOpacity: .9,
-                    strokeWidth: 2,
-                    fillColor: "#ff3300",
-                    fillOpacity: .3,
-                    cursor: "pointer",
-                    pointRadius: 10
-                }),
-                styleMap;
-
-            styleMap = new openlayers.StyleMap({
-                default: defaultStyle
-            });
-            return styleMap;
         },
 
         _createModify: function () {
@@ -151,6 +132,18 @@ define([
                         }).show();
                     })
                 );
+            }));
+
+            topic.subscribe('/editor/feature/unselect', lang.hitch(this, function (feature) {
+                var layerKeyname, style;
+                if (feature && feature.attributes.keyname) {
+                    layerKeyname = feature.attributes.keyname;
+                    style = array.filter(this._editableLayersInfo.default, function (style) {
+                        return style.layerKeyname == layerKeyname;
+                    })[0];
+                    feature.style = style.styles;
+                    feature.layer.redraw();
+                }
             }));
         },
 
@@ -390,12 +383,14 @@ define([
 
             if (keyname) {
                 selectStyle = this._editableLayersInfo.select[keyname];
+                feature.style = selectStyle;
                 this._layer.styleMap.styles.default.defaultStyle = selectStyle;
             }
         },
 
         _afterFeatureModified: function (afterFeatureModifiedEvent) {
             if (!afterFeatureModifiedEvent.modified) {
+                this._unselectModifiedFeature();
                 return false;
             }
 
