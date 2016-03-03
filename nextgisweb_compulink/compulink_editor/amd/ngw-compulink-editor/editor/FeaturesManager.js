@@ -403,8 +403,9 @@ define([
         },
 
         _afterFeatureModified: function (afterFeatureModifiedEvent) {
+            var feature = afterFeatureModifiedEvent.feature;
             if (!afterFeatureModifiedEvent.modified) {
-                this._unselectModifiedFeature();
+                this._unselectModifiedFeature(feature);
                 return false;
             }
 
@@ -423,11 +424,11 @@ define([
             relativeFeatures.push(afterFeatureModifiedEvent.feature);
 
             this._saveFeaturesModified(relativeFeatures);
-            this._unselectModifiedFeature();
+            this._unselectModifiedFeature(feature);
         },
 
-        _unselectModifiedFeature: function () {
-            topic.publish('/editor/feature/unselect', this._selectedFeature);
+        _unselectModifiedFeature: function (feature) {
+            topic.publish('/editor/feature/unselect', feature);
             this._selectedFeature = null;
         },
 
