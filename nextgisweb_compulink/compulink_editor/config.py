@@ -7,7 +7,7 @@ def get_editable_layers_styles(request):
             'select': {
                 'graphicName': 'x',
                 'strokeColor': '#FF0000',
-                'pointRadius': 7,
+                'pointRadius': 4,
                 'fillColor': '#FF0000',
                 'strokeWidth': 3,
                 'stroke': True,
@@ -54,7 +54,7 @@ def get_editable_layers_styles(request):
             'select': {
                 'graphicName': 'x',
                 'strokeColor': '#FF0000',
-                'pointRadius': 7,
+                'pointRadius': 4,
                 'fillColor': '#FF0000',
                 'strokeWidth': 3,
                 'stroke': True,
