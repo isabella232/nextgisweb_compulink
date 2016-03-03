@@ -19,6 +19,7 @@ from nextgisweb_compulink.db_migrations.append_actual_layers import append_actua
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
 from nextgisweb import DBSession
 from nextgisweb.command import Command
+from nextgisweb_compulink.db_migrations.copy_existing_real_feat_attaches import copy_existing_real_feat_attaches
 from nextgisweb_compulink.db_migrations.copy_existing_real_features import copy_existing_real_features
 from nextgisweb_compulink.db_migrations.fill_construct_obj import fill_construct_obj_12_10
 from nextgisweb_compulink.db_migrations.fill_guid_field import fill_guid_field
@@ -48,7 +49,8 @@ class DBMigrates():
                                 'add_guid_field',
                                 'fill_guid_field',
                                 'append_actual_layers',
-                                'copy_existing_real_features'
+                                'copy_existing_real_features',
+                                'copy_existing_real_feat_attaches',
                             ])
 
     @classmethod
@@ -83,7 +85,8 @@ class DBMigrates():
             append_actual_layers(args)
         if args.migration == 'copy_existing_real_features':     # 12.02.2016
             copy_existing_real_features(args)
-
+        if args.migration == 'copy_existing_real_feat_attaches':  # 03.03.2016
+            copy_existing_real_feat_attaches(args)
 
     @classmethod
     def append_real_layers(cls):
