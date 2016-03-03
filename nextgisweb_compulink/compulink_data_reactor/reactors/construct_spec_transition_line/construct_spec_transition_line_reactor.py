@@ -36,7 +36,7 @@ class ConstructSpecTransitionLineReactor(AbstractReactor):
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
-            cls.construct_line(fs)
+            cls.smart_construct_line(fs)
             db_session.flush()
 
         cls.log_info('ConstructSpecTransitionLineReactor finished!')
@@ -78,6 +78,91 @@ class ConstructSpecTransitionLineReactor(AbstractReactor):
         cls.clear_layer(lines_lyr)
 
         #merge points in two mass
+        for start_point_feat in starts:
+            if len(ends) < 1:
+                continue
+
+            # get near point
+            near_point_feat = ends[0]
+            near_len = start_point_feat.geom.distance(near_point_feat.geom)
+            for end_point_feat in ends:
+                if start_point_feat.geom.distance(end_point_feat.geom) < near_len:
+                    near_point_feat = end_point_feat
+                    near_len = start_point_feat.geom.distance(end_point_feat.geom)
+
+            # check distance limit
+            real_dist = DistanceUtils.get_spherical_distance(start_point_feat.geom[0], near_point_feat.geom[0])
+            if real_dist > cls.DISTANCE_LIMIT:
+                cls.log_warning('Point %s has no paired points near that maximum distance!' % start_point_feat.id)
+                continue
+
+            # construct line
+            line_feats = [start_point_feat, near_point_feat]
+            info = cls.get_segment_info(line_feats)
+            cls.write_segment(lines_lyr, line_feats, info)
+
+            # remove from ends
+            ends.remove(near_point_feat)
+
+
+    @classmethod
+    def smart_construct_line(cls, focl_res):
+        # get target layer
+        lines_lyr = [lyr for lyr in focl_res.children if lyr.keyname and
+                     not lyr.keyname.startswith('actual_real_special_transition_point') and
+                     lyr.keyname.startswith('actual_real_special_transition')]
+        lines_lyr = lines_lyr[0] if len(lines_lyr) else None
+
+        if not lines_lyr:
+            cls.log_debug('Construct line for %s skeeped (no result line layer)!' % focl_res.display_name)
+            return
+
+        # get existings lines (for filter points)
+        query = lines_lyr.feature_query()
+        query.geom()
+        lines = query()
+        lines_vertexes = []
+        for line_feat in lines:
+            for coord in line_feat.geom[0].coords:
+                lines_vertexes.append(coord)
+
+        # Collect features for processing
+        points_lyr = [lyr for lyr in focl_res.children if
+                      lyr.keyname and lyr.keyname.startswith('actual_real_special_transition_point')]
+        points_lyr = points_lyr[0] if len(points_lyr) else None
+
+        features = []
+
+        if points_lyr:
+            # get all points
+            query = points_lyr.feature_query()
+            query.geom()
+            result = query()
+            # filter - only non ~lined~
+            for feature in result:
+                if feature.geom[0].coords[0] not in lines_vertexes:
+                    features.append(feature)
+
+        if len(features) > 0:
+            cls.log_debug('Construct spec_trans line for %s started!' % focl_res.display_name)
+        else:
+            cls.log_debug('Construct spec_trans line for %s skeeped (no points)!' % focl_res.display_name)
+            return
+
+        # split points as starts and ends
+        starts = []
+        ends = []
+        for feature in features:
+            if feature.fields['special_laying_number'] == 'entrance':
+                starts.append(feature)
+            else:
+                ends.append(feature)
+
+        if len(starts) != len(ends):
+            cls.log_warning('Line %s has unpaired count of start\end points! (%s\%s)' % (
+            focl_res.display_name, len(starts), len(ends)))
+
+        # merge points to segments
         for start_point_feat in starts:
             if len(ends) < 1:
                 continue

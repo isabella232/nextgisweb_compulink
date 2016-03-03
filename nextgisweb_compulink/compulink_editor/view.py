@@ -27,6 +27,8 @@ from nextgisweb.vector_layer import VectorLayer, TableInfo
 from nextgisweb.feature_layer import Feature
 from nextgisweb_compulink.compulink_data_reactor.reactors.construct_focl_line.construct_focl_line_reactor import \
     ConstructFoclLineReactor
+from nextgisweb_compulink.compulink_data_reactor.reactors.construct_spec_transition_line.construct_spec_transition_line_reactor import \
+    ConstructSpecTransitionLineReactor
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
 from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
 from nextgisweb_lookuptable.model import LookupTable
@@ -776,6 +778,7 @@ def construct_line(request):
         fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id==int(res_id))  # all()
         for fs in fs_resources:
             ConstructFoclLineReactor.smart_construct_line(fs)
+            ConstructSpecTransitionLineReactor.smart_construct_line(fs)
 
         transaction.manager.commit()
     except Exception, ex:
