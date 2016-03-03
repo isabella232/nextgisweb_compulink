@@ -88,3 +88,5 @@ def _copy_feat_attache(src_feat, dst_feat):
         mirror_attache.mime_type = src_attache.mime_type
         mirror_attache.name = src_attache.name
         mirror_attache.description = src_attache.description
+
+        DBSession.add(mirror_attache)
