@@ -183,6 +183,7 @@ class ConstructFoclLineReactor(AbstractReactor):
                     for intersect_line in intersect_lines:
                         if intersect_line.geom[0].coords[0] == geom_2 or intersect_line.geom[0].coords[1] == geom_2:
                             lines_lyr.feature_delete(intersect_line.id)
+                            lines_feats.remove(intersect_line)
                             print 'deleted ', intersect_line.id
 
 
