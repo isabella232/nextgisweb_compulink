@@ -113,7 +113,7 @@ define([
                 }
             }));
 
-            topic.subscribe('/compulink/editor/set/mode/', lang.hitch(this, function (editorMode) {
+            topic.subscribe('/compulink/editor/mode/set/', lang.hitch(this, function (editorMode) {
                 this._setEditorMode(editorMode);
             }));
 
@@ -159,6 +159,8 @@ define([
 
         _editorMode: 'edit',
         _setEditorMode: function (editorMode) {
+            console.log(editorMode);
+            return;
             if (editorMode === 'createSp' || editorMode === 'createVols') {
                 this._deactivateEditMode();
                 this._setMapCrosshairClass();

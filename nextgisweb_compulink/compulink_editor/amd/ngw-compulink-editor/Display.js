@@ -519,6 +519,7 @@ define([
             });
         },
 
+        _toolOn: null,
         addTool: function (tool) {
             var btn = new ToggleButton({
                 label: tool.label,
@@ -531,7 +532,8 @@ define([
             this.tools.push(tool);
 
             var display = this;
-            btn.watch("checked", function (attr, oldVal, newVal) {
+            btn.watch("checked", lang.hitch(this, function (attr, oldVal, newVal) {
+                topic.publish('/compulink/panel/common-tools/activate');
                 if (newVal) {
                     // При включении инструмента все остальные инструменты
                     // выключаем, а этот включаем
@@ -541,11 +543,19 @@ define([
                         }
                     });
                     tool.activate();
+                    this._toolOn = tool;
                 } else {
                     // При выключении остальные инструменты не трогаем
                     tool.deactivate();
+                    this._toolOn = null;
                 }
-            });
+            }));
+        },
+
+        _turnOffTools: function () {
+            if (this._toolOn) {
+                this._toolOn.toolbarBtn.set("checked", false);
+            }
         },
 
         loadBookmarks: function () {
@@ -817,6 +827,10 @@ define([
 
             this.addTool(new ToolMeasure({display: this, order: 1}));
             this.addTool(new ToolMeasure({display: this, order: 2}));
+
+            topic.subscribe('/compulink/panel/editor/activate', lang.hitch(this, function () {
+                this._turnOffTools();
+            }));
         },
 
         _pluginsSetup: function () {
