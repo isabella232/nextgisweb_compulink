@@ -180,11 +180,15 @@ class ConstructFoclLineReactor(AbstractReactor):
                 # if second point - in radius = delete it
                 for j in range(i+1, len(features_in_radius)):
                     geom_2 = features_in_radius[j].geom[0].coords[0]
+                    for_delete = []
                     for intersect_line in intersect_lines:
                         if intersect_line.geom[0].coords[0] == geom_2 or intersect_line.geom[0].coords[1] == geom_2:
-                            lines_lyr.feature_delete(intersect_line.id)
-                            lines_feats.remove(intersect_line)
-                            print 'deleted ', intersect_line.id
+                            for_delete.append(intersect_line)
+                    for d_line in for_delete:
+                            lines_lyr.feature_delete(d_line.id)
+                            lines_feats.remove(d_line)
+                            intersect_lines.remove(d_line)
+                            print 'Construct line for ', focl_struct_resource.id, ': deleted ', d_line.id
 
 
 
