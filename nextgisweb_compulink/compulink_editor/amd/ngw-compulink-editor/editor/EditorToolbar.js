@@ -30,11 +30,50 @@ define([
         region: 'top',
 
         constructor: function () {
-            this.bindEvents();
         },
 
-        bindEvents: function () {
+        postCreate: function () {
+            this._bindEvents();
+        },
 
+        _toggleButtonOn: null,
+        _bindEvents: function () {
+            var toolbar = registry.byId('editorToolbar'),
+                toolbarChildren = toolbar.getChildren(),
+                isToggleButton, context;
+
+            array.forEach(toolbarChildren, function (toolbarChildrenControl) {
+                context = this;
+                on(toolbarChildrenControl, 'click', function () {
+                    isToggleButton = this instanceof ToggleButton;
+                    topic.publish('/compulink/panel/editor/activate');
+                    if (isToggleButton) {
+                        if (this.get('checked')) {
+                            if (context._toggleButtonOn) {
+                                context._toggleButtonOn.set('checked', false);
+                            }
+                            context._toggleButtonOn = this;
+                            topic.publish('/compulink/editor/mode/set/', this.editorMode);
+                        } else {
+                            topic.publish('/compulink/editor/mode/set/', 'off');
+                            context._toggleButtonOn = null;
+                        }
+                    }
+                });
+            }, this);
+
+            topic.subscribe('/compulink/panel/common-tools/activate', lang.hitch(this, function () {
+                if (this._toggleButtonOn) {
+                    this._toggleButtonOn.set('checked', false);
+                }
+            }));
+
+            this._toggleButtonOn = registry.byId('selectAndMoveButton');
+        },
+
+        selectAndMoveChanged: function (val) {
+            registry.byId('undoOneButton').set('disabled', !val);
+            registry.byId('removeFeatureButton').set('disabled', !val);
         },
 
         removeFeature: function () {
@@ -42,7 +81,9 @@ define([
         },
 
         createSp: function () {
-            var checked = registry.byId('createSpButton').get('checked');
+            var toolbar = registry.byId('editorToolbar'),
+                v = toolbar.getChildren()[1] instanceof ToggleButton,
+                checked = registry.byId('createSpButton').get('checked');
             if (checked) {
                 registry.byId('createVolsButton').set('checked', false);
                 topic.publish('/compulink/editor/set/mode/', 'createSp');
@@ -62,6 +103,14 @@ define([
         },
 
         updateLines: function () {
+            topic.publish('/compulink/editor/lines/update');
+        },
+
+        undoOne: function () {
+
+        },
+
+        undoAll: function () {
             topic.publish('/compulink/editor/lines/update');
         }
     });

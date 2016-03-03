@@ -4,18 +4,39 @@
          style="border-bottom: none"
          id="editorToolbar">
 
+        <div data-dojo-attach-point="selectAndMove"
+             id="selectAndMoveButton"
+             data-dojo-attach-event="onChange: selectAndMoveChanged"
+             data-dojo-type="dijit/form/ToggleButton"
+             data-dojo-props="editorMode: 'selectAndMove', iconClass: 'selectAndMove', showLabel: false, checked: true, title: 'Выбрать и переместить'">
+        </div>
+
+        <div data-dojo-attach-point="undoOneButton"
+             id="undoOneButton"
+             data-dojo-attach-event="onClick: undoAll"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="editorMode: 'undoOne', iconClass: 'undoOne', showLabel: false, checked: false, title: 'Отменить изменения выбранного объекта'">
+        </div>
+
+        <div data-dojo-attach-point="removeFeatureButton"
+             id="removeFeatureButton"
+             data-dojo-attach-event="onClick: removeFeature"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="editorMode: 'removingFeature', iconClass: 'removeFeature', showLabel: false, checked: false, title: 'Удалить выбранный объект'">
+        </div>
+
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
         <div data-dojo-attach-point="createVolsButton"
-             data-dojo-attach-event="onClick: createVols"
              id="createVolsButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconCreateVols', showLabel: false, checked: false, title: 'Создать ВОЛС'">
+             data-dojo-props="editorMode: 'creatingVols', iconClass: 'iconCreateVols', showLabel: false, checked: false, title: 'Создать ВОЛС'">
         </div>
 
         <div data-dojo-attach-point="createSpButton"
-             data-dojo-attach-event="onClick: createSp"
              id="createSpButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Создать спецпереход'">
+             data-dojo-props="editorMode: 'creatingSp', iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Создать спецпереход'">
         </div>
 
         <div data-dojo-attach-point="updateLinesButton"
@@ -26,21 +47,7 @@
 
         <div data-dojo-type="dijit/ToolbarSeparator"></div>
 
-        <div data-dojo-attach-point="removeFeatureButton"
-             data-dojo-attach-event="onClick: removeFeature"
-             data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: true, title: 'Удалить выбранный объект'">
-        </div>
-
-        <div data-dojo-type="dijit/ToolbarSeparator"></div>
-
-        <div data-dojo-attach-point="undoOne"
-             data-dojo-attach-event="onClick: undoOne"
-             data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'undoOne', showLabel: false, checked: true, title: 'Отменить изменения выбранного объекта'">
-        </div>
-
-        <div data-dojo-attach-point="undoAll"
+        <div data-dojo-attach-point="undoAllButton"
              data-dojo-attach-event="onClick: undoAll"
              data-dojo-type="dijit/form/Button"
              data-dojo-props="iconClass: 'undoAll', showLabel: false, checked: true, title: 'Отменить изменения всех объектов'">

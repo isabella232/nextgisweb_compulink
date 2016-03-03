@@ -7,6 +7,14 @@
     background-size: cover; /* Generic*/
 }
 
+#editorToolbar span.dijitDisabled {
+    opacity: 0.3;
+}
+
+#editorToolbar span.selectAndMove {
+    background: url('img/select_move.png') no-repeat;
+}
+
 #editorToolbar span.removeFeature {
     background: url('img/remove_feature.png') no-repeat;
 }
