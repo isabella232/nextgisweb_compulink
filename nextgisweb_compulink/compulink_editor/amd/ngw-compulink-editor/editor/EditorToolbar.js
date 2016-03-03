@@ -55,20 +55,27 @@ define([
                             context._toggleButtonOn = this;
                             topic.publish('/compulink/editor/mode/set/', this.editorMode);
                         } else {
-                            topic.publish('/compulink/editor/mode/set/', 'off');
-                            context._toggleButtonOn = null;
+                            context._deactivateToolbar();
                         }
                     }
                 });
             }, this);
 
             topic.subscribe('/compulink/panel/common-tools/activate', lang.hitch(this, function () {
-                if (this._toggleButtonOn) {
-                    this._toggleButtonOn.set('checked', false);
-                }
+                this._deactivateToolbar();
             }));
 
             this._toggleButtonOn = registry.byId('selectAndMoveButton');
+        },
+
+        _deactivateToolbar: function () {
+            if (this._toggleButtonOn) {
+                this._toggleButtonOn.set('checked', false);
+            } else {
+                return false;
+            }
+            topic.publish('/compulink/editor/mode/set/', 'off');
+            this._toggleButtonOn = null;
         },
 
         selectAndMoveChanged: function (val) {
