@@ -163,6 +163,7 @@ define([
                 case 'off':
                     this._deactivateEditMode();
                     this._deactivateCreateLineMode();
+                    this._removeMapCrosshairClass();
                     break;
                 case 'selectAndMove':
                     this._deactivateCreateLineMode();
@@ -170,19 +171,23 @@ define([
                     this._removeMapCrosshairClass();
                     break;
                 case 'creatingVols':
-                    this._deactivateEditMode();
-                    this._setMapCrosshairClass();
-                    this._activateCreateLineMode();
+                    this._activateCreateLinesMode();
                     break;
                 case 'creatingSp':
-                    this._deactivateEditMode();
-                    this._setMapCrosshairClass();
-                    this._activateCreateLineMode();
+                    this._activateCreateLinesMode();
                     break;
                 default:
                     throw new Exception('FeaturesManager: Unknow editor mode: "' + editorMode + '"')
             }
             this._editorMode = editorMode;
+        },
+
+        _activateCreateLinesMode: function () {
+            this._deactivateEditMode();
+            this._deactivateCreateLineMode();
+            this._removeMapCrosshairClass();
+            this._setMapCrosshairClass();
+            this._activateCreateLineMode();
         },
 
         _classCrosshair: "cursor-crosshair",
@@ -285,14 +290,14 @@ define([
             };
 
             switch (this._editorMode) {
-                case 'createSp':
+                case 'creatingSp':
                     lineInfo.type = 'stp';
                     break;
-                case 'createVols':
+                case 'creatingVols':
                     lineInfo.type = 'vols';
                     break;
                 default:
-                    throw new Exception('Editor type "' + this._editorMode + '" is not supported.');
+                    throw new Error('Editor type "' + this._editorMode + '" is not supported.');
             }
 
             GlobalStandBy.show();
