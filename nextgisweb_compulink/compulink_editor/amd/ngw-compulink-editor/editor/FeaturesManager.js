@@ -37,7 +37,7 @@ define([
             if (this._layer) return this._layer;
 
             this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer', {
-                rendererOptions: { zIndexing: true }
+                rendererOptions: {zIndexing: true}
             });
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
@@ -159,16 +159,28 @@ define([
 
         _editorMode: 'edit',
         _setEditorMode: function (editorMode) {
-            console.log(editorMode);
-            return;
-            if (editorMode === 'createSp' || editorMode === 'createVols') {
-                this._deactivateEditMode();
-                this._setMapCrosshairClass();
-                this._activateCreateLineMode(editorMode);
-            } else if (editorMode === 'edit') {
-                this._deactivateCreateLineMode();
-                this._activateEditMode();
-                this._removeMapCrosshairClass();
+            switch (editorMode) {
+                case 'off':
+                    this._deactivateEditMode();
+                    this._deactivateCreateLineMode();
+                    break;
+                case 'selectAndMove':
+                    this._deactivateCreateLineMode();
+                    this._activateEditMode();
+                    this._removeMapCrosshairClass();
+                    break;
+                case 'creatingVols':
+                    this._deactivateEditMode();
+                    this._setMapCrosshairClass();
+                    this._activateCreateLineMode();
+                    break;
+                case 'creatingSp':
+                    this._deactivateEditMode();
+                    this._setMapCrosshairClass();
+                    this._activateCreateLineMode();
+                    break;
+                default:
+                    throw new Exception('FeaturesManager: Unknow editor mode: "' + editorMode + '"')
             }
             this._editorMode = editorMode;
         },
@@ -194,9 +206,8 @@ define([
         },
 
         _checkClickCreateLineCallback: null,
-        _activateCreateLineMode: function (editorMode) {
+        _activateCreateLineMode: function () {
             var context = this;
-            this._editorMode = editorMode;
             this._checkClickCreateLineCallback = function (e) {
                 context._checkClickCreateLine(e)
             };
