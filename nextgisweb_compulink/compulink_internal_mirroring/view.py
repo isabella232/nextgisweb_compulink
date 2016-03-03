@@ -189,6 +189,7 @@ def copy_attache(feat_attache, value, oldvalue, initiator):
     mirror_attache.size = req_fields['size']
     mirror_attache.mime_type = req_fields['mime_type']
     mirror_attache.name = feat_attache.name
+    mirror_attache.description = feat_attache.description
 
     DBSession.add(mirror_attache)
 
