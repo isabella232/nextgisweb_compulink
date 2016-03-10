@@ -44,7 +44,6 @@ define([
             this._bindAddLayerEvent(this._map.olMap);
             this._createModify();
             this._createSnapping();
-            this._createLineDraw();
             return this._layer;
         },
 
@@ -63,11 +62,6 @@ define([
                 greedy: false
             });
             this._snapping.activate();
-        },
-
-        _createLineDraw: function () {
-            this._lineDraw = new openlayers.Control.DrawFeature(this._layer, openlayers.Handler.Path);
-            this._map.olMap.addControl(this._lineDraw);
         },
 
         _bindAddLayerEvent: function (map) {
