@@ -10,10 +10,14 @@ define([
     'ngw-compulink-site/InfoDialog',
     'ngw-compulink-site/ConfirmDialog',
     'ngw/openlayers',
+    'ngw-compulink-editor/editor/ol/OpenLayers.Control.Click',
     'ngw-compulink-editor/editor/GlobalStandBy',
+    'ngw-compulink-editor/editor/IdentifyLayers',
+    'ngw-compulink-editor/editor/FeaturesSelectorMenu',
     'xstyle/css!./templates/css/FeaturesManager.css'
 ], function (declare, lang, array, domClass, Deferred, all, query, topic, InfoDialog,
-             ConfirmDialog, openlayers, GlobalStandBy) {
+             ConfirmDialog, openlayers, controlClick,
+             GlobalStandBy, IdentifyLayers, FeaturesSelectorMenu) {
 
     return declare([], {
         constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
@@ -24,6 +28,7 @@ define([
             if (isCreateLayer) this.getLayer();
             if (isFillObjects) this.fillObjects();
             this._bindEvents();
+            this._setEditorMode('selectAndMove');
         },
 
         _editableLayersInfo: null,
@@ -44,6 +49,7 @@ define([
             this._bindAddLayerEvent(this._map.olMap);
             this._createModify();
             this._createSnapping();
+            this._createClick();
             return this._layer;
         },
 
@@ -52,7 +58,7 @@ define([
             this._modify.mode = openlayers.Control.ModifyFeature.RESHAPE;
             this._modify.createVertices = false;
             this._map.olMap.addControl(this._modify);
-            this._modify.activate();
+            //this._modify.activate();
         },
 
         _createSnapping: function () {
@@ -62,6 +68,35 @@ define([
                 greedy: false
             });
             this._snapping.activate();
+        },
+
+        _createClick: function () {
+            this._click = new controlClick({
+                callback: lang.hitch(this, function (e, clickEvent) {
+                    var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
+                        point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
+                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, 300, 4, 0.0),
+                        intersectedFeatures = [];
+
+                    IdentifyLayers.showIdentify(this._map.olMap, lonlat);
+
+                    array.forEach(this._layer.features, function (feature) {
+                        if (polygonAroundPoint.intersects(feature.geometry)) {
+                            intersectedFeatures.push(feature);
+                        }
+                    }, this);
+
+                    if (intersectedFeatures.length > 0) {
+                        new FeaturesSelectorMenu('vectorIdentify', intersectedFeatures);
+                        topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function (feature) {
+                            IdentifyLayers.hideIdentify();
+                        }));
+                    } else {
+                        IdentifyLayers.hideIdentify();
+                    }
+                })
+            });
+            this._map.olMap.addControl(this._click);
         },
 
         _bindAddLayerEvent: function (map) {
@@ -129,6 +164,7 @@ define([
             }));
 
             topic.subscribe('/editor/feature/unselect', lang.hitch(this, function (feature) {
+                this._modify.deactivate();
                 var layerKeyname, style;
                 if (feature && feature.attributes.keyname) {
                     layerKeyname = feature.attributes.keyname;
@@ -139,6 +175,11 @@ define([
                     feature.layer.redraw();
                 }
                 topic.publish('/editor/attributes/clear');
+            }));
+
+            topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function (feature) {
+                this._modify.activate();
+                this._modify.selectFeature(feature);
             }));
         },
 
@@ -195,13 +236,17 @@ define([
 
         _activateEditMode: function () {
             this._editorMode = 'edit';
-            this._modify.activate();
+
+            this._click.activate();
+
+            //this._modify.activate();
             this._snapping.activate();
         },
 
         _deactivateEditMode: function () {
             this._modify.deactivate();
             this._snapping.deactivate();
+            this._click.deactivate();
         },
 
         _checkClickCreateLineCallback: null,
@@ -358,9 +403,12 @@ define([
             return deferred.promise;
         },
 
+        _features: {},
         _createFeatures: function (ngwFeatureItems) {
             var feature,
                 editableLayerInfo;
+
+            this._features = {};
 
             array.forEach(ngwFeatureItems, function (ngwFeatures, getFeaturesPromiseIndex) {
                 editableLayerInfo = this._editableLayersInfo.default[getFeaturesPromiseIndex];
@@ -370,6 +418,7 @@ define([
                     feature.style = editableLayerInfo.styles;
                     feature.ngwLayerId = editableLayerInfo.id;
                     feature.ngwFeatureId = ngwFeature.id;
+                    this._features[feature.ngwLayerId + '_' + feature.ngwFeatureId] = feature;
                     this.getLayer().addFeatures(feature);
                 }))
             }, this);
