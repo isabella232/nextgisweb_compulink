@@ -11,22 +11,6 @@
              data-dojo-props="editorMode: 'selectAndMove', iconClass: 'selectAndMove', showLabel: false, checked: true, title: 'Выбрать и переместить'">
         </div>
 
-        <div data-dojo-attach-point="undoOneButton"
-             id="undoOneButton"
-             data-dojo-attach-event="onClick: undoAll"
-             data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'undoOne', showLabel: false, checked: false, title: 'Отменить изменения выбранного объекта'">
-        </div>
-
-        <div data-dojo-attach-point="removeFeatureButton"
-             id="removeFeatureButton"
-             data-dojo-attach-event="onClick: removeFeature"
-             data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: false, title: 'Удалить выбранный объект'">
-        </div>
-
-        <div data-dojo-type="dijit/ToolbarSeparator"></div>
-
         <div data-dojo-attach-point="createVolsButton"
              id="createVolsButton"
              data-dojo-type="dijit/form/ToggleButton"
@@ -39,18 +23,34 @@
              data-dojo-props="editorMode: 'creatingSp', iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Создать спецпереход'">
         </div>
 
-        <div data-dojo-attach-point="updateLinesButton"
-             data-dojo-attach-event="onClick: updateLines"
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
+        <div data-dojo-attach-point="removeFeatureButton"
+             id="removeFeatureButton"
+             data-dojo-attach-event="onClick: removeFeature"
              data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'updateLines', showLabel: false, checked: true, title: 'Перестроить линии'">
+             data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: false, title: 'Удалить выбранный объект'">
         </div>
 
-        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+        <div data-dojo-attach-point="undoOneButton"
+             id="undoOneButton"
+             data-dojo-attach-event="onClick: undoAll"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="iconClass: 'undoOne', showLabel: false, checked: false, title: 'Отменить изменения выбранного объекта'">
+        </div>
 
         <div data-dojo-attach-point="undoAllButton"
              data-dojo-attach-event="onClick: undoAll"
              data-dojo-type="dijit/form/Button"
              data-dojo-props="iconClass: 'undoAll', showLabel: false, checked: true, title: 'Отменить изменения всех объектов'">
+        </div>
+
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
+        <div data-dojo-attach-point="updateLinesButton"
+             data-dojo-attach-event="onClick: updateLines"
+             data-dojo-type="dijit/form/Button"
+             data-dojo-props="iconClass: 'updateLines', showLabel: false, checked: true, title: 'Перестроить линии'">
         </div>
     </div>
 </div>
