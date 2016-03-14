@@ -13,10 +13,11 @@ define([
             if (map.getLayersByName(identifyLayerName).length === 0) {
                 map.addLayer(identifyLayer);
             }
+            identifyLayer.clearMarkers();
             map.setLayerIndex(identifyLayer, 99999999);
             var identifyLoadingMarker = new openlayers.Marker(latlon, identifyIconLoading);
             identifyLayer.addMarker(identifyLoadingMarker);
-            identifyLoadingMarker.icon.imageDiv.id = 'vectorIdentify';
+            identifyLoadingMarker.icon.imageDiv.id = 'vectorIdentifyMarker';
         },
 
         hideIdentify: function () {

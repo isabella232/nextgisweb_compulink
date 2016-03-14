@@ -76,7 +76,13 @@ define([
                     var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
                         point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
                         polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, 300, 4, 0.0),
-                        intersectedFeatures = [];
+                        intersectedFeatures = [],
+                        countIntersectedFeatures;
+
+                    if (this._featuresSelectorMenu) {
+                        this._featuresSelectorMenu.close();
+                        this._featuresSelectorMenu = null;
+                    }
 
                     IdentifyLayers.showIdentify(this._map.olMap, lonlat);
 

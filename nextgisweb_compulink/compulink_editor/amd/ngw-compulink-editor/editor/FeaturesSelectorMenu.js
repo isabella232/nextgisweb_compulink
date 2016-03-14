@@ -4,11 +4,12 @@ define([
     'dojo/topic',
     'dijit/Menu',
     'dijit/MenuItem',
+    'dijit/popup',
     'dijit/CheckedMenuItem',
     'dijit/MenuSeparator',
     'dijit/PopupMenuItem',
     'dojo/domReady!'
-], function (declare, array, topic, Menu, MenuItem, CheckedMenuItem,
+], function (declare, array, topic, Menu, MenuItem, popup, CheckedMenuItem,
              MenuSeparator, PopupMenuItem) {
     var FEATURE_TYPES = {
         'actual_real_special_transition': 'Спецпереход',
@@ -21,10 +22,12 @@ define([
     };
 
     return declare([], {
-        constructor: function (id, features) {
+        _menu: null,
+
+        constructor: function (features) {
             var pMenu, label, menuItem;
             pMenu = new Menu({
-                targetNodeIds: [id]
+                targetNodeIds: ['vectorIdentifyMarker']
             });
 
             array.forEach(features, function (feature) {
@@ -42,8 +45,18 @@ define([
             pMenu.startup();
 
             pMenu._openMyself({
-                target: document.getElementById('vectorIdentify')
+                target: document.getElementById('vectorIdentifyMarker')
             });
+
+            this._menu = pMenu;
+        },
+
+        close: function () {
+            popup.close(this._menu);
+            this._menu.destroy();
+            this._menu.destroyRecursive(true);
+            this._menu.destroyRendering(true);
+            this._menu = null;
         }
     });
 });
