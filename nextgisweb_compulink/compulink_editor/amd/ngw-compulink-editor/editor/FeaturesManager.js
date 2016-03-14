@@ -58,7 +58,6 @@ define([
             this._modify.mode = openlayers.Control.ModifyFeature.RESHAPE;
             this._modify.createVertices = false;
             this._map.olMap.addControl(this._modify);
-            //this._modify.activate();
         },
 
         _createSnapping: function () {
@@ -70,6 +69,7 @@ define([
             this._snapping.activate();
         },
 
+        _featuresSelectorMenu: null,
         _createClick: function () {
             this._click = new controlClick({
                 callback: lang.hitch(this, function (e, clickEvent) {
@@ -86,11 +86,17 @@ define([
                         }
                     }, this);
 
-                    if (intersectedFeatures.length > 0) {
-                        new FeaturesSelectorMenu('vectorIdentify', intersectedFeatures);
-                        topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function (feature) {
-                            IdentifyLayers.hideIdentify();
-                        }));
+                    countIntersectedFeatures = intersectedFeatures.length;
+
+                    if (countIntersectedFeatures > 0) {
+                        if (countIntersectedFeatures === 1) {
+                            topic.publish('/compulink/editor/map/select', intersectedFeatures[0]);
+                        } else {
+                            this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedFeatures);
+                            topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                                IdentifyLayers.hideIdentify();
+                            }));
+                        }
                     } else {
                         IdentifyLayers.hideIdentify();
                     }
