@@ -10,6 +10,7 @@ define([
     'dojo/dom-construct',
     'dojo/promise/all',
     'dojo/topic',
+    'dijit/focus',
     'dijit/registry',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
@@ -21,7 +22,7 @@ define([
     'dijit/form/Button',
     'dojo/text!./templates/EditorToolbar.html',
     'xstyle/css!./templates/css/EditorToolbar.css'
-], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic, registry,
+], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic, focus, registry,
              _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
              siteSettings, InfoDialog, Toolbar, ToggleButton, Button, editorToolbarTemplate) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
@@ -54,6 +55,7 @@ define([
                             }
                             context._toggleButtonOn = this;
                             topic.publish('/compulink/editor/mode/set/', this.editorMode);
+                            focus.curNode && focus.curNode.blur();
                         } else {
                             context._deactivateToolbar();
                         }
