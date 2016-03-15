@@ -10,6 +10,7 @@ define([
     'dojo/dom-construct',
     'dojo/promise/all',
     'dojo/topic',
+    'dojo/date/locale',
     'dijit/_WidgetBase',
     'dijit/_TemplatedMixin',
     'ngw/settings!compulink_site',
@@ -19,7 +20,8 @@ define([
     'dojo/text!./templates/AttributesEditor.mustache',
     'xstyle/css!./templates/css/AttributesEditor.css',
     'dojox/dtl/tag/logic'
-], function (declare, lang, array, html, dom, on, query, domClass, domConstruct, all, topic, _WidgetBase, _TemplatedMixin,
+], function (declare, lang, array, html, dom, on, query, domClass, domConstruct,
+             all, topic, locale, _WidgetBase, _TemplatedMixin,
              siteSettings, InfoDialog, mustache, templateWrapper, templateAttributes) {
 
     return declare([_WidgetBase, _TemplatedMixin], {
@@ -93,9 +95,15 @@ define([
                         var fieldValue = ngwFeatureInfo.fields[field.keyname];
 
                         if (field.datatype === 'DATETIME' && fieldValue) {
-                            fieldValue = new Date(fieldValue.year, fieldValue.month, fieldValue.day,
-                                fieldValue.hour, fieldValue.minute, fieldValue.second);
-                            fieldValue = fieldValue.toISOString().replace('Z', '');
+                            fieldValue = new Date(Date.UTC(fieldValue.year, fieldValue.month, fieldValue.day,
+                                fieldValue.hour, fieldValue.minute, fieldValue.second));
+
+                            fieldValue = locale.format(fieldValue, {
+                                datePattern: 'yyyy-MM-dd',
+                                timePattern: 'hh:mm:ss'
+                            });
+
+                            fieldValue = fieldValue.replace(', ', 'T');
                         }
 
                         var isDictField = false,
