@@ -7,6 +7,10 @@ define([
     'dojo/promise/all',
     'dojo/query',
     'dojo/topic',
+    'dojo/keys',
+    'dojo/on',
+    'dijit/focus',
+    'dojo/_base/window',
     'ngw-compulink-site/InfoDialog',
     'ngw-compulink-site/ConfirmDialog',
     'ngw/openlayers',
@@ -15,8 +19,8 @@ define([
     'ngw-compulink-editor/editor/IdentifyLayers',
     'ngw-compulink-editor/editor/FeaturesSelectorMenu',
     'xstyle/css!./templates/css/FeaturesManager.css'
-], function (declare, lang, array, domClass, Deferred, all, query, topic, InfoDialog,
-             ConfirmDialog, openlayers, controlClick,
+], function (declare, lang, array, domClass, Deferred, all, query, topic, keys, on, focus, win,
+             InfoDialog, ConfirmDialog, openlayers, controlClick,
              GlobalStandBy, IdentifyLayers, FeaturesSelectorMenu) {
 
     return declare([], {
@@ -75,7 +79,9 @@ define([
                 callback: lang.hitch(this, function (e, clickEvent) {
                     var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
                         point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
-                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, 300, 4, 0.0),
+                        resolution = this._map.olMap.resolution,
+                        pixels = 20,
+                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, pixels / 2 * resolution, 8, 0.0),
                         intersectedFeatures = [],
                         countIntersectedFeatures;
 
@@ -248,17 +254,36 @@ define([
 
         _activateEditMode: function () {
             this._editorMode = 'edit';
-
             this._click.activate();
-
-            //this._modify.activate();
             this._snapping.activate();
+            this._activateDeleteKeyClick();
         },
 
         _deactivateEditMode: function () {
             this._modify.deactivate();
             this._snapping.deactivate();
             this._click.deactivate();
+            this._deactivateDeleteKeyClick();
+        },
+
+        _deleteKeyEvent: null,
+        _activateDeleteKeyClick: function () {
+            this._deleteKeyEvent = on(win.doc, 'keydown', function (evt) {
+                switch (evt.keyCode) {
+                    case 46:
+                        if (!focus.curNode) {
+                            topic.publish('/compulink/editor/features/remove');
+                        }
+                        break;
+                }
+            });
+        },
+
+        _deactivateDeleteKeyClick: function () {
+            if (this._deleteKeyEvent) {
+                this._deleteKeyEvent.remove();
+                this._deleteKeyEvent = null;
+            }
         },
 
         _checkClickCreateLineCallback: null,
