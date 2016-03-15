@@ -75,7 +75,9 @@ define([
                 callback: lang.hitch(this, function (e, clickEvent) {
                     var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
                         point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
-                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, 300, 4, 0.0),
+                        resolution = this._map.olMap.resolution,
+                        pixels = 20,
+                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, pixels / 2 * resolution, 8, 0.0),
                         intersectedFeatures = [],
                         countIntersectedFeatures;
 
