@@ -402,8 +402,13 @@ def get_user_writable_focls(user):
     allowed_res_ids = []
 
     def get_perms_recursive(resource):
-        if resource.has_permission(DataScope.write, user):
+        # add self
+        if resource.identity == FoclStruct.identity:
+            if resource.has_permission(DataScope.write, user):
+                allowed_res_ids.append(resource.id)
+        elif resource.identity in [ResourceGroup.identity, FoclProject.identity]:
             allowed_res_ids.append(resource.id)
+        # add childs
         if resource.identity in [ResourceGroup.identity, FoclProject.identity]:
             for child in resource.children:
                 get_perms_recursive(child)
@@ -419,7 +424,7 @@ def get_user_accessible_structs(user):
 
     if not user.is_administrator:
         res_ids = get_user_writable_focls(user)
-        query = query.filter(ConstructObject.id.in_(res_ids))
+        query = query.filter(ConstructObject.resource_id.in_(res_ids))
 
     regions = []
     districts = []
