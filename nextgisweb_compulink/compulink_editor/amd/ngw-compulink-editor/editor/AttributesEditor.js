@@ -95,7 +95,7 @@ define([
                         var fieldValue = ngwFeatureInfo.fields[field.keyname];
 
                         if (field.datatype === 'DATETIME' && fieldValue) {
-                            fieldValue = new Date(Date.UTC(fieldValue.year, fieldValue.month, fieldValue.day,
+                            fieldValue = new Date(Date.UTC(fieldValue.year, fieldValue.month - 1, fieldValue.day,
                                 fieldValue.hour, fieldValue.minute, fieldValue.second));
 
                             fieldValue = locale.format(fieldValue, {
