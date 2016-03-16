@@ -5,7 +5,7 @@ define([
 ], function (declare, lang, openlayers) {
     var identifyLayerName = 'vectorIdentify',
         identifyIconLoading = new openlayers.Icon(
-            ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
+            ngwConfig.compulinkAssetUrl + 'img/empty_40x40.png',
             new openlayers.Size(40, 40)),
         identifyLayer = new openlayers.Layer.Markers(identifyLayerName);
     return {
