@@ -31,15 +31,17 @@ define([
             });
 
             array.forEach(features, function (feature) {
-                label = FEATURE_TYPES[feature.attributes.keyname];
-                menuItem = new MenuItem({
-                    label: label,
-                    onClick: function () {
-                        topic.publish('/compulink/editor/map/select', this.feature);
-                    }
-                });
-                menuItem.feature = feature;
-                pMenu.addChild(menuItem);
+                if (feature.ngwFeatureId && feature.ngwLayerId) {
+                    label = FEATURE_TYPES[feature.attributes.keyname];
+                    menuItem = new MenuItem({
+                        label: label,
+                        onClick: function () {
+                            topic.publish('/compulink/editor/map/select', feature);
+                        }
+                    });
+                    menuItem.feature = feature;
+                    pMenu.addChild(menuItem);
+                }
             }, this);
 
             pMenu.startup();
