@@ -82,8 +82,12 @@ define([
                         resolution = this._map.olMap.resolution,
                         pixels = 20,
                         polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, pixels / 2 * resolution, 8, 0.0),
-                        intersectedFeatures = [],
-                        countIntersectedFeatures;
+                        featureGeometry,
+                        intersectedPoints = [],
+                        intersectedLines = [],
+                        countIntersectedPoints = 0,
+                        countIntersectedLines = 0,
+                        handleSelect;
 
                     if (this._featuresSelectorMenu) {
                         this._featuresSelectorMenu.close();
@@ -93,21 +97,42 @@ define([
                     IdentifyLayers.showIdentify(this._map.olMap, lonlat);
 
                     array.forEach(this._layer.features, function (feature) {
-                        if (polygonAroundPoint.intersects(feature.geometry)) {
-                            intersectedFeatures.push(feature);
+                        featureGeometry = feature.geometry;
+                        if (polygonAroundPoint.intersects(featureGeometry)) {
+                            if (this.isPoint(featureGeometry)) {
+                                intersectedPoints.push(feature);
+                                countIntersectedPoints += 1;
+                            }
+                            if (this.isLine(featureGeometry)) {
+                                intersectedLines.push(feature);
+                                countIntersectedLines += 1;
+                            }
                         }
                     }, this);
 
-                    countIntersectedFeatures = intersectedFeatures.length;
-
-                    if (countIntersectedFeatures > 0) {
-                        if (countIntersectedFeatures === 1) {
-                            topic.publish('/compulink/editor/map/select', intersectedFeatures[0]);
-                        } else {
-                            this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedFeatures);
-                            topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                    if (countIntersectedPoints > 0 || countIntersectedLines > 0) {
+                        if (countIntersectedPoints > 0) {
+                            if (countIntersectedPoints === 1) {
+                                topic.publish('/compulink/editor/map/select', intersectedPoints[0]);
                                 IdentifyLayers.hideIdentify();
-                            }));
+                            } else {
+                                this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedPoints);
+                                handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                                    handleSelect.remove();
+                                    IdentifyLayers.hideIdentify();
+                                }));
+                            }
+                        } else {
+                            if (countIntersectedLines === 1) {
+                                topic.publish('/compulink/editor/map/select', intersectedLines[0]);
+                                IdentifyLayers.hideIdentify();
+                            } else {
+                                this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedLines);
+                                handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                                    handleSelect.remove();
+                                    IdentifyLayers.hideIdentify();
+                                }));
+                            }
                         }
                     } else {
                         IdentifyLayers.hideIdentify();
@@ -115,6 +140,14 @@ define([
                 })
             });
             this._map.olMap.addControl(this._click);
+        },
+
+        isLine: function (geometry) {
+            return geometry.id.indexOf('Line') > -1;
+        },
+
+        isPoint: function (geometry) {
+            return geometry.id.indexOf('Point') > -1;
         },
 
         _bindAddLayerEvent: function (map) {
