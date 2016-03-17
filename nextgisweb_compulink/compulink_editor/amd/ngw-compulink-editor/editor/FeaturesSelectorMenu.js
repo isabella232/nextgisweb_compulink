@@ -32,7 +32,8 @@ define([
 
             array.forEach(features, function (feature) {
                 if (feature.ngwFeatureId && feature.ngwLayerId) {
-                    label = FEATURE_TYPES[feature.attributes.keyname];
+                    label = FEATURE_TYPES[feature.attributes.keyname] +
+                        ' #' + feature.ngwFeatureId;
                     menuItem = new MenuItem({
                         label: label,
                         onClick: function () {
