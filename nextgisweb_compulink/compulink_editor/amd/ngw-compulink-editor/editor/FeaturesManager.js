@@ -76,70 +76,72 @@ define([
         _featuresSelectorMenu: null,
         _createClick: function () {
             this._click = new controlClick({
-                callback: lang.hitch(this, function (e, clickEvent) {
-                    var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
-                        point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
-                        resolution = this._map.olMap.resolution,
-                        pixels = 20,
-                        polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, pixels / 2 * resolution, 8, 0.0),
-                        featureGeometry,
-                        intersectedPoints = [],
-                        intersectedLines = [],
-                        countIntersectedPoints = 0,
-                        countIntersectedLines = 0,
-                        handleSelect;
-
-                    if (this._featuresSelectorMenu) {
-                        this._featuresSelectorMenu.close();
-                        this._featuresSelectorMenu = null;
-                    }
-
-                    IdentifyLayers.showIdentify(this._map.olMap, lonlat);
-
-                    array.forEach(this._layer.features, function (feature) {
-                        featureGeometry = feature.geometry;
-                        if (polygonAroundPoint.intersects(featureGeometry)) {
-                            if (this.isPoint(featureGeometry)) {
-                                intersectedPoints.push(feature);
-                                countIntersectedPoints += 1;
-                            }
-                            if (this.isLine(featureGeometry)) {
-                                intersectedLines.push(feature);
-                                countIntersectedLines += 1;
-                            }
-                        }
-                    }, this);
-
-                    if (countIntersectedPoints > 0 || countIntersectedLines > 0) {
-                        if (countIntersectedPoints > 0) {
-                            if (countIntersectedPoints === 1) {
-                                topic.publish('/compulink/editor/map/select', intersectedPoints[0]);
-                                IdentifyLayers.hideIdentify();
-                            } else {
-                                this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedPoints);
-                                handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
-                                    handleSelect.remove();
-                                    IdentifyLayers.hideIdentify();
-                                }));
-                            }
-                        } else {
-                            if (countIntersectedLines === 1) {
-                                topic.publish('/compulink/editor/map/select', intersectedLines[0]);
-                                IdentifyLayers.hideIdentify();
-                            } else {
-                                this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedLines);
-                                handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
-                                    handleSelect.remove();
-                                    IdentifyLayers.hideIdentify();
-                                }));
-                            }
-                        }
-                    } else {
-                        IdentifyLayers.hideIdentify();
-                    }
-                })
+                callback: lang.hitch(this, this._handleClick)
             });
             this._map.olMap.addControl(this._click);
+        },
+
+        _handleClick: function (e, clickEvent) {
+            var lonlat = this._map.olMap.getLonLatFromPixel(clickEvent[0].xy),
+                point = new openlayers.Geometry.Point(lonlat.lon, lonlat.lat),
+                resolution = this._map.olMap.resolution,
+                pixels = 20,
+                polygonAroundPoint = openlayers.Geometry.Polygon.createRegularPolygon(point, pixels / 2 * resolution, 8, 0.0),
+                featureGeometry,
+                intersectedPoints = [],
+                intersectedLines = [],
+                countIntersectedPoints = 0,
+                countIntersectedLines = 0,
+                handleSelect;
+
+            if (this._featuresSelectorMenu) {
+                this._featuresSelectorMenu.close();
+                this._featuresSelectorMenu = null;
+            }
+
+            IdentifyLayers.showIdentify(this._map.olMap, lonlat);
+
+            array.forEach(this._layer.features, function (feature) {
+                featureGeometry = feature.geometry;
+                if (polygonAroundPoint.intersects(featureGeometry)) {
+                    if (this.isPoint(featureGeometry)) {
+                        intersectedPoints.push(feature);
+                        countIntersectedPoints += 1;
+                    }
+                    if (this.isLine(featureGeometry)) {
+                        intersectedLines.push(feature);
+                        countIntersectedLines += 1;
+                    }
+                }
+            }, this);
+
+            if (countIntersectedPoints > 0 || countIntersectedLines > 0) {
+                if (countIntersectedPoints > 0) {
+                    if (countIntersectedPoints === 1) {
+                        topic.publish('/compulink/editor/map/select', intersectedPoints[0]);
+                        IdentifyLayers.hideIdentify();
+                    } else {
+                        this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedPoints);
+                        handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                            handleSelect.remove();
+                            IdentifyLayers.hideIdentify();
+                        }));
+                    }
+                } else {
+                    if (countIntersectedLines === 1) {
+                        topic.publish('/compulink/editor/map/select', intersectedLines[0]);
+                        IdentifyLayers.hideIdentify();
+                    } else {
+                        this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedLines);
+                        handleSelect = topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function () {
+                            handleSelect.remove();
+                            IdentifyLayers.hideIdentify();
+                        }));
+                    }
+                }
+            } else {
+                IdentifyLayers.hideIdentify();
+            }
         },
 
         isLine: function (geometry) {
@@ -217,6 +219,11 @@ define([
             topic.subscribe('/editor/feature/unselect', lang.hitch(this, function (feature) {
                 this._modify.deactivate();
                 var layerKeyname, style;
+
+                if (!feature && this._selectedFeature) {
+                    feature = this._selectedFeature;
+                }
+
                 if (feature && feature.attributes.keyname) {
                     layerKeyname = feature.attributes.keyname;
                     style = array.filter(this._editableLayersInfo.default, function (style) {
@@ -225,6 +232,8 @@ define([
                     feature.style = style.styles;
                     feature.layer.redraw();
                 }
+
+                this._selectedFeature = null;
                 topic.publish('/editor/attributes/clear');
             }));
 
