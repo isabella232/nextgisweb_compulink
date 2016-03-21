@@ -73,7 +73,7 @@ define([
 
         _createSnapping: function () {
             this._snapping = new openlayers.Control.Snapping({
-                layer: this._layer,
+                layer: this._modifyLayer,
                 targets: [this._layer],
                 greedy: false
             });
@@ -552,7 +552,7 @@ define([
             if (keyname) {
                 selectStyle = this._editableLayersInfo.select[keyname];
                 feature.style = selectStyle;
-                this._layer.styleMap.styles.default.defaultStyle = selectStyle;
+                this._modifyLayer.styleMap.styles.default.defaultStyle = selectStyle;
             }
         },
 
