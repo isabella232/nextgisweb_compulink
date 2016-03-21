@@ -244,13 +244,15 @@ define([
         },
 
         _unselectFeature: function (feature) {
-            this._modify.deactivate();
-
-            if (!feature && this._selectedFeature) {
-                feature = this._selectedFeature;
+            if (this._modifyLayer.features.length > 0) {
+                if (this._modify.feature) {
+                    this._modify.unselectFeature(this._modify.feature);
+                }
+                this._modify.deactivate();
+                this._modifyLayer.removeAllFeatures();
+                this._modifyLayer.destroyFeatures();
+                this._modifyLayer.redraw();
             }
-
-            this._resetSelectedStyle(feature);
 
             this._selectedFeature = null;
             topic.publish('/editor/attributes/clear');
@@ -573,11 +575,10 @@ define([
                 pointsAffected = this._getPointsAffectedFromLine(afterFeatureModifiedEvent);
             }
 
+            realFeature = this._applyModificationToFeature(afterFeatureModifiedEvent.feature);
             relativeFeatures = this._processRelativeFeatures(pointsAffected);
             afterFeatureModifiedEvent.feature.modified = false;
 
-            realFeature = this._applyModificationToFeature(afterFeatureModifiedEvent.feature);
-            this._layer.redraw();
             relativeFeatures.push(realFeature);
 
             this._saveFeaturesModified(relativeFeatures);
@@ -585,10 +586,16 @@ define([
 
         _applyModificationToFeature: function (modifiedFeature) {
             var featureUniqueId = modifiedFeature.attributes.ngwLayerId + '_' + modifiedFeature.attributes.ngwFeatureId,
-                realFeature = this._features[featureUniqueId];
+                realFeature = this._features[featureUniqueId],
+                newRealFeature;
 
-            realFeature.geometry = modifiedFeature.geometry;
-            return realFeature;
+            newRealFeature = new openlayers.Feature.Vector(modifiedFeature.geometry, realFeature.attributes, realFeature.style);
+            this._layer.addFeatures(newRealFeature);
+
+            this._layer.destroyFeatures([realFeature]);
+            this._layer.redraw();
+
+            return newRealFeature;
         },
 
         _getPointAffected: function (afterFeatureModifiedEvent) {
