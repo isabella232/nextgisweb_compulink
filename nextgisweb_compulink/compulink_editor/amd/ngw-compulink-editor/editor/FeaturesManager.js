@@ -98,6 +98,7 @@ define([
                 this._featuresSelectorMenu.close();
                 this._featuresSelectorMenu = null;
             }
+            this._unselectFeature();
 
             IdentifyLayers.showIdentify(this._map.olMap, lonlat);
 
@@ -118,7 +119,7 @@ define([
             if (countIntersectedPoints > 0 || countIntersectedLines > 0) {
                 if (countIntersectedPoints > 0) {
                     if (countIntersectedPoints === 1) {
-                        topic.publish('/compulink/editor/map/select', intersectedPoints[0]);
+                        this._selectFeature(intersectedPoints[0]);
                         IdentifyLayers.hideIdentify();
                     } else {
                         this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedPoints);
@@ -129,7 +130,7 @@ define([
                     }
                 } else {
                     if (countIntersectedLines === 1) {
-                        topic.publish('/compulink/editor/map/select', intersectedLines[0]);
+                        this._selectFeature(intersectedLines[0]);
                         IdentifyLayers.hideIdentify();
                     } else {
                         this._featuresSelectorMenu = new FeaturesSelectorMenu(intersectedLines);
@@ -140,6 +141,7 @@ define([
                     }
                 }
             } else {
+                this._unselectFeature();
                 IdentifyLayers.hideIdentify();
             }
         },
@@ -217,30 +219,39 @@ define([
             }));
 
             topic.subscribe('/editor/feature/unselect', lang.hitch(this, function (feature) {
-                this._modify.deactivate();
-                var layerKeyname, style;
-
-                if (!feature && this._selectedFeature) {
-                    feature = this._selectedFeature;
-                }
-
-                if (feature && feature.attributes.keyname) {
-                    layerKeyname = feature.attributes.keyname;
-                    style = array.filter(this._editableLayersInfo.default, function (style) {
-                        return style.layerKeyname == layerKeyname;
-                    })[0];
-                    feature.style = style.styles;
-                    feature.layer.redraw();
-                }
-
-                this._selectedFeature = null;
-                topic.publish('/editor/attributes/clear');
+                this._unselectFeature(feature);
             }));
 
             topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function (feature) {
-                this._modify.activate();
-                this._modify.selectFeature(feature);
+                this._selectFeature(feature);
             }));
+        },
+
+        _selectFeature: function (feature) {
+            this._unselectFeature();
+            this._modify.activate();
+            this._modify.selectFeature(feature);
+        },
+
+        _unselectFeature: function (feature) {
+            this._modify.deactivate();
+            var layerKeyname, style;
+
+            if (!feature && this._selectedFeature) {
+                feature = this._selectedFeature;
+            }
+
+            if (feature && feature.attributes.keyname) {
+                layerKeyname = feature.attributes.keyname;
+                style = array.filter(this._editableLayersInfo.default, function (style) {
+                    return style.layerKeyname == layerKeyname;
+                })[0];
+                feature.style = style.styles;
+                feature.layer.redraw();
+            }
+
+            this._selectedFeature = null;
+            topic.publish('/editor/attributes/clear');
         },
 
         _updateEditorLayer: function (isGlobalStandBy) {
@@ -302,7 +313,7 @@ define([
         },
 
         _deactivateEditMode: function () {
-            this._modify.deactivate();
+            this._unselectFeature();
             this._snapping.deactivate();
             this._click.deactivate();
             this._deactivateDeleteKeyClick();
@@ -530,16 +541,15 @@ define([
         },
 
         _afterFeatureModified: function (afterFeatureModifiedEvent) {
-            var feature = afterFeatureModifiedEvent.feature;
             if (!afterFeatureModifiedEvent.modified) {
-                this._unselectModifiedFeature(feature);
                 return false;
             }
 
-            var pointsAffected,
+            var feature = afterFeatureModifiedEvent.feature,
+                geometryId = feature.geometry.id,
+                pointsAffected,
                 relativeFeatures;
 
-            var geometryId = afterFeatureModifiedEvent.feature.geometry.id;
             if (geometryId.indexOf('Point') > -1) {
                 pointsAffected = this._getPointAffected(afterFeatureModifiedEvent);
             } else if (geometryId.indexOf('Line') > -1) {
@@ -551,12 +561,6 @@ define([
             relativeFeatures.push(afterFeatureModifiedEvent.feature);
 
             this._saveFeaturesModified(relativeFeatures);
-            this._unselectModifiedFeature(feature);
-        },
-
-        _unselectModifiedFeature: function (feature) {
-            topic.publish('/editor/feature/unselect', feature);
-            this._selectedFeature = null;
         },
 
         _getPointAffected: function (afterFeatureModifiedEvent) {
@@ -667,13 +671,14 @@ define([
             });
 
             this._ngwServiceFacade.saveEditorFeatures(objectsForSaving).then(null, function (result) {
-                if (result.status === 'error') {
-                    new InfoDialog({
-                        isDestroyedAfterHiding: true,
-                        title: 'Ошибка сохранения!',
-                        message: result.message
-                    }).show();
-                }
+                var message = result.status === 'error' ? result.message :
+                    'На сервере произошла ошибка. Перезагрузите страницу';
+
+                new InfoDialog({
+                    isDestroyedAfterHiding: true,
+                    title: 'Ошибка сохранения!',
+                    message: message
+                }).show();
             });
         },
 
