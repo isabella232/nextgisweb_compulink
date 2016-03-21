@@ -564,7 +564,8 @@ define([
             var feature = afterFeatureModifiedEvent.feature,
                 geometryId = feature.geometry.id,
                 pointsAffected,
-                relativeFeatures;
+                relativeFeatures,
+                realFeature;
 
             if (geometryId.indexOf('Point') > -1) {
                 pointsAffected = this._getPointAffected(afterFeatureModifiedEvent);
@@ -574,9 +575,20 @@ define([
 
             relativeFeatures = this._processRelativeFeatures(pointsAffected);
             afterFeatureModifiedEvent.feature.modified = false;
-            relativeFeatures.push(afterFeatureModifiedEvent.feature);
+
+            realFeature = this._applyModificationToFeature(afterFeatureModifiedEvent.feature);
+            this._layer.redraw();
+            relativeFeatures.push(realFeature);
 
             this._saveFeaturesModified(relativeFeatures);
+        },
+
+        _applyModificationToFeature: function (modifiedFeature) {
+            var featureUniqueId = modifiedFeature.attributes.ngwLayerId + '_' + modifiedFeature.attributes.ngwFeatureId,
+                realFeature = this._features[featureUniqueId];
+
+            realFeature.geometry = modifiedFeature.geometry;
+            return realFeature;
         },
 
         _getPointAffected: function (afterFeatureModifiedEvent) {
