@@ -594,15 +594,16 @@ define([
         _applyModificationToFeature: function (modifiedFeature) {
             var featureUniqueId = modifiedFeature.attributes.ngwLayerId + '_' + modifiedFeature.attributes.ngwFeatureId,
                 realFeature = this._features[featureUniqueId],
-                newRealFeature;
+                newFeature;
 
-            newRealFeature = new openlayers.Feature.Vector(modifiedFeature.geometry, realFeature.attributes, realFeature.style);
-            this._layer.addFeatures(newRealFeature);
-
+            newFeature = new openlayers.Feature.Vector(modifiedFeature.geometry, realFeature.attributes, realFeature.style);
             this._layer.destroyFeatures([realFeature]);
+            this._layer.addFeatures(newFeature);
+            this._features[featureUniqueId] = newFeature;
+
             this._layer.redraw();
 
-            return newRealFeature;
+            return newFeature;
         },
 
         _getPointAffected: function (afterFeatureModifiedEvent) {
