@@ -588,6 +588,7 @@ define([
             relativeFeatures.push(realFeature);
 
             this._saveFeaturesModified(relativeFeatures);
+            this._unselectFeature();
         },
 
         _applyModificationToFeature: function (modifiedFeature) {
