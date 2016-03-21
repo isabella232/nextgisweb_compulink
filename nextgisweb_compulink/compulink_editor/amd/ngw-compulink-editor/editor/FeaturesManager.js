@@ -189,6 +189,7 @@ define([
                         isDestroyedAfterHiding: true,
                         handlerOk: lang.hitch(this, function () {
                             this._removeFeatures(removingFeatures);
+                            this._unselectFeature();
                         }),
                         handlerCancel: lang.hitch(this, function () {
                             this._removeConfirmDialog = null;
@@ -236,7 +237,7 @@ define([
 
         _selectFeature: function (feature) {
             this._unselectFeature();
-
+            this._selectedFeature = feature;
             var clonedFeature = feature.clone();
             this._modifyLayer.addFeatures(clonedFeature);
             this._modify.activate();
@@ -542,8 +543,7 @@ define([
 
         _selectedFeature: null,
         _beforeFeatureModified: function (beforeFeatureModifiedEvent) {
-            this._selectedFeature = beforeFeatureModifiedEvent.feature;
-            this._applySelectStyle(this._selectedFeature);
+            this._applySelectStyle(beforeFeatureModifiedEvent.feature);
             topic.publish('/editor/feature/select', beforeFeatureModifiedEvent.feature);
         },
 
