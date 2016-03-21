@@ -50,10 +50,17 @@ define([
             });
             this._map.olMap.addLayer(this._layer);
             this._map.olMap.setLayerIndex(this._layer, 9999);
+
+            this._modifyLayer = new openlayers.Layer.Vector('FeaturesManager.Modify.Layer', {
+                rendererOptions: {zIndexing: true}
+            });
+            this._map.olMap.addLayer(this._modifyLayer);
+            this._map.olMap.setLayerIndex(this._layer, 99999);
+
             this._bindAddLayerEvent(this._map.olMap);
+            this._createClick();
             this._createModify();
             this._createSnapping();
-            this._createClick();
             return this._layer;
         },
 
@@ -235,12 +242,19 @@ define([
 
         _unselectFeature: function (feature) {
             this._modify.deactivate();
-            var layerKeyname, style;
 
             if (!feature && this._selectedFeature) {
                 feature = this._selectedFeature;
             }
 
+            this._resetSelectedStyle(feature);
+
+            this._selectedFeature = null;
+            topic.publish('/editor/attributes/clear');
+        },
+
+        _resetSelectedStyle: function (feature) {
+            var layerKeyname, style;
             if (feature && feature.attributes.keyname) {
                 layerKeyname = feature.attributes.keyname;
                 style = array.filter(this._editableLayersInfo.default, function (style) {
@@ -249,9 +263,6 @@ define([
                 feature.style = style.styles;
                 feature.layer.redraw();
             }
-
-            this._selectedFeature = null;
-            topic.publish('/editor/attributes/clear');
         },
 
         _updateEditorLayer: function (isGlobalStandBy) {
@@ -513,13 +524,15 @@ define([
                 }))
             }, this);
 
-            this.getLayer().events.register('beforefeaturemodified', this.getLayer(), lang.hitch(this, function (event) {
-                this._beforeFeatureModified(event);
-            }));
+            this.getLayer().events.register('beforefeaturemodified', this.getLayer(),
+                lang.hitch(this, function (event) {
+                    this._beforeFeatureModified(event);
+                }));
 
-            this.getLayer().events.register('afterfeaturemodified', this.getLayer(), lang.hitch(this, function (event) {
-                this._afterFeatureModified(event);
-            }));
+            this.getLayer().events.register('afterfeaturemodified', this.getLayer(),
+                lang.hitch(this, function (event) {
+                    this._afterFeatureModified(event);
+                }));
         },
 
         _selectedFeature: null,
