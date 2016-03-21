@@ -46,10 +46,10 @@ define([
             topic.subscribe('/editor/feature/select', lang.hitch(this, function (feature) {
                 if (!this._ngwServiceFacade) return false;
                 this._setEditorState('wait');
-                this.ngwLayerId = feature.ngwLayerId;
-                this.ngwFeatureId = feature.ngwFeatureId;
-                var getFeatureInfo = this._ngwServiceFacade.getFeature(feature.ngwLayerId, feature.ngwFeatureId),
-                    resourceInfo = this._ngwServiceFacade.getResourceInfo(feature.ngwLayerId);
+                this.ngwLayerId = feature.attributes.ngwLayerId;
+                this.ngwFeatureId = feature.attributes.ngwFeatureId;
+                var getFeatureInfo = this._ngwServiceFacade.getFeature(this.ngwLayerId, this.ngwFeatureId),
+                    resourceInfo = this._ngwServiceFacade.getResourceInfo(this.ngwLayerId);
                 all([resourceInfo, getFeatureInfo]).then(lang.hitch(this, function (results) {
                     this.renderAttributes(results[0], results[1]);
                 }));

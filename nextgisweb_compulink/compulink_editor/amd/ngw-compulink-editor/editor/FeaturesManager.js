@@ -65,7 +65,7 @@ define([
         },
 
         _createModify: function () {
-            this._modify = new openlayers.Control.ModifyFeature(this._layer);
+            this._modify = new openlayers.Control.ModifyFeature(this._modifyLayer);
             this._modify.mode = openlayers.Control.ModifyFeature.RESHAPE;
             this._modify.createVertices = false;
             this._map.olMap.addControl(this._modify);
@@ -236,8 +236,11 @@ define([
 
         _selectFeature: function (feature) {
             this._unselectFeature();
+
+            var clonedFeature = feature.clone();
+            this._modifyLayer.addFeatures(clonedFeature);
             this._modify.activate();
-            this._modify.selectFeature(feature);
+            this._modify.selectFeature(clonedFeature);
         },
 
         _unselectFeature: function (feature) {
@@ -420,12 +423,12 @@ define([
         _createLine: function (endPoint) {
             var lineInfo = {
                 start: {
-                    ngwLayerId: this._startPoint.ngwLayerId,
-                    ngwFeatureId: this._startPoint.ngwFeatureId
+                    ngwLayerId: this._startPoint.attributes.ngwLayerId,
+                    ngwFeatureId: this._startPoint.attributes.ngwFeatureId
                 },
                 end: {
-                    ngwLayerId: endPoint.ngwLayerId,
-                    ngwFeatureId: endPoint.ngwFeatureId
+                    ngwLayerId: endPoint.attributes.ngwLayerId,
+                    ngwFeatureId: endPoint.attributes.ngwFeatureId
                 }
             };
 
@@ -517,19 +520,19 @@ define([
                     feature = this._wkt.read(ngwFeature.geom);
                     feature.attributes.keyname = editableLayerInfo.layerKeyname;
                     feature.style = editableLayerInfo.styles;
-                    feature.ngwLayerId = editableLayerInfo.id;
-                    feature.ngwFeatureId = ngwFeature.id;
-                    this._features[feature.ngwLayerId + '_' + feature.ngwFeatureId] = feature;
+                    feature.attributes.ngwLayerId = editableLayerInfo.id;
+                    feature.attributes.ngwFeatureId = ngwFeature.id;
+                    this._features[feature.attributes.ngwLayerId + '_' + feature.attributes.ngwFeatureId] = feature;
                     this.getLayer().addFeatures(feature);
                 }))
             }, this);
 
-            this.getLayer().events.register('beforefeaturemodified', this.getLayer(),
+            this._modifyLayer.events.register('beforefeaturemodified', this._modifyLayer,
                 lang.hitch(this, function (event) {
                     this._beforeFeatureModified(event);
                 }));
 
-            this.getLayer().events.register('afterfeaturemodified', this.getLayer(),
+            this._modifyLayer.events.register('afterfeaturemodified', this._modifyLayer,
                 lang.hitch(this, function (event) {
                     this._afterFeatureModified(event);
                 }));
@@ -678,8 +681,8 @@ define([
             array.forEach(features, function (feature) {
                 objectsForSaving.push({
                     wkt: wktParser.write(feature),
-                    id: feature.ngwFeatureId,
-                    layer: feature.ngwLayerId
+                    id: feature.attributes.ngwFeatureId,
+                    layer: feature.attributes.ngwLayerId
                 });
             });
 
@@ -699,8 +702,8 @@ define([
             var objectsForRemoving = [];
             array.forEach(features, function (feature) {
                 objectsForRemoving.push({
-                    id: feature.ngwFeatureId,
-                    layer: feature.ngwLayerId
+                    id: feature.attributes.ngwFeatureId,
+                    layer: feature.attributes.ngwLayerId
                 });
 
             });
