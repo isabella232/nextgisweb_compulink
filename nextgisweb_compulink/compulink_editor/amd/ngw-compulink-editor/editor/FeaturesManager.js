@@ -9,6 +9,7 @@ define([
     'dojo/topic',
     'dojo/keys',
     'dojo/on',
+    'dojo/aspect',
     'dijit/focus',
     'dojo/_base/window',
     'ngw-compulink-site/InfoDialog',
@@ -19,7 +20,7 @@ define([
     'ngw-compulink-editor/editor/IdentifyLayers',
     'ngw-compulink-editor/editor/FeaturesSelectorMenu',
     'xstyle/css!./templates/css/FeaturesManager.css'
-], function (declare, lang, array, domClass, Deferred, all, query, topic, keys, on, focus, win,
+], function (declare, lang, array, domClass, Deferred, all, query, topic, keys, on, aspect, focus, win,
              InfoDialog, ConfirmDialog, openlayers, controlClick,
              GlobalStandBy, IdentifyLayers, FeaturesSelectorMenu) {
 
@@ -538,6 +539,11 @@ define([
             this._modifyLayer.events.register('afterfeaturemodified', this._modifyLayer,
                 lang.hitch(this, function (event) {
                     this._afterFeatureModified(event);
+                }));
+
+            this._modifyLayer.events.register('featuremodified', this._modifyLayer,
+                lang.hitch(this, function (event) {
+                    this._modify.unselectFeature(event.feature);
                 }));
         },
 
