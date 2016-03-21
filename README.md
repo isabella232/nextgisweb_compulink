@@ -3,6 +3,10 @@ NextGIS Web extension for Compulink
 
 Developed by NextGIS for Compulink (http://www.compulink.ru/)
 
+License information:
+-------------
+This program is licensed under GNU GPL v2 or any later version
+
 Commercial support
 ----------
 Need to fix a bug or add a feature to NextGIS Web extension for Compulink? We provide custom development and support for this software. [Contact us](http://nextgis.ru/en/contact/) to discuss options!
