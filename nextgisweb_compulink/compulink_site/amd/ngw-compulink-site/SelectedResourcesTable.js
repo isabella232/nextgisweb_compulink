@@ -46,7 +46,8 @@ define([
         _get_extent_url: ngwConfig.applicationUrl + '/compulink/resources/focl_extent',
 
 
-        constructor: function (domId) {
+        constructor: function (domId, Display) {
+            this._Display = Display;
             this._store = Memory({data: []});
 
             //grid
@@ -130,7 +131,15 @@ define([
                 label: 'Редактировать',
                 onClick: lang.hitch(this, function (evt) {
                     // TODO: need check!
-                    window.open(displayConfig.editorUrl + '?resource_id=' + Object.getOwnPropertyNames( this._grid.selection )[0], '_blank');
+                    var extent = this._Display.map.olMap.getExtent(),
+                        extentArray = [
+                            extent.left,extent.bottom,
+                            extent.right, extent.top
+                        ];
+
+                    window.open(displayConfig.editorUrl +
+                        '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0] +
+                        '&extent=' + JSON.stringify(extentArray), '_blank');
                 })
             }));
 
