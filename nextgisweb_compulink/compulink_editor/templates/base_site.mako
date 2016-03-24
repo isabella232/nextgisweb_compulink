@@ -77,6 +77,7 @@
         };
 
         var editorConfig = {
+            resource_display_name: '${resource_display_name}',
             resourceId: '${request.GET['resource_id']}',
             editableLayersInfo: ${json.dumps(editable_layers_info)|n}
         }

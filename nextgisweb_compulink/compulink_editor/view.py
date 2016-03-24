@@ -217,6 +217,7 @@ def show_map(request):
     editable_layers_view_model = _create_editable_layers_view_model(editable_layers)
 
     values = dict(
+        resource_display_name=resource.display_name,
         show_header=True,
         focl_layers_type=focl_layers['focl'],
         objects_layers_type=focl_layers['objects'],
