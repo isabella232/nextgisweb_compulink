@@ -392,19 +392,23 @@ define([
                 return false;
             }
 
-            if (this._startPoint) {
-                if (this._startPoint.geometry.components[0].equals(e.feature.geometry.components[0])) {
-                    return false;
-                } else {
-                    this._createLine(e.feature);
-                }
+            var isStartPointExist = this._startPoint !== null;
+
+            if (isStartPointExist && this._startPoint.geometry.components[0].equals(e.feature.geometry.components[0])) {
+                return false;
+            }
+            if (!this._verifySpPoint(e.feature)) {
+                return false;
+            }
+            if (isStartPointExist) {
+                this._createLine(e.feature);
             } else {
-                this._startPoint = e.feature;
-                this._createSkecthLine(this._startPoint);
+                this._createSkecthLine(e.feature);
             }
         },
 
         _createSkecthLine: function (startPoint) {
+            this._startPoint = startPoint;
             this._creatingLine = new openlayers.Feature.Vector(new openlayers.Geometry.LineString([
                 startPoint.geometry.components[0],
                 startPoint.geometry.components[0].clone()
@@ -462,6 +466,14 @@ define([
                     }).show();
                 })
             );
+        },
+
+        _pointsSp: ['actual_real_special_transition_point'],
+        _verifySpPoint: function (feature) {
+            if (this._editorMode !== 'creatingSp') {
+                return true;
+            }
+            return this._pointsSp.indexOf(feature.attributes.keyname) > -1;
         },
 
         _getRemovingFeatures: function (feature) {
