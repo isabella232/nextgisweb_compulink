@@ -131,7 +131,7 @@ define([
                 label: 'Редактировать',
                 onClick: lang.hitch(this, function (evt) {
                     // TODO: need check!
-                    var extent = this._Display.map.olMap.getExtent(),
+                    var extent = this._Display.map.olMap.getExtent().transform('EPSG:3857', 'EPSG:4326'),
                         extentArray = [
                             extent.left,extent.bottom,
                             extent.right, extent.top
