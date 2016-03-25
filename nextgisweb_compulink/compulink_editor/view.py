@@ -36,7 +36,7 @@ from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusRep
 from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
 from nextgisweb_lookuptable.model import LookupTable
 from .. import compulink_admin
-from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
+from layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
     PROJECT_STATUS_BUILT, FoclStructScope
