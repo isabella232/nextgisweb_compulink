@@ -31,6 +31,7 @@ define([
         templateAttributes: templateAttributes,
         ngwLayerId: null,
         ngwFeatureId: null,
+        resourceDisplayName: editorConfig.resource_display_name,
 
         constructor: function () {
             mustache.parse(this.templateString);
@@ -165,6 +166,13 @@ define([
             return mustache.render(template, this);
         },
 
+        buildRendering: function () {
+            if (!this._rendered) {
+                this.domNode = domConstruct.toDom(this._stringRepl(this.templateString), this.ownerDocument);
+            }
+            this._rendered = true;
+        },
+
         _save: function () {
             var fields = {};
             $(this.domNode).find('.field_value:enabled').each(function () {
@@ -180,5 +188,6 @@ define([
                 }).show();
             });
         }
-    });
+    })
+        ;
 });

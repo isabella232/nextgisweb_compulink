@@ -480,7 +480,7 @@ define([
             this.inherited(arguments);
 
             this.LayersSelector = this.buildLayersSelector();
-            this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable');
+            this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable', this);
             this.ResourcesTree = new ResourcesTree("#resourcesTree", {
                 type: 'vols'
             });

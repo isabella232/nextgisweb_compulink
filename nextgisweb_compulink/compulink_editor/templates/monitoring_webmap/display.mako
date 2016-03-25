@@ -66,7 +66,7 @@
                 "id": 1,
                 "label": null
             },
-            "extent": ${json.dumps(extent)},
+            "extent": ${json.dumps(json.loads(request.GET['extent']))|n},
             "mid": {
                 "adapter": [],
                 "basemap": [
