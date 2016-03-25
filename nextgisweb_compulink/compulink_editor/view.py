@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+from __future__ import print_function
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
@@ -71,6 +74,7 @@ def setup_pyramid(comp, config):
         'compulink.editor.get_focl_status',
         '/compulink/editor/resources/{id:\d+}/focl_status', client=('id',)) \
         .add_view(get_focl_status)
+
     config.add_route(
         'compulink.editor.set_focl_status',
         '/compulink/editor/resources/{id:\d+}/set_focl_status', client=('id',)) \
@@ -80,7 +84,6 @@ def setup_pyramid(comp, config):
         'compulink.editor.save_geom',
         '/compulink/editor/features/save') \
         .add_view(editor_save_geom)
-
 
     config.add_route(
         'compulink.editor.create_geom',
@@ -114,7 +117,7 @@ def get_child_resx_by_parent(request):
 
     dbsession = DBSession()
     if is_root_node_requsted:
-        parent_resource_id = dbsession.query(Resource).filter(Resource.parent==None).all()[0].id
+        parent_resource_id = dbsession.query(Resource).filter(Resource.parent == None).all()[0].id
 
     parent_resource = dbsession.query(Resource).get(parent_resource_id)
     children = parent_resource.children
@@ -130,6 +133,8 @@ def get_child_resx_by_parent(request):
 
     if not request.user.is_administrator:
         allowed_res_list = _get_user_resources_tree(request.user)
+    else:
+        allowed_res_list = []
 
     child_resources_json = []
     for child_resource in children:
@@ -163,12 +168,11 @@ def get_child_resx_by_parent(request):
 def _get_user_resources_tree(user):
     # get explicit rules
     rules_query = DBSession.query(ResourceACLRule)\
-        .filter(ResourceACLRule.principal_id==user.principal_id)\
-        .filter(ResourceACLRule.scope==DataScope.identity)\
+        .filter(ResourceACLRule.principal_id == user.principal_id)\
+        .filter(ResourceACLRule.scope == DataScope.identity)\
         .options(joinedload_all(ResourceACLRule.resource))
 
-    #todo: user groups explicit rules???
-
+    # todo: user groups explicit rules???
     allowed_res_ids = set()
 
     def get_child_perms_recursive(resource):
@@ -363,8 +367,6 @@ def get_sit_plan_layers_list():
     return layers
 
 
-
-
 def extent_union(extent, new_extent):
     return [
         extent[0] if extent[0] < new_extent[0] else new_extent[0],
@@ -442,8 +444,11 @@ def get_layers_by_type(request):
     resp_list = []
 
     dbsession = DBSession()
-    #все ВОСЛ и СИТ планы для присланных ид
-    group_resources = dbsession.query(Resource).options(joinedload_all('children.children')).filter(Resource.id.in_(group_res_ids)).all()
+    # все ВОСЛ и СИТ планы для присланных ид
+    group_resources = dbsession.query(Resource)\
+        .options(joinedload_all('children.children'))\
+        .filter(Resource.id.in_(group_res_ids))\
+        .all()
 
     for group_res in group_resources:
         for child_res in group_res.children:
@@ -492,6 +497,7 @@ def get_all_dicts():
     dbsession.close()
 
     return dicts
+
 
 @view_config(renderer='json')
 def get_focl_status(request):
@@ -543,7 +549,9 @@ def set_focl_status(request):
 
     # update reports
     try:
-        report_line = dbsession.query(ConstructionStatusReport).filter(ConstructionStatusReport.focl_res_id == res_id).one()
+        report_line = dbsession.query(ConstructionStatusReport)\
+            .filter(ConstructionStatusReport.focl_res_id == res_id)\
+            .one()
     except:
         report_line = None
 
@@ -564,7 +572,6 @@ def set_focl_status(request):
     return Response(json.dumps({'status': 'ok'}))
 
 
-
 @view_config(renderer='json')
 def editor_save_geom(request):
     if request.user.keyname == 'guest':
@@ -580,7 +587,10 @@ def editor_save_geom(request):
         transaction.manager.begin()
 
         for update in updates:
-            res = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==update['layer']).first()
+            res = db_session.query(VectorLayer)\
+                .options(joinedload_all('parent'))\
+                .filter(VectorLayer.id == update['layer'])\
+                .first()
             if not res:
                 return error_response(u'Редактируемый слой не найден')
             parent_res = res.parent
@@ -613,7 +623,7 @@ def editor_save_geom(request):
                 return error_response(u'Ресурс не поддерживает хранение геометрий')
 
         transaction.manager.commit()
-    except Exception, ex:
+    except Exception as ex:
         return error_response(ex.message)
 
     resp = {'status': 'ok'}
@@ -633,7 +643,10 @@ def editor_delete_geom(request):
         transaction.manager.begin()
 
         for del_feat in deletes:
-            res = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==del_feat['layer']).first()
+            res = db_session.query(VectorLayer)\
+                .options(joinedload_all('parent'))\
+                .filter(VectorLayer.id == del_feat['layer'])\
+                .first()
             if not res:
                 return error_response(u'Редактируемый слой не найден')
             parent_res = res.parent
@@ -648,7 +661,7 @@ def editor_delete_geom(request):
                 return error_response(u'Ресурс не поддерживает работу с геометриями')
 
         transaction.manager.commit()
-    except Exception, ex:
+    except Exception as ex:
         return error_response(ex.message)
 
     resp = {'status': 'ok'}
@@ -680,8 +693,15 @@ def editor_create_geom(request):
         transaction.manager.begin()
 
         # get source layers
-        start_point_layer = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==start_layer_id).first()
-        end_point_layer = db_session.query(VectorLayer).options(joinedload_all('parent')).filter(VectorLayer.id==end_layer_id).first()
+        start_point_layer = db_session.query(VectorLayer)\
+            .options(joinedload_all('parent'))\
+            .filter(VectorLayer.id == start_layer_id)\
+            .first()
+
+        end_point_layer = db_session.query(VectorLayer)\
+            .options(joinedload_all('parent'))\
+            .filter(VectorLayer.id == end_layer_id)\
+            .first()
 
         if not start_point_layer or not end_point_layer:
             return error_response(u'Cлой с исходными данными не найден')
@@ -746,20 +766,22 @@ def editor_create_geom(request):
 
         # generate new feat and save it
         info = ConstructFoclLineReactor.get_segment_info([start_point_feat, end_point_feat])
-        feature = Feature(fields=info, geom=MultiLineString([[start_point_feat.geom[0].coords[0], end_point_feat.geom[0].coords[0]]]))
+        feature = Feature(
+            fields=info,
+            geom=MultiLineString([[start_point_feat.geom[0].coords[0], end_point_feat.geom[0].coords[0]]])
+        )
 
         if IWritableFeatureLayer.providedBy(target_layer):
-            feature_id = target_layer.feature_create(feature)
+            target_layer.feature_create(feature)
         else:
             return error_response(u'Ресурс не поддерживает хранение геометрий')
 
         transaction.manager.commit()
-    except Exception, ex:
+    except Exception as ex:
         return error_response(ex.message)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
-
 
 
 def construct_line(request):
@@ -770,18 +792,17 @@ def construct_line(request):
         resp = {'status': 'error', 'message': u'Метод не поддерживается! Необходим POST'}
         return Response(json.dumps(resp), status=400)
 
-
     try:
         db_session = DBSession()
         transaction.manager.begin()
 
-        fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id==int(res_id))  # all()
+        fs_resources = db_session.query(FoclStruct).filter(FoclStruct.id == int(res_id))  # all()
         for fs in fs_resources:
             ConstructFoclLineReactor.smart_construct_line(fs)
             ConstructSpecTransitionLineReactor.smart_construct_line(fs)
 
         transaction.manager.commit()
-    except Exception, ex:
+    except Exception as ex:
         resp = {'status': 'error', 'message': ex.message}
         return Response(json.dumps(resp), status=400)
 
@@ -790,14 +811,14 @@ def construct_line(request):
 
 
 def reset_all_layers(request):
-    focl_struct_id = None #TODO: need getting request params
+    focl_struct_id = None  # TODO: need getting request params
 
     #TODO: need rights check!
 
     db_session = DBSession()
     transaction.manager.begin()
 
-    focl_struct = db_session.query(FoclStruct).get(id==focl_struct_id)
+    focl_struct = db_session.query(FoclStruct).get(id == focl_struct_id)
 
     layers = focl_struct.children
     real_layer = None
@@ -818,13 +839,13 @@ def reset_all_layers(request):
                 actual_layer = lyr
 
         if not real_layer or not actual_layer:
-            print 'Ops! Needed layers not found!'
+            print('Ops! Needed layers not found!')
             return
 
         try:
-            #clear actual layer
+            # clear actual layer
             actual_layer.feature_delete_all()
-            #copy
+            # copy
             query = real_layer.feature_query()
             query.geom()
 
@@ -833,10 +854,10 @@ def reset_all_layers(request):
                 feat.fields['change_date'] = feat.fields['built_date']
                 actual_layer.feature_put(feat)
 
-            print "Layers %s was updated!" % actual_layer.keyname
+            print("Layers %s was updated!" % actual_layer.keyname)
 
-        except Exception, ex:
-            print "Error on update %s: %s" % (actual_layer.keyname, ex.message)
+        except Exception as ex:
+            print("Error on update %s: %s" % (actual_layer.keyname, ex.message))
         db_session.flush()
 
     transaction.manager.commit()
