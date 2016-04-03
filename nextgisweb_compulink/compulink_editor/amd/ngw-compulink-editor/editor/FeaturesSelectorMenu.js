@@ -13,10 +13,10 @@ define([
              MenuSeparator, PopupMenuItem) {
     var FEATURE_TYPES = {
         'actual_real_special_transition': 'Спецпереход',
-        'actual_real_special_transition_point': 'Точка спецперехода',
-        'actual_real_optical_cable': 'Трасса оптического кабеля',
-        'actual_real_optical_cable_point': 'Точка трассы ОК',
-        'actual_real_fosc': 'ФОСК',
+        'actual_real_special_transition_point': 'Отметка спецперехода',
+        'actual_real_optical_cable': 'Трасса ВОЛС',
+        'actual_real_optical_cable_point': 'Отметка трассы ВОЛС',
+        'actual_real_fosc': 'Оптическая муфта',
         'actual_real_optical_cross': 'Оптический кросс',
         'actual_real_access_point': 'Точка доступа'
     };
@@ -33,7 +33,7 @@ define([
             array.forEach(features, function (feature) {
                 if (feature.attributes.ngwFeatureId && feature.attributes.ngwLayerId) {
                     label = FEATURE_TYPES[feature.attributes.keyname] +
-                        ' #' + feature.attributes.ngwFeatureId;
+                        ': #' + feature.attributes.ngwFeatureId;
                     menuItem = new MenuItem({
                         label: label,
                         onClick: function () {
