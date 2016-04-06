@@ -1,0 +1,38 @@
+body div.header-wrapper, #rightPanel, #leftPanel, div.dijitToolbar, div.dijitGutter {
+    display: none !important;
+}
+
+body.claro , div.main-wrapper, div.body-wrapper,
+div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter,
+div.dijitTabContainerTopChildWrapper.dijitVisible,
+div[data-dojo-attach-point="focusNode"],
+div[data-dojo-attach-point="mainPane"],
+#mainContainer
+{
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#centerContainer {
+    left: 0 !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#permalink,
+div.olControlAttribution,
+div.olControlZoom,
+#LayersLoadingIndicator {
+    display: none;
+}
+
+div[data-dojo-attach-point="mapNode"] {
+    margin: 0 auto !important;
+}
+
+div[data-dojo-attach-point="mapPane"] {
+    position: relative !important;
+    top: 0 !important;
+}
