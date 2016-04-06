@@ -124,11 +124,18 @@
 
                         </div>
 
+                        <div data-dojo-attach-point="printMapButton"
+                             data-dojo-attach-event="onClick: printMap"
+                             data-dojo-type="dijit/form/Button"
+                             data-dojo-props="iconClass: 'iconPrintMap', showLabel: false">
+                        </div>
+
+                        <div data-dojo-type="dijit/ToolbarSeparator"></div>
                     </div>
 
                     <div data-dojo-type="ngw-compulink-editor/editor/EditorToolbar"></div>
 
-                    <div data-dojo-attach-point="mapPane"
+                    <div id="mapPane" data-dojo-attach-point="mapPane"
                          data-dojo-type="dijit/layout/ContentPane"
                          data-dojo-props="region: 'center'"
                          style="width: 100%; padding: 0;">

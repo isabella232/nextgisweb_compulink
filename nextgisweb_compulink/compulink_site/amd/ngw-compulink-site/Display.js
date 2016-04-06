@@ -476,6 +476,10 @@ define([
                 mainContainer.removeChild(panel);
         },
 
+        printMap: function () {
+            window.print();
+        },
+
         startup: function () {
             this.inherited(arguments);
 
