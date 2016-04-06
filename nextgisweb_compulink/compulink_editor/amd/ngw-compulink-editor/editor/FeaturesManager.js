@@ -206,6 +206,36 @@ define([
                 }
             }));
 
+            topic.subscribe('/compulink/editor/features/undo', lang.hitch(this, function () {
+                if (this._selectedFeature) {
+                    var ngwLayerId = this._selectedFeature.attributes.ngwLayerId,
+                        ngwFeatureId = this._selectedFeature.attributes.ngwFeatureId;
+
+                    this._undoOneConfirmDialog = new ConfirmDialog({
+                        title: 'Отмена изменений',
+                        id: 'undoOneFeature',
+                        message: 'Отменить изменения выбранного объекта?',
+                        buttonOk: 'Да',
+                        buttonCancel: 'Отменить',
+                        isDestroyedAfterHiding: true,
+                        handlerOk: lang.hitch(this, function () {
+                            this._undoOneFeature(ngwLayerId, ngwFeatureId);
+                            this._unselectFeature();
+                        }),
+                        handlerCancel: lang.hitch(this, function () {
+                            this._undoOneConfirmDialog = null;
+                        })
+                    });
+                    this._undoOneConfirmDialog.show();
+                } else {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Внимание!',
+                        message: 'Выберите объект для отмены изменений!'
+                    }).show();
+                }
+            }));
+
             topic.subscribe('/compulink/editor/mode/set/', lang.hitch(this, function (editorMode) {
                 this._setEditorMode(editorMode);
             }));
@@ -759,6 +789,23 @@ define([
                     }).show();
                 }
             });
+        },
+
+        _undoOneFeature: function (ngwLayerId, ngwFeatureId) {
+            GlobalStandBy.show();
+            this._ngwServiceFacade.resetFeature(ngwLayerId, ngwFeatureId).then(
+                lang.hitch(this, function () {
+                    this._updateEditorLayer(true);
+                }),
+                lang.hitch(this, function (result) {
+                    GlobalStandBy.hide();
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Ошибка!',
+                        message: result.message
+                    }).show();
+                })
+            );
         }
     });
 });

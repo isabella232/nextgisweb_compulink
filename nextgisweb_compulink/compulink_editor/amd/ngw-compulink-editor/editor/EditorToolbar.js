@@ -116,7 +116,7 @@ define([
         },
 
         undoOne: function () {
-
+            topic.publish('/compulink/editor/features/undo');
         },
 
         undoAll: function () {

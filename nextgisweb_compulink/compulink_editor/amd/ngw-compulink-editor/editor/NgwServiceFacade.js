@@ -129,7 +129,7 @@ define([
 
             return xhr.post(url, {
                 handleAs: 'json',
-                data: JSON.stringify(params)
+                data: params
             });
         }
     });
