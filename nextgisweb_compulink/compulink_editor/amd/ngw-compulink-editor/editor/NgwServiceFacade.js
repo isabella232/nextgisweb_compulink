@@ -18,6 +18,7 @@ define([
         REMOVE_EDITOR_FEATURES: '/compulink/editor/features/remove',
         CREATE_EDITOR_LINE: '/compulink/editor/lines/create',
         UPDATE_EDITOR_LINES: new dtlBase.Template('/compulink/editor/construct_line/{{resourceId}}', true),
+        RESET_FEATURE: '/compulink/editor/reset_point',
 
         ngwApplicationUrl: null,
 
@@ -111,6 +112,24 @@ define([
             return xhr.put(url, {
                 handleAs: 'json',
                 data: JSON.stringify(lineInfo)
+            });
+        },
+
+        /**
+         * Represents a facade for reverting one point.
+         * @ngwLayerId Id of the NGW layer
+         * @ngwFeatureId Id of the NGW feature
+         */
+        resetFeature: function (ngwLayerId, ngwFeatureId) {
+            var url = this.ngwApplicationUrl + this.RESET_FEATURE,
+                params = {
+                    ngwLayerId: ngwLayerId,
+                    ngwFeatureId: ngwFeatureId
+                };
+
+            return xhr.post(url, {
+                handleAs: 'json',
+                data: JSON.stringify(params)
             });
         }
     });
