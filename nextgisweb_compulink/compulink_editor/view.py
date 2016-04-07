@@ -100,6 +100,11 @@ def setup_pyramid(comp, config):
         '/compulink/editor/construct_line/{id:\d+}', client=('id',)) \
         .add_view(construct_line)
 
+    config.add_route(
+        'compulink.editor.reset_point',
+        '/compulink/editor/reset_point') \
+        .add_view(reset_point)
+
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
@@ -784,7 +789,7 @@ def editor_create_geom(request):
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
 
-
+@view_config(renderer='json')
 def construct_line(request):
     res_id = request.matchdict['id']
     if request.user.keyname == 'guest':
@@ -806,6 +811,102 @@ def construct_line(request):
     except Exception as ex:
         resp = {'status': 'error', 'message': ex.message}
         return Response(json.dumps(resp), status=400)
+
+    resp = {'status': 'ok'}
+    return Response(json.dumps(resp))
+
+@view_config(renderer='json')
+def reset_point(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    if request.method != 'POST':
+        return error_response(u'Метод не поддерживается! Необходим POST')
+
+    try:
+        reset_info = request.json_body
+
+        db_session = DBSession
+        transaction.manager.begin()
+
+        # get fact layer
+        res = db_session.query(VectorLayer) \
+            .options(joinedload_all('parent')) \
+            .filter(VectorLayer.id == reset_info['ngwLayerId']) \
+            .first()
+
+        if not res:
+            return error_response(u'Редактируемый слой не найден')
+        if not res.keyname or not res.keyname.startswith('actual_'):
+            return error_response(u'Редактируемый слой некорректный (Слой не ясвляется фактическим актуальным)')
+
+        parent_res = res.parent
+        if not parent_res:
+            return error_response(u'Редактируемый слой некорректный (Слой вне объекта строительства)')
+        if not (
+            request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
+            return error_response(u'У вас недостаточно прав для редактирования данных')
+
+        # get fact point
+        query = res.feature_query()
+        query.geom()
+
+        query.filter_by(id=reset_info['ngwFeatureId'])
+        query.limit(1)
+
+        feature = None
+        for f in query():
+            feature = f
+
+        if not feature:
+            return error_response(u'Редактируемый объект не найден')
+
+        # get global id of feat
+        feat_guid = feature.fields['feat_guid']
+
+
+        # try to get mirror layer
+        actual_layer_name = '_'.join(res.keyname.rsplit('_')[0:-1])
+        real_layer_name = actual_layer_name.replace('actual_', '')
+        real_layer = None
+
+        for lyr in parent_res.children:
+            if lyr.keyname:
+                lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
+            else:
+                continue
+            if real_layer_name == lyr_name:
+                real_layer = lyr
+
+        if not real_layer:
+            return error_response(u'Слой с исходными данными не найден')
+
+        # try to get original feat
+        query_real = real_layer.feature_query()
+        query_real.geom()
+        query_real.filter_by(feat_guid=feat_guid)
+        query_real.limit(1)
+
+        original_feature = None
+        for f in query_real():
+            original_feature = f
+
+        if not original_feature:
+            return error_response(u'Исходный объект не найден')
+
+
+        # reset geom
+        feature.geom = original_feature.geom
+
+        # update feature
+        if IWritableFeatureLayer.providedBy(res):
+            res.feature_put(feature)
+        else:
+            return error_response(u'Ресурс не поддерживает хранение геометрий')
+
+        transaction.manager.commit()
+    except Exception as ex:
+        return error_response(ex.message)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
