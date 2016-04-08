@@ -1,0 +1,74 @@
+/* based on http://stackoverflow.com/questions/22519377/css-dropdown-menu-with-submenu-aligning-to-the-right-edge-of-its-parent */
+/* http://jsfiddle.net/V8aL6/2/ solution */
+
+#nav {
+    display: block;
+    float: right;
+    font-weight: bold;
+    height: 15px;
+    list-style: outside none none;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 5;
+}
+
+#nav li {
+    float: left;
+    margin-right: 10px;
+    position: relative;
+    background: #2D3E50;
+}
+
+#nav a {
+    display: block;
+    padding: 5px;
+    color: #6FBEF3;
+    background: #2D3E50;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+#nav ul {
+    background: #2D3E50; /* Adding a background makes the dropdown work properly in IE7+. Make this as close to your page's background as possible (i.e. white page == white background). */
+    background: rgba(45, 62, 80, 0); /* But! Let's make the background fully transparent where we can, we don't actually want to see it if we can help it... */
+    list-style: none;
+    position: absolute;
+    display: none /*If menu item is not hovered hide sub-menu*/
+}
+
+#nav ul li {
+    padding-top: 1px; /* Introducing a padding between the li and the a give the illusion spaced items */
+    float: none;
+    margin-right: 0;
+}
+
+#nav ul a {
+    white-space: nowrap; /* Stop text wrapping and creating multi-line dropdown items */
+}
+
+#nav li:hover ul {
+    /* Display the dropdown on hover */
+    display: block; /*DISPLAY ONLY WHEN ITEM IS HOVERED*/
+    right: 0;
+}
+
+#nav li a:hover {
+    color: #cae1f3;
+}
+
+#nav a.parent-link:after {
+    padding-left: 3px;
+    content: "\25BE";
+}
+
+#nav ul.child-items {
+    min-width: 100%;
+}
+
+#header a.header-title {
+    color: white;
+    text-decoration: none;
+    text-transform: capitalize;
+}

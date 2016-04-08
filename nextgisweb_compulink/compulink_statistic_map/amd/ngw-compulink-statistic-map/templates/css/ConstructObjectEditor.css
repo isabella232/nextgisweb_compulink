@@ -1,0 +1,10 @@
+#constructObjectEditor {
+    width: 350px;
+}
+
+#constructObjectEditor table.dijitSelect span.dijitSelectLabel {
+    width: 176px;
+    display: inline-block;
+    overflow: hidden;
+    text-align: left;
+}
