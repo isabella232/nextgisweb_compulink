@@ -14,6 +14,8 @@ define([
     "dojo/aspect",
     "dojo/io-query",
     "dojo/topic",
+    "dojo/has",
+    "dojo/sniff",
     "ngw/openlayers",
     "ngw/openlayers/Map",
     'dgrid/Grid',
@@ -85,6 +87,8 @@ define([
     aspect,
     ioQuery,
     topic,
+    has,
+    sniff,
     openlayers,
     Map,
     Grid,
@@ -491,7 +495,16 @@ define([
         },
 
         printMap: function () {
-            window.print();
+
+
+            html2canvas($('#mapPane'), {
+                useCORS: true,
+                onrendered: function (canvas) {
+                    var mapScreenImage = canvas.toDataURL('image/png');
+                    window.open(mapScreenImage, '_newtab');
+                }
+            })
+
         },
 
         startup: function () {
