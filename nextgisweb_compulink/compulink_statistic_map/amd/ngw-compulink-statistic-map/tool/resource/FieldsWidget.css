@@ -1,0 +1,7 @@
+.ngw-feature-layer-fields-widget .field-idx { width: 3em; }
+.ngw-feature-layer-fields-widget .field-datatype { width: 10em; }
+.ngw-feature-layer-fields-widget .field-display_name { width: 50%; }
+
+.ngw-feature-layer-fields-widget .field-grid_visibility, 
+.ngw-feature-layer-fields-widget .field-label_field {
+    width: 3em; text-align: center; }

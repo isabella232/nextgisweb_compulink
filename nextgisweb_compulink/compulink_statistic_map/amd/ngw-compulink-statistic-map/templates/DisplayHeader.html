@@ -1,0 +1,42 @@
+<div id="header" class="header" style="padding: 0; margin: 0">
+    <div style="overflow:visible;" class="home-menu pure-menu pure-menu-horizontal">
+        <a class="header-inline" href="{{ headerData.appUrl }}" title="На главную">
+            <img width="108" height="28" class="logo" src="{{ headerData.srcLogo }}"/>
+        </a>
+
+        <a class="header-inline pure-menu-heading" href="{{ headerData.appUrl }}" title="На главную">
+            {{ headerData.fullName }}
+        </a>
+
+        <ul id="nav">
+            {% if headerData.isAdm %}
+            <li>
+                <a href="{{ headerData.resourcesUrl }}" title="На страницу ресурсов">Ресурсы</a>
+            </li>
+            <li>
+                <a href="{{ headerData.controlPanelUrl }}" title="К панели управления">Панель управления</a>
+            </li>
+            {% endif %}
+            <li>
+                <a href="#" title="Отчёты" class="parent-link">Отчёты</a>
+                <ul class="child-items">
+                    <li>
+                        <a title="Открыть отчёт о ходе строительства" href="{{ headerData.reportUrl }}">Отчёт о ходе
+                            строительства</a>
+                    </li>
+                    <li>
+                        <a title="Отчет по проекту УЦН" href="{{ headerData.reportUcnUrl }}">Отчет по проекту УЦН</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" title="Имя пользователя" class="parent-link">{{headerData.userName }}</a>
+                <ul class="child-items">
+                    <li>
+                        <a href="{{ headerData.logoutUrl }}" title="Выход из системы">Выход</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
