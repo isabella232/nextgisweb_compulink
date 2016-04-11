@@ -495,16 +495,7 @@ define([
         },
 
         printMap: function () {
-
-
-            html2canvas($('#mapPane'), {
-                useCORS: true,
-                onrendered: function (canvas) {
-                    var mapScreenImage = canvas.toDataURL('image/png');
-                    window.open(mapScreenImage, '_newtab');
-                }
-            })
-
+            window.print();
         },
 
         startup: function () {

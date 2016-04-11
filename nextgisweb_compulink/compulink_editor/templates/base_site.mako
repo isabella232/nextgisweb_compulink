@@ -30,8 +30,6 @@
     <link href="${request.route_url('amd_package', subpath='dijit/themes/claro/claro.css')}"
           rel="stylesheet" media="screen"/>
 
-    <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/html2canvas/html2canvas.js')}"></script>
-
     <script type="text/javascript">
         var ngwConfig = {
             applicationUrl: ${request.application_url | json.dumps, n},
