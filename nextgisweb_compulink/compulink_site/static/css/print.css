@@ -3,23 +3,22 @@ div.dijitGutter, #bottomPanel, div.dgrid-scroller {
     display: none !important;
 }
 
-body.claro , div.main-wrapper, div.body-wrapper,
+body.claro, div.main-wrapper, div.body-wrapper,
 div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter,
 div.dijitTabContainerTopChildWrapper.dijitVisible,
 div[data-dojo-attach-point="focusNode"],
 div[data-dojo-attach-point="mainPane"],
-#mainContainer
-{
+#mainContainer {
     position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 11in !important;
+    height: 7in !important;
 }
 
 #centerContainer {
     left: 0 !important;
     position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 11in !important;
+    height: 7in !important;
     padding: 0 !important;
     margin: 0 !important;
     overflow: hidden !important;
@@ -34,10 +33,14 @@ div.olControlZoom,
 
 div[data-dojo-attach-point="mapNode"] {
     margin: 0 auto !important;
+        width: 11in !important;
+    height: 7in !important;
 }
 
 div[data-dojo-attach-point="mapPane"] {
     position: relative !important;
     top: 0 !important;
     overflow: hidden;
+    width: 11in !important;
+    height: 7in !important;
 }
