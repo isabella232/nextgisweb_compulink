@@ -33,6 +33,7 @@ class ConstructFoclLineReactor(AbstractReactor):
     log_info = staticmethod(lambda x: LogEntry.info(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now()))
     log_debug = staticmethod(lambda x: LogEntry.debug(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now()))
     log_warning = staticmethod(lambda x: LogEntry.warning(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now()))
+    log_error = staticmethod(lambda x: LogEntry.error(x, component=COMP_ID, group=ConstructFoclLineReactor.identity, append_dt=datetime.now()))
 
     @classmethod
     def run(cls, env):
@@ -44,8 +45,12 @@ class ConstructFoclLineReactor(AbstractReactor):
 
         fs_resources = db_session.query(FoclStruct).all()
         for fs in fs_resources:
-            cls.smart_construct_line(fs)
-            db_session.flush()
+            try:
+                cls.smart_construct_line(fs)
+                db_session.flush()
+            except Exception as ex:
+                print 'Error on construct line %s: %s' % (fs.id, ex.message)
+                cls.log_error('Error on construct line %s: %s' % (fs.id, ex.message))
 
         cls.log_info('ConstructFoclLineReactor finished!')
         transaction.manager.commit()
