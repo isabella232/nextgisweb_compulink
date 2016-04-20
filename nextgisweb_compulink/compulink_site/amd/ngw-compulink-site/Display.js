@@ -47,6 +47,7 @@ define([
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
+    "ngw-compulink-site/PrintMap",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -113,6 +114,7 @@ define([
     CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
+    PrintMap,
     Adapter,
     clientSettings
 ) {
@@ -477,7 +479,7 @@ define([
         },
 
         printMap: function () {
-            window.print();
+            PrintMap.run(this.map.olMap);
         },
 
         startup: function () {

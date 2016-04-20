@@ -1,0 +1,38 @@
+@page {
+    size: A4 landscape;
+    margin: 5mm 5mm 5mm 5mm;
+}
+
+#printMapDialog div.dijitDialogPaneContent {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0;
+    padding: 0;
+}
+
+#printMap {
+    display: block;
+    position: absolute;
+    top: 177px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 999;
+    overflow: auto;
+    -webkit-box-shadow: 0 0 6px 0 rgb(23, 68, 107);
+    -moz-box-shadow: 0 0 6px 0 rgb(23, 68, 107);
+    box-shadow: 0 0 6px 0 rgb(23, 68, 107);
+    background-color: #F7F7F7;
+}
+
+#printMap div.map-container {
+    position: relative;
+    display: block;
+    height: 297mm;
+    width: 210mm;
+    z-index: 1000;
+}
+
+#printMap.inactive {
+    display: none;
+}

@@ -1,43 +1,55 @@
-body div.header-wrapper, #rightPanel, #leftPanel, div.dijitToolbar,
-div.dijitGutter, #bottomPanel, div.dgrid-scroller {
+body div.main-wrapper, div.dijitDialog, div.dijitPopup {
     display: none !important;
 }
 
-body.claro , div.main-wrapper, div.body-wrapper,
-div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter,
-div.dijitTabContainerTopChildWrapper.dijitVisible,
-div[data-dojo-attach-point="focusNode"],
-div[data-dojo-attach-point="mainPane"],
-#mainContainer
-{
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-#centerContainer {
-    left: 0 !important;
-    position: relative !important;
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-}
-
-#permalink,
-div.olControlAttribution,
-div.olControlZoom,
-#LayersLoadingIndicator {
-    display: none;
-}
-
-div[data-dojo-attach-point="mapNode"] {
-    margin: 0 auto !important;
-}
-
-div[data-dojo-attach-point="mapPane"] {
-    position: relative !important;
+#printMap {
+    display: block !important;
+    width: auto;
+    height: auto;
     top: 0 !important;
-    overflow: hidden;
+    left: 0 !important;
+    bottom: 0 !important;
+    right: 0 !important;
 }
+
+/*body.claro, div.main-wrapper, div.body-wrapper,*/
+/*div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter,*/
+/*div.dijitTabContainerTopChildWrapper.dijitVisible,*/
+/*div[data-dojo-attach-point="focusNode"],*/
+/*div[data-dojo-attach-point="mainPane"],*/
+/*#mainContainer {*/
+    /*position: relative !important;*/
+    /*width: 11in !important;*/
+    /*height: 7in !important;*/
+/*}*/
+
+/*#centerContainer {*/
+    /*left: 0 !important;*/
+    /*position: relative !important;*/
+    /*width: 11in !important;*/
+    /*height: 7in !important;*/
+    /*padding: 0 !important;*/
+    /*margin: 0 !important;*/
+    /*overflow: hidden !important;*/
+/*}*/
+
+/*#permalink,*/
+/*div.olControlAttribution,*/
+/*div.olControlZoom,*/
+/*#LayersLoadingIndicator {*/
+    /*display: none;*/
+/*}*/
+
+/*div[data-dojo-attach-point="mapNode"] {*/
+    /*margin: 0 auto !important;*/
+        /*width: 11in !important;*/
+    /*height: 7in !important;*/
+/*}*/
+
+/*div[data-dojo-attach-point="mapPane"] {*/
+    /*position: relative !important;*/
+    /*top: 0 !important;*/
+    /*overflow: hidden;*/
+    /*width: 11in !important;*/
+    /*height: 7in !important;*/
+/*}*/
