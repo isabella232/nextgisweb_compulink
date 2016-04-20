@@ -1,6 +1,6 @@
 @page {
-    size: 8.5in 11in;
-    margin: 2cm
+    size: A4 landscape;
+    margin: 5mm 5mm 5mm 5mm;
 }
 
 #printMapDialog div.dijitDialogPaneContent {
@@ -13,7 +13,7 @@
 #printMap {
     display: block;
     position: absolute;
-    top: 146px;
+    top: 177px;
     left: 10px;
     right: 10px;
     bottom: 10px;
@@ -28,8 +28,8 @@
 #printMap div.map-container {
     position: relative;
     display: block;
-    height: 29.7cm;
-    width: 21.0cm;
+    height: 297mm;
+    width: 210mm;
     z-index: 1000;
 }
 

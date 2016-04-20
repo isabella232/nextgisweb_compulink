@@ -38,7 +38,7 @@ define([
         printElement: null,
         printElementMap: null,
         printMap: null,
-        style: "width: 100%; height: 100%;",
+        style: 'width: 100%; height: 100%;',
 
         constructor: function (settings) {
             lang.mixin(this, settings);
@@ -49,7 +49,10 @@ define([
                 message: this.message,
                 buttonOk: this.buttonOk,
                 buttonCancel: this.buttonCancel,
-                style: "width: 100%; height: 100%;"
+                style: 'width: 100%; height: 100%;',
+                func: function () {
+                    console.log(111111);
+                }
             }));
 
             contentWidget.startup();
@@ -64,22 +67,34 @@ define([
             on(this.content.okButton, 'click', lang.hitch(this, function () {
                 window.print();
             }));
-        },
 
-        startup: function () {
-            this.inherited(arguments);
+            on(this.content.sizesSelect, 'change', lang.hitch(this, function () {
+                var sizeValues = this.content.sizesSelect.get('value'),
+                    parsedSizeValues, height, width;
+                if (sizeValues === 'custom') {
+
+                } else {
+                    parsedSizeValues = sizeValues.split('_');
+                    width = parsedSizeValues[0];
+                    height = parsedSizeValues[1];
+                    this.content.heightInput.set('value', height);
+                    this.content.widthInput.set('value', width);
+                    this._resizeMapContainer(width, height);
+                }
+            }));
         },
 
         show: function () {
             this.inherited(arguments);
-
             this._buildPrintElement();
             this._buildMap();
+            this.content.sizesSelect.attr('value', '210_297');
         },
 
         _hideDialog: function () {
             this.printMap.olMap.destroy();
             domClass.add(this.printElement, 'inactive');
+            this._removePageStyle();
             this.destroyRecursive();
         },
 
@@ -115,6 +130,46 @@ define([
             }, this);
 
             this.printMap.olMap.zoomToExtent(this.map.getExtent(), true);
+        },
+
+        _resizeMapContainer: function (width, height) {
+            var mapContainer = query('div.map-container', this.printElement)[0];
+
+            domStyle.set(mapContainer, {
+                height: height + 'mm',
+                width: width + 'mm'
+            });
+
+            this.printMap.olMap.updateSize();
+            this.printMap.olMap.zoomToExtent(this.map.getExtent(), true);
+            this._buildPageStyle(width, height);
+        },
+
+        _buildPageStyle: function (width, height) {
+            var style = this._getPageStyle(),
+                margin = this.content.marginInput.get('value');
+            if (style.sheet.cssRules.length > 0) {
+                style.sheet.deleteRule(0);
+            }
+            style.sheet.insertRule('@page {size:' + width + 'mm ' + height + 'mm; margin: ' + margin + 'mm;}', 0);
+        },
+
+        _pageStyle: null,
+        _getPageStyle: function () {
+            if (this._pageStyle) {
+                return this._pageStyle;
+            }
+            var style = document.createElement('style');
+            style.appendChild(document.createTextNode(''));
+            document.head.appendChild(style);
+            this._pageStyle = style;
+            return style;
+        },
+
+        _removePageStyle: function () {
+            if (this._pageStyle) {
+                domConstruct.destroy(this._pageStyle);
+            }
         }
     });
 
@@ -124,10 +179,6 @@ define([
                 map: olMap
             });
             editor.show();
-
-            registry.byId('sizesSelect').on("change", function () {
-                console.log("my value: ", this.get("value"))
-            });
         }
     }
 });

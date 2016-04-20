@@ -4,36 +4,47 @@
              data-dojo-attach-point="tableContainer"
              style="margin-left: 10px;"
              data-dojo-props="cols:1">
-
             <select id="sizesSelect"
-                    data-dojo-type="dijit/form/Select"
+                    data-dojo-type="dijit.form.Select"
                     data-dojo-attach-point="sizesSelect"
-                    data-dojo-event="change: func"
                     title="Формат" name="sizes"
                     style="width: 180px;">
-                <option value="TN" selected>A4 - Портретный</option>
-                <option value="TN">A4 - Альбомный</option>
-                <option value="TN">A3 - Портретный</option>
-                <option value="TN">A3 - Альбомный</option>
-                <option value="TN">Настраиваемый</option>
+                <option value="none" disabled="disabled" selected>Выберите формат...</option>
+                <option value="210_297">A4 - Портретный</option>
+                <option value="297_210">A4 - Альбомный</option>
+                <option value="297_420">A3 - Портретный</option>
+                <option value="420_297">A3 - Альбомный</option>
+                <!--<option value="custom">Настраиваемый</option>-->
             </select>
 
-            <input data-dojo-type="dijit/form/NumberTextBox"
+            <input id="heightInput"
+                   data-dojo-type="dijit/form/NumberTextBox"
                    data-dojo-attach-point="heightInput"
-                   title="Высота, см"
+                   title="Высота, мм"
                    type="number"
                    required="true"
                    disabled="disabled"
-                   value="21.0"
+                   value="297"
                    data-dojo-props="constraints:{min:0,max:20000,places:0}"/>
 
-            <input data-dojo-type="dijit/form/NumberTextBox"
+            <input id="widthInput"
+                   data-dojo-type="dijit/form/NumberTextBox"
                    data-dojo-attach-point="widthInput"
-                   title="Ширина, см"
+                   title="Ширина, мм"
                    type="number"
                    required="true"
                    disabled="disabled"
-                   value="29.7"
+                   value="210"
+                   data-dojo-props="constraints:{min:0,max:20000,places:0}"/>
+
+            <input id="marginInput"
+                   data-dojo-type="dijit/form/NumberTextBox"
+                   data-dojo-attach-point="marginInput"
+                   title="Отступ, мм"
+                   type="number"
+                   required="true"
+                   disabled="disabled"
+                   value="10"
                    data-dojo-props="constraints:{min:0,max:20000,places:0}"/>
         </div>
         <button data-dojo-type="dijit.form.Button"
@@ -42,7 +53,4 @@
             Печать
         </button>
     </div>
-    <!--<div class="dijitDialogPaneActionBar">-->
-
-    <!--</div>-->
 </div>
