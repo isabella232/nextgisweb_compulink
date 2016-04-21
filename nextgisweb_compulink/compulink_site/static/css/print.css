@@ -10,6 +10,8 @@ body div.main-wrapper, div.dijitDialog, div.dijitPopup {
     left: 0 !important;
     bottom: 0 !important;
     right: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
 }
 
 /*body.claro, div.main-wrapper, div.body-wrapper,*/
