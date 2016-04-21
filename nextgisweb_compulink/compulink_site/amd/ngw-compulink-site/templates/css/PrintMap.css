@@ -15,14 +15,15 @@
     position: absolute;
     top: 177px;
     left: 10px;
-    right: 10px;
+    width: auto;
+    max-width: 98%;
     bottom: 10px;
     z-index: 999;
     overflow: auto;
     -webkit-box-shadow: 0 0 6px 0 rgb(23, 68, 107);
     -moz-box-shadow: 0 0 6px 0 rgb(23, 68, 107);
     box-shadow: 0 0 6px 0 rgb(23, 68, 107);
-    background-color: #F7F7F7;
+    background-color: white;
 }
 
 #printMap div.map-container {
