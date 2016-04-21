@@ -19,7 +19,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
-from shapely.geometry import MultiLineString
+from shapely.geometry import MultiLineString, Polygon
 
 from config import get_editable_layers_styles
 from nextgisweb import DBSession, db
@@ -894,8 +894,9 @@ def reset_point(request):
         if not original_feature:
             return error_response(u'Исходный объект не найден')
 
-
         # reset geom
+        old_point = feature.geom
+        new_point = original_feature.geom
         feature.geom = original_feature.geom
 
         # update feature
@@ -904,12 +905,65 @@ def reset_point(request):
         else:
             return error_response(u'Ресурс не поддерживает хранение геометрий')
 
+        # replace lines
+        line_lyrs = get_line_lyrs(parent_res)
+        replace_lines_to_point(line_lyrs, old_point, new_point)
+
         transaction.manager.commit()
     except Exception as ex:
         return error_response(ex.message)
 
     resp = {'status': 'ok'}
     return Response(json.dumps(resp))
+
+
+def get_line_lyrs(parent_res):
+    search_names = ['actual_real_optical_cable', 'actual_real_special_transition']
+    result_layers = []
+
+    for lyr in parent_res.children:
+        # get name
+        if lyr.keyname:
+            lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
+        else:
+            continue
+        # check
+        for search_name in search_names:
+            if search_name == lyr_name:
+                result_layers.append(lyr)
+                break
+
+    return result_layers
+
+
+def replace_lines_to_point(line_lyrs, old_point, new_point):
+    x = old_point[0].coords[0][0]
+    y = old_point[0].coords[0][1]
+    buff = Polygon([(x-1, y-1), (x-1, y+1), (x+1, y+1), (x+1, y-1), (x-1, y-1)])
+    buff.srid = old_point.srid
+
+    for line_lyr in line_lyrs:
+        # get intersection lines
+        query = line_lyr.feature_query()
+        #query.intersects(buff)
+        query.geom()
+
+        # replace point in lines
+        for f in query():
+            line = f.geom[0]
+            new_line_points = []
+            need_reconstruct = False
+            for vertex in line.coords:
+                if vertex == old_point[0].coords[0]:
+                    new_line_points.append(new_point[0].coords[0])
+                    need_reconstruct = True
+                else:
+                    new_line_points.append(vertex)
+
+            if need_reconstruct:
+                new_geom = MultiLineString([new_line_points,])
+                f.geom = new_geom
+                line_lyr.feature_put(f)
 
 
 def reset_all_layers(request):
