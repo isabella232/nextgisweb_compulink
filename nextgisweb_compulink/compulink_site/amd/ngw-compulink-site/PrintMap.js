@@ -140,6 +140,10 @@ define([
                 width: width + 'mm'
             });
 
+            domStyle.set(this.printElement, {
+                width: width + 'mm'
+            });
+
             this.printMap.olMap.updateSize();
             this.printMap.olMap.zoomToExtent(this.map.getExtent(), true);
             this._buildPageStyle(width, height);
