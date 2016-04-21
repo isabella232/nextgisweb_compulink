@@ -236,6 +236,25 @@ define([
                 }
             }));
 
+            topic.subscribe('/compulink/editor/features/undo_all', lang.hitch(this, function () {
+                this._undoAllConfirmDialog = new ConfirmDialog({
+                    title: 'Отмена изменений',
+                    id: 'undoAllFeatures',
+                    message: 'Отменить изменения для всего объекта строительства?',
+                    buttonOk: 'Да',
+                    buttonCancel: 'Отменить',
+                    isDestroyedAfterHiding: true,
+                    handlerOk: lang.hitch(this, function () {
+                        this._undoAllFeatures(this._resourceId);
+                        this._unselectFeature();
+                    }),
+                    handlerCancel: lang.hitch(this, function () {
+                        this._undoAllConfirmDialog = null;
+                    })
+                });
+                this._undoAllConfirmDialog.show();
+            }));
+
             topic.subscribe('/compulink/editor/mode/set/', lang.hitch(this, function (editorMode) {
                 this._setEditorMode(editorMode);
             }));
@@ -794,6 +813,23 @@ define([
         _undoOneFeature: function (ngwLayerId, ngwFeatureId) {
             GlobalStandBy.show();
             this._ngwServiceFacade.resetFeature(ngwLayerId, ngwFeatureId).then(
+                lang.hitch(this, function () {
+                    this._updateEditorLayer(true);
+                }),
+                lang.hitch(this, function (result) {
+                    GlobalStandBy.hide();
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Ошибка!',
+                        message: result.message
+                    }).show();
+                })
+            );
+        },
+
+        _undoAllFeatures: function (resourceId) {
+            GlobalStandBy.show();
+            this._ngwServiceFacade.resetLayers(resourceId).then(
                 lang.hitch(this, function () {
                     this._updateEditorLayer(true);
                 }),

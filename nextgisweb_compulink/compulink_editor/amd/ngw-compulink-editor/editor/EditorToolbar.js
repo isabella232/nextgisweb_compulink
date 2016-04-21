@@ -120,7 +120,7 @@ define([
         },
 
         undoAll: function () {
-            topic.publish('/compulink/editor/lines/update');
+            topic.publish('/compulink/editor/features/undo_all');
         }
     });
 });

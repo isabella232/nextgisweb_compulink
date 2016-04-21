@@ -19,6 +19,7 @@ define([
         CREATE_EDITOR_LINE: '/compulink/editor/lines/create',
         UPDATE_EDITOR_LINES: new dtlBase.Template('/compulink/editor/construct_line/{{resourceId}}', true),
         RESET_FEATURE: '/compulink/editor/reset_point',
+        RESET_LAYERS: new dtlBase.Template('/compulink/editor/reset_layer/{{resourceId}}', true),
 
         ngwApplicationUrl: null,
 
@@ -130,6 +131,15 @@ define([
             return xhr.post(url, {
                 handleAs: 'json',
                 data: JSON.stringify(params)
+            });
+        },
+
+        resetLayers: function (resourceId) {
+            var dtlContext = new dtlBase.Context({resourceId: resourceId}),
+                url = this.ngwApplicationUrl + this.RESET_LAYERS.render(dtlContext);
+
+            return xhr.post(url, {
+                handleAs: 'json'
             });
         }
     });
