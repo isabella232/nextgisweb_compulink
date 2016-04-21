@@ -49,6 +49,7 @@ define([
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
+    "ngw-compulink-site/PrintMap",
     "ngw-compulink-editor/editor/FeaturesManager",
     "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-compulink-editor/editor/AttributesEditor",
@@ -121,6 +122,7 @@ define([
     CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
+    PrintMap,
     EditorFeaturesManager,
     NgwServiceFacade,
     AttributesEditor,
@@ -495,7 +497,7 @@ define([
         },
 
         printMap: function () {
-            window.print();
+            PrintMap.run(this.map.olMap);
         },
 
         startup: function () {
