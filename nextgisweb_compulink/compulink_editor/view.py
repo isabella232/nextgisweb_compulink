@@ -105,6 +105,11 @@ def setup_pyramid(comp, config):
         '/compulink/editor/reset_point') \
         .add_view(reset_point)
 
+    config.add_route(
+    'compulink.editor.reset_layer',
+    '/compulink/editor/reset_layer/{id:\d+}', client=('id',)) \
+    .add_view(reset_all_layer)
+
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
@@ -909,6 +914,8 @@ def reset_point(request):
         line_lyrs = get_line_lyrs(parent_res)
         replace_lines_to_point(line_lyrs, old_point, new_point)
 
+        # TODO: photo reset!
+
         transaction.manager.commit()
     except Exception as ex:
         return error_response(ex.message)
@@ -966,55 +973,117 @@ def replace_lines_to_point(line_lyrs, old_point, new_point):
                 line_lyr.feature_put(f)
 
 
-def reset_all_layers(request):
-    focl_struct_id = None  # TODO: need getting request params
+def get_layer_by_type(parent_res, layer_type):
+    layer = None
 
-    #TODO: need rights check!
+    for lyr in parent_res.children:
+        if lyr.keyname:
+            lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
+        else:
+            continue
+        if layer_type == lyr_name:
+            layer = lyr
+            break
+    return layer
 
-    db_session = DBSession()
-    transaction.manager.begin()
 
-    focl_struct = db_session.query(FoclStruct).get(id == focl_struct_id)
+def reset_all_layer(request):
+    # check
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
 
-    layers = focl_struct.children
-    real_layer = None
-    actual_layer = None
+    if request.method != 'POST':
+        return error_response(u'Метод не поддерживается! Необходим POST')
 
-    for real_layer_name in FOCL_REAL_LAYER_STRUCT:
-        # get real layer and actual layer
-        for lyr in layers:
-            if lyr.keyname:
-                lyr_name = '_'.join(lyr.keyname.rsplit('_')[0:-1])
-            else:
-                continue
+    try:
+        db_session = DBSession
+        transaction.manager.begin()
 
-            if real_layer_name == lyr_name:
-                real_layer = lyr
+        # get root resource
+        res_id = request.matchdict['id']
+        parent_res = db_session.query(Resource) \
+            .options(joinedload_all('children')) \
+            .filter(Resource.id == res_id) \
+            .first()
 
-            if 'actual_' + real_layer_name == lyr_name:
-                actual_layer = lyr
+        if not parent_res:
+            return error_response(u'Редактируемый объект строительства не найден')
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
+            return error_response(u'У вас недостаточно прав для редактирования данных')
 
-        if not real_layer or not actual_layer:
-            print('Ops! Needed layers not found!')
-            return
+        line_lyrs = get_line_lyrs(parent_res)
 
-        try:
-            # clear actual layer
-            actual_layer.feature_delete_all()
-            # copy
+        for actual_layer_name in ['actual_real_optical_cable_point',
+                                  'actual_real_special_transition_point',
+                                  'actual_real_fosc',
+                                  'actual_real_optical_cross',
+                                  'actual_real_access_point']:
+            # get fact layer
+            res = get_layer_by_type(parent_res, actual_layer_name)
+
+            if not res:
+                continue  # mmm... wtf?
+
+            # try to get mirror layer
+            real_layer_name = actual_layer_name.replace('actual_', '')
+            real_layer = get_layer_by_type(parent_res, real_layer_name)
+
+            if not real_layer:
+                continue  # mmm... wtf?
+
+            # reset all points from original layers
             query = real_layer.feature_query()
             query.geom()
 
-            for feat in query():
-                feat.fields['change_author'] = u'Мобильное приложение'
-                feat.fields['change_date'] = feat.fields['built_date']
-                actual_layer.feature_put(feat)
+            for original_feature in query():
 
-            print("Layers %s was updated!" % actual_layer.keyname)
+                # get global id of feat
+                feat_guid = original_feature.fields['feat_guid']
 
-        except Exception as ex:
-            print("Error on update %s: %s" % (actual_layer.keyname, ex.message))
-        db_session.flush()
+                # try to get actual feat
+                query_act = res.feature_query()
+                query_act.geom()
+                query_act.filter_by(feat_guid=feat_guid)
+                query_act.limit(1)
 
-    transaction.manager.commit()
-    db_session.close()
+                feature = None
+                for f in query_act():
+                    feature = f
+
+                if not feature:
+                    continue  # temporary
+                    # it's was deleted? recreate it
+                    new_feat = Feature(fields=original_feature.fields, geom=original_feature.geom)
+                    new_feat.fields['change_author'] = u'Мобильное приложение'
+                    new_feat.fields['change_date'] = new_feat.fields['built_date']
+                    feature = res.feature_create(new_feat)
+                else:
+                    # point already exists
+
+                    # reset geom and fields
+                    old_point = feature.geom
+                    new_point = original_feature.geom
+                    feature.geom = original_feature.geom
+
+                    for k,v in original_feature.fields.iteritems():
+                        feature.fields[k] = v
+                    feature.fields['change_author'] = u'Мобильное приложение'
+                    feature.fields['change_date'] = feature.fields['built_date']
+
+                    # update feature
+                    if IWritableFeatureLayer.providedBy(res):
+                        res.feature_put(feature)
+                    else:
+                        return error_response(u'Ресурс не поддерживает хранение геометрий')
+
+                    # replace lines
+                    replace_lines_to_point(line_lyrs, old_point, new_point)
+
+                # TODO: photo reset!
+
+        transaction.manager.commit()
+    except Exception as ex:
+        return error_response(ex.message)
+
+    resp = {'status': 'ok'}
+    return Response(json.dumps(resp))
