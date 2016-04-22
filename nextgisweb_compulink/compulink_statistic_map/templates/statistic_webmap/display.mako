@@ -53,7 +53,7 @@
             "ngw-compulink-admin/reference_books/BuildingObjectsRelationSelect",
             "dijit/form/DateTextBox",
             "ngw-compulink-statistic-map/Display",
-            "ngw-compulink-statistic-map/DisplayHeader"
+            "ngw-compulink-site/DisplayHeader"
         ], function (parser, ready, RelationSelect, RegionSelect,
                      BuildingObjectsRelationSelect, DateTextBox) {
             ready(function () {
@@ -81,7 +81,7 @@
              data-dojo-props="region: 'top'"
              style="width: 100%; overflow:visible;">
             <div data-dojo-id="displayHeader"
-                 data-dojo-type="ngw-compulink-statistic-map/DisplayHeader"
+                 data-dojo-type="ngw-compulink-site/DisplayHeader"
                  data-dojo-props="">
             </div>
         </div>

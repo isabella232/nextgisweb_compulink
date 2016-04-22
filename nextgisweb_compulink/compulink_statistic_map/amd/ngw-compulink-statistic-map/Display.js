@@ -40,7 +40,7 @@ define([
     "ngw-compulink-statistic-map/EventsMediator",
     "ngw-compulink-statistic-map/SelectedResourcesTable",
     "ngw-compulink-statistic-map/CadastreOverlay",
-    "ngw-compulink-statistic-map/DisplayHeader",
+    "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
     "ngw-webmap/ImageAdapter",
     // settings
