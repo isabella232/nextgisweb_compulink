@@ -35,10 +35,10 @@ define([
     "ngw-webmap/tool/Base",
     "ngw-webmap/tool/Zoom",
     "ngw-webmap/tool/Measure",
-    "ngw-compulink-statistic-map/EventsMediator",
     "ngw-compulink-statistic-map/SelectedResourcesTable",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
+    "ngw-compulink-statistic-map/LevelLayersManager",
     "ngw-compulink-statistic-map/StatisticToolbar",
     "ngw-webmap/ImageAdapter",
     // settings
@@ -94,10 +94,10 @@ define([
     ToolBase,
     ToolZoom,
     ToolMeasure,
-    EventsMediator,
     SelectedResourcesTable,
     DisplayHeader,
     LayersLoadingIndicator,
+    LevelLayersManager,
     StatisticToolbar,
     Adapter,
     clientSettings
@@ -272,12 +272,12 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
 
             all([this._mapDeferred, this._postCreateDeferred]).then(
                 function () {
+                    /*
                     // Формируем список слоев базовых карты в списке выбора
                     array.forEach(Object.keys(widget.map.layers), function (key) {
                         var layer = widget.map.layers[key];
@@ -294,6 +294,7 @@ define([
                         widget.map.olMap.setBaseLayer(widget.map.layers[newVal].olLayer);
                     });
                     if (widget._urlParams.base) { widget.basemapSelect.set("value", widget._urlParams.base); }
+                    */
                 }
             ).then(undefined, function (err) { console.error(err); });
 
@@ -568,6 +569,7 @@ define([
             this._zoomToInitialExtent();
 
             new LayersLoadingIndicator(this.map);
+            new LevelLayersManager(this.map);
 
             this._mapDeferred.resolve();
         },
