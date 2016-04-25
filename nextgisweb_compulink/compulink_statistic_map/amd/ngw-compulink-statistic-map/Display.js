@@ -26,8 +26,6 @@ define([
     "dojo/store/JsonRest",
     "dojo/request/xhr",
     "dojo/data/ItemFileWriteStore",
-    "cbtree/models/TreeStoreModel",
-    "cbtree/model/ForestStoreModel",
     "cbtree/Tree",
     "cbtree/store/Memory",
     "dojo/store/Cache",
@@ -39,7 +37,6 @@ define([
     "ngw-webmap/tool/Measure",
     "ngw-compulink-statistic-map/EventsMediator",
     "ngw-compulink-statistic-map/SelectedResourcesTable",
-    "ngw-compulink-statistic-map/CadastreOverlay",
     "ngw-compulink-statistic-map/DisplayHeader",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
     "ngw-webmap/ImageAdapter",
@@ -88,8 +85,6 @@ define([
     JsonRest,
     xhr,
     ItemFileWriteStore,
-    TreeStoreModel,
-    ForestStoreModel,
     Tree,
     Memory,
     Cache,
@@ -100,7 +95,6 @@ define([
     ToolMeasure,
     EventsMediator,
     SelectedResourcesTable,
-    CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
     Adapter,
@@ -248,19 +242,10 @@ define([
                 });
             }, this);
 
-            // Хранилище
-            this._itemStoreSetup();
 
             this._mapDeferred.then(
                 function () { widget._itemStorePrepare(); }
             );
-
-            // Модель
-            this.itemModel = new TreeStoreModel({
-                store: this.itemStore,
-                checkedAttr: "checked",
-                query: { type: "root" }
-            });
 
             this.displayProjection = new openlayers.Projection("EPSG:3857");
             this.lonlatProjection = new openlayers.Projection("EPSG:4326");
@@ -275,44 +260,16 @@ define([
                     .transform(this.lonlatProjection, this.displayProjection);
             }
 
-            // Дерево элементов слоя
-            this.itemTree = new Tree({
-                style: "height: 100%",
-                model: this.itemModel,
-                autoExpand: true,
-                showRoot: false
-            });
-
-            // Размещаем дерево, когда виджет будет готов
-            // all([this._layersDeferred, this._postCreateDeferred]).then(
-            //     function () { widget.itemTree.placeAt(widget.layerTreePane); }
-            // ).then(undefined, function (err) { console.error(err); });
-
             // Загружаем закладки, когда кнопка будет готова
             this._postCreateDeferred.then(
                 function () { widget.loadBookmarks(); }
             ).then(undefined, function (err) { console.error(err); });
 
-            // Выбранный элемент
-            this.itemTree.watch("selectedItem", function (attr, oldVal, newVal) {
-                widget.set(
-                    "itemConfig",
-                    widget._itemConfigById[widget.itemStore.getValue(newVal, "id")]
-                );
-                widget.set("item", newVal);
-            });
 
             // Карта
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
-                    resourcesTypeSelector.selectResourceType('vols');
-                    this.LayersSelector.selectLayers([
-                        'actual_real_special_transition', 'actual_real_special_transition_point',
-                        'actual_real_optical_cable', 'actual_real_optical_cable_point',
-                        'actual_real_fosc', 'actual_real_optical_cross', 'actual_real_access_point'
-                    ], 'focl_struct');
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
@@ -370,24 +327,6 @@ define([
                     widget._pluginsSetup();
                 }
             ).then(undefined, function (err) { console.error(err); });
-
-            // Свернем те элементы дерева, которые не отмечены как развернутые.
-            // По-умолчанию все элементы развернуты за счет autoExpand у itemTree
-            all([this._itemStoreDeferred, widget.itemTree.onLoadDeferred]).then(
-                function () {
-                    widget.itemStore.fetch({
-                        queryOptions: { deep: true },
-                        onItem: function (item) {
-                            var node = widget.itemTree.getNodesByItem(item)[0],
-                                config = widget._itemConfigById[widget.itemStore.getValue(item, "id")];
-                            if (node && config.type === "group" && !config.expanded) {
-                                node.collapse();
-                            }
-                        }
-                    });
-                }
-            ).then(undefined, function (err) { console.error(err); });
-
 
             // Инструменты
             this.tools = [];
@@ -521,46 +460,6 @@ define([
             }
         },
 
-        _itemStoreSetup: function () {
-            var itemConfigById = {};
-
-            function prepare_item(item) {
-                // В хранилище переносим только самое необходимое и то, что
-                // может меняться в процессе работы с картой.
-                var copy = {
-                    id: item.id,
-                    type: item.type,
-                    label: item.label
-                };
-
-                if (copy.type === "layer") {
-                    copy.layerId = item.layerId;
-                    copy.styleId = item.styleId;
-
-                    copy.visibility = null;
-                    copy.checked = item.visibility;
-
-                } else if (copy.type === "group" || copy.type === "root") {
-                    copy.children = array.map(item.children, function (c) { return prepare_item(c); });
-                }
-
-                // Для всего остального строим индекс
-                itemConfigById[item.id] = item;
-
-                return copy;
-            }
-
-            var rootItem = prepare_item(this.config.rootItem);
-
-            this.itemStore = new CustomItemFileWriteStore({data: {
-                identifier: "id",
-                label: "label",
-                items: [ rootItem ]
-            }});
-
-            this._itemConfigById = itemConfigById;
-        },
-
         _itemStorePrepare: function () {
             var widget = this;
 
@@ -631,9 +530,9 @@ define([
             });
 
             // При изменении размеров контейнера пересчитываем размер карты
-            aspect.after(this.mapPane, "resize", function() {
-                widget.map.olMap.updateSize();
-            });
+            // aspect.after(this.mapPane, "resize", function() {
+            //     widget.map.olMap.updateSize();
+            // });
 
             // Инициализация базовых слоев
             var idx = 0;
@@ -663,9 +562,6 @@ define([
             this.zoomToInitialExtentButton.on("click", function() {
                 widget._zoomToInitialExtent();
             });
-
-            this.cadastre = CadastreOverlay(this.map);
-            widget.pkkCheck.on("change",  lang.hitch(this.cadastre, this.cadastre.switchLayer) );
 
             this._zoomToInitialExtent();
 
