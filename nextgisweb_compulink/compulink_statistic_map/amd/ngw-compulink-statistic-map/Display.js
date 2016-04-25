@@ -37,7 +37,7 @@ define([
     "ngw-webmap/tool/Measure",
     "ngw-compulink-statistic-map/EventsMediator",
     "ngw-compulink-statistic-map/SelectedResourcesTable",
-    "ngw-compulink-statistic-map/DisplayHeader",
+    "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
     "ngw-compulink-statistic-map/StatisticToolbar",
     "ngw-webmap/ImageAdapter",
