@@ -1,0 +1,48 @@
+#statisticToolbar span.dijitInline.dijitIcon {
+    width: 16px;
+    height: 16px;
+    -webkit-background-size: cover; /* For WebKit*/
+    -moz-background-size: cover; /* Mozilla*/
+    -o-background-size: cover; /* Opera*/
+    background-size: cover; /* Generic*/
+}
+
+#statisticToolbar span.dijitDisabled {
+    opacity: 0.3;
+}
+
+#statisticToolbar span.selectAndMove {
+    background: url('img/select_move.png') no-repeat;
+}
+
+#statisticToolbar span.removeFeature {
+    background: url('img/remove_feature.png') no-repeat;
+}
+
+#statisticToolbar span.iconCreateSp {
+    background: url('img/create_sp.png') no-repeat;
+}
+
+#statisticToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#statisticToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#statisticToolbar span.iconCreateVols {
+    background: url('img/create_vols.png') no-repeat;
+}
+
+#statisticToolbar span.undoOne {
+    background: url('img/undo-one.png') no-repeat;
+}
+
+#statisticToolbar span.undoAll {
+    background: url('img/undo-all.png') no-repeat;
+}
+
+#statisticToolbar span.updateLines {
+    background: url('img/update_line.png') no-repeat;
+}

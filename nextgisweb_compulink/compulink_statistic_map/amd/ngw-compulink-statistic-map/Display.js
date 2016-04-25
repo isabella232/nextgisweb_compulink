@@ -39,6 +39,7 @@ define([
     "ngw-compulink-statistic-map/SelectedResourcesTable",
     "ngw-compulink-statistic-map/DisplayHeader",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
+    "ngw-compulink-statistic-map/StatisticToolbar",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -97,6 +98,7 @@ define([
     SelectedResourcesTable,
     DisplayHeader,
     LayersLoadingIndicator,
+    StatisticToolbar,
     Adapter,
     clientSettings
 ) {
