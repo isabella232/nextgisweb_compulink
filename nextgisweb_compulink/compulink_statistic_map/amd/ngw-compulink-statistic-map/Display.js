@@ -19,7 +19,9 @@ define([
     "dijit/registry",
     "dijit/form/DropDownButton",
     "dijit/DropDownMenu",
+    "dijit/form/ComboButton",
     "dijit/MenuItem",
+    "dijit/Menu",
     "dijit/layout/ContentPane",
     "dijit/form/ToggleButton",
     "dojo/dom-style",
@@ -79,7 +81,9 @@ define([
     registry,
     DropDownButton,
     DropDownMenu,
+    ComboButton,
     MenuItem,
+    Menu,
     ContentPane,
     ToggleButton,
     domStyle,
@@ -277,18 +281,31 @@ define([
 
             all([this._mapDeferred, this._postCreateDeferred]).then(
                 function () {
-                    /*
                     // Формируем список слоев базовых карты в списке выбора
+                    baseLayersMenu = new Menu({ style: "display: none;"});
+
                     array.forEach(Object.keys(widget.map.layers), function (key) {
                         var layer = widget.map.layers[key];
                         if (layer.isBaseLayer) {
-                            widget.basemapSelect.addOption({
+                            var menuItem = new MenuItem({
+                                label: layer.title,
                                 value: key,
-                                label: layer.title
+                                onClick: lang.hitch(this, function(){
+                                    widget.map.olMap.setBaseLayer(widget.map.layers[key].olLayer);
+                                    widget.basemapSelect.set('label', layer.title);
+                                })
                             });
+                            baseLayersMenu.addChild(menuItem);
                         }
                     });
 
+                    baseLayersMenu.startup();
+                    widget.basemapSelect.dropDown = baseLayersMenu;
+                    widget.basemapSelect.label = baseLayersMenu.getChildren()[0].label;
+                    widget.basemapSelect.set('label', baseLayersMenu.getChildren()[0].label);
+
+
+                    /*
                     // И добавляем возможность переключения
                     widget.basemapSelect.watch("value", function (attr, oldVal, newVal) {
                         widget.map.olMap.setBaseLayer(widget.map.layers[newVal].olLayer);
@@ -533,7 +550,7 @@ define([
             });
 
             // При изменении размеров контейнера пересчитываем размер карты
-            // aspect.after(this.mapPane, "resize", function() {
+            // aspect.after(this.mapPane, "resize", function() {f
             //     widget.map.olMap.updateSize();
             // });
 
