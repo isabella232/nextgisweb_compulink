@@ -17,6 +17,7 @@ define([
     "put-selector/put",
     "ngw/route",
     "ngw-feature-layer/DisplayWidget",
+    "ngw-compulink-site/ConfirmDialog",
     "dojo/text!./resource/FotoDisplayWidget.html",
     "dojo/text!./resource/FotoDisplayWidgetItem.html",
     "dojo/NodeList-traverse",
@@ -40,6 +41,7 @@ define([
              put,
              route,
              DisplayWidget,
+             ConfirmDialog,
              template,
              templateItem) {
     function fileSizeToString(size) {
@@ -178,25 +180,48 @@ define([
                 evt.preventDefault();
             });
 
-            on(query("div.remove", imageElement), "click", lang.hitch(this, function (evt) {
-                var removeUrlTmpl = new dtlBase.Template("/api/resource/{{id}}/feature/{{fid}}/attachment/{{aid}}", true),
-                    removeUrlContext = new dtlBase.Context({
-                        id: resourceId,
-                        fid: fid,
-                        aid: aid
-                    }),
-                    removeUrl = removeUrlTmpl.render(removeUrlContext),
-                    imageElement = evt.target.parentElement;
+            var removeDiv = query("div.remove", imageElement)[0];
+            removeDiv._aid = aid;
 
-                xhr(ngwConfig.applicationUrl + removeUrl, {
-                    handleAs: "json",
-                    method: "DELETE"
-                }).then(lang.hitch(this, function (data) {
-                    domConstruct.destroy(imageElement);
-                    this.updateTitle();
-                }));
-
+            on(removeDiv, "click", lang.hitch(this, function (evt) {
+                this.removeImage(this.resourceId, this.featureId, evt.target._aid, evt);
                 evt.preventDefault();
+            }));
+        },
+
+        removeImage: function (resourceId, featureId, attachmentId, evt) {
+            this._removeConfirmDialog = new ConfirmDialog({
+                title: "Удаление фото",
+                id: "fotoRemoveConfirmDialog",
+                message: "Удалить фото?",
+                buttonOk: "Да",
+                buttonCancel: "Отменить",
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._removeImage(resourceId, featureId, attachmentId, evt.target.parentElement);
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                    this._removeConfirmDialog = null;
+                })
+            });
+            this._removeConfirmDialog.show();
+        },
+
+        _removeImage: function (resourceId, featureId, attachmentId, removeImageElement) {
+            var removeUrlTmpl = new dtlBase.Template("/api/resource/{{id}}/feature/{{fid}}/attachment/{{aid}}", true),
+                removeUrlContext = new dtlBase.Context({
+                    id: resourceId,
+                    fid: featureId,
+                    aid: attachmentId
+                }),
+                removeUrl = removeUrlTmpl.render(removeUrlContext);
+
+            xhr(ngwConfig.applicationUrl + removeUrl, {
+                handleAs: "json",
+                method: "DELETE"
+            }).then(lang.hitch(this, function (data) {
+                domConstruct.destroy(removeImageElement);
+                this.updateTitle();
             }));
         }
     });
