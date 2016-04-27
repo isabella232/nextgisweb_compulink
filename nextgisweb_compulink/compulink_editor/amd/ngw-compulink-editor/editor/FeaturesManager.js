@@ -443,7 +443,8 @@ define([
 
             var isStartPointExist = this._startPoint !== null;
 
-            if (isStartPointExist && this._startPoint.geometry.components[0].equals(e.feature.geometry.components[0])) {
+            if (isStartPointExist &&
+                this._startPoint.geometry.components[0].equals(e.feature.geometry.components[0])) {
                 return false;
             }
             if (!this._verifySpPoint(e.feature)) {
@@ -452,6 +453,7 @@ define([
             if (isStartPointExist) {
                 this._createLine(e.feature);
             } else {
+                this._creatingLineNow = false;
                 this._createSkecthLine(e.feature);
             }
         },
@@ -477,7 +479,14 @@ define([
             this._map.olMap.events.register('mousemove', this._map.olMap, this._mouseMoveHandler);
         },
 
+        _creatingLineNow: false,
         _createLine: function (endPoint) {
+            if (this._creatingLineNow) {
+                return false;
+            } else {
+                this._creatingLineNow = true;
+            }
+
             var lineInfo = {
                 start: {
                     ngwLayerId: this._startPoint.attributes.ngwLayerId,
