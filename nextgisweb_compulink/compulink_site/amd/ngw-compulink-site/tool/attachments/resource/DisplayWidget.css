@@ -45,10 +45,6 @@
     right: 0;
     background-image: url("DisplayWidget/remove.png");
     cursor: pointer;
-    opacity: 0.6;
-}
-
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.remove:hover {
     opacity: 1;
 }
 
@@ -64,6 +60,7 @@
 .ngw-feature-attachment-FotoDisplayWidget.compact div.image div.imgWrapper {
     width: 64px;
     height: 64px;
+    cursor: pointer;
 }
 
 .ngw-feature-attachment-FotoDisplayWidget div.image img {
