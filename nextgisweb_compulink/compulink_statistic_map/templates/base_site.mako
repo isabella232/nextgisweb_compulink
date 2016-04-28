@@ -72,6 +72,7 @@
                 userName: '${request.user}',
                 reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
                 reportUcnUrl: '${request.route_url('compulink.reports.ucn')}',
+                statisticMapUrl: '${request.route_url('compulink.statistic_map.map')}',
                 logoutUrl: '${request.route_url('auth.logout')}'
             %endif
         }
