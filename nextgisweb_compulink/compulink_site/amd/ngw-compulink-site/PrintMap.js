@@ -68,6 +68,10 @@ define([
                 window.print();
             }));
 
+            on(this.content.cancelButton, 'click', lang.hitch(this, function () {
+                this.hide();
+            }));
+
             on(this.content.sizesSelect, 'change', lang.hitch(this, function () {
                 var sizeValues = this.content.sizesSelect.get('value'),
                     parsedSizeValues, height, width;
