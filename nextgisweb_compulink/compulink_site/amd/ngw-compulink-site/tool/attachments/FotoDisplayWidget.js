@@ -4,6 +4,7 @@ define([
     "dojo/_base/lang",
     "dojo/dom-class",
     "dojo/dom-construct",
+    "dojo/dom-attr",
     "dojo/query",
     "dojo/on",
     "dojo/html",
@@ -28,6 +29,7 @@ define([
              lang,
              domClass,
              domConstruct,
+             domAttr,
              query,
              on,
              html,
@@ -71,6 +73,10 @@ define([
                     url: ngwConfig.applicationUrl + "/api/component/file_upload/upload",
                     name: 'file'
                 }).placeAt(query("div.panel", this.domNode)[0]);
+
+                array.forEach(query('input', uploader.domNode), function (node) {
+                    domAttr.set(node, 'accept', 'image/*');
+                });
 
                 uploader.on("complete", lang.hitch(this, function (data) {
                     array.forEach(data.upload_meta, function (f) {
