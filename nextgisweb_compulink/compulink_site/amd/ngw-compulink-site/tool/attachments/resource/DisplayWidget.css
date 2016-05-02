@@ -24,7 +24,8 @@
     overflow: auto;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image {
+.ngw-feature-attachment-FotoDisplayWidget.compact div.image,
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file {
     position: relative;
     display: block;
     float: left;
@@ -36,7 +37,8 @@
     border: solid 1px #BBBBBB;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.remove {
+.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.remove,
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file div.remove {
     width: 16px;
     height: 16px;
     display: block;
@@ -48,7 +50,8 @@
     opacity: 1;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.title {
+.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.title,
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file div.title {
     width: 48px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -57,10 +60,21 @@
     position: relative;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.imgWrapper {
+.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.imgWrapper,
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file a.fileWrapper {
+    display: block;
     width: 64px;
     height: 64px;
     cursor: pointer;
+}
+
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file a.fileWrapper {
+    text-decoration: none;
+    color: #B5BCC7;
+}
+
+.ngw-feature-attachment-FotoDisplayWidget div.file a.fileWrapper:hover{
+    color: #686c72;
 }
 
 .ngw-feature-attachment-FotoDisplayWidget div.image img {
@@ -71,6 +85,20 @@
     cursor: pointer;
     display: block;
 }
+
+.ngw-feature-attachment-FotoDisplayWidget div.file div.extension {
+    font-size: 20px;
+    font-weight: bold;
+
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    cursor: pointer;
+    display: block;
+}
+
+
 
 .ngw-feature-attachment-FotoDisplayWidget table { clear: both; width: 100%; margin-top: 1ex; }
 
