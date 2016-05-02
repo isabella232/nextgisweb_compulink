@@ -74,9 +74,7 @@ define([
                     name: 'file'
                 }).placeAt(query("div.panel", this.domNode)[0]);
 
-                array.forEach(query('input', uploader.domNode), function (node) {
-                    domAttr.set(node, 'accept', 'image/*');
-                });
+                this.setUploaderAccept(uploader);
 
                 uploader.on("complete", lang.hitch(this, function (data) {
                     array.forEach(data.upload_meta, function (f) {
@@ -108,10 +106,17 @@ define([
                                 size: f.size
                             });
                             this.updateTitle();
+                            this.setUploaderAccept(uploader);
                         }));
                     }, this);
                 }));
             }));
+        },
+
+        setUploaderAccept: function (uploader) {
+            array.forEach(query('input', uploader.domNode), function (node) {
+                domAttr.set(node, 'accept', 'image/*');
+            });
         },
 
         buildRendering: function () {
