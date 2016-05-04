@@ -1,6 +1,8 @@
-<div class="file">
+<div class="file {% if removable %}web{% endif %}">
     <a class="fileWrapper" href="{{url}}" title="{{title}}">
         <div class="extension">{{extension}}</div>
     </a>
+    {% if removable %}
     <div class="remove"></div>
+    {% endif %}
 </div>
