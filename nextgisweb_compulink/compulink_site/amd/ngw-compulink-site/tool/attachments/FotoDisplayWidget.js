@@ -56,6 +56,8 @@ define([
         return size.toFixed(1) + " " + units[i];
     }
 
+    var DESCRIPTION_PREDICAT = "[WEB]";
+
     return declare([DisplayWidget], {
         title: "Прикрепленные файлы",
 
@@ -96,13 +98,15 @@ define([
                                 },
                                 mime_type: f.mime_type,
                                 name: f.name,
-                                size: f.size
+                                size: f.size,
+                                description: DESCRIPTION_PREDICAT
                             })
                         }).then(lang.hitch(this, function (data) {
                             this.renderImage(this.resourceId, this.featureId, {
                                 id: data.id,
                                 mime_type: f.mime_type,
                                 name: f.name,
+                                description: DESCRIPTION_PREDICAT,
                                 size: f.size
                             });
                             this.updateTitle();
@@ -174,10 +178,12 @@ define([
                     aid: aid
                 }) + (this.compact ? "?size=64x64" : "?size=128x128");
 
-            var tmpl = new dtl.Template(templateItem);
+            var tmpl = new dtl.Template(templateItem),
+                removable = image.description && image.description.indexOf(DESCRIPTION_PREDICAT > -1);
             var context = new dtlContext({
                 title: image.name,
-                url: src
+                url: src,
+                removable: removable
             });
             var imageElement = domConstruct.place(tmpl.render(context),
                 query("div.photo-content", this.domNode)[0],
@@ -191,13 +197,14 @@ define([
                 evt.preventDefault();
             });
 
-            var removeDiv = query("div.remove", imageElement)[0];
-            removeDiv._aid = aid;
-
-            on(removeDiv, "click", lang.hitch(this, function (evt) {
-                this.removeImage(this.resourceId, this.featureId, evt.target._aid, evt);
-                evt.preventDefault();
-            }));
+            if (removable) {
+                var removeDiv = query("div.remove", imageElement)[0];
+                removeDiv._aid = aid;
+                on(removeDiv, "click", lang.hitch(this, function (evt) {
+                    this.removeImage(this.resourceId, this.featureId, evt.target._aid, evt);
+                    evt.preventDefault();
+                }));
+            }
         },
 
         removeImage: function (resourceId, featureId, attachmentId, evt) {

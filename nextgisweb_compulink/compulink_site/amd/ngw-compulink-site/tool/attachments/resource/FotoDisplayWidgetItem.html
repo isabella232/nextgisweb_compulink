@@ -1,6 +1,8 @@
-<div class="image">
+<div class="image {% if removable %}web{% endif %}">
     <div class="imgWrapper" title="{{title}}">
         <img src="{{url}}"/>
     </div>
+    {% if removable %}
     <div class="remove"></div>
+    {% endif %}
 </div>
