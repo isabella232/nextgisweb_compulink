@@ -55,6 +55,10 @@ def setup_pyramid(comp, config):
         '/compulink/editor').add_view(show_map)
 
     config.add_route(
+        'compulink.player.map',
+        '/compulink/player').add_view(show_map_player)
+
+    config.add_route(
         'compulink.editor.json',
         '/compulink/editor/resources/child').add_view(get_child_resx_by_parent)
 
@@ -210,6 +214,20 @@ def _get_user_resources_tree(user):
 
 
 def show_map(request):
+    values = _get_values_for_display(request)
+    return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
+                              values,
+                              request=request)
+
+
+def show_map_player(request):
+    values = _get_values_for_display(request)
+    return render_to_response('nextgisweb_compulink:compulink_editor/templates/player/display.mako',
+                              values,
+                              request=request)
+
+
+def _get_values_for_display(request):
     resource_id = int(request.GET['resource_id'])
     dbsession = DBSession()
     resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
@@ -241,9 +259,7 @@ def show_map(request):
         editable_layers_info=editable_layers_view_model
     )
 
-    return render_to_response('nextgisweb_compulink:compulink_editor/templates/monitoring_webmap/display.mako',
-                              values,
-                              request=request)
+    return values
 
 
 def _extent_3857_to_4326(extent3857):
