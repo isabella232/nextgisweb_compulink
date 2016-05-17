@@ -143,6 +143,14 @@ define([
                 })
             }));
 
+            this._menu.addChild(new MenuItem({
+                label: 'Проиграть',
+                onClick: lang.hitch(this, function (evt) {
+                    window.open(displayConfig.playerUrl +
+                        '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0]);
+                })
+            }));
+
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
             aspect.after(this._grid, 'renderRow', function(row, args) {
 
