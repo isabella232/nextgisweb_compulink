@@ -85,7 +85,8 @@
                 ],
                 "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
             },
-            editorUrl: "${request.route_url('compulink.editor.map')}"
+            editorUrl: "${request.route_url('compulink.editor.map')}",
+            playerUrl: "${request.route_url('compulink.player.map')}"
         };
 
         require([
