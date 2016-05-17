@@ -575,6 +575,7 @@ define([
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
                 this._createFeatures(ngwFeatureItems);
+                topic.publish('features/manager/filled', this);
                 deferred.resolve();
             }));
 
