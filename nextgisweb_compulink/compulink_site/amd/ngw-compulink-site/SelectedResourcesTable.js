@@ -144,7 +144,7 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Проиграть',
+                label: 'Проиграть ход строительства',
                 onClick: lang.hitch(this, function (evt) {
                     window.open(displayConfig.playerUrl +
                         '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0]);
