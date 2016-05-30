@@ -2,6 +2,7 @@ define([
     'dojo/_base/window',
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/dom-construct',
     'dojo/query',
     'dojo/on',
@@ -16,7 +17,8 @@ define([
     'xstyle/css!ngw-compulink-libs/font-awesome-4.6.3/css/font-awesome.min.css',
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
-], function (win, declare, lang, domConstruct, query, on, topic, FloatingPane, mustache, vis, template) {
+], function (win, declare, lang, array, domConstruct, query, on,
+             topic, FloatingPane, mustache, vis, template) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -41,10 +43,10 @@ define([
                 title: 'Плеер',
                 content: htmlContent,
                 closable: false,
-                resizable: false,
+                resizable: true,
                 dockable: false,
                 maxable: false,
-                style: 'position:absolute;top:100px;left:100px;width:500px;height:400px;visibility:hidden;'
+                style: 'position:absolute;top:100px;left:100px;width:500px;height:162px;visibility:hidden;'
             }, floatingDiv);
             this._dialog.startup();
             this._dialog.show();
@@ -54,25 +56,31 @@ define([
         },
 
         _buildTimeline: function (featureManager) {
-            var dataSetItems = [],
-                date_ms;
+            var dataSetItems = [];
 
             this._featureManager = featureManager;
 
-            for (date_ms in featureManager._featuresByBuiltDate) {
-                date_ms = parseInt(date_ms, 10);
-                if (featureManager._featuresByBuiltDate.hasOwnProperty(date_ms)) {
-                    dataSetItems.push({
-                        id: date_ms,
-                        content: "+" + featureManager._featuresByBuiltDate[date_ms].length,
-                        start: new Date(date_ms)
-                    });
-                }
-            }
+            array.forEach(featureManager._layer.features, function (feature) {
+                dataSetItems.push({
+                    id: feature.id,
+                    content: '',
+                    start: feature.attributes.built_date
+                });
+            });
+
+            dataSetItems.push({
+                id: 'rangeBuilt',
+                content: '',
+                start: featureManager._minBuiltDate,
+                end: featureManager._maxBuiltDate
+            });
+
 
             var options = {
-                height: '352px',
-                locale: 'ru'
+                height: '100px',
+                locale: 'ru',
+                stack: false,
+                selectable: false
             };
 
             var timeline = new vis.Timeline(this._timelineWidgetDiv, new vis.DataSet(dataSetItems), options);

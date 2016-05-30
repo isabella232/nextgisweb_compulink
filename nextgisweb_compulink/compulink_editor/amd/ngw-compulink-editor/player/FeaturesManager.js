@@ -25,9 +25,9 @@ define([
                     feature = this._wkt.read(ngwFeature.geom);
                     feature.attributes.keyname = editableLayerInfo.layerKeyname;
                     built_date = ngwFeature.fields.built_date;
-                    feature.attributes.built_date = built_date;
-                    feature.attributes.built_date = new Date(built_date.year, built_date.month, built_date.day + 1,
-                        0, 0, 0);
+                    //feature.attributes.built_date = built_date;
+                    feature.attributes.built_date = new Date(built_date.year, built_date.month, built_date.day,
+                        built_date.hour, built_date.minute, built_date.second);
                     built_date_ms = feature.attributes.built_date.getTime();
                     if (!this._featuresByBuiltDate.hasOwnProperty(built_date_ms)) {
                         this._featuresByBuiltDate[built_date_ms] = [];

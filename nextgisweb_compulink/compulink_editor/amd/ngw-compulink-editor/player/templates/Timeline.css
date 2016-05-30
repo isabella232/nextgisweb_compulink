@@ -17,3 +17,16 @@ div.timeline i.fa {
 div.timeline i.fa:hover {
     color: #0166FF;
 }
+
+div.timeline div.vis-foreground div.vis-group {
+    height: 100% !important;
+}
+
+div.timeline div.vis-item.vis-range.vis-readonly {
+    top: 0 !important;
+    bottom: 0;
+}
+
+div.timeline div.vis-custom-time.currentTime {
+    background-color: red;
+}
