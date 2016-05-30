@@ -46,7 +46,7 @@ define([
                 resizable: true,
                 dockable: false,
                 maxable: false,
-                style: 'position:absolute;top:100px;left:100px;width:500px;height:162px;visibility:hidden;'
+                style: 'position:absolute;top:100px;left:100px;width:500px;height:145px;visibility:hidden;'
             }, floatingDiv);
             this._dialog.startup();
             this._dialog.show();
