@@ -37,11 +37,6 @@
     border: solid 1px #BBBBBB;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image.web,
-.ngw-feature-attachment-FotoDisplayWidget.compact div.file.web {
-    border: solid 1px #009B25;
-}
-
 .ngw-feature-attachment-FotoDisplayWidget.compact div.image div.remove,
 .ngw-feature-attachment-FotoDisplayWidget.compact div.file div.remove {
     width: 16px;
