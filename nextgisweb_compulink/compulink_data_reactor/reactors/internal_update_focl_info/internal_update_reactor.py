@@ -18,6 +18,7 @@ class InternalUpdateReactor(AbstractReactor):
 
     @classmethod
     def run(cls, env):
+        return  # disabled by request of Sergey
 
         db_session = DBSession()
         transaction.manager.begin()
