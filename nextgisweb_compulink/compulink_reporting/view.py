@@ -1,7 +1,9 @@
 # coding=utf-8
 import json
 import tempfile
-from datetime import datetime
+from datetime import datetime, date
+
+from dateutil.relativedelta import relativedelta
 from openpyxl import load_workbook
 from openpyxl.styles import Style
 from openpyxl.styles.numbers import FORMAT_PERCENTAGE
@@ -19,7 +21,7 @@ from nextgisweb.resource.model import ResourceACLRule, Resource
 from nextgisweb_compulink.compulink_admin import get_regions_from_resource, get_districts_from_resource, \
     get_project_statuses
 from nextgisweb_compulink.compulink_admin.model import FoclProject, FoclStruct, PROJECT_STATUS_DELIVERED, \
-    ConstructObject
+    ConstructObject, PROJECT_STATUS_BUILT
 from nextgisweb_compulink.compulink_admin.view import get_region_name, get_district_name
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from view_ucn import add_routes
@@ -93,35 +95,47 @@ def get_status_report(request):
 
     json_report = []
     num_line = 1
-    for row in report_query.all():
+    for row, const_obj in report_query.all():
         json_row = {
             'num_line': num_line,
-            'focl_name': row.focl_name,
+            'focl_name': const_obj.name,
             'region': regions.get(row.region, row.region),
             'district': districts.get(row.district, row.district),
             'status': statuses.get(row.status, row.status),
-            'subcontr_name': row.subcontr_name,
-            'start_build_time': row.start_build_time,
-            'end_build_time': row.end_build_time,
-            'cabling_plan': row.cabling_plan if row.cabling_plan else None,  # already in km
+            'subcontr_name': const_obj.subcontr_name,
+            'start_build_time': const_obj.start_build_date,
+            'end_build_time': const_obj.end_build_date,
+            'cabling_plan': const_obj.cabling_plan if const_obj.cabling_plan else None,  # already in km
             'cabling_fact': row.cabling_fact if row.cabling_fact else None,  # already in km
             'cabling_percent': row.cabling_percent,
-            'fosc_plan': row.fosc_plan,
+            'fosc_plan': const_obj.fosc_plan,
             'fosc_fact': row.fosc_fact,
             'fosc_percent': row.fosc_percent,
-            'cross_plan': row.cross_plan,
+            'cross_plan': const_obj.cross_plan,
             'cross_fact': row.cross_fact,
             'cross_percent': row.cross_percent,
-            'spec_trans_plan': row.spec_trans_plan,
+            'spec_trans_plan': const_obj.spec_trans_plan,
             'spec_trans_fact': row.spec_trans_fact,
             'spec_trans_percent': row.spec_trans_percent,
-            'ap_plan': row.ap_plan,
+            'ap_plan': const_obj.access_point_plan,
             'ap_fact': row.ap_fact,
             'ap_percent': row.ap_percent,
             'is_overdue': row.is_overdue,
             'is_month_overdue': row.is_month_overdue,
             'is_focl_delivered': row.status == PROJECT_STATUS_DELIVERED,
         }
+        # reset percantage
+        json_row['cabling_percent'] = _get_percentage(json_row['cabling_plan'], json_row['cabling_fact'])
+        json_row['fosc_percent'] = _get_percentage(json_row['fosc_plan'], json_row['fosc_fact'])
+        json_row['cross_percent'] = _get_percentage(json_row['cross_plan'], json_row['cross_fact'])
+        json_row['spec_trans_percent'] = _get_percentage(json_row['spec_trans_plan'], json_row['spec_trans_fact'])
+        json_row['ap_percent'] = _get_percentage(json_row['ap_plan'], json_row['ap_fact'])
+
+        #reset statuses
+        json_row['is_overdue'] = _is_overdue(const_obj.end_build_date, row.status)
+        json_row['is_month_overdue'] = _is_month_overdue(const_obj.end_build_date, row.status)
+
+
         json_report.append(json_row)
         num_line += 1
 
@@ -129,6 +143,31 @@ def get_status_report(request):
         json.dumps(json_report, cls=DateTimeJSONEncoder),
         content_type=b'application/json')
 
+
+def _is_overdue(end_build_time, status):
+    now_dt = date.today()
+    if end_build_time and now_dt > end_build_time and status not in [PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED]:
+        return True
+    else:
+        return False
+
+
+def _is_month_overdue(end_build_time, status):
+    if _is_overdue(end_build_time, status):
+        now_dt = date.today()
+        return now_dt - relativedelta(months=1) > end_build_time
+    else:
+        return False
+
+
+def _get_percentage(plan, fact):
+    if plan is None or fact is None:
+        percent = None
+    elif plan == 0:
+        percent = None
+    else:
+        percent = round(fact/float(plan) * 100.0)
+    return percent
 
 def export_status_report(request):
     """
@@ -253,43 +292,45 @@ def export_status_report(request):
         }
 
         num_line = 1
-        for row in report_query.all():
+        for row, const_obj in report_query.all():
             line_in_ws = 9 + num_line
+            cabling_plan = const_obj.cabling_plan if const_obj.cabling_plan else None
+            cabling_fact = row.cabling_fact if row.cabling_fact else None
 
             ws.cell(row=line_in_ws, column=1).value = num_line
-            ws.cell(row=line_in_ws, column=2).value = row.focl_name
+            ws.cell(row=line_in_ws, column=2).value = const_obj.name
             ws.cell(row=line_in_ws, column=3).value = regions.get(row.region, row.region)
             ws.cell(row=line_in_ws, column=4).value = districts.get(row.district, row.district)
             ws.cell(row=line_in_ws, column=5).value = statuses.get(row.status, row.status)
-            ws.cell(row=line_in_ws, column=6).value = row.subcontr_name
-            ws.cell(row=line_in_ws, column=7).value = row.start_build_time
-            ws.cell(row=line_in_ws, column=8).value = row.end_build_time
-            ws.cell(row=line_in_ws, column=9).value = row.cabling_plan if row.cabling_plan else None
-            ws.cell(row=line_in_ws, column=10).value = row.cabling_fact if row.cabling_fact else None
-            ws.cell(row=line_in_ws, column=11).value = row.cabling_percent
-            ws.cell(row=line_in_ws, column=12).value = row.fosc_plan
+            ws.cell(row=line_in_ws, column=6).value = const_obj.subcontr_name
+            ws.cell(row=line_in_ws, column=7).value = const_obj.start_build_date
+            ws.cell(row=line_in_ws, column=8).value = const_obj.end_build_date
+            ws.cell(row=line_in_ws, column=9).value = cabling_plan
+            ws.cell(row=line_in_ws, column=10).value = cabling_fact
+            ws.cell(row=line_in_ws, column=11).value = _get_percentage(cabling_plan, cabling_fact)
+            ws.cell(row=line_in_ws, column=12).value = const_obj.fosc_plan
             ws.cell(row=line_in_ws, column=13).value = row.fosc_fact
-            ws.cell(row=line_in_ws, column=14).value = row.fosc_percent
-            ws.cell(row=line_in_ws, column=15).value = row.cross_plan
+            ws.cell(row=line_in_ws, column=14).value = _get_percentage(const_obj.fosc_plan, row.fosc_fact)
+            ws.cell(row=line_in_ws, column=15).value = const_obj.cross_plan
             ws.cell(row=line_in_ws, column=16).value = row.cross_fact
-            ws.cell(row=line_in_ws, column=17).value = row.cross_percent
-            ws.cell(row=line_in_ws, column=18).value = row.spec_trans_plan
+            ws.cell(row=line_in_ws, column=17).value = _get_percentage(const_obj.cross_plan, row.cross_fact)
+            ws.cell(row=line_in_ws, column=18).value = const_obj.spec_trans_plan
             ws.cell(row=line_in_ws, column=19).value = row.spec_trans_fact
-            ws.cell(row=line_in_ws, column=20).value = row.spec_trans_percent
-            ws.cell(row=line_in_ws, column=21).value = row.ap_plan
+            ws.cell(row=line_in_ws, column=20).value = _get_percentage(const_obj.spec_trans_plan, row.spec_trans_fact)
+            ws.cell(row=line_in_ws, column=21).value = const_obj.access_point_plan
             ws.cell(row=line_in_ws, column=22).value = row.ap_fact
-            ws.cell(row=line_in_ws, column=23).value = row.ap_percent
+            ws.cell(row=line_in_ws, column=23).value = _get_percentage(const_obj.access_point_plan, row.ap_fact)
             # special format fo DT
             ws.cell(row=line_in_ws, column=7).style = dt_style
             ws.cell(row=line_in_ws, column=8).style = dt_style
 
-            if row.is_overdue:
+            if _is_overdue(const_obj.end_build_date, row.status):
                 for col in xrange(1, 23 + 1):
                     ws.cell(row=line_in_ws, column=col).style = overdue_style
                 ws.cell(row=line_in_ws, column=7).style = dt_overdue_style
                 ws.cell(row=line_in_ws, column=8).style = dt_overdue_style
 
-            if row.is_month_overdue:
+            if _is_month_overdue(const_obj.end_build_date, row.status):
                 for col in xrange(1, 23 + 1):
                     ws.cell(row=line_in_ws, column=col).style = month_overdue_style
                 ws.cell(row=line_in_ws, column=7).style = dt_month_overdue_style
@@ -350,7 +391,9 @@ def construct_query(request):
     status_filter = request.params.getall('status')
     project_filter = request.params.get('resource_id', None)
 
-    report_query = DBSession.query(ConstructionStatusReport)
+    report_query = DBSession.query(ConstructionStatusReport, ConstructObject)\
+        .outerjoin(ConstructObject, ConstructObject.resource_id == ConstructionStatusReport.focl_res_id)
+
     if region_filter:
         report_query = report_query.filter(ConstructionStatusReport.region == region_filter)
     if district_filter:
