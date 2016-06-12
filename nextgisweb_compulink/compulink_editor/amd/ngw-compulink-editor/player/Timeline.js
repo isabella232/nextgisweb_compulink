@@ -116,6 +116,12 @@ define([
                 console.log(e);
             }));
 
+            this._timeline = timeline;
+
+            this._bindPlayerControlsEvents();
+        },
+
+        _bindPlayerControlsEvents: function () {
             on(query('i.fa-play-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
                 var barTime = timeline.getCustomTime(this._barId);
                 this.play(barTime, 1);
@@ -125,7 +131,13 @@ define([
                 this.stop();
             }));
 
-            this._timeline = timeline;
+            on(query('i.fa-fast-backward', this._dialog.domNode), 'click', lang.hitch(this, function () {
+                this._timeline.setCustomTime(this._featureManager.minBuiltDate, this._barId);
+            }));
+
+            on(query('i.fa-fast-forward', this._dialog.domNode), 'click', lang.hitch(this, function () {
+                this._timeline.setCustomTime(this._featureManager.maxBuiltDate, this._barId);
+            }));
         },
 
         _buildSpeedSelectors: function () {
