@@ -30,3 +30,11 @@ div.timeline div.vis-item.vis-range.vis-readonly {
 div.timeline div.vis-custom-time.currentTime {
     background-color: red;
 }
+
+i.fa-fast-backward {
+    margin-right: 5px;
+}
+
+i.fa-fast-forward {
+    margin-left: 5px;
+}
