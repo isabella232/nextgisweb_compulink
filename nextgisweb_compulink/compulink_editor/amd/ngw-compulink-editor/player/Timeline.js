@@ -4,10 +4,12 @@ define([
     'dojo/_base/lang',
     'dojo/_base/array',
     'dojo/dom-construct',
+    'dojo/dom',
     'dojo/query',
     'dojo/on',
     'dojo/topic',
     'dojox/layout/FloatingPane',
+    'dijit/form/Select',
     'ngw-compulink-libs/mustache/mustache',
     'ngw-compulink-libs/vis-4.16.1/vis.min',
     'dojo/text!./templates/Timeline.mustache',
@@ -17,12 +19,28 @@ define([
     'xstyle/css!ngw-compulink-libs/font-awesome-4.6.3/css/font-awesome.min.css',
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
-], function (win, declare, lang, array, domConstruct, query, on,
-             topic, FloatingPane, mustache, vis, template) {
+], function (win, declare, lang, array, domConstruct, dom, query, on,
+             topic, FloatingPane, Select, mustache, vis, template) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
         _featureManager: null,
+        _countUnitSelector: null,
+        _countUnits: [
+            {label: '1', value: '1'},
+            {label: '5', value: '5'},
+            {label: '10', value: '10'},
+            {label: '15', value: '15'},
+            {label: '30', value: '30'},
+            {label: '60', value: '60'},
+            {label: '90', value: '90'}
+        ],
+        _unitsSelector: null,
+        _units: [
+            {label: 'часов', value: '3600000'},
+            {label: 'дней', value: '86400000'},
+            {label: 'месяцев', value: '2592000000'}
+        ],
 
         constructor: function (featuresManager) {
             mustache.parse(template);
@@ -33,6 +51,7 @@ define([
             topic.subscribe('features/manager/filled', lang.hitch(this, function (featureManager) {
                 this._buildFloatingPane();
                 this._buildTimeline(featureManager);
+                this._buildSpeedSelectors();
             }));
         },
 
@@ -107,6 +126,18 @@ define([
             }));
 
             this._timeline = timeline;
+        },
+
+        _buildSpeedSelectors: function () {
+            this._unitsSelector = new Select({
+                name: 'unitsSelector',
+                options: this._units
+            }).placeAt(dom.byId('unitsSelector')).startup();
+
+            this._countUnitSelector = new Select({
+                name: 'countUnitSelector',
+                options: this._countUnits
+            }).placeAt(dom.byId('countUnitSelector')).startup();
         },
 
         _state: 'wait',
