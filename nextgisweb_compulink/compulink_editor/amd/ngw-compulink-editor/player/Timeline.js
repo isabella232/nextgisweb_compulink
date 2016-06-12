@@ -46,7 +46,7 @@ define([
                 resizable: true,
                 dockable: false,
                 maxable: false,
-                style: 'position:absolute;top:100px;left:100px;width:500px;height:145px;visibility:hidden;'
+                style: 'position:absolute;top:100px;left:100px;width:500px;height:160px;visibility:hidden;'
             }, floatingDiv);
             this._dialog.startup();
             this._dialog.show();
@@ -71,8 +71,8 @@ define([
             dataSetItems.push({
                 id: 'rangeBuilt',
                 content: '',
-                start: featureManager._minBuiltDate,
-                end: featureManager._maxBuiltDate
+                start: featureManager.minBuiltDate,
+                end: featureManager.maxBuiltDate
             });
 
 
@@ -85,12 +85,12 @@ define([
 
             var timeline = new vis.Timeline(this._timelineWidgetDiv, new vis.DataSet(dataSetItems), options);
 
-            timeline.addCustomTime(new Date(featureManager._minBuiltDate), this._barId);
+            timeline.addCustomTime(new Date(featureManager.minBuiltDate), this._barId);
 
             timeline.on('click', lang.hitch(this, function (e) {
                 var start = this._normalizeDateToDay(e.time);
                 timeline.setCustomTime(e.time, this._barId);
-                this._buildFeatures(new Date(this._featureManager._minBuiltDate), start, true);
+                this._buildFeatures(new Date(this._featureManager.minBuiltDate), start, true);
             }));
 
             timeline.on('timechanged', lang.hitch(this, function (e) {
@@ -114,7 +114,7 @@ define([
         play: function (start, speed) {
             this._state = 'playing';
             start = this._normalizeDateToDay(start);
-            this._buildFeatures(start, new Date(this._featureManager._minBuiltDate), true);
+            this._buildFeatures(start, new Date(this._featureManager.minBuiltDate), true);
             var intervalCounter = 1;
 
             this._interval = setInterval(lang.hitch(this, function () {
