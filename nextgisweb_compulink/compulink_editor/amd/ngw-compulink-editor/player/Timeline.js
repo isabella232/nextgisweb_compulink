@@ -125,7 +125,10 @@ define([
         _handleTimeChanged: function (timeChangedEvent) {
             this.stop();
             this._timeline.setCustomTime(timeChangedEvent.time, this._barId);
-            this._buildFeatures(this._featureManager.minBuiltDate, timeChangedEvent.time, true);
+            var minDate = timeChangedEvent.time < this._featureManager.minBuiltDate ?
+                new Date(0) :
+                this._featureManager.minBuiltDate;
+            this._buildFeatures(minDate, timeChangedEvent.time, true);
         },
 
         _bindPlayerControlsEvents: function () {
@@ -336,6 +339,10 @@ define([
                 var newFrom = to;
                 to = from;
                 from = newFrom;
+            }
+
+            if (from === this._featureManager.minBuiltDate.getTime()) {
+                from = 0;
             }
 
             array.forEach(this._featureManager._featuresByBuiltDate, function (feature, index) {
