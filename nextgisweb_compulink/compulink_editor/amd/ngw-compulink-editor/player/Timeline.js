@@ -28,6 +28,7 @@ define([
         _countUnitSelector: null,
         _countUnits: [
             {label: '1', value: '1'},
+            {label: '2', value: '2'},
             {label: '5', value: '5'},
             {label: '10', value: '10'},
             {label: '15', value: '15'},
@@ -53,6 +54,7 @@ define([
                 this._buildFloatingPane();
                 this._buildTimeline(featureManager);
                 this._buildSpeedSelectors();
+                this._setOptimalSpeed();
             }));
         },
 
@@ -172,6 +174,88 @@ define([
             this._countUnitSelector.on('change', lang.hitch(this, function (changedEvent) {
                 this.stop();
             }));
+        },
+
+        _setOptimalSpeed: function () {
+            var diffMs = this._featureManager.maxBuiltDate.getTime() -
+                    this._featureManager.minBuiltDate.getTime(),
+                    months = Math.floor(diffMs / 2592000000),
+                    days = Math.floor(diffMs / 86400000),
+                    hours = Math.floor(diffMs / 3600000),
+                    minutes = Math.floor(diffMs / 60000);
+            if (months > 0) {
+                if (months > 1 && months <= 5) {
+                    this._unitsSelector.set('value', 'Days');
+                    this._countUnitSelector.set('value', '10');
+                    return true;
+                } else if (months > 5 && months <= 8) {
+                    this._unitsSelector.set('value', 'Days');
+                    this._countUnitSelector.set('value', '15');
+                    return true;
+                } else if (months > 8 && months < 30) {
+                    this._unitsSelector.set('value', 'Months');
+                    this._countUnitSelector.set('value', '1');
+                    return true;
+                } else if (months <= 30 && months < 90) {
+                    this._unitsSelector.set('value', 'Months');
+                    this._countUnitSelector.set('value', '5');
+                    return true;
+                } else if (months > 90) {
+                    this._unitsSelector.set('value', 'Months');
+                    this._countUnitSelector.set('value', '10');
+                    return true;
+                }
+            }
+            if (days > 0) {
+                if (days > 20 && days <= 35) {
+                    this._unitsSelector.set('value', 'Days');
+                    this._countUnitSelector.set('value', '2');
+                    return true;
+                } else if (days > 10 && days <= 20) {
+                    this._unitsSelector.set('value', 'Days');
+                    this._countUnitSelector.set('value', '1');
+                    return true;
+                } else if (days > 5 && days <= 10) {
+                    this._unitsSelector.set('value', 'Hours');
+                    this._countUnitSelector.set('value', '15');
+                    return true;
+                } else if (days > 1 && days <= 5) {
+                    this._unitsSelector.set('value', 'Hours');
+                    this._countUnitSelector.set('value', '5');
+                    return true;
+                }
+            }
+            if (hours > 0) {
+                if (hours > 24 && hours <= 48) {
+                    this._unitsSelector.set('value', 'Hours');
+                    this._countUnitSelector.set('value', '2');
+                    return true;
+                } else if (hours > 10 && hours <= 24) {
+                    this._unitsSelector.set('value', 'Hours');
+                    this._countUnitSelector.set('value', '1');
+                    return true;
+                } else if (hours > 5 && hours <= 10) {
+                    this._unitsSelector.set('value', 'Minutes');
+                    this._countUnitSelector.set('value', '30');
+                    return true;
+                } else if (hours > 1 && hours <= 5) {
+                    this._unitsSelector.set('value', 'Minutes');
+                    this._countUnitSelector.set('value', '15');
+                    return true;
+                }
+            }
+            if (minutes > 0) {
+                if (minutes > 60 && minutes <= 120) {
+                    this._unitsSelector.set('value', 'Minutes');
+                    this._countUnitSelector.set('value', '10');
+                    return true;
+                } else if (minutes > 30 && minutes <= 60) {
+                    this._unitsSelector.set('value', 'Minutes');
+                    this._countUnitSelector.set('value', '2');
+                    return true;
+                }
+            }
+            return false;
         },
 
         _state: 'wait',
