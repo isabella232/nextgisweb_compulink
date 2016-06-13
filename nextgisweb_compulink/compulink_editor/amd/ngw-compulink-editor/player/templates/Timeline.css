@@ -1,3 +1,11 @@
+div#timeline {
+    height: 175px !important;
+}
+
+div.dojoxFloatingPaneCanvas {
+    height: 154px !important;
+}
+
 div.timeline {
     width: 100%;
     height: 100%;
