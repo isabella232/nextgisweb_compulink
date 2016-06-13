@@ -199,7 +199,7 @@ define([
                     this._unitsSelector.set('value', 'Months');
                     this._countUnitSelector.set('value', '1');
                     return true;
-                } else if (months <= 30 && months < 90) {
+                } else if (months >= 30 && months < 90) {
                     this._unitsSelector.set('value', 'Months');
                     this._countUnitSelector.set('value', '5');
                     return true;
