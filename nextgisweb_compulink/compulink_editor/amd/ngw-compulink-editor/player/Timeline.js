@@ -190,6 +190,10 @@ define([
             this._interval = setInterval(lang.hitch(this, function () {
                 intervalTimeByTick = this._getIntervalTimeByTick(start, tick, units, countUnits);
                 tick++;
+                if (intervalTimeByTick.to > this._featureManager.maxBuiltDate) {
+                    intervalTimeByTick.to = this._featureManager.maxBuiltDate;
+                    this.stop();
+                }
                 this._timeline.setCustomTime(intervalTimeByTick.to, this._barId);
                 this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to);
             }), 1000);
