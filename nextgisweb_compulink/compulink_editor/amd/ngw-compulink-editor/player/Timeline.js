@@ -37,9 +37,10 @@ define([
         ],
         _unitsSelector: null,
         _units: [
-            {label: 'часов', value: '3600000'},
-            {label: 'дней', value: '86400000'},
-            {label: 'месяцев', value: '2592000000'}
+            {label: 'минут', value: 'Minutes'},
+            {label: 'часов', value: 'Hours'},
+            {label: 'дней', value: 'Days'},
+            {label: 'месяцев', value: 'Months'}
         ],
 
         constructor: function (featuresManager) {
@@ -106,25 +107,28 @@ define([
 
             timeline.addCustomTime(new Date(featureManager.minBuiltDate), this._barId);
 
-            timeline.on('click', lang.hitch(this, function (e) {
-                var start = this._normalizeDateToDay(e.time);
-                timeline.setCustomTime(e.time, this._barId);
-                this._buildFeatures(new Date(this._featureManager.minBuiltDate), start, true);
+            timeline.on('click', lang.hitch(this, function (timeChangedEvent) {
+                this._handleTimeChanged(timeChangedEvent);
             }));
 
-            timeline.on('timechanged', lang.hitch(this, function (e) {
-                console.log(e);
+            timeline.on('timechanged', lang.hitch(this, function (timeChangedEvent) {
+                this._handleTimeChanged(timeChangedEvent);
             }));
 
             this._timeline = timeline;
-
             this._bindPlayerControlsEvents();
+            this._moveTimeBarToStart();
+        },
+
+        _handleTimeChanged: function (timeChangedEvent) {
+            this.stop();
+            this._timeline.setCustomTime(timeChangedEvent.time, this._barId);
+            this._buildFeatures(this._featureManager.minBuiltDate, timeChangedEvent.time, true);
         },
 
         _bindPlayerControlsEvents: function () {
             on(query('i.fa-play-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                var barTime = timeline.getCustomTime(this._barId);
-                this.play(barTime, 1);
+                this.play(this._timeline.getCustomTime(this._barId));
             }));
 
             on(query('i.fa-stop-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
@@ -132,72 +136,131 @@ define([
             }));
 
             on(query('i.fa-fast-backward', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                this._timeline.setCustomTime(this._featureManager.minBuiltDate, this._barId);
+                this._moveTimeBarToStart();
             }));
 
             on(query('i.fa-fast-forward', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                this._timeline.setCustomTime(this._featureManager.maxBuiltDate, this._barId);
+                this._handleTimeChanged({
+                    time: this._featureManager.maxBuiltDate
+                });
             }));
+        },
+
+        _moveTimeBarToStart: function () {
+            this._handleTimeChanged({
+                time: this._featureManager.minBuiltDate
+            });
         },
 
         _buildSpeedSelectors: function () {
             this._unitsSelector = new Select({
                 name: 'unitsSelector',
                 options: this._units
-            }).placeAt(dom.byId('unitsSelector')).startup();
+            });
+            this._unitsSelector.placeAt(dom.byId('unitsSelector')).startup();
+
+            this._unitsSelector.on('change', lang.hitch(this, function (changedEvent) {
+                this.stop();
+            }));
 
             this._countUnitSelector = new Select({
                 name: 'countUnitSelector',
                 options: this._countUnits
-            }).placeAt(dom.byId('countUnitSelector')).startup();
+            });
+            this._countUnitSelector.placeAt(dom.byId('countUnitSelector')).startup();
+
+            this._countUnitSelector.on('change', lang.hitch(this, function (changedEvent) {
+                this.stop();
+            }));
         },
 
         _state: 'wait',
         _interval: null,
-        play: function (start, speed) {
+        play: function (start) {
             this._state = 'playing';
-            start = this._normalizeDateToDay(start);
-            this._buildFeatures(start, new Date(this._featureManager.minBuiltDate), true);
-            var intervalCounter = 1;
+            if (start < this._featureManager.minBuiltDate) {
+                this._moveTimeBarToStart();
+                start = this._featureManager.minBuiltDate;
+            }
+            var tick = 1,
+                units = this._unitsSelector.get('value'),
+                countUnits = parseInt(this._countUnitSelector.get('value'), 10),
+                intervalTimeByTick;
 
             this._interval = setInterval(lang.hitch(this, function () {
-                var from = this._addDays(new Date(start), speed * intervalCounter - 1),
-                    to = this._addDays(new Date(start), speed * intervalCounter);
-                intervalCounter++;
-                this._timeline.setCustomTime(to, this._barId);
-                this._buildFeatures(from, to);
+                intervalTimeByTick = this._getIntervalTimeByTick(start, tick, units, countUnits);
+                tick++;
+                this._timeline.setCustomTime(intervalTimeByTick.to, this._barId);
+                this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to);
             }), 1000);
         },
 
-        stop: function () {
-            clearInterval(this._interval);
+        _getIntervalTimeByTick: function (startDate, tick, units, countUnits) {
+            return {
+                from: this['add' + units](startDate, (tick - 1) * countUnits),
+                to: this['add' + units](startDate, tick * countUnits)
+            }
         },
 
-        _buildFeatures: function (from, to, isNeedRebuild) {
-            from = from.getTime();
-            to = to ? to.getTime() : from;
-            if (to < from) {
-                var newFrom = to;
-                to = from;
-                from = newFrom;
+        addMinutes: function (date, minutes) {
+            var clonedDate = new Date(date.getTime());
+            clonedDate.setMinutes(clonedDate.getMinutes() + minutes);
+            return clonedDate;
+        },
+
+        addHours: function (date, hours) {
+            var clonedDate = new Date(date.getTime());
+            clonedDate.setHours(clonedDate.getHours() + hours);
+            return clonedDate;
+        },
+
+        addMonths: function (date, months) {
+            var clonedDate = new Date(date.getTime());
+            clonedDate.setMonth(clonedDate.getMonth() + months);
+            return clonedDate;
+        },
+
+        addDays: function (date, days) {
+            var clonedDate = new Date(date.getTime());
+            clonedDate.setDate(clonedDate.getDate() + days);
+            return clonedDate;
+        },
+
+        stop: function () {
+            if (this._interval) {
+                clearInterval(this._interval);
             }
-            var currentDate = from,
-                featuresDaySet, featuresDaySetMs,
-                featuresByBuiltDate = this._featureManager._featuresByBuiltDate,
-                layer = this._featureManager._layer;
+        },
+
+        _currentIndexDate: null,
+        _buildFeatures: function (from, to, isNeedRebuild) {
+            var layer = this._featureManager._layer,
+                featureBuiltDateMs;
 
             if (isNeedRebuild) {
                 layer.removeAllFeatures();
             }
 
-            for (featuresDaySetMs in featuresByBuiltDate) {
-                if (featuresByBuiltDate.hasOwnProperty(featuresDaySetMs)) {
-                    featuresDaySetMs = parseInt(featuresDaySetMs, 10);
-                    if (from <= featuresDaySetMs && featuresDaySetMs < to) {
-                        layer.addFeatures(featuresByBuiltDate[featuresDaySetMs]);
-                    }
-                }
+            from = from.getTime();
+            to = to ? to.getTime() : from;
+
+            if (to < from) {
+                var newFrom = to;
+                to = from;
+                from = newFrom;
             }
+
+            array.forEach(this._featureManager._featuresByBuiltDate, function (feature, index) {
+                featureBuiltDateMs = feature.attributes.built_date_ms;
+                if (featureBuiltDateMs <= from) {
+                    return true;
+                } else if  (featureBuiltDateMs > from  && featureBuiltDateMs <= to) {
+                    layer.addFeatures(feature);
+                } else if (featureBuiltDateMs > to) {
+                    this._currentIndexDate = index - 1;
+                    return false;
+                }
+            }, this);
         },
 
         _normalizeDateToDay: function (dateTime) {
