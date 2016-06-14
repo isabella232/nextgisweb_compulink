@@ -46,3 +46,7 @@ i.fa-fast-backward {
 i.fa-fast-forward {
     margin-left: 5px;
 }
+
+div#timeline div.vis-current-time {
+    background-color: green;
+}

@@ -54,6 +54,7 @@ define([
     "ngw-compulink-editor/player/FeaturesManager",
     "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-compulink-editor/editor/AttributesEditor",
+    "ngw-compulink-site/PrintMap",
     "ngw-compulink-editor/player/Timeline",
     "ngw-webmap/ImageAdapter",
     // settings
@@ -128,6 +129,7 @@ define([
     EditorFeaturesManager,
     NgwServiceFacade,
     AttributesEditor,
+    PrintMap,
     Timeline,
     Adapter,
     clientSettings
@@ -515,7 +517,7 @@ define([
         },
 
         printMap: function () {
-            window.print();
+            PrintMap.run(this.map.olMap);
         },
 
         startup: function () {
