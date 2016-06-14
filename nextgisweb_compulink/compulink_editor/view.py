@@ -21,7 +21,8 @@ from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
 from shapely.geometry import MultiLineString, Polygon
 
-from config import get_editable_layers_styles
+from config.editor import get_editable_layers_styles
+from config.player import get_playable_layers_styles
 from nextgisweb import DBSession, db
 from nextgisweb.feature_layer import IWritableFeatureLayer
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
@@ -245,8 +246,9 @@ def _get_values_for_display(request):
     focl_layers = get_focl_layers_list()
     sit_plan_layers_type = get_sit_plan_layers_list()
 
-    editable_layers = _get_editable_layers_items(request, resource_id)
-    editable_layers_view_model = _create_editable_layers_view_model(editable_layers)
+    layers_styles = _get_layers_styles_items(request, resource_id)
+    editable_layers_view_model = _create_editable_layers_view_model(layers_styles)
+    playable_layers_view_model = _create_playable_layers_view_model(layers_styles)
 
     values = dict(
         resource_display_name=resource.display_name,
@@ -256,7 +258,8 @@ def _get_values_for_display(request):
         real_layers_type=focl_layers['real'],
         sit_plan_layers_type=sit_plan_layers_type,
         extent=extent4326,
-        editable_layers_info=editable_layers_view_model
+        editable_layers_info=editable_layers_view_model,
+        playable_layers_info=playable_layers_view_model
     )
 
     return values
@@ -276,13 +279,14 @@ def _extent_3857_to_4326(extent3857):
     return extent4326
 
 
-def _get_editable_layers_items(request, resource_id):
-    editable_layers = []
+def _get_layers_styles_items(request, resource_id):
+    layers_styles = []
     dbsession = DBSession()
 
     resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
 
     editable_layers_styles = get_editable_layers_styles(request)
+    player_layers_styles = get_playable_layers_styles(request)
 
     for child_resource in resource.children:
         if child_resource.identity != VectorLayer.identity:
@@ -292,30 +296,49 @@ def _get_editable_layers_items(request, resource_id):
         layer_keyname_without_guid = child_resource.keyname[0:-(GUID_LENGTH + 1)]
         if layer_keyname_without_guid not in editable_layers_styles:
             continue
-        editable_layers.append({
+        layers_styles.append({
             'resource': child_resource,
             'layer_keyname': layer_keyname_without_guid,
-            'styles': editable_layers_styles[layer_keyname_without_guid]
+            'editor_styles': editable_layers_styles[layer_keyname_without_guid],
+            'player_styles': player_layers_styles[layer_keyname_without_guid]
         })
 
     dbsession.close()
 
-    return editable_layers
+    return layers_styles
 
 
-def _create_editable_layers_view_model(editable_layers):
-    editable_layers_model = {
+def _create_editable_layers_view_model(layers_styles):
+    return _create_layers_view_model(layers_styles, 'editable')
+
+
+def _create_playable_layers_view_model(layers_styles):
+    return _create_layers_view_model(layers_styles, 'playable')
+
+
+def _create_layers_view_model(layers_styles, layers_type):
+    if layers_type == 'editable':
+        prefix_style = 'editor'
+    elif layers_type == 'playable':
+        prefix_style = 'player'
+    else:
+        raise Exception('Unknown layers_type: "%s"' % layers_type)
+
+    layers_model = {
         'default': [],
         'select': {}
     }
-    for editable_layer_item in editable_layers:
-        editable_layers_model['default'].append({
-            'id': editable_layer_item['resource'].id,
-            'layerKeyname': editable_layer_item['layer_keyname'],
-            'styles': editable_layer_item['styles']['default']
+
+    for layer_styles_item in layers_styles:
+        layers_model['default'].append({
+            'id': layer_styles_item['resource'].id,
+            'layerKeyname': layer_styles_item['layer_keyname'],
+            'styles': layer_styles_item['%s_styles' % prefix_style]['default']
         })
-        editable_layers_model['select'][editable_layer_item['layer_keyname']] = editable_layer_item['styles']['select']
-    return editable_layers_model
+        if 'select' in layer_styles_item['%s_styles' % prefix_style]:
+            layers_model['select'][layer_styles_item['layer_keyname']] = \
+                layer_styles_item['%s_styles' % prefix_style]['select']
+    return layers_model
 
 
 def get_focl_layers_list():
