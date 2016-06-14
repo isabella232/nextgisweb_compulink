@@ -22,7 +22,9 @@ define([
     "dijit/registry",
     "dijit/form/DropDownButton",
     "dijit/DropDownMenu",
+    "dijit/form/ComboButton",
     "dijit/MenuItem",
+    "dijit/Menu",
     "dijit/layout/ContentPane",
     "dijit/form/ToggleButton",
     "dojo/dom-style",
@@ -95,7 +97,9 @@ define([
     registry,
     DropDownButton,
     DropDownMenu,
+    ComboButton,
     MenuItem,
+    Menu,
     ContentPane,
     ToggleButton,
     domStyle,
@@ -346,26 +350,41 @@ define([
                 })
             ).then(undefined, function (err) { console.error(err); });
 
-            //all([this._mapDeferred, this._postCreateDeferred]).then(
-            //    function () {
-            //        // Формируем список слоев базовых карты в списке выбора
-            //        array.forEach(Object.keys(widget.map.layers), function (key) {
-            //            var layer = widget.map.layers[key];
-            //            if (layer.isBaseLayer) {
-            //                widget.basemapSelect.addOption({
-            //                    value: key,
-            //                    label: layer.title
-            //                });
-            //            }
-            //        });
-            //
-            //        // И добавляем возможность переключения
-            //        widget.basemapSelect.watch("value", function (attr, oldVal, newVal) {
-            //            widget.map.olMap.setBaseLayer(widget.map.layers[newVal].olLayer);
-            //        });
-            //        if (widget._urlParams.base) { widget.basemapSelect.set("value", widget._urlParams.base); }
-            //    }
-            //).then(undefined, function (err) { console.error(err); });
+            all([this._mapDeferred, this._postCreateDeferred]).then(
+                function () {
+                    // Формируем список слоев базовых карты в списке выбора
+                    baseLayersMenu = new Menu({ style: "display: none;"});
+
+                    array.forEach(Object.keys(widget.map.layers), function (key) {
+                        var layer = widget.map.layers[key];
+                        if (layer.isBaseLayer) {
+                            var menuItem = new MenuItem({
+                                label: layer.title,
+                                value: key,
+                                onClick: lang.hitch(this, function(){
+                                    widget.map.olMap.setBaseLayer(widget.map.layers[key].olLayer);
+                                    widget.basemapSelect.set('label', layer.title);
+                                })
+                            });
+                            baseLayersMenu.addChild(menuItem);
+                        }
+                    });
+
+                    baseLayersMenu.startup();
+                    widget.basemapSelect.dropDown = baseLayersMenu;
+                    widget.basemapSelect.label = baseLayersMenu.getChildren()[0].label;
+                    widget.basemapSelect.set('label', baseLayersMenu.getChildren()[0].label);
+
+
+                    /*
+                    // И добавляем возможность переключения
+                    widget.basemapSelect.watch("value", function (attr, oldVal, newVal) {
+                        widget.map.olMap.setBaseLayer(widget.map.layers[newVal].olLayer);
+                    });
+                    if (widget._urlParams.base) { widget.basemapSelect.set("value", widget._urlParams.base); }
+                    */
+                }
+            ).then(undefined, function (err) { console.error(err); });
 
             // Слои элементов
             //all([this._midDeferred.adapter, this._itemStoreDeferred]).then(
