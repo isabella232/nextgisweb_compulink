@@ -182,10 +182,10 @@ define([
         _setOptimalSpeed: function () {
             var diffMs = this._featureManager.maxBuiltDate.getTime() -
                     this._featureManager.minBuiltDate.getTime(),
-                    months = Math.floor(diffMs / 2592000000),
-                    days = Math.floor(diffMs / 86400000),
-                    hours = Math.floor(diffMs / 3600000),
-                    minutes = Math.floor(diffMs / 60000);
+                    months = Math.round(diffMs / 2592000000),
+                    days = Math.round(diffMs / 86400000),
+                    hours = Math.round(diffMs / 3600000),
+                    minutes = Math.round(diffMs / 60000);
             if (months > 0) {
                 if (months > 1 && months <= 5) {
                     this._unitsSelector.set('value', 'Days');
