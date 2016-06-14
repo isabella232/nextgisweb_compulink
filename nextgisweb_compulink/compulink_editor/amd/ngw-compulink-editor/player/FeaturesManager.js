@@ -10,27 +10,32 @@ define([
         minBuiltDate: 0,
         maxBuiltDate: 0,
         featuresCount: 0,
+        _playableLayersInfo: null,
+
+        constructor: function () {
+            this._playableLayersInfo = editorConfig.playableLayersInfo;
+        },
 
         _createFeatures: function (ngwFeatureItems) {
             var feature,
-                editableLayerInfo,
+                playableLayersInfo,
                 built_date,
                 built_date_ms;
 
             this._features = {};
 
             array.forEach(ngwFeatureItems, function (ngwFeatures, getFeaturesPromiseIndex) {
-                editableLayerInfo = this._editableLayersInfo.default[getFeaturesPromiseIndex];
+                playableLayersInfo = this._playableLayersInfo.default[getFeaturesPromiseIndex];
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
                     feature = this._wkt.read(ngwFeature.geom);
-                    feature.attributes.keyname = editableLayerInfo.layerKeyname;
+                    feature.attributes.keyname = playableLayersInfo.layerKeyname;
                     built_date = ngwFeature.fields.built_date;
                     feature.attributes.built_date = new Date(built_date.year, built_date.month, built_date.day,
                         built_date.hour, built_date.minute, built_date.second);
                     built_date_ms = feature.attributes.built_date.getTime();
                     feature.attributes.built_date_ms = built_date_ms;
-                    feature.style = editableLayerInfo.styles;
-                    feature.attributes.ngwLayerId = editableLayerInfo.id;
+                    feature.style = playableLayersInfo.styles;
+                    feature.attributes.ngwLayerId = playableLayersInfo.id;
                     feature.attributes.ngwFeatureId = ngwFeature.id;
                     this._features[feature.attributes.ngwLayerId + '_' + feature.attributes.ngwFeatureId] = feature;
                     this._featuresByBuiltDate.push(feature);
