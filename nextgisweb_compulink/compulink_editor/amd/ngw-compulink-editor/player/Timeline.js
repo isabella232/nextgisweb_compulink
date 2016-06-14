@@ -38,10 +38,10 @@ define([
         ],
         _unitsSelector: null,
         _units: [
-            {label: 'минут', value: 'Minutes'},
-            {label: 'часов', value: 'Hours'},
-            {label: 'дней', value: 'Days'},
-            {label: 'месяцев', value: 'Months'}
+            {label: 'минут(а)', value: 'Minutes'},
+            {label: 'час(ов)', value: 'Hours'},
+            {label: 'день(дней)', value: 'Days'},
+            {label: 'месяц(ев)', value: 'Months'}
         ],
 
         constructor: function (featuresManager) {
