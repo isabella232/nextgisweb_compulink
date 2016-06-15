@@ -27,7 +27,7 @@
         require([
             "dojo/parser",
             "dojo/ready",
-            "ngw-compulink-reporting/ReportGrid",
+            "ngw-compulink-deviation/DeviationGrid",
             "ngw-compulink-reporting/BuildingObjectsSelect"
         ], function (parser, ready) {
             ready(function () {
@@ -55,8 +55,8 @@
     </div>
     <div class="body-wrapper">
         <div data-dojo-id="display"
-             data-dojo-type="ngw-compulink-reporting/ReportGrid"
-             style="width: 100%; height: 100%">
+             data-dojo-type="ngw-compulink-deviation/DeviationGrid"
+             style="width: 100%; height: 100%;">
         </div>
     </div>
 </div>

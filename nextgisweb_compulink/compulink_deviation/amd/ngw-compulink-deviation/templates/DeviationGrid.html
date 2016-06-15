@@ -21,31 +21,8 @@
                              data-dojo-props="url: '/compulink/reporting/resources/child'"
                              data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
                     </div>
-                    <div class="control-block-group">
-                        <label for="regionSelect">Субъект РФ</label>
-
-                        <div data-dojo-attach-point="regionSelect"
-                             data-dojo-type="ngw-compulink-reporting/RegionSelect"
-                             data-dojo-props="regions: rlist"
-                             id="regionSelect" style=""></div>
-                    </div>
-                    <div class="control-block-group">
-                        <label for="regionSelect">Район</label>
-
-                        <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
-                             data-dojo-props="districts: dlist"
-                             data-dojo-attach-point="districtSelect"
-                             id="districtSelect" style=""></div>
-                    </div>
                 </td>
                 <td>
-                    <div class="control-block-group">
-                        <label for="statusSelect">Статус</label>
-
-                        <div data-dojo-attach-point="statusSelect"
-                             data-dojo-type="ngw-compulink-reporting/StatusSelect"
-                             id="statusSelect" style=""></div>
-                    </div>
                     <div class="control-block-group">
                         <label for="onlyOverdue">Только просроченные</label>
 
@@ -59,10 +36,10 @@
                             type="button">Построить
                     </button>
 
-                    <button data-dojo-type="dijit/form/Button"
-                            data-dojo-attach-point="exportExcel"
-                            type="button">Выгрузить в Excel
-                    </button>
+                    <!--<button data-dojo-type="dijit/form/Button"-->
+                            <!--data-dojo-attach-point="exportExcel"-->
+                            <!--type="button">Выгрузить в Excel-->
+                    <!--</button>-->
                 </td>
             </tr>
         </table>

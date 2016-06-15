@@ -76,32 +76,34 @@ define([
         postCreate: function () {
             this.inherited(arguments);
 
-            var w = this,
-                rs = w.regionSelect, rss = rs.store,
-                ds = w.districtSelect, dss = ds.store,
-                ss = w.statusSelect;
-
-            rss.data.unshift({'id': '-', 'name': 'Все'});
-            dss.data.unshift({'id': '-', 'name': 'Все'});
-            rss.setData(rss.data);
-            dss.setData(dss.data);
+            var w = this;
+            //    rs = w.regionSelect,
+            //    rss = rs.store,
+            //    ds = w.districtSelect,
+            //    dss = ds.store,
+            //    ss = w.statusSelect;
+            //
+            //rss.data.unshift({'id': '-', 'name': 'Все'});
+            //dss.data.unshift({'id': '-', 'name': 'Все'});
+            //rss.setData(rss.data);
+            //dss.setData(dss.data);
 
             // Синхронизируем выпадающие списки субъектов и регионов
-            ds.set('_store', lang.clone(dss));
-            rs.watch('value', function(attr, oldValue, newValue) {
-                if (newValue == '-') {
-                    ds.set('disabled', true);
-                } else {
-                    ds.set('disabled', false);
-                    var fdata = ds._store.query(function (d) {
-                        return ((d.parent_id == newValue) ||
-                                (d.id == '-'))});
-                    dss.setData(fdata);
-
-                    // Из списка районов выбираем первый элемент
-                    ds.set('value', dss.getIdentity(dss.data[0]));
-                }
-            });
+            //ds.set('_store', lang.clone(dss));
+            //rs.watch('value', function(attr, oldValue, newValue) {
+            //    if (newValue == '-') {
+            //        ds.set('disabled', true);
+            //    } else {
+            //        ds.set('disabled', false);
+            //        var fdata = ds._store.query(function (d) {
+            //            return ((d.parent_id == newValue) ||
+            //                    (d.id == '-'))});
+            //        dss.setData(fdata);
+            //
+            //        // Из списка районов выбираем первый элемент
+            //        ds.set('value', dss.getIdentity(dss.data[0]));
+            //    }
+            //});
 
             // Обрабатываем нажатие кнопки 'Построить'
             this.buildReport.on('click', function() {
@@ -117,17 +119,17 @@ define([
             });
 
             // Обрабатываем нажатие кнопки 'Выгрузить в Excel'
-            this.exportExcel.on('click', function() {
-                var url = route.compulink.reporting.export_status_report();
-                    queryStr = ioQuery.objectToQuery(w.get('value'));
-                window.open(url + '?' + queryStr, '_blank');
-            });
+            //this.exportExcel.on('click', function() {
+            //    var url = route.compulink.reporting.export_status_report();
+            //        queryStr = ioQuery.objectToQuery(w.get('value'));
+            //    window.open(url + '?' + queryStr, '_blank');
+            //});
 
-            // Из списка регионов выбираем первый элемент
-            rs.set('value', rss.getIdentity(rss.data[0]));
-
-            // Отмечаем все статусы
-            ss.set('value', ss.options);
+            //// Из списка регионов выбираем первый элемент
+            //rs.set('value', rss.getIdentity(rss.data[0]));
+            //
+            //// Отмечаем все статусы
+            //ss.set('value', ss.options);
 
             // Меняем цвет строки для просроченных объектов, выделяем суммарные значения
             aspect.after(w._grid, "renderRow", function(row, args) {
