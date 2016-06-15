@@ -37,8 +37,7 @@
     border: solid 1px #BBBBBB;
 }
 
-.ngw-feature-attachment-FotoDisplayWidget.compact div.image div.remove,
-.ngw-feature-attachment-FotoDisplayWidget.compact div.file div.remove {
+.ngw-feature-attachment-FotoDisplayWidget.compact div.remove {
     width: 16px;
     height: 16px;
     display: block;
@@ -48,6 +47,10 @@
     background-image: url("DisplayWidget/remove.png");
     cursor: pointer;
     opacity: 1;
+}
+
+.ngw-feature-attachment-FotoDisplayWidget.compact div.file div.remove {
+    top: 3px;
 }
 
 .ngw-feature-attachment-FotoDisplayWidget.compact div.image div.title,
