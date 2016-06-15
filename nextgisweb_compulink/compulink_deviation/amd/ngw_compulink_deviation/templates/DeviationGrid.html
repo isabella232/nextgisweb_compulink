@@ -1,0 +1,70 @@
+<div data-dojo-type="${baseClass}"
+     data-dojo-attach-point="focusNode"
+     style="width: 100%; height: 100%">
+
+    <div data-dojo-attach-point="gridPane" data-dojo-type="dijit/layout/ContentPane"
+         data-dojo-props="region: 'center'" style="padding: 0;">
+    </div>
+
+    <div data-dojo-attach-point="toolbar" data-dojo-type="dijit/layout/ContentPane"
+         data-dojo-props="region: 'top'"
+         style="margin-bottom: 0; overflow:auto">
+
+        <table class="parameters-table">
+            <tr>
+                <td>
+                    <div class="control-block-group">
+                        <label for="buildingObjectsSelect">Проект</label>
+
+                        <div id="buildingObjectsSelect"
+                             data-dojo-attach-point="buildingObjectsSelect"
+                             data-dojo-props="url: '/compulink/reporting/resources/child'"
+                             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
+                    </div>
+                    <div class="control-block-group">
+                        <label for="regionSelect">Субъект РФ</label>
+
+                        <div data-dojo-attach-point="regionSelect"
+                             data-dojo-type="ngw-compulink-reporting/RegionSelect"
+                             data-dojo-props="regions: rlist"
+                             id="regionSelect" style=""></div>
+                    </div>
+                    <div class="control-block-group">
+                        <label for="regionSelect">Район</label>
+
+                        <div data-dojo-type="ngw-compulink-reporting/DistrictSelect"
+                             data-dojo-props="districts: dlist"
+                             data-dojo-attach-point="districtSelect"
+                             id="districtSelect" style=""></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="control-block-group">
+                        <label for="statusSelect">Статус</label>
+
+                        <div data-dojo-attach-point="statusSelect"
+                             data-dojo-type="ngw-compulink-reporting/StatusSelect"
+                             id="statusSelect" style=""></div>
+                    </div>
+                    <div class="control-block-group">
+                        <label for="onlyOverdue">Только просроченные</label>
+
+                        <div data-dojo-type="dijit/form/CheckBox"
+                             data-dojo-attach-point="onlyOverdue"
+                             data-dojo-props="value: true"
+                             id="onlyOverdue"></div>
+                    </div>
+                    <button data-dojo-type="dijit/form/Button"
+                            data-dojo-attach-point="buildReport"
+                            type="button">Построить
+                    </button>
+
+                    <button data-dojo-type="dijit/form/Button"
+                            data-dojo-attach-point="exportExcel"
+                            type="button">Выгрузить в Excel
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
