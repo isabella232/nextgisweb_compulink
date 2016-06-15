@@ -22,7 +22,7 @@ def pkginfo():
             compulink_editor='nextgisweb_compulink.compulink_editor',
             compulink_internal_mirroring='nextgisweb_compulink.compulink_internal_mirroring',
             compulink_statistic_map='nextgisweb_compulink.compulink_statistic_map',
-            #compulink_deviation='nextgisweb_compulink.compulink_deviation',
+            compulink_deviation='nextgisweb_compulink.compulink_deviation',
         )
     )
 
@@ -35,5 +35,6 @@ def amd_packages():
         ('ngw-compulink-reporting', 'nextgisweb_compulink:compulink_reporting/amd/ngw-compulink-reporting'),
         ('ngw-compulink-libs', 'nextgisweb_compulink:compulink_site/static/js'),
         ('ngw-compulink-statistic-map', 'nextgisweb_compulink:compulink_statistic_map/amd/ngw-compulink-statistic-map'),
+        ('ngw-compulink-deviation', 'nextgisweb_compulink:compulink_deviation/amd/ngw-compulink-deviation'),
         ('jquery', 'nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2')
     )
