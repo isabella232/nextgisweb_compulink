@@ -12,7 +12,7 @@ from ident import COMP_ID
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
-@Component.registry.register
+
 class CompulinkMssqlBridgeComponent(Component):
     identity = COMP_ID
     #metadata = Base.metadata

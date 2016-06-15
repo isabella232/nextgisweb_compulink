@@ -11,7 +11,7 @@ from .view import get_regions_from_resource, get_districts_from_resource, get_pr
 
 BASE_PATH = path.abspath(path.dirname(__file__))
 
-@Component.registry.register
+
 class CompulinkAdminComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata

@@ -6,7 +6,6 @@ from ident import COMP_ID
 from .view import setup_events
 
 
-@Component.registry.register
 class CompulinkInternalMirroringComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata

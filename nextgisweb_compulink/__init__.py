@@ -22,6 +22,7 @@ def pkginfo():
             compulink_editor='nextgisweb_compulink.compulink_editor',
             compulink_internal_mirroring='nextgisweb_compulink.compulink_internal_mirroring',
             compulink_statistic_map='nextgisweb_compulink.compulink_statistic_map',
+            #compulink_deviation='nextgisweb_compulink.compulink_deviation',
         )
     )
 

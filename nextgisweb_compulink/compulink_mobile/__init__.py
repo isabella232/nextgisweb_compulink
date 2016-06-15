@@ -7,7 +7,6 @@ from nextgisweb.component import Component
 from ident import COMP_ID
 
 
-@Component.registry.register
 class CompulinkMobileComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata

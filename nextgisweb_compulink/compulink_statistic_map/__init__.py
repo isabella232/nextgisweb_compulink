@@ -7,7 +7,6 @@ from .ident import COMP_ID
 
 
 
-@Component.registry.register
 class CompulinkStatisticMapComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata

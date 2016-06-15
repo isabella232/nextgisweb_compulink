@@ -6,7 +6,7 @@ from ident import COMP_ID
 from .init_db import init_calendar, init_ucn_group, init_ucn_project
 from .model import Base
 
-@Component.registry.register
+
 class CompulinkReportingComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata

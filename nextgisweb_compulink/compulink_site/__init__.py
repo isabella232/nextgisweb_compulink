@@ -9,7 +9,6 @@ from nextgisweb_compulink.compulink_admin.well_known_resource import BOOL_FIELDS
 from .view import get_all_dicts
 
 
-@Component.registry.register
 class CompulinkSiteComponent(Component):
     identity = COMP_ID
     metadata = Base.metadata
