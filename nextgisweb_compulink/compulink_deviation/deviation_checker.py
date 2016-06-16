@@ -46,12 +46,12 @@ class DeviationChecker:
                     proj_layer = cls.get_layer_by_type(fs.children, layer_type)
                     actual_layer = cls.get_layer_by_type(fs.children, 'actual_real_' + layer_type)
 
-                    proj_features = cls.get_features(proj_layer)
+                    #proj_features = cls.get_features(proj_layer)
                     actual_features = cls.get_features(actual_layer)
 
                     for feat in actual_features:
                         # TODO: ADD CHECK already setted flags!
-                        min_dist = cls.nearest_feat_dist(feat, proj_features)
+                        min_dist = cls.nearest_feat_dist(feat, proj_layer)
                         if min_dist > deviation_distance:
                             # write to layer
                             feat.fields['is_deviation'] = 1
@@ -93,7 +93,11 @@ class DeviationChecker:
         return list(q())
 
     @classmethod
-    def nearest_feat_dist(cls, feat, features):
+    def nearest_feat_dist(cls, feat, feat_lyr):
         orig_dist = feat.geom
-        return min([orig_dist.distance(f.geom) for f in features])
+        q = feat_lyr.feature_query()
+        q.distance_to(orig_dist)
+        features = q()
+
+        return min([f.calculations['distance_to'] for f in features])
 
