@@ -24,5 +24,5 @@ class CompulinkDeviationComponent(Component):
 
 
     settings_info = (
-        dict(key='deviation_distance', desc=u"Отклонение от проекта в метрах"),
+        dict(key='deviation_distance', desc=u"Отклонение от проекта в метрах", ),
     )

@@ -8,6 +8,7 @@ from .real_data_generator import command  # NOQA
 from .compulink_data_reactor import command  # NOQA
 from .legend_generator import command  # NOQA
 from .real_data_importer import command  # NOQA
+from .compulink_deviation import command  # NOQA
 
 
 def pkginfo():

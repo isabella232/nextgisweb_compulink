@@ -20,15 +20,14 @@ class ConstructDeviation(Base):
 
     object_type = db.Column(db.VARCHAR, nullable=False)         # Тип объекта (слой)
     object_type_name = db.Column(db.Unicode, nullable=False)    # Название типа объекта (слоя)
-
     object_num = db.Column(db.Integer, nullable=False)          # ИД объекта в слое
 
     deviation_distance = db.Column(db.Integer, nullable=False)  # отклонение в метрах
     deviation_approved = db.Column(db.Boolean, nullable=False, default=False)   # отклонение утверждено
-    approval_comment = db.Column(db.Unicode, nullable=True)     # комментарий к отклонению
 
-    approval_author = db.Column(db.Unicode, nullable=False)  # автор утверждения
-    approval_timestamp = db.Column(db.DateTime, server_default=func.now())  # Дата\Время утверждения
+    approval_comment = db.Column(db.Unicode, nullable=True)     # комментарий к отклонению
+    approval_author = db.Column(db.Unicode, nullable=True)  # автор утверждения
+    approval_timestamp = db.Column(db.DateTime, nullable=True)  # Дата\Время утверждения
 
 
 ConstructDeviation.__table__.tometadata = types.MethodType(tometadata_event, ConstructDeviation.__table__)
