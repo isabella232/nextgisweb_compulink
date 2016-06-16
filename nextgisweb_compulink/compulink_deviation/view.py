@@ -1,9 +1,15 @@
 # coding=utf-8
+import json
+
 from os import path
 
 from nextgisweb.pyramid import viewargs
+from nextgisweb import DBSession
 from pyramid.httpexceptions import HTTPForbidden
+from pyramid.response import Response
 
+from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
+from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_parent
 
 CURR_PATH = path.dirname(path.abspath(__file__))
@@ -41,4 +47,26 @@ def deviation_grid(request):
 
 
 def get_deviation_data(request):
-    pass
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    # get params
+    #all = request.params.get('??', None)
+    #?? = request.params.get('??', None)
+
+    # request
+    ngw_session = DBSession()
+    query = ngw_session.query(ConstructDeviation)
+
+    #if(all):
+    #    query.filter()
+    # if not request.user.is_administrator:
+    #     allowed_res_ids = get_user_writable_focls(request.user)
+    #     report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+
+    row2dict = lambda row: dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
+    json_resp = []
+    for row in query.all():
+        json_resp.append(row2dict(row))
+
+    return Response(json.dumps(json_resp, cls=DateTimeJSONEncoder), content_type=b'application/json')
