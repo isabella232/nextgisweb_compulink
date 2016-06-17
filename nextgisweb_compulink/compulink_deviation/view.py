@@ -63,7 +63,7 @@ def get_deviation_data(request):
         query = query.filter(ConstructDeviation.deviation_approved==False)
 
 
-    if resource_id is not None:
+    if resource_id not in (None, 'root'):
         try:
             resource_id = int(resource_id)
         except:
@@ -72,9 +72,9 @@ def get_deviation_data(request):
         project_res_ids = get_project_focls(resource_id)
         query = query.filter(ConstructDeviation.focl_res_id.in_(project_res_ids))
 
-        if not request.user.is_administrator:
-            allowed_res_ids = get_user_writable_focls(request.user)
-            query = query.filter(ConstructDeviation.focl_res_id.in_(allowed_res_ids))
+    if not request.user.is_administrator:
+        allowed_res_ids = get_user_writable_focls(request.user)
+        query = query.filter(ConstructDeviation.focl_res_id.in_(allowed_res_ids))
 
 
     row2dict = lambda row: dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
