@@ -10,7 +10,8 @@ from pyramid.response import Response
 
 from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
-from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_parent
+from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_parent, get_project_focls, \
+    get_user_writable_focls
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -62,9 +63,19 @@ def get_deviation_data(request):
         query = query.filter(ConstructDeviation.deviation_approved==False)
 
 
-    # if not request.user.is_administrator:
-    #     allowed_res_ids = get_user_writable_focls(request.user)
-    #     report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+    if resource_id is not None:
+        try:
+            resource_id = int(resource_id)
+        except:
+            return Response(json.dumps({'error': 'Invalid resource_id'}), content_type=b'application/json', status=400)
+
+        project_res_ids = get_project_focls(resource_id)
+        query = query.filter(ConstructDeviation.focl_res_id.in_(project_res_ids))
+
+        if not request.user.is_administrator:
+            allowed_res_ids = get_user_writable_focls(request.user)
+            query = query.filter(ConstructDeviation.focl_res_id.in_(allowed_res_ids))
+
 
     row2dict = lambda row: dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
     json_resp = []
