@@ -78,7 +78,7 @@ define([
 
             // Обрабатываем нажатие кнопки 'Построить'
             this.buildReport.on('click', function () {
-                xhr(route.compulink.reporting.get_deviation_data(), {
+                xhr(route.compulink.deviation.get_deviation_data(), {
                     method: 'GET',
                     handleAs: 'json',
                     query: w.get('value')
