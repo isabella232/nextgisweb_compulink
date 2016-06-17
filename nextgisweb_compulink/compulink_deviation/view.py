@@ -51,15 +51,16 @@ def get_deviation_data(request):
         raise HTTPForbidden()
 
     # get params
-    #all = request.params.get('??', None)
-    #?? = request.params.get('??', None)
+    show_approved = request.params.get('show_approved', None)
+    resource_id = request.params.get('resource_id', None)
 
     # request
     ngw_session = DBSession()
     query = ngw_session.query(ConstructDeviation)
 
-    #if(all):
-    #    query.filter()
+    if not show_approved == 'true':
+        query = query.filter(ConstructDeviation.deviation_approved==False)
+
     # if not request.user.is_administrator:
     #     allowed_res_ids = get_user_writable_focls(request.user)
     #     report_query = report_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
