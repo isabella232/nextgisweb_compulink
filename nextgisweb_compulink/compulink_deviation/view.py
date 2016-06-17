@@ -56,10 +56,11 @@ def get_deviation_data(request):
 
     # request
     ngw_session = DBSession()
-    query = ngw_session.query(ConstructDeviation)
+    query = ngw_session.query(ConstructDeviation).order_by(ConstructDeviation.focl_name)
 
     if not show_approved == 'true':
         query = query.filter(ConstructDeviation.deviation_approved==False)
+
 
     # if not request.user.is_administrator:
     #     allowed_res_ids = get_user_writable_focls(request.user)
