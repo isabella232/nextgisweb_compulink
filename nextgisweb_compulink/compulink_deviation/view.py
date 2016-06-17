@@ -8,6 +8,7 @@ from nextgisweb import DBSession
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.response import Response
 
+from nextgisweb_compulink.compulink_deviation.deviation_checker import PROCESSING_LAYER_TYPES
 from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_parent, get_project_focls, \
@@ -80,6 +81,8 @@ def get_deviation_data(request):
     row2dict = lambda row: dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
     json_resp = []
     for row in query.all():
-        json_resp.append(row2dict(row))
+        obj_dict = row2dict(row)
+        obj_dict['object_type_name'] = PROCESSING_LAYER_TYPES[obj_dict['object_type']]
+        json_resp.append(obj_dict)
 
     return Response(json.dumps(json_resp, cls=DateTimeJSONEncoder), content_type=b'application/json')

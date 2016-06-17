@@ -1,3 +1,4 @@
+# coding=utf-8
 import transaction
 
 from nextgisweb import DBSession
@@ -5,12 +6,19 @@ from nextgisweb.env import env
 
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
 from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
-from . import CompulinkDeviationComponent
 
 __author__ = 'yellow'
 
+PROCESSING_LAYER_TYPES = {
+    'special_transition': u'Спецпереход',
+    'optical_cable': u'Трасса ВОЛС',
+    'fosc': u'Оптическая муфта',
+    'optical_cross': u'Оптический кросс',
+    'access_point': u'Точка доступа'
+}
 
 class DeviationChecker:
+
 
     @classmethod
     def run(cls):
@@ -35,7 +43,7 @@ class DeviationChecker:
             project_layers = {}
             for layer in fs.children:
                 layer_type = cls.get_layer_type(layer)
-                if layer_type in ['special_transition', 'optical_cable', 'fosc', 'optical_cross', 'access_point']:
+                if layer_type in PROCESSING_LAYER_TYPES.keys():
                     obj_count = cls.get_feat_count(layer)
                     if obj_count > 0:
                         project_layers[layer_type] = obj_count
@@ -63,7 +71,6 @@ class DeviationChecker:
                             deviation.focl_res_id = fs.id
                             deviation.focl_name = fs.display_name
                             deviation.object_type = layer_type
-                            deviation.object_type_name = layer_type  # TODO
                             deviation.object_num = feat.id
                             ngw_session.add(deviation)
 

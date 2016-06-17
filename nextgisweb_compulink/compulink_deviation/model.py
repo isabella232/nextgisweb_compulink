@@ -19,7 +19,6 @@ class ConstructDeviation(Base):
     focl_name = db.Column(db.Unicode, nullable=False)        # Наименование ВОЛС
 
     object_type = db.Column(db.VARCHAR, nullable=False)         # Тип объекта (слой)
-    object_type_name = db.Column(db.Unicode, nullable=False)    # Название типа объекта (слоя)
     object_num = db.Column(db.Integer, nullable=False)          # ИД объекта в слое
 
     deviation_distance = db.Column(db.Integer, nullable=False)  # отклонение в метрах
