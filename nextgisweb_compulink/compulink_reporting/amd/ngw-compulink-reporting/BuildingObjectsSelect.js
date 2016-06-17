@@ -10,7 +10,7 @@ define([
     'ngw-compulink-libs/jstree-3.0.9/jstree',
     'xstyle/css!./resource/BuildingObjectsSelect.css'
 ], function (declare, lang, topic, Evented, array, _WidgetBase, _TemplatedMixin, template) {
-    return declare([_WidgetBase, _TemplatedMixin], {
+    return declare([Evented, _WidgetBase, _TemplatedMixin], {
         templateString: template,
         $domNodeTree: null,
         value: null,
@@ -120,6 +120,10 @@ define([
             if (!node || !node.text) return false;
             this.$input.val(node.text);
             this.value = node.id;
+            this.emit('change', {
+                id: node.id,
+                text: node.text
+            });
         },
 
         _showTree: function ($treeWrapper) {
