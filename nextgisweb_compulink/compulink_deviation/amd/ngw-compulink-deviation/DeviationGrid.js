@@ -74,20 +74,6 @@ define([
         postCreate: function () {
             this.inherited(arguments);
 
-            var w = this;
-
-            // Обрабатываем нажатие кнопки 'Построить'
-            this.buildReport.on('click', function () {
-                xhr(route.compulink.deviation.get_deviation_data(), {
-                    method: 'GET',
-                    handleAs: 'json',
-                    query: w.get('value')
-                }).then(lang.hitch(this, function (data) {
-                    w._grid.refresh();
-                    w._grid.renderArray(data);
-                }));
-            });
-
             // Обрабатываем нажатие кнопки 'Выгрузить в Excel'
             //this.exportExcel.on('click', function() {
             //    var url = route.compulink.reporting.export_status_report();
@@ -97,10 +83,28 @@ define([
 
             this.showApproved.on('change', lang.hitch(this, function (checked) {
                 if (checked) {
-                    this.buildTable(['Default', 'Approved']);
+                    this.setDeviationGridColumns(['Default', 'Approved']);
                 } else {
-                    this.buildTable(['Default']);
+                    this.setDeviationGridColumns(['Default']);
                 }
+                this.buildDeviationGrid();
+            }));
+
+            this.buildingObjectsSelect.on('change', lang.hitch(this, function () {
+                this.buildDeviationGrid();
+            }));
+
+            this.buildDeviationGrid();
+        },
+
+        buildDeviationGrid: function () {
+            xhr(route.compulink.deviation.get_deviation_data(), {
+                method: 'GET',
+                handleAs: 'json',
+                query: this.get('value')
+            }).then(lang.hitch(this, function (data) {
+                this._grid.refresh();
+                this._grid.renderArray(data);
             }));
         },
 
@@ -147,7 +151,7 @@ define([
          * Build a table based on columns sets (e.g. 'Default' for this.columnsDefault etc.)
          * @param {Array} columnsSet
          */
-        buildTable: function (columnsSets) {
+        setDeviationGridColumns: function (columnsSets) {
             var columns = [];
             array.forEach(columnsSets, function (columnsSet) {
                 columns = columns.concat(this['columns' + columnsSet]);
@@ -157,7 +161,7 @@ define([
 
         initializeGrid: function () {
             this._grid = new GridClass();
-            this.buildTable(['Default']);
+            this.setDeviationGridColumns(['Default']);
             domStyle.set(this._grid.domNode, "height", "100%");
             domStyle.set(this._grid.domNode, "border", "none");
         },
