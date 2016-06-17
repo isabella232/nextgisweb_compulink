@@ -108,25 +108,43 @@ define([
             }));
         },
 
-        columnsDefault: [
-            {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name', sortable: false},
-            {label: 'Тип объекта', field: 'object_type', name: 'object_type', sortable: false},
-            {label: 'Номер объекта', field: 'object_number', name: 'object_number', sortable: false},
-            {label: 'Отклонение в метрах', field: 'deviation_meters', name: 'deviation_meters', sortable: false}
-        ],
+        getColumnsDefault: function () {
+            return [
+                {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name', sortable: false},
+                {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
+                {label: 'Номер объекта', field: 'object_num', name: 'object_num', sortable: false},
+                {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance', sortable: false}
+            ];
+        },
 
-        columnsApproved: [
-            {label: 'Отклонение утверждено', field: 'deviation_approved', name: 'deviation_approved', sortable: false},
-            {label: 'Автор утверждения', field: 'approval_author', name: 'approval_author', sortable: false},
-            {
-                label: 'Дата/Время утверждения',
-                field: 'approval_timestamp',
-                name: 'approval_timestamp',
-                get: lang.partial(this._getDateCell, 'start_build_time'),
-                sortable: false
-            },
-            {label: 'Комментарий к отклонению', field: 'approval_comment', name: 'approval_comment', sortable: false}
-        ],
+        getColumnsApproved: function () {
+            var _getDateCell = this._getDateCell,
+                _getBoolean = this._getBoolean;
+
+            return [
+                {
+                    label: 'Отклонение утверждено',
+                    field: 'deviation_approved',
+                    name: 'deviation_approved',
+                    get: lang.partial(_getBoolean, 'deviation_approved'),
+                    sortable: false
+                },
+                {label: 'Автор утверждения', field: 'approval_author', name: 'approval_author', sortable: false},
+                {
+                    label: 'Дата/Время утверждения',
+                    field: 'approval_timestamp',
+                    name: 'approval_timestamp',
+                    get: lang.partial(_getDateCell, 'start_build_time'),
+                    sortable: false
+                },
+                {
+                    label: 'Комментарий к отклонению',
+                    field: 'approval_comment',
+                    name: 'approval_comment',
+                    sortable: false
+                }
+            ];
+        },
 
         _getDateCell: function (prop, obj) {
             if (obj[prop]) {
@@ -147,6 +165,14 @@ define([
             }
         },
 
+        _getBoolean: function (prop, obj) {
+            if (obj[prop]) {
+                return 'Да';
+            } else {
+                return 'Нет';
+            }
+        },
+
         /**
          * Build a table based on columns sets (e.g. 'Default' for this.columnsDefault etc.)
          * @param {Array} columnsSet
@@ -154,7 +180,7 @@ define([
         setDeviationGridColumns: function (columnsSets) {
             var columns = [];
             array.forEach(columnsSets, function (columnsSet) {
-                columns = columns.concat(this['columns' + columnsSet]);
+                columns = columns.concat(this['getColumns' + columnsSet]());
             }, this);
             this._grid.set("columns", columns);
         },
