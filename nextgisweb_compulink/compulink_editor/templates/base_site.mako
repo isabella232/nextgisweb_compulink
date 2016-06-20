@@ -73,6 +73,7 @@
                 reportUrl: '${request.route_url('compulink.reporting.status_grid')}',
                 reportUcnUrl: '${request.route_url('compulink.reports.ucn')}',
                 statisticMapUrl: '${request.route_url('compulink.statistic_map.map')}',
+                reportDeviation: '${request.route_url('compulink.deviation.grid')}',
                 logoutUrl: '${request.route_url('auth.logout')}'
             %endif
         };
