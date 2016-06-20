@@ -99,6 +99,10 @@ def setup_pyramid(comp, config):
         'compulink.site.get_dicts',
         '/compulink/get_dicts',) \
         .add_view(get_dicts)
+    config.add_route(
+        'compulink.site.get_focl_parents',
+        '/compulink/resources/{id:\d+}/get_focl_parents', client=('id',)) \
+        .add_view(get_focl_parents)
 
 
 @view_config(renderer='json')
@@ -428,6 +432,31 @@ def get_focl_info(request):
     dbsession.close()
 
     return Response(json.dumps(resp))
+
+@view_config(renderer='json')
+def get_focl_parents(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    res_id = request.matchdict['id']
+    response = []
+
+    try:
+        dbsession = DBSession()
+        focl_resource = dbsession.query(FoclStruct).get(res_id)
+    except:
+        raise HTTPNotFound()
+
+    if not focl_resource:
+        raise HTTPNotFound()
+
+    while focl_resource:
+        response.append(focl_resource.id)
+        focl_resource = focl_resource.parent
+
+    response.reverse()
+
+    return Response(json.dumps(response))
 
 
 def extent_union(extent, new_extent):
