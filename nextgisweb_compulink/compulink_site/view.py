@@ -63,6 +63,10 @@ def setup_pyramid(comp, config):
         '/compulink/resources/focl_extent').add_view(get_focl_extent)
 
     config.add_route(
+        'compulink.site.get_object_extent',
+        '/compulink/resources/object_extent').add_view(get_object_extent)
+
+    config.add_route(
         'compulink.site.layers_by_type',
         '/compulink/resources/layers_by_type').add_view(get_layers_by_type)
 
@@ -519,6 +523,72 @@ def get_extent_by_resource_id(resource_id):
     session.close()
 
     return extent_buff(extent, 1000)
+
+
+@view_config(renderer='json')
+def get_object_extent(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    resource_id = request.params.get('resource_id', None)
+    object_type = request.params.get('object_type', None)
+    object_num = request.params.get('object_num', None)
+
+    if resource_id is None:
+        return Response('[]')
+
+    if None in (object_num, object_type):
+        return {'extent': get_extent_by_resource_id(resource_id)}
+
+    extent = get_extent_by_objext_num(resource_id, object_type, object_num)
+    if not extent:
+        extent = get_extent_by_resource_id(resource_id)
+
+    resp = {'extent': extent}
+    return Response(json.dumps(resp))
+
+
+def get_extent_by_objext_num(resource_id, object_type, object_num):
+    extent = []
+
+    session = DBSession()
+    resource = session.query(Resource).filter(Resource.id == resource_id).first()
+
+    if not resource:
+        return extent
+
+    layer_type = 'actual_real_' + object_type
+    layer = None
+    for res in resource.children:
+        if get_layer_type(res) == layer_type:
+            layer = res
+            break
+
+    if not layer:
+        return extent
+
+    query = layer.feature_query()
+    query.box()
+
+    query.filter_by(id=object_num)
+    query.limit(1)
+
+    obj = None
+    for f in query():
+        obj = f
+
+    if not obj:
+        return extent
+
+    return obj.box.bounds
+
+
+def get_layer_type(layer):
+    if layer.keyname and '_' in layer.keyname:
+        return '_'.join(layer.keyname.rsplit('_')[:-1])
+    else:
+        return None
+
 
 
 @view_config(renderer='json')
