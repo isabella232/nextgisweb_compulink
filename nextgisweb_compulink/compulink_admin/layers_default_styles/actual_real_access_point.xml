@@ -1,0 +1,52 @@
+<map>
+  <layer>
+    <type>Point</type>
+    <labelitem>name</labelitem>
+    <class>
+      <expression>('[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+      <style>
+        <outlinecolor red="255" green="52" blue="72"/>
+        <width>4</width>
+        <symbol>std:circle</symbol>
+        <color red="0" green="0" blue="0"/>
+        <size>23</size>
+      </style>
+      <style>
+        <outlinecolor red="255" green="255" blue="255"/>
+        <symbol>std:circle</symbol>
+        <color red="0" green="0" blue="0"/>
+        <size>20</size>
+      </style>
+      <label>
+        <type>truetype</type>
+        <font>regular</font>
+        <size>11</size>
+        <color blue="0" green="0" red="0"/>
+        <outlinewidth>3</outlinewidth>
+        <outlinecolor blue="255" green="255" red="255"/>
+        <position>ur</position>
+        <offset x='5' y='0' />
+        <maxscaledenom>140000</maxscaledenom>
+      </label>
+    </class>
+    <class>
+      <style>
+        <outlinecolor red="255" green="255" blue="255"/>
+        <symbol>std:circle</symbol>
+        <color red="0" green="0" blue="0"/>
+        <size>20</size>
+      </style>
+      <label>
+        <type>truetype</type>
+        <font>regular</font>
+        <size>11</size>
+        <color blue="0" green="0" red="0"/>
+        <outlinewidth>3</outlinewidth>
+        <outlinecolor blue="255" green="255" red="255"/>
+        <position>ur</position>
+        <offset x='5' y='0' />
+        <maxscaledenom>140000</maxscaledenom>
+      </label>
+    </class>
+  </layer>
+</map>

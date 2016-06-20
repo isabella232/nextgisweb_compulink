@@ -1,0 +1,167 @@
+<map>
+  <layer>
+    <type>Line</type>
+    <class>
+      <expression>('[laying_method]'='ground' and '[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+	  <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>8.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>5.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="156" green="121" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='ground' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="156" green="121" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+
+    <class>
+      <expression>('[laying_method]'='transmission_towers' and '[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>8.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>5.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="0" green="0" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='transmission_towers' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="0" green="0" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='canalization' and '[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+       <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>8.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>5.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="139" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='canalization' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="139" blue="0" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='building' and '[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>8.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>5.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="29" green="66" blue="201" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='building' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="29" green="66" blue="201" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+
+    <class>
+      <expression>( '[laying_method]'='other' and '[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>8.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>5.0</width>
+      </style>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="118" green="0" blue="236" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+    <class>
+      <expression>( '[laying_method]'='other' )</expression>
+      <style>
+        <linecap>square</linecap>
+        <linejoin>bevel</linejoin>
+        <color red="118" green="0" blue="236" />
+        <width>3.0</width>
+      </style>
+    </class>
+
+  </layer>
+</map> 

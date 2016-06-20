@@ -47,11 +47,14 @@ class UpdateStylesCommand():
         for ms_style_res in ms_styles_resources:
             vector_layer_key = ms_style_res.parent.keyname
             if not vector_layer_key:
-                print "!!!! %s was not updated! No parent keyname!" % (ms_style_res.display_name)
+                print "!!!! %s was not updated! No parent keyname or keyname is invalid!" % (ms_style_res.display_name)
                 continue
+
+            v_vector_layer_key = '_'.join(vector_layer_key.rsplit('_')[:-1])
+
             updated = False
             for style_name in new_styles_keys:
-                if vector_layer_key.startswith(style_name):
+                if style_name == v_vector_layer_key:
                     ms_style_res.xml = new_styles[style_name]
                     ms_style_res.persist()
                     print "!!!! %s was updated!" % vector_layer_key

@@ -1,0 +1,35 @@
+<map>
+  <layer>
+    <type>Line</type>
+    <class>
+      <expression>('[is_deviation]'='1' and '[deviation_approved]'!='1')</expression>
+      <style>
+        <linecap>round</linecap>
+        <linejoin>round</linejoin>
+        <color red="255" green="52" blue="72" />
+        <width>12.0</width>
+      </style>
+      <style>
+        <linecap>round</linecap>
+        <linejoin>round</linejoin>
+        <color red="255" green="255" blue="255" />
+        <width>10.0</width>
+      </style>
+      <style>
+        <linecap>round</linecap>
+        <linejoin>round</linejoin>
+        <color red="223" green="86" blue="223" />
+        <width>8.0</width>
+      </style>
+    </class>
+    <class>
+      <style>
+        <linecap>round</linecap>
+        <linejoin>round</linejoin>
+        <color red="223" green="86" blue="223" />
+        <width>8.0</width>
+      </style>
+    </class>
+  </layer>
+</map>
+
