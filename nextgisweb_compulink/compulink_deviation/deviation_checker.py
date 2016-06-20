@@ -58,12 +58,15 @@ class DeviationChecker:
                     actual_features = cls.get_features(actual_layer)
 
                     for feat in actual_features:
-                        # TODO: ADD CHECK already setted flags!
+                        if feat.fields['is_deviation'] == 1:
+                            continue
+
                         min_dist = cls.nearest_feat_dist(feat, proj_layer)
                         if min_dist > deviation_distance:
                             # write to layer
                             feat.fields['is_deviation'] = 1
                             feat.fields['deviation_distance'] = min_dist
+                            feat.layer.feature_put(feat)
 
                             # write to table
                             deviation = ConstructDeviation()
