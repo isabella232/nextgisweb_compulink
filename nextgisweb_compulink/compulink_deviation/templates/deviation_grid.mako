@@ -1,7 +1,7 @@
 <%inherit file='nextgisweb_compulink:compulink_site/templates/base_site.mako' />
 
 <%def name="title()">
-    Отчёт о ходе строительства
+    Отчёт об отклонениях от проекта строительства
 </%def>
 
 <%def name="head()">
