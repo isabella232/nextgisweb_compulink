@@ -433,6 +433,7 @@ def get_focl_info(request):
 
     return Response(json.dumps(resp))
 
+
 @view_config(renderer='json')
 def get_focl_parents(request):
     if request.user.keyname == 'guest':
@@ -456,7 +457,7 @@ def get_focl_parents(request):
 
     response.reverse()
 
-    return Response(json.dumps(response))
+    return Response(json.dumps(response[:-1]))
 
 
 def extent_union(extent, new_extent):
