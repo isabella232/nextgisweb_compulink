@@ -323,6 +323,14 @@ define([
                 lang.hitch(this, function () {
                     widget._mapSetup();
                     var resourcesTypeSelector = new ResourcesTypeSelector('resourcesTypeSelector');
+
+                    if (this._urlParams['resource_id']) {
+                        var resTypeChangedHandler = topic.subscribe('resources/tree/refreshed', lang.hitch(this, function () {
+                            resTypeChangedHandler.remove();
+                            this.ResourcesTree.selectResource();
+                        }));
+                    }
+
                     resourcesTypeSelector.selectResourceType('vols');
                     this.LayersSelector.selectLayers([
                         'actual_real_special_transition', 'actual_real_special_transition_point',
@@ -492,7 +500,8 @@ define([
             this.LayersSelector = this.buildLayersSelector();
             this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable', this);
             this.ResourcesTree = new ResourcesTree("#resourcesTree", {
-                type: 'vols'
+                type: 'vols',
+                resourceToSelect: this._urlParams['resource_id']
             });
             this.LayersManager = new LayersManager(this.ResourcesTree, this.LayersSelector, this);
 

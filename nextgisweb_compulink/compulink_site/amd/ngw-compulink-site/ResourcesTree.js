@@ -19,6 +19,8 @@ define([
 
             this.setDefaultValues(settings);
 
+            this._bindEvents($tree);
+
             $tree.jstree({
                 'core': {
                     'themes': {
@@ -44,7 +46,7 @@ define([
                 },
                 'plugins': ['checkbox', 'types', 'ui']
             });
-            this._bindEvents($tree);
+
         },
 
         _getJsTreeQuery: function (node) {
@@ -133,11 +135,14 @@ define([
             }));
 
             this.$tree.on('loaded.jstree', lang.hitch(this, function () {
-                this._previousState = this.$tree.jstree('get_state');
+                if (!this.settings.resourceToSelect) {
+                    this._previousState = this.$tree.jstree('get_state');
+                }
             }));
 
             $tree.on('refresh.jstree', lang.hitch(this, function () {
                 this._checkedResourcesId = this.$tree.jstree().get_bottom_selected();
+                topic.publish('resources/tree/refreshed');
             }));
 
             topic.subscribe('resources/type/set', lang.hitch(this, function (resourceType) {
@@ -148,6 +153,35 @@ define([
             topic.subscribe('resources/tree/refresh', lang.hitch(this, function () {
                 this.$tree.jstree('refresh');
             }));
+        },
+
+        selectResource: function () {
+            var getParentsUrl = ngwConfig.applicationUrl +
+                '/compulink/resources/' + this.settings.resourceToSelect + '/get_focl_parents';
+            xhr(getParentsUrl, {
+                handleAs: "json"
+            }).then(lang.hitch(this, function (parents) {
+                parents.shift();
+                this._parentsToOpen = array.map(parents, function (resId) {
+                    return 'res_' + resId;
+                });
+                this.open_node();
+            }));
+        },
+
+        _parentsToOpen: null,
+        open_node: function () {
+            if (!this._parentsToOpen[0]) {
+                this.$tree.jstree('select_node', 'res_' + this.settings.resourceToSelect);
+                return true;
+            }
+            var after_open = lang.hitch(this, function () {
+                this._parentsToOpen.shift();
+                this.$tree.off('after_open.jstree', after_open);
+                this.open_node();
+            });
+            this.$tree.on('after_open.jstree', after_open);
+            this.$tree.jstree('open_node', this._parentsToOpen[0]);
         },
 
         addValidator: function (validator) {
