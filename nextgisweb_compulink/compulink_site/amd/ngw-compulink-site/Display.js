@@ -328,6 +328,7 @@ define([
                         var resTypeChangedHandler = topic.subscribe('resources/tree/refreshed', lang.hitch(this, function () {
                             resTypeChangedHandler.remove();
                             this.ResourcesTree.selectResource();
+                            this.setExtentByResource();
                         }));
                     }
 
@@ -415,6 +416,24 @@ define([
 
             // Инструменты
             this.tools = [];
+        },
+
+        setExtentByResource: function () {
+            if (!this._urlParams['resource_id'] ||
+                !this._urlParams['object_type'] ||
+                !this._urlParams['object_num']) {
+                return false;
+            }
+            var getExtentUrl = ngwConfig.applicationUrl + '/compulink/resources/object_extent?resource_id=' +
+                    this._urlParams['resource_id'] + '&object_type=' + this._urlParams['object_type'] +
+                    '&object_num=' + this._urlParams['object_num'];
+            xhr(getExtentUrl, {
+                handleAs: 'json'
+            }).then(lang.hitch(this, function (result) {
+                if (result && result.extent) {
+                    topic.publish('map/zoom_to', result.extent);
+                }
+            }));
         },
 
         postCreate: function () {
