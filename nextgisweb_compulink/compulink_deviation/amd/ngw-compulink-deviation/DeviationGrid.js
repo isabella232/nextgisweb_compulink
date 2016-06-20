@@ -187,9 +187,18 @@ define([
 
         initializeGrid: function () {
             this._grid = new GridClass();
+            this._bindGridEvents();
             this.setDeviationGridColumns(['Default']);
             domStyle.set(this._grid.domNode, "height", "100%");
             domStyle.set(this._grid.domNode, "border", "none");
+        },
+
+        _bindGridEvents: function () {
+            this._grid.on('.dgrid-row:click', lang.hitch(this, function (evt) {
+                var row = this._grid.row(evt),
+                    resource_id = row.data.focl_res_id;
+                window.open(ngwConfig.compulinkMapUrl + '?resource_id=' + resource_id, '_blank');
+            }));
         },
 
         startup: function () {
