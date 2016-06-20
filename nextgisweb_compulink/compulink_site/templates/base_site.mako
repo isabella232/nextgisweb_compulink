@@ -35,7 +35,8 @@
             applicationUrl: ${request.application_url | json.dumps, n},
             compulinkAssetUrl: ${request.static_url('nextgisweb_compulink:compulink_site/static/') | json.dumps, n},
             assetUrl: ${request.static_url('nextgisweb:static/') | json.dumps, n },
-            amdUrl: ${request.route_url('amd_package', subpath="") | json.dumps, n}
+            amdUrl: ${request.route_url('amd_package', subpath="") | json.dumps, n},
+            compulinkMapUrl: '${request.route_url('compulink.site.map')}'
         };
 
         var dojoConfig = {
