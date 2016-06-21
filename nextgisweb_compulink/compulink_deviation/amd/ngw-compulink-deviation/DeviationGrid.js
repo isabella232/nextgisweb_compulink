@@ -110,9 +110,8 @@ define([
 
         getColumnsDefault: function () {
             return [
-                {label: 'Наименование ВОЛС', field: 'focl_name', name: 'focl_name', sortable: false},
+                {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false},
                 {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
-                {label: 'Номер объекта', field: 'object_num', name: 'object_num', sortable: false},
                 {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance', sortable: false}
             ];
         },
@@ -138,7 +137,7 @@ define([
                     sortable: false
                 },
                 {
-                    label: 'Комментарий к отклонению',
+                    label: 'Комментарий к утверждению',
                     field: 'approval_comment',
                     name: 'approval_comment',
                     sortable: false
