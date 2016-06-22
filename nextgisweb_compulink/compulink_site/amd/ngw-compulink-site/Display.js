@@ -338,6 +338,15 @@ define([
                         'actual_real_optical_cable', 'actual_real_optical_cable_point',
                         'actual_real_fosc', 'actual_real_optical_cross', 'actual_real_access_point'
                     ], 'focl_struct');
+
+                    if (this._urlParams['layers'] && this._urlParams['layers'] === 'design_layers') {
+                        this.LayersSelector.selectLayers([
+                            'endpoint', 'access_point',
+                            'optical_cross', 'fosc',
+                            'optical_cable', 'special_transition', 'note'
+                        ], 'focl_struct');
+                    }
+
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
