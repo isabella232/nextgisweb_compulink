@@ -110,6 +110,7 @@ define([
 
         getColumnsDefault: function () {
             return [
+                {label: 'Проект', field: 'focl_proj', name: 'focl_proj', sortable: false},
                 {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false},
                 {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
                 {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance', sortable: false}

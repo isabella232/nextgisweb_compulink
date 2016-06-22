@@ -16,6 +16,7 @@ class ConstructDeviation(Base):
     id = db.Column(db.Integer, primary_key=True)
 
     focl_res_id = db.Column(db.Integer, nullable=False)      # ИД ресурса объекта строительства
+    focl_proj = db.Column(db.Unicode, nullable=False)        # Наименование ВОЛС
     focl_name = db.Column(db.Unicode, nullable=False)        # Наименование ВОЛС
 
     object_type = db.Column(db.VARCHAR, nullable=False)         # Тип объекта (слой)

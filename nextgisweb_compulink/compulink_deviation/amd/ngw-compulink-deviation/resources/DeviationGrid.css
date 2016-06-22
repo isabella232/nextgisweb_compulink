@@ -15,53 +15,31 @@
     text-align: center;
 }
 
-.dgrid-content .dgrid-cell.field-start_build_time,
-.dgrid-content .dgrid-cell.field-end_build_time,
-.dgrid-content .dgrid-cell.field-cabling_plan,
-.dgrid-content .dgrid-cell.field-cabling_fact,
-.dgrid-content .dgrid-cell.field-cabling_percent,
-.dgrid-content .dgrid-cell.field-fosc_plan,
-.dgrid-content .dgrid-cell.field-fosc_fact,
-.dgrid-content .dgrid-cell.field-fosc_percent,
-.dgrid-content .dgrid-cell.field-cross_plan,
-.dgrid-content .dgrid-cell.field-cross_fact,
-.dgrid-content .dgrid-cell.field-cross_percent,
-.dgrid-content .dgrid-cell.field-spec_trans_plan,
-.dgrid-content .dgrid-cell.field-spec_trans_fact,
-.dgrid-content .dgrid-cell.field-spec_trans_percent,
-.dgrid-content .dgrid-cell.field-ap_plan,
-.dgrid-content .dgrid-cell.field-ap_fact,
-.dgrid-content .dgrid-cell.field-ap_percent {
+
+.dgrid-content .dgrid-cell.field-deviation_distance,
+.dgrid-content .dgrid-cell.field-deviation_approved,
+.dgrid-content .dgrid-cell.field-approval_author,
+.dgrid-content .dgrid-cell.field-approval_timestamp
+{
     text-align: center;
 }
 
-.field-focl_name {
-    width: 14em;
-}
-
-.field-region {
-    width: 14em;
-}
-
-.field-district {
-    width: 14em;
-}
-
-.field-status {
+.field-focl_proj {
     width: 10em;
 }
 
-.field-subcontr_name {
-    width: 8em;
+.field-focl_name {
+    width: 10em;
 }
 
-.field-start_build_time {
-    width: 9em;
+.field-approval_comment {
+    width: 10em;
 }
 
-.field-end_build_time {
-    width: 9em;
+.field-deviation_distance {
+    width: 5em;
 }
+
 
 .summary-row {
     font-weight: bold;

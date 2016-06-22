@@ -58,8 +58,8 @@ class DeviationChecker:
                     actual_features = cls.get_features(actual_layer)
 
                     for feat in actual_features:
-                        if feat.fields['is_deviation'] == 1:
-                            continue
+                        #if feat.fields['is_deviation'] == 1:
+                        #    continue
 
                         min_dist = cls.nearest_feat_dist(feat, proj_layer)
                         if min_dist > deviation_distance:
@@ -73,11 +73,23 @@ class DeviationChecker:
                             deviation.deviation_distance = min_dist
                             deviation.focl_res_id = fs.id
                             deviation.focl_name = fs.display_name
+                            deviation.focl_proj = cls.get_proj_name(fs)
                             deviation.object_type = layer_type
                             deviation.object_num = feat.id
                             ngw_session.add(deviation)
 
         transaction.manager.commit()
+
+    @classmethod
+    def get_proj_name(cls, fs):
+        names = []
+        res = fs.parent
+        while res:
+            names.append(res.display_name)
+            res = res.parent
+        names.reverse()
+        names = names[1:]
+        return '\\'.join(names)
 
     @classmethod
     def get_layer_type(cls, layer):
