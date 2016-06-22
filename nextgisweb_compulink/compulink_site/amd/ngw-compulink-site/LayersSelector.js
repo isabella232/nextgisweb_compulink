@@ -279,13 +279,15 @@ define([
         },
 
         getLayersTypesSelected: function (type) {
+            var result = [],
+                tree;
             if (type) {
                 return this.settings.resources[type].$tree.jstree('get_bottom_selected');
             } else {
-                var result = [];
                 for (var resourceType in this.settings.resources) {
                     if (this.settings.resources.hasOwnProperty(resourceType)) {
-                        result = result.concat(this.settings.resources[resourceType].$tree.jstree('get_bottom_selected'));
+                        tree = jQuery.jstree.reference(this.settings.resources[resourceType].$tree);
+                        result = result.concat(tree.get_bottom_selected());
                     }
                 }
                 return result;
