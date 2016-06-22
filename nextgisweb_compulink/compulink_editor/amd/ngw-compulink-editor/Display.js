@@ -50,6 +50,7 @@ define([
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
     "ngw-compulink-site/PrintMap",
+    "ngw-compulink-site/MapStandBy",
     "ngw-compulink-editor/editor/FeaturesManager",
     "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-compulink-editor/editor/AttributesEditor",
@@ -123,6 +124,7 @@ define([
     DisplayHeader,
     LayersLoadingIndicator,
     PrintMap,
+    MapStandBy,
     EditorFeaturesManager,
     NgwServiceFacade,
     AttributesEditor,
@@ -505,13 +507,21 @@ define([
 
             this.LayersSelector = this.buildLayersSelector();
             this.LayersManager = new LayersManager(this.LayersSelector, this);
+            this.standBy();
             this._startupDeferred.resolve();
-
             //events
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
                  this.map.olMap.zoomToExtent(new_ext, false);
             }));
 
+        },
+
+        standBy: function () {
+            var mapStandBy = new MapStandBy();
+            mapStandBy.show();
+            topic.subscribe('features/manager/filled', function () {
+                mapStandBy.hide();
+            });
         },
 
         buildLayersSelector: function () {

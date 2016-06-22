@@ -55,6 +55,7 @@ define([
     "ngw-compulink-editor/editor/NgwServiceFacade",
     "ngw-compulink-editor/editor/AttributesEditor",
     "ngw-compulink-site/PrintMap",
+    "ngw-compulink-site/MapStandBy",
     "ngw-compulink-editor/player/Timeline",
     "ngw-webmap/ImageAdapter",
     // settings
@@ -130,6 +131,7 @@ define([
     NgwServiceFacade,
     AttributesEditor,
     PrintMap,
+    MapStandBy,
     Timeline,
     Adapter,
     clientSettings
@@ -523,8 +525,7 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            //this.LayersSelector = this.buildLayersSelector();
-            //this.LayersManager = new LayersManager(this.LayersSelector, this);
+            this.standBy();
             this._startupDeferred.resolve();
 
             //events
@@ -532,6 +533,14 @@ define([
                  this.map.olMap.zoomToExtent(new_ext, false);
             }));
 
+        },
+
+        standBy: function () {
+            var mapStandBy = new MapStandBy();
+            mapStandBy.show();
+            topic.subscribe('features/manager/filled', function () {
+                mapStandBy.hide();
+            });
         },
 
         buildLayersSelector: function () {
