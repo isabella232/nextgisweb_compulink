@@ -45,22 +45,16 @@ class DeviationChecker:
                 layer_type = cls.get_layer_type(layer)
                 if layer_type in PROCESSING_LAYER_TYPES.keys():
                     obj_count = cls.get_feat_count(layer)
-                    if obj_count > 0:
-                        project_layers[layer_type] = obj_count
+                    project_layers[layer_type] = obj_count
 
-            if sum(project_layers.values()) > 0:
-                # real check
-                for layer_type, count in project_layers.items():
-                    proj_layer = cls.get_layer_by_type(fs.children, layer_type)
-                    actual_layer = cls.get_layer_by_type(fs.children, 'actual_real_' + layer_type)
+            # real check
+            for layer_type, proj_feat_count in project_layers.items():
+                proj_layer = cls.get_layer_by_type(fs.children, layer_type)
+                actual_layer = cls.get_layer_by_type(fs.children, 'actual_real_' + layer_type)
+                actual_features = cls.get_features(actual_layer)
 
-                    #proj_features = cls.get_features(proj_layer)
-                    actual_features = cls.get_features(actual_layer)
-
-                    for feat in actual_features:
-                        #if feat.fields['is_deviation'] == 1:
-                        #    continue
-
+                for feat in actual_features:
+                    if proj_feat_count > 0:
                         min_dist = cls.nearest_feat_dist(feat, proj_layer)
                         if min_dist > deviation_distance:
                             # write to layer
@@ -69,7 +63,16 @@ class DeviationChecker:
                             feat.layer.feature_put(feat)
 
                             # write to table
-                            deviation = ConstructDeviation()
+                            deviation = ngw_session.query(ConstructDeviation)\
+                                .filter(
+                                    ConstructDeviation.focl_res_id == fs.id,
+                                    ConstructDeviation.object_type == layer_type,
+                                    ConstructDeviation.object_num == feat.id
+                                ).first()
+
+                            if not deviation:
+                                deviation = ConstructDeviation()
+
                             deviation.deviation_distance = min_dist
                             deviation.focl_res_id = fs.id
                             deviation.focl_name = fs.display_name
@@ -77,6 +80,33 @@ class DeviationChecker:
                             deviation.object_type = layer_type
                             deviation.object_num = feat.id
                             ngw_session.add(deviation)
+
+                        elif feat.fields['is_deviation'] == 1 and feat.fields['deviation_approved'] != 1:
+                            feat.fields['is_deviation'] = 0
+                            feat.fields['deviation_distance'] = None
+                            feat.layer.feature_put(feat)
+
+                            # remove from table
+                            deviation = ngw_session.query(ConstructDeviation) \
+                                .filter(
+                                ConstructDeviation.focl_res_id == fs.id,
+                                ConstructDeviation.object_type == layer_type,
+                                ConstructDeviation.object_num == feat.id
+                            ).delete()
+                    else:
+                        if feat.fields['is_deviation'] == 1 and feat.fields['deviation_approved'] != 1:
+                            feat.fields['is_deviation'] = 0
+                            feat.fields['deviation_distance'] = None
+                            feat.layer.feature_put(feat)
+
+                            # remove from table
+                            ngw_session.query(ConstructDeviation) \
+                                .filter(
+                                ConstructDeviation.focl_res_id == fs.id,
+                                ConstructDeviation.object_type == layer_type,
+                                ConstructDeviation.object_num == feat.id
+                            ).delete()
+
 
         transaction.manager.commit()
 
