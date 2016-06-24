@@ -83,7 +83,7 @@ class DeviationChecker:
 
                         elif feat.fields['is_deviation'] == 1 and feat.fields['deviation_approved'] != 1:
                             feat.fields['is_deviation'] = 0
-                            feat.fields['deviation_distance'] = None
+                            feat.fields['deviation_distance'] = 0
                             feat.layer.feature_put(feat)
 
                             # remove from table
@@ -96,7 +96,7 @@ class DeviationChecker:
                     else:
                         if feat.fields['is_deviation'] == 1 and feat.fields['deviation_approved'] != 1:
                             feat.fields['is_deviation'] = 0
-                            feat.fields['deviation_distance'] = None
+                            feat.fields['deviation_distance'] = 0
                             feat.layer.feature_put(feat)
 
                             # remove from table
