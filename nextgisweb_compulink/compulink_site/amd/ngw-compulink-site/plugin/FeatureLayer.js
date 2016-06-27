@@ -21,7 +21,7 @@ define([
     "put-selector/put",
     "ngw/route",
     "ngw-feature-layer/FeatureStore",
-    "../tool/Identify",
+    "../tool/DeviationIdentify"
 ], function (
     declare,
     _PluginBase,
