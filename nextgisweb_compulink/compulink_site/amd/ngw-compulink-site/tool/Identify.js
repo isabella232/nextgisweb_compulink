@@ -300,21 +300,19 @@ define([
     parseLayersInfo(focl_layers_type);
     parseLayersInfo(sit_plan_layers_type);
 
-    var identifyIconLoading = new OpenLayers.Icon(
-            ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
-            new OpenLayers.Size(40,40)),
-        isIdentifyActive = false,
-        identifyLoadingMarker,
-        identifyIcon = new OpenLayers.Icon(
-            ngwConfig.compulinkAssetUrl + 'img/identify-icon.png',
-            new OpenLayers.Size(16,16)),
-        identifyMarker = null,
-        identifyLayerName = 'identifyMarkers',
+    var identifyLayerName = 'identifyMarkers',
         identifyLayer = new OpenLayers.Layer.Markers(identifyLayerName);
 
     return declare(Base, {
         label: "Информация об объекте",
         iconClass: "iconIdentify",
+
+        identifyIconLoading: new OpenLayers.Icon(
+            ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
+            new OpenLayers.Size(40,40)),
+        identifyIcon: new OpenLayers.Icon(
+            ngwConfig.compulinkAssetUrl + 'img/identify-icon.png',
+            new OpenLayers.Size(16,16)),
 
         // Радиус для поиска объектов в пикселях
         pixelRadius: webmapSettings.identify_radius,
@@ -347,21 +345,17 @@ define([
         },
 
         execute: function (pixel) {
-            var tool = this,
-                olMap = this.display.map.olMap,
+            var olMap = this.display.map.olMap,
                 point = olMap.getLonLatFromPixel(new OpenLayers.Pixel(pixel[0], pixel[1])),
-                vectors_ids = [];
+                vectors_ids = [],
+                request = {
+                    srs: 3857,
+                    geom: this._requestGeomString(pixel),
+                    layers: []
+                },
+                isIdentifyActive = true;
 
-            var request = {
-                srs: 3857,
-                geom: this._requestGeomString(pixel),
-                layers: []
-            };
-
-            isIdentifyActive = true;
-            this._addIdentifyLayer();
-            identifyLoadingMarker = new OpenLayers.Marker(point, identifyIconLoading);
-            identifyLayer.addMarker(identifyLoadingMarker);
+            this._addIdentifyLoadingMarker(point);
 
             for (var lyr_name in this.display.map.layers) {
                 var lyr = this.display.map.layers[lyr_name];
@@ -381,25 +375,21 @@ define([
             xhr.post(route("feature_layer.identify"), {
                 handleAs: "json",
                 data: json.stringify(request)
-            }).then(function (response) {
+            }).then(lang.hitch(this, function (response) {
                 isIdentifyActive = false;
-                identifyLayer.removeMarker(identifyLoadingMarker);
-                tool._responsePopup(response, point, layerLabels);
-            }, lang.hitch(this, function (err) {
+                this._clearIdentifyLayer();
+                this._responsePopup(response, point, layerLabels);
+            }), lang.hitch(this, function (err) {
                 console.log(err);
-                isIdentifyActive = false;
                 this._clearIdentifyLayer();
             }));
         },
 
-        // WKT-строка геометрии поиска объектов для точки pixel
         _requestGeomString: function (pixel) {
             var olMap = this.map.olMap,
                 bounds = new openlayers.Bounds();
-
             bounds.extend(olMap.getLonLatFromPixel({x: pixel[0] - this.pixelRadius, y: pixel[1] - this.pixelRadius}));
             bounds.extend(olMap.getLonLatFromPixel({x: pixel[0] + this.pixelRadius, y: pixel[1] + this.pixelRadius}));
-
             return bounds.toGeometry().toString();
         },
 
@@ -410,10 +400,7 @@ define([
                 this.map.olMap.removePopup(this._popup);
                 this._popup = null;
             }
-            if (identifyMarker) {
-                identifyLayer.removeMarker(identifyMarker);
-                identifyMarker = null;
-            }
+            this._clearIdentifyLayer();
         },
 
         _responsePopup: function (response, point, layerLabels) {
@@ -424,9 +411,7 @@ define([
                 return false;
             }
 
-            this._addIdentifyLayer();
-            identifyMarker = new OpenLayers.Marker(point, identifyIcon);
-            identifyLayer.addMarker(identifyMarker);
+            this._addIdentifyMarker(point);
 
             this._popup = new Popup({
                 title: "Информация об объекте",
@@ -464,6 +449,16 @@ define([
                 olMap.addLayer(identifyLayer);
             }
             olMap.setLayerIndex(identifyLayer, 9999);
+        },
+
+        _addIdentifyLoadingMarker: function (point) {
+            this._addIdentifyLayer();
+            identifyLayer.addMarker(new OpenLayers.Marker(point, this.identifyIconLoading));
+        },
+
+        _addIdentifyMarker: function (point) {
+            this._addIdentifyLayer();
+            identifyLayer.addMarker(new OpenLayers.Marker(point, this.identifyIcon));
         }
     });
 });
