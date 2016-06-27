@@ -1,12 +1,9 @@
 # coding=utf-8
-import json
 
 from os import path
 
-from nextgisweb.pyramid import viewargs
 from nextgisweb import DBSession
 from pyramid.httpexceptions import HTTPForbidden
-from pyramid.response import Response
 
 from nextgisweb_compulink.compulink_deviation.deviation_checker import PROCESSING_LAYER_TYPES
 from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
@@ -16,10 +13,21 @@ from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_pare
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
+import json
+
+from pyramid.response import Response
+
+from nextgisweb.resource import (
+    Resource,
+    ResourceScope,
+    DataScope)
+from nextgisweb.geometry import geom_from_wkt
+from nextgisweb.pyramid import viewargs
+from nextgisweb.feature_layer.interface import IFeatureLayer
+from nextgisweb.feature_layer.view import ComplexEncoder
 
 
 def setup_pyramid(comp, config):
-
     config.add_route(
         'compulink.deviation.grid',
         '/compulink/deviation/grid') \
@@ -36,6 +44,12 @@ def setup_pyramid(comp, config):
         '/compulink/deviation/resources/child',
         client=()) \
         .add_view(get_child_resx_by_parent)
+
+    config.add_route(
+        'compulink.deviation.identify',
+        '/compulink/deviation/identify',
+        client=()) \
+        .add_view(deviation_identify)
 
 
 @viewargs(renderer='nextgisweb_compulink:compulink_deviation/templates/deviation_grid.mako')
@@ -63,7 +77,6 @@ def get_deviation_data(request):
     if not show_approved == 'true':
         query = query.filter(ConstructDeviation.deviation_approved==False)
 
-
     if resource_id not in (None, 'root'):
         try:
             resource_id = int(resource_id)
@@ -77,7 +90,6 @@ def get_deviation_data(request):
         allowed_res_ids = get_user_writable_focls(request.user)
         query = query.filter(ConstructDeviation.focl_res_id.in_(allowed_res_ids))
 
-
     row2dict = lambda row: dict((col, getattr(row, col)) for col in row.__table__.columns.keys())
     json_resp = []
     for row in query.all():
@@ -86,3 +98,70 @@ def get_deviation_data(request):
         json_resp.append(obj_dict)
 
     return Response(json.dumps(json_resp, cls=DateTimeJSONEncoder), content_type=b'application/json')
+
+
+def deviation_identify(request):
+    sett_name = 'permissions.disable_check.identify'
+    setting_disable_check = request.env.core.settings.get(sett_name, 'false').lower()
+    if setting_disable_check in ('true', 'yes', '1'):
+        setting_disable_check = True
+    else:
+        setting_disable_check = False
+
+    srs = int(request.json_body['srs'])
+    geom = geom_from_wkt(request.json_body['geom'], srid=srs)
+    layers = map(int, request.json_body['layers'])
+
+    layer_list = DBSession.query(Resource).filter(Resource.id.in_(layers))
+
+    result = dict()
+
+    # Количество объектов для всех слоев
+    feature_count = 0
+
+    for layer in layer_list:
+        if not setting_disable_check and not layer.has_permission(DataScope.read, request.user):
+            result[layer.id] = dict(error="Forbidden")
+
+        elif not IFeatureLayer.providedBy(layer):
+            result[layer.id] = dict(error="Not implemented")
+
+        else:
+            query = layer.feature_query()
+            query.intersects(geom)
+
+            # Ограничиваем кол-во идентифицируемых объектов по 10 на слой,
+            # иначе ответ может оказаться очень большим.
+            query.limit(10)
+
+            features = [
+                dict(id=f.id, layerId=layer.id,
+                     label=f.label, fields=f.fields)
+                for f in query()
+            ]
+
+            # Добавляем в результаты идентификации название
+            # родительского ресурса (можно использовать в случае,
+            # если на клиенте нет возможности извлечь имя слоя по
+            # идентификатору)
+            if not setting_disable_check:
+                allow = layer.parent.has_permission(ResourceScope.read, request.user)
+            else:
+                allow = True
+
+            if allow:
+                for feature in features:
+                    feature['parent'] = layer.parent.display_name
+
+            result[layer.id] = dict(
+                features=features,
+                featureCount=len(features)
+            )
+
+            feature_count += len(features)
+
+    result["featureCount"] = feature_count
+
+    return Response(
+        json.dumps(result, cls=ComplexEncoder),
+        content_type='application/json')
