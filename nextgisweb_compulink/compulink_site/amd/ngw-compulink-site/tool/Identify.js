@@ -131,9 +131,9 @@ define([
         deactivate: function () {
             this.control.deactivate();
 
-            if (this.popup) {
-                this.display.map.olMap.removePopup(this.popup);
-                this.popup = null;
+            if (this._popup) {
+                this.display.map.olMap.removePopup(this._popup);
+                this._popup = null;
             }
         },
 
