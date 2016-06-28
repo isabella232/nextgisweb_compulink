@@ -9,11 +9,12 @@ define([
     'dijit/MenuItem',
     'ngw/route',
     'ngw-compulink-site/tool/DeviationIdentifyControl',
-    './Identify',
-    './IdentifyPopup'
+    'ngw-compulink-site/tool/Identify',
+    'ngw-compulink-site/tool/IdentifyPopup',
+    'ngw-compulink-site/ConfirmDialog'
 ], function (declare, array, xhr, lang, domConstruct, json,
              Menu, MenuItem, route, DeviationIdentifyControl,
-             Identify, IdentifyPopup) {
+             Identify, IdentifyPopup, ConfirmDialog) {
     return declare(Identify, {
         constructor: function () {
             this.inherited(arguments);
@@ -31,6 +32,12 @@ define([
 
         deactivate: function () {
             this.inherited(arguments);
+
+            if (this._deviationMenu) {
+                this._deviationMenu.destroy();
+                this._clearIdentifyLayer();
+            }
+
             this.deviationIndentifyControl.deactivate();
         },
 
@@ -53,8 +60,8 @@ define([
                 layers: layersInfoIdentify
             };
 
-            xhr.post(route("compulink.deviation.identify"), {
-                handleAs: "json",
+            xhr.post(route('compulink.deviation.identify'), {
+                handleAs: 'json',
                 data: json.stringify(request)
             }).then(lang.hitch(this, function (response) {
                 isIdentifyActive = false;
@@ -67,10 +74,12 @@ define([
             }));
         },
 
+        _deviationMenu: null,
         _buildDeviationsMenu: function (response, layersLabels, div) {
             var layersOrdered, layerId, layerOrderedItem,
                 layerResponse, idx, node, deviationMenu,
-                menuItemLabel;
+                menuItemLabel,
+                widget = this;
 
             node = domConstruct.create('div', {
                 'class': 'identify-deviation-menu'
@@ -89,7 +98,15 @@ define([
                         " (" + feature.parent + ")";
 
                     deviationMenu.addChild(new MenuItem({
-                        label: menuItemLabel
+                        deviationData: {
+                            layerType: layerOrderedItem.lt,
+                            layerId: feature.layerId,
+                            featureId: feature.id
+                        },
+                        label: menuItemLabel,
+                        onClick: function () {
+                            widget._handleMenuItemClick(this.deviationData);
+                        }
                     }));
 
                     idx++;
@@ -97,6 +114,43 @@ define([
             }
 
             deviationMenu.startup();
+            this._deviationMenu = deviationMenu;
+        },
+
+        _handleMenuItemClick: function (deviationData) {
+            this._clearIdentifyLayer();
+            this._deviationMenu.destroy();
+            this._showApplyDeviationDialog(deviationData);
+        },
+
+        _applyDeviationDialog: null,
+        _showApplyDeviationDialog: function (deviationData) {
+            this._applyDeviationDialog = new ConfirmDialog({
+                title: 'Утверждение отклонения',
+                id: 'applyDeviation',
+                message: 'Утвердить отклонение?',
+                buttonOk: 'Да',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._applyDeviation(deviationData);
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                    this._applyDeviationDialog = null;
+                })
+            });
+            this._applyDeviationDialog.show();
+        },
+
+        _applyDeviation: function (deviationData) {
+            xhr.post(route('compulink.deviation.apply'), {
+                handleAs: 'json',
+                data: json.stringify(deviationData)
+            }).then(lang.hitch(this, function (response) {
+                console.log(response);
+            }), lang.hitch(this, function (err) {
+                console.log(err);
+            }));
         }
     });
 });
