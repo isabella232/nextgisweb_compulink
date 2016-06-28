@@ -347,30 +347,21 @@ define([
         execute: function (pixel) {
             var olMap = this.display.map.olMap,
                 point = olMap.getLonLatFromPixel(new OpenLayers.Pixel(pixel[0], pixel[1])),
-                vectors_ids = [],
-                request = {
-                    srs: 3857,
-                    geom: this._requestGeomString(pixel),
-                    layers: []
-                },
+                request,
+                layersInfoIdentify,
+                layersLabels,
                 isIdentifyActive = true;
 
             this._addIdentifyLoadingMarker(point);
 
-            for (var lyr_name in this.display.map.layers) {
-                var lyr = this.display.map.layers[lyr_name];
-                if (lyr.vectors_ids) {
-                    vectors_ids = lyr.vectors_ids.split(',');
-                    array.forEach(vectors_ids, function (vector_id, index) {
-                        request.layers.push(vector_id);
-                    }, this);
-                }
-            }
+            layersInfoIdentify = this._getLayersInfoIdentify();
+            layersLabels = this._getLayersLabel(layersInfoIdentify);
 
-            var layerLabels = {};
-            array.forEach(request.layers, function (i) {
-                layerLabels[i] = i;
-            }, this);
+            request = {
+                srs: 3857,
+                geom: this._requestGeomString(pixel),
+                layers: layersInfoIdentify
+            };
 
             xhr.post(route("feature_layer.identify"), {
                 handleAs: "json",
@@ -378,7 +369,7 @@ define([
             }).then(lang.hitch(this, function (response) {
                 isIdentifyActive = false;
                 this._clearIdentifyLayer();
-                this._responsePopup(response, point, layerLabels);
+                this._responsePopup(response, point, layersLabels);
             }), lang.hitch(this, function (err) {
                 console.log(err);
                 this._clearIdentifyLayer();
@@ -391,6 +382,35 @@ define([
             bounds.extend(olMap.getLonLatFromPixel({x: pixel[0] - this.pixelRadius, y: pixel[1] - this.pixelRadius}));
             bounds.extend(olMap.getLonLatFromPixel({x: pixel[0] + this.pixelRadius, y: pixel[1] + this.pixelRadius}));
             return bounds.toGeometry().toString();
+        },
+
+        _getLayersInfoIdentify: function () {
+            var vectorsIds = [],
+                mapLayers = this.display.map.layers,
+                layersInfoIdentify = [],
+                layerName,
+                layer;
+
+            for (layerName in mapLayers) {
+                if (mapLayers.hasOwnProperty(layerName)) {
+                    layer = this.display.map.layers[layerName];
+                    if (layer.vectors_ids) {
+                        vectorsIds = layer.vectors_ids.split(',');
+                        array.forEach(vectorsIds, function (vectorId) {
+                            layersInfoIdentify.push(vectorId);
+                        }, this);
+                    }
+                }
+            }
+
+            return layersInfoIdentify;
+        },
+
+        _getLayersLabel: function (layersInfoIdentify) {
+            var layerLabels = {};
+            array.forEach(layersInfoIdentify, function (i) {
+                layerLabels[i] = i;
+            });
         },
 
         _removePopup: function () {
@@ -452,13 +472,23 @@ define([
         },
 
         _addIdentifyLoadingMarker: function (point) {
+            var icon, marker;
+            icon = new OpenLayers.Icon(ngwConfig.compulinkAssetUrl + 'img/identify-loading.svg',
+                new OpenLayers.Size(40, 40));
+            marker = new OpenLayers.Marker(point, icon);
             this._addIdentifyLayer();
-            identifyLayer.addMarker(new OpenLayers.Marker(point, this.identifyIconLoading));
+            identifyLayer.addMarker(marker);
+            return marker;
         },
 
         _addIdentifyMarker: function (point) {
+            var icon, marker;
+            icon = new OpenLayers.Icon(ngwConfig.compulinkAssetUrl + 'img/identify-icon.png',
+                new OpenLayers.Size(16, 16));
+            marker = new OpenLayers.Marker(point, icon);
             this._addIdentifyLayer();
-            identifyLayer.addMarker(new OpenLayers.Marker(point, this.identifyIcon));
+            identifyLayer.addMarker(marker);
+            return marker;
         }
     });
 });
