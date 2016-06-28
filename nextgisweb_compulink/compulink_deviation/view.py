@@ -51,6 +51,12 @@ def setup_pyramid(comp, config):
         client=()) \
         .add_view(deviation_identify)
 
+    config.add_route(
+        'compulink.deviation.apply',
+        '/compulink/deviation/apply',
+        client=()) \
+        .add_view(apply_deviation)
+
 
 @viewargs(renderer='nextgisweb_compulink:compulink_deviation/templates/deviation_grid.mako')
 def deviation_grid(request):
@@ -164,4 +170,13 @@ def deviation_identify(request):
 
     return Response(
         json.dumps(result, cls=ComplexEncoder),
+        content_type='application/json')
+
+
+def apply_deviation(request):
+    layer_type = request.json_body['layerType']
+    layer_id = int(request.json_body['layerId'])
+    feature_id = int(request.json_body['featureId'])
+    return Response(
+        json.dumps({}, cls=ComplexEncoder),
         content_type='application/json')
