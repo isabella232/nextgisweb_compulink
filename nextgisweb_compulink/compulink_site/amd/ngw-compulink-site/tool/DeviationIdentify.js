@@ -11,7 +11,10 @@ define([
     return declare(Identify, {
         constructor: function () {
             this.inherited(arguments);
-            this.deviationIndentifyControl = new DeviationIdentifyControl({tool: this});
+            this.deviationIndentifyControl = new DeviationIdentifyControl({
+                tool: this,
+                olMap: this.display.map.olMap
+            });
             this.display.map.olMap.addControl(this.deviationIndentifyControl);
         },
 

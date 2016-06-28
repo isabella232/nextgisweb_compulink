@@ -5,9 +5,21 @@ define([], function () {
 
         initialize: function (options) {
             OpenLayers.Control.prototype.initialize.apply(this, [options]);
+            this._setContextMenuHandler();
             this.handler = new OpenLayers.Handler.Click(this, {
-                rightclick: this.clickCallback
+                rightclick: this.clickCallback,
+                single: true,
+                'double': false,
+                pixelTolerance: null
             });
+        },
+
+        _setContextMenuHandler: function () {
+            this.olMap.div.oncontextmenu = function (e) {
+                e = e ? e : window.event;
+                if (e.preventDefault) e.preventDefault(); // For non-IE browsers.
+                else return false; // For IE browsers.
+            };
         },
 
         clickCallback: function (evt) {
