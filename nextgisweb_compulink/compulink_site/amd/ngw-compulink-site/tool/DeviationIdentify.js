@@ -125,14 +125,17 @@ define([
 
         _applyDeviationDialog: null,
         _showApplyDeviationDialog: function (deviationData) {
+            var html = '<label>Комментарий  </label>' +
+                '<input id=applyDeviationComment />';
             this._applyDeviationDialog = new ConfirmDialog({
                 title: 'Утверждение отклонения',
                 id: 'applyDeviation',
-                message: 'Утвердить отклонение?',
-                buttonOk: 'Да',
+                message: html,
+                buttonOk: 'Утвердить',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function () {
+                    deviationData.comment = document.getElementById('applyDeviationComment').value;
                     this._applyDeviation(deviationData);
                 }),
                 handlerCancel: lang.hitch(this, function () {
