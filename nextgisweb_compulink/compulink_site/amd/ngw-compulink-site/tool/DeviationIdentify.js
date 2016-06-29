@@ -125,8 +125,8 @@ define([
 
         _applyDeviationDialog: null,
         _showApplyDeviationDialog: function (deviationData) {
-            var html = '<label>Комментарий  </label>' +
-                '<input id=applyDeviationComment />';
+            var html = '<label>Комментарий:</label><br/>' +
+                '<textarea id=applyDeviationComment style=width:200px;height:60px;margin:3px;></textarea>';
             this._applyDeviationDialog = new ConfirmDialog({
                 title: 'Утверждение отклонения',
                 id: 'applyDeviation',
