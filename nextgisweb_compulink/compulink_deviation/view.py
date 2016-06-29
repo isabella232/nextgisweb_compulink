@@ -21,6 +21,7 @@ from nextgisweb.resource import (
     Resource,
     ResourceScope,
     DataScope)
+from nextgisweb_compulink.compulink_admin.model import FoclStructScope
 from nextgisweb.geometry import geom_from_wkt
 from nextgisweb.pyramid import viewargs
 from nextgisweb.feature_layer.interface import IFeatureLayer
@@ -128,6 +129,9 @@ def deviation_identify(request):
     for layer in layer_list:
         if not setting_disable_check and not layer.has_permission(DataScope.read, request.user):
             result[layer.id] = dict(error="Forbidden")
+
+        elif not layer.parent or not (request.user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, request.user)):
+            result[layer.id] = dict(error="Forbidden deviation")
 
         elif not IFeatureLayer.providedBy(layer):
             result[layer.id] = dict(error="Not implemented")
