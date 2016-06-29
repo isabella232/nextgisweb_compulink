@@ -35,6 +35,7 @@ from nextgisweb_compulink.compulink_data_reactor.reactors.construct_spec_transit
     ConstructSpecTransitionLineReactor
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
 from nextgisweb_compulink.compulink_site.view import get_extent_by_resource_id
+from nextgisweb_compulink.utils import error_response, success_response
 from nextgisweb_lookuptable.model import LookupTable
 from .. import compulink_admin
 from nextgisweb_compulink.compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
@@ -619,7 +620,7 @@ def set_focl_status(request):
 
         report_line.persist()
 
-    return Response(json.dumps({'status': 'ok'}))
+    return success_response()
 
 
 @view_config(renderer='json')
@@ -676,8 +677,7 @@ def editor_save_geom(request):
     except Exception as ex:
         return error_response(ex.message)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
+    return success_response()
 
 
 @view_config(renderer='json')
@@ -714,13 +714,7 @@ def editor_delete_geom(request):
     except Exception as ex:
         return error_response(ex.message)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
-
-
-def error_response(mes):
-    resp = {'status': 'error', 'message': mes}
-    return Response(json.dumps(resp), status=400)
+    return success_response()
 
 
 @view_config(renderer='json')
@@ -830,8 +824,7 @@ def editor_create_geom(request):
     except Exception as ex:
         return error_response(ex.message)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
+    return success_response()
 
 @view_config(renderer='json')
 def construct_line(request):
@@ -856,8 +849,7 @@ def construct_line(request):
         resp = {'status': 'error', 'message': ex.message}
         return Response(json.dumps(resp), status=400)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
+    return success_response()
 
 @view_config(renderer='json')
 def reset_point(request):
@@ -959,8 +951,7 @@ def reset_point(request):
     except Exception as ex:
         return error_response(ex.message)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
+    return success_response()
 
 
 def get_line_lyrs(parent_res):
@@ -1124,5 +1115,4 @@ def reset_all_layer(request):
     except Exception as ex:
         return error_response(ex.message)
 
-    resp = {'status': 'ok'}
-    return Response(json.dumps(resp))
+    return success_response()
