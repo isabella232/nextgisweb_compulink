@@ -4,12 +4,17 @@ from os import path
 
 from nextgisweb import DBSession
 from pyramid.httpexceptions import HTTPForbidden
+import transaction
 
+from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_deviation.deviation_checker import PROCESSING_LAYER_TYPES
 from nextgisweb_compulink.compulink_deviation.model import ConstructDeviation
 from nextgisweb_compulink.compulink_reporting.utils import DateTimeJSONEncoder
 from nextgisweb_compulink.compulink_reporting.view import get_child_resx_by_parent, get_project_focls, \
     get_user_writable_focls
+from nextgisweb_compulink.utils import error_response, success_response
+
+from .deviation_checker import DeviationChecker
 
 CURR_PATH = path.dirname(path.abspath(__file__))
 TEMPLATES_PATH = path.join(CURR_PATH, 'templates/')
@@ -21,7 +26,7 @@ from nextgisweb.resource import (
     Resource,
     ResourceScope,
     DataScope)
-from nextgisweb_compulink.compulink_admin.model import FoclStructScope
+from nextgisweb_compulink.compulink_admin.model import FoclStructScope, FoclStruct
 from nextgisweb.geometry import geom_from_wkt
 from nextgisweb.pyramid import viewargs
 from nextgisweb.feature_layer.interface import IFeatureLayer
@@ -127,6 +132,8 @@ def deviation_identify(request):
     feature_count = 0
 
     for layer in layer_list:
+        layer_type = DeviationChecker.get_layer_type(layer)
+
         if not setting_disable_check and not layer.has_permission(DataScope.read, request.user):
             result[layer.id] = dict(error="Forbidden")
 
@@ -136,18 +143,17 @@ def deviation_identify(request):
         elif not IFeatureLayer.providedBy(layer):
             result[layer.id] = dict(error="Not implemented")
 
+        elif not layer_type.startswith('actual_real_') or layer_type.replace('actual_real_', '') not in PROCESSING_LAYER_TYPES.keys():
+            result[layer.id] = dict(error="Not supported")
+
         else:
             query = layer.feature_query()
             query.intersects(geom)
 
-            # Ограничиваем кол-во идентифицируемых объектов по 10 на слой,
-            # иначе ответ может оказаться очень большим.
-            query.limit(10)
-
             features = [
                 dict(id=f.id, layerId=layer.id,
                      label=f.label, fields=f.fields)
-                for f in query()
+                for f in query() if ('is_deviation' in f.fields.keys() and f.fields['is_deviation'] == 1)
             ]
 
             # Добавляем в результаты идентификации название
@@ -181,6 +187,26 @@ def apply_deviation(request):
     layer_type = request.json_body['layerType']
     layer_id = int(request.json_body['layerId'])
     feature_id = int(request.json_body['featureId'])
-    return Response(
-        json.dumps({}, cls=ComplexEncoder),
-        content_type='application/json')
+    comment = request.json_body['comment']
+
+    ngw_session = DBSession()
+    transaction.manager.begin()
+
+    # get layers\focl_structs\etc
+    layer = ngw_session.query(VectorLayer).filter_by(VectorLayer.id==layer_id).first()
+
+    if not layer:
+        error_response('Layer not found!')
+
+    if not isinstance(layer.parent, FoclStruct):
+        error_response('Invalid layer! Layer not in FoclStruct!')
+
+    focl_res_id = layer.parent.id
+    layer_type = DeviationChecker.get_layer_type(layer)
+
+    # set approved flag
+    # TODO
+
+
+
+    return success_response()
