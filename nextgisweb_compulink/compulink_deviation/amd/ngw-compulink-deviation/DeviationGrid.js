@@ -197,7 +197,7 @@ define([
 
         _selectedObjectsId: {},
         _bindGridEvents: function () {
-            this._grid.on('.dgrid-row:click', lang.hitch(this, function (evt) {
+            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
                 var row = this._grid.row(evt);
                 window.open(ngwConfig.compulinkMapUrl + '?resource_id=' + row.data.focl_res_id +
                     '&object_type=' + row.data.object_type +
