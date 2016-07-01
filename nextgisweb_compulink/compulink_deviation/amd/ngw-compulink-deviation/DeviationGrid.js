@@ -60,7 +60,7 @@ define([
              CompoundColumns,
              ColumnResizer) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, DijitRegistry, CompoundColumns, ColumnResizer], {});
+    var GridClass = declare([Grid, Selection, DijitRegistry, CompoundColumns, ColumnResizer], {});
 
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
@@ -186,13 +186,16 @@ define([
         },
 
         initializeGrid: function () {
-            this._grid = new GridClass();
+            this._grid = new GridClass({
+                selectionMode: 'multiple'
+            });
             this._bindGridEvents();
             this.setDeviationGridColumns(['Default']);
             domStyle.set(this._grid.domNode, "height", "100%");
             domStyle.set(this._grid.domNode, "border", "none");
         },
 
+        _selectedObjectsId: {},
         _bindGridEvents: function () {
             this._grid.on('.dgrid-row:click', lang.hitch(this, function (evt) {
                 var row = this._grid.row(evt);
@@ -201,6 +204,30 @@ define([
                     '&object_num=' + row.data.object_num +
                     '&layers=design_layers', '_blank');
             }));
+
+            this._grid.on('dgrid-select', lang.hitch(this, function (evt) {
+                var row = evt.rows[0];
+                this._selectedObjectsId[row.data.id] = row.data;
+                this._enableApplyDeviationBtns();
+            }));
+
+            this._grid.on('dgrid-deselect', lang.hitch(this, function (evt) {
+                var row = evt.rows[0];
+                delete this._selectedObjectsId[row.data.id];
+                if (Object.keys(this._selectedObjectsId).length < 1) {
+                    this._disableApplyDeviationBtns();
+                }
+            }));
+        },
+
+        _enableApplyDeviationBtns: function () {
+            this.applyDeviationBtn.set('disabled', false);
+            this.clearSelectionBtn.set('disabled', false);
+        },
+
+        _disableApplyDeviationBtns: function () {
+            this.applyDeviationBtn.set('disabled', 'disabled');
+            this.clearSelectionBtn.set('disabled', 'disabled');
         },
 
         startup: function () {
@@ -208,6 +235,12 @@ define([
 
             this.gridPane.set("content", this._grid.domNode);
             this._grid.startup();
+
+            this.clearSelectionBtn.on('click', lang.hitch(this, function (evt) {
+                this._grid.clearSelection();
+                this._selectedObjectsId = {};
+                this._disableApplyDeviationBtns();
+            }));
         },
 
         _getValueAttr: function () {
