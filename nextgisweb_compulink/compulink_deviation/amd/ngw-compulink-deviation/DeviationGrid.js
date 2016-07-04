@@ -54,13 +54,13 @@ define([
              template,
              route,
              Grid,
-             Selection,
+             Selector,
              ColumnSet,
              DijitRegistry,
              CompoundColumns,
              ColumnResizer) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, Selection, DijitRegistry, CompoundColumns, ColumnResizer], {});
+    var GridClass = declare([Grid, Selector, DijitRegistry, CompoundColumns, ColumnResizer], {});
 
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
@@ -82,15 +82,19 @@ define([
             //});
 
             this.showApproved.on('change', lang.hitch(this, function (checked) {
+                this._offSelectHandling();
+                this._clearSelection();
                 if (checked) {
                     this.setDeviationGridColumns(['Default', 'Approved']);
                 } else {
                     this.setDeviationGridColumns(['Default']);
                 }
                 this.buildDeviationGrid();
+                this._onSelectHandling();
             }));
 
             this.buildingObjectsSelect.on('change', lang.hitch(this, function () {
+                this._clearSelection();
                 this.buildDeviationGrid();
             }));
 
@@ -195,7 +199,6 @@ define([
             domStyle.set(this._grid.domNode, "border", "none");
         },
 
-        _selectedObjectsId: {},
         _bindGridEvents: function () {
             this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
                 var row = this._grid.row(evt);
@@ -205,19 +208,34 @@ define([
                     '&layers=design_layers', '_blank');
             }));
 
-            this._grid.on('dgrid-select', lang.hitch(this, function (evt) {
-                var row = evt.rows[0];
-                this._selectedObjectsId[row.data.id] = row.data;
-                this._enableApplyDeviationBtns();
-            }));
+            this._onSelectHandling();
+        },
 
-            this._grid.on('dgrid-deselect', lang.hitch(this, function (evt) {
-                var row = evt.rows[0];
-                delete this._selectedObjectsId[row.data.id];
-                if (Object.keys(this._selectedObjectsId).length < 1) {
-                    this._disableApplyDeviationBtns();
-                }
-            }));
+        _gridSelectEventHandler: null,
+        _dgridDeselectEventHandler: null,
+        _onSelectHandling: function () {
+            this._gridSelectEventHandler = this._grid.on('dgrid-select', lang.hitch(this, this._dgridSelectEventHandle));
+            this._dgridDeselectEventHandler = this._grid.on('dgrid-deselect', lang.hitch(this, this._dgridDeselectEventHandle));
+        },
+
+        _selectedObjectsId: {},
+        _offSelectHandling: function () {
+            this._gridSelectEventHandler.remove();
+            this._dgridDeselectEventHandler.remove();
+        },
+
+        _dgridSelectEventHandle: function (evt) {
+            var row = evt.rows[0];
+            this._selectedObjectsId[row.data.id] = row;
+            this._enableApplyDeviationBtns();
+        },
+
+        _dgridDeselectEventHandle: function (evt) {
+            var row = evt.rows[0];
+            delete this._selectedObjectsId[row.data.id];
+            if (Object.keys(this._selectedObjectsId).length < 1) {
+                this._disableApplyDeviationBtns();
+            }
         },
 
         _enableApplyDeviationBtns: function () {
@@ -237,10 +255,14 @@ define([
             this._grid.startup();
 
             this.clearSelectionBtn.on('click', lang.hitch(this, function (evt) {
-                this._grid.clearSelection();
-                this._selectedObjectsId = {};
-                this._disableApplyDeviationBtns();
+                this._clearSelection();
             }));
+        },
+
+        _clearSelection: function () {
+            this._grid.clearSelection();
+            this._selectedObjectsId = {};
+            this._disableApplyDeviationBtns();
         },
 
         _getValueAttr: function () {
