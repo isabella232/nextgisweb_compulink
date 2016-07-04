@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from datetime import datetime
 from os import path
 
 from nextgisweb import DBSession
@@ -184,6 +184,10 @@ def deviation_identify(request):
 
 
 def apply_deviation(request):
+
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
     layer_type = request.json_body['layerType']
     layer_id = int(request.json_body['layerId'])
     feature_id = int(request.json_body['featureId'])
@@ -193,20 +197,51 @@ def apply_deviation(request):
     transaction.manager.begin()
 
     # get layers\focl_structs\etc
-    layer = ngw_session.query(VectorLayer).filter_by(VectorLayer.id==layer_id).first()
+    layer = ngw_session.query(VectorLayer).filter(VectorLayer.id==layer_id).first()
 
     if not layer:
-        error_response('Layer not found!')
+        return error_response('Layer not found!')
 
     if not isinstance(layer.parent, FoclStruct):
-        error_response('Invalid layer! Layer not in FoclStruct!')
+        return error_response('Invalid layer! Layer not in FoclStruct!')
 
     focl_res_id = layer.parent.id
     layer_type = DeviationChecker.get_layer_type(layer)
 
-    # set approved flag
-    # TODO
+    if not layer_type.startswith('actual_real_') or layer_type.replace('actual_real_', '') not in PROCESSING_LAYER_TYPES.keys():
+        return error_response('Not supported layer type!')
 
+    if not (request.user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, request.user)):
+        return error_response('Forbidden deviation')
 
+    # set approved flag to feat
+    query = layer.feature_query()
+    query.filter_by(id=feature_id)
+    for f in query():
+        feat = f
+        break
+
+    if not feat:
+        return error_response('Feature not found!')
+
+    feat.fields['deviation_approved'] = 1
+    feat.fields['approval_comment'] = comment
+    layer.feature_put(feat)
+
+    # set to table
+    deviation = ngw_session.query(ConstructDeviation) \
+        .filter(
+        ConstructDeviation.focl_res_id == focl_res_id,
+        ConstructDeviation.object_type == layer_type.replace('actual_real_', ''),
+        ConstructDeviation.object_num == feat.id
+    ).first()
+    if not deviation:
+        return error_response('Deviation not found in table')
+
+    deviation.deviation_approved = True
+    deviation.approval_author = request.user.display_name or request.user.keyname
+    deviation.approval_timestamp = datetime.now()
+
+    transaction.manager.commit()
 
     return success_response()
