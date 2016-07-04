@@ -153,7 +153,12 @@ def deviation_identify(request):
             features = [
                 dict(id=f.id, layerId=layer.id,
                      label=f.label, fields=f.fields)
-                for f in query() if ('is_deviation' in f.fields.keys() and f.fields['is_deviation'] == 1)
+                for f in query() if (
+                    'is_deviation' in f.fields.keys()
+                    and f.fields['is_deviation'] == 1
+                    and 'deviation_approved' in f.fields.keys()
+                    and f.fields['deviation_approved'] != 1
+                )
             ]
 
             # Добавляем в результаты идентификации название
