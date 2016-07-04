@@ -63,6 +63,12 @@ def setup_pyramid(comp, config):
         client=()) \
         .add_view(apply_deviation)
 
+    config.add_route(
+        'compulink.deviation.bulk.apply',
+        '/compulink/deviation/bulk/apply',
+        client=()) \
+        .add_view(apply_bulk_deviation)
+
 
 @viewargs(renderer='nextgisweb_compulink:compulink_deviation/templates/deviation_grid.mako')
 def deviation_grid(request):
@@ -189,10 +195,8 @@ def deviation_identify(request):
 
 
 def apply_deviation(request):
-
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
-
     layer_type = request.json_body['layerType']
     layer_id = int(request.json_body['layerId'])
     feature_id = int(request.json_body['featureId'])
@@ -248,5 +252,16 @@ def apply_deviation(request):
     deviation.approval_timestamp = datetime.now()
 
     transaction.manager.commit()
+
+    return success_response()
+
+
+def apply_bulk_deviation(request):
+    comment = request.json_body['comment']
+    layersInfo = map(lambda x: {
+        'featureId': x['featureId'],
+        'layerId': x['layerId'],
+        'layerType': x['layerType']
+    }, request.json_body['layers'])
 
     return success_response()
