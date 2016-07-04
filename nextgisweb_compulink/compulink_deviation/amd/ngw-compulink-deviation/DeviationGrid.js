@@ -1,41 +1,43 @@
 define([
-    "dojo/_base/declare",
-    "dojo/_base/lang",
-    "dojo/aspect",
-    "dojo/request/xhr",
-    "dojo/dom-style",
-    "dojo/_base/array",
-    "dojo/io-query",
-    "dojo/store/Memory",
-    "dojo/store/Observable",
-    "dojo/date/locale",
-    "dojo/date/stamp",
-    "dojo/number",
-    "dijit/layout/BorderContainer",
-    "dijit/_TemplatedMixin",
-    "dijit/_WidgetsInTemplateMixin",
-    "dojo/text!./templates/DeviationGrid.html",
-    "ngw/route",
+    'dojo/_base/declare',
+    'dojo/_base/lang',
+    'dojo/aspect',
+    'dojo/request/xhr',
+    'dojo/dom-style',
+    'dojo/_base/array',
+    'dojo/io-query',
+    'dojo/store/Memory',
+    'dojo/store/Observable',
+    'dojo/date/locale',
+    'dojo/date/stamp',
+    'dojo/number',
+    'dojo/json',
+    'dijit/layout/BorderContainer',
+    'dijit/_TemplatedMixin',
+    'dijit/_WidgetsInTemplateMixin',
+    'dojo/text!./templates/DeviationGrid.html',
+    'ngw/route',
     //grid
-    "dgrid/Grid",
-    "dgrid/Selection",
-    "dgrid/ColumnSet",
-    "dgrid/extensions/DijitRegistry",
-    "dgrid/extensions/CompoundColumns",
-    "dgrid/extensions/ColumnResizer",
+    'dgrid/Grid',
+    'dgrid/Selection',
+    'dgrid/ColumnSet',
+    'dgrid/extensions/DijitRegistry',
+    'dgrid/extensions/CompoundColumns',
+    'dgrid/extensions/ColumnResizer',
+    'ngw-compulink-site/ConfirmDialog',
     //style
-    "ngw/dgrid/css",
-    "xstyle/css!./resources/DeviationGrid.css",
+    'ngw/dgrid/css',
+    'xstyle/css!./resources/DeviationGrid.css',
     //template
-    "dijit/form/CheckBox",
-    "dijit/form/Button",
-    "dijit/layout/ContentPane",
-    "dojox/layout/TableContainer",
-    "ngw-compulink-reporting/RegionSelect",
-    "ngw-compulink-reporting/DistrictSelect",
-    "ngw-compulink-reporting/StatusSelect",
-    "ngw-compulink-site/DisplayHeader",
-    "dijit/Toolbar"
+    'dijit/form/CheckBox',
+    'dijit/form/Button',
+    'dijit/layout/ContentPane',
+    'dojox/layout/TableContainer',
+    'ngw-compulink-reporting/RegionSelect',
+    'ngw-compulink-reporting/DistrictSelect',
+    'ngw-compulink-reporting/StatusSelect',
+    'ngw-compulink-site/DisplayHeader',
+    'dijit/Toolbar'
 ], function (declare,
              lang,
              aspect,
@@ -48,6 +50,7 @@ define([
              locale,
              stamp,
              number,
+             json,
              BorderContainer,
              _TemplatedMixin,
              _WidgetsInTemplateMixin,
@@ -58,7 +61,8 @@ define([
              ColumnSet,
              DijitRegistry,
              CompoundColumns,
-             ColumnResizer) {
+             ColumnResizer,
+             ConfirmDialog) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
     var GridClass = declare([Grid, Selector, DijitRegistry, CompoundColumns, ColumnResizer], {});
 
@@ -153,8 +157,8 @@ define([
         _getDateCell: function (prop, obj) {
             if (obj[prop]) {
                 return locale.format(stamp.fromISOString(obj[prop]), {
-                    selector: "date",
-                    datePattern: "dd.MM.yyyy"
+                    selector: 'date',
+                    datePattern: 'dd.MM.yyyy'
                 });
             } else {
                 return obj[prop];
@@ -162,7 +166,7 @@ define([
         },
 
         _getDecimal: function (prop, obj) {
-            if (obj[prop] && typeof obj[prop] != "string") {
+            if (obj[prop] && typeof obj[prop] != 'string') {
                 return number.round(obj[prop], 3);
             } else {
                 return obj[prop];
@@ -186,7 +190,7 @@ define([
             array.forEach(columnsSets, function (columnsSet) {
                 columns = columns.concat(this['getColumns' + columnsSet]());
             }, this);
-            this._grid.set("columns", columns);
+            this._grid.set('columns', columns);
         },
 
         initializeGrid: function () {
@@ -195,8 +199,8 @@ define([
             });
             this._bindGridEvents();
             this.setDeviationGridColumns(['Default']);
-            domStyle.set(this._grid.domNode, "height", "100%");
-            domStyle.set(this._grid.domNode, "border", "none");
+            domStyle.set(this._grid.domNode, 'height', '100%');
+            domStyle.set(this._grid.domNode, 'border', 'none');
         },
 
         _bindGridEvents: function () {
@@ -251,11 +255,65 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            this.gridPane.set("content", this._grid.domNode);
+            this.gridPane.set('content', this._grid.domNode);
             this._grid.startup();
 
             this.clearSelectionBtn.on('click', lang.hitch(this, function (evt) {
                 this._clearSelection();
+            }));
+
+            this.applyDeviationBtn.on('click', lang.hitch(this, function () {
+                this._showApplyDeviationDialog();
+            }));
+        },
+
+        _applyDeviationDialog: null,
+        _showApplyDeviationDialog: function () {
+            var html = '<label>Комментарий:</label><br/>' +
+                '<textarea id=applyDeviationComment style=width:200px;height:60px;margin:3px;></textarea>';
+            this._applyDeviationDialog = new ConfirmDialog({
+                title: 'Утверждение отклонений',
+                id: 'applyBulkDeviation',
+                message: html,
+                buttonOk: 'Утвердить',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._applyBulkDeviation(document.getElementById('applyDeviationComment').value);
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                    this._applyDeviationDialog = null;
+                })
+            });
+            this._applyDeviationDialog.show();
+        },
+
+        _applyBulkDeviation: function (comment) {
+            var selectObjectId,
+                dataRow,
+                bulkDeviationData = {
+                    layers: [],
+                    comment: comment
+                };
+
+            for (selectObjectId in this._selectedObjectsId) {
+                if (this._selectedObjectsId.hasOwnProperty(selectObjectId)) {
+                    dataRow = this._selectedObjectsId[selectObjectId].data;
+                    bulkDeviationData.layers.push({
+                        layerId: dataRow.focl_res_id,
+                        featureId: dataRow.object_num,
+                        layerType: dataRow.object_type
+                    });
+                }
+            }
+
+            xhr.post(route('compulink.deviation.bulk.apply'), {
+                handleAs: 'json',
+                data: json.stringify(bulkDeviationData)
+            }).then(lang.hitch(this, function (response) {
+                this.buildDeviationGrid();
+            }), lang.hitch(this, function (err) {
+                console.log(err);
             }));
         },
 
