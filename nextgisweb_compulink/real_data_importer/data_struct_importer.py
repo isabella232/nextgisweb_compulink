@@ -155,6 +155,8 @@ class DataStructImporter():
 
                 # write construct object info
                 co = ConstructObject()
+                co.region_id = reg_id
+                co.district_id = distr_id
                 co.name = vols_struct.display_name
                 co.resource = vols_struct
                 co.project = ModelsUtils.get_project_by_resource(vols_struct)
