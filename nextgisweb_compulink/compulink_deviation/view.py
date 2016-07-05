@@ -197,6 +197,7 @@ def deviation_identify(request):
 def apply_deviation(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
+
     layer_type = request.json_body['layerType']
     layer_id = int(request.json_body['layerId'])
     feature_id = int(request.json_body['featureId'])
@@ -208,30 +209,40 @@ def apply_deviation(request):
     # get layers\focl_structs\etc
     layer = ngw_session.query(VectorLayer).filter(VectorLayer.id==layer_id).first()
 
+    result = set_deviation_approve(ngw_session, request.user, layer, feature_id, comment)
+    if result != 0:
+        error_response(result)
+
+    transaction.manager.commit()
+    return success_response()
+
+
+def set_deviation_approve(ngw_session, user, layer, feature_id, comment):
     if not layer:
-        return error_response('Layer not found!')
+        return 'Layer not found!'
 
     if not isinstance(layer.parent, FoclStruct):
-        return error_response('Invalid layer! Layer not in FoclStruct!')
+        return 'Invalid layer! Layer not in FoclStruct!'
 
     focl_res_id = layer.parent.id
     layer_type = DeviationChecker.get_layer_type(layer)
 
     if not layer_type.startswith('actual_real_') or layer_type.replace('actual_real_', '') not in PROCESSING_LAYER_TYPES.keys():
-        return error_response('Not supported layer type!')
+        return 'Not supported layer type!'
 
-    if not (request.user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, request.user)):
-        return error_response('Forbidden deviation')
+    if not (user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, user)):
+        return 'Forbidden deviation'
 
     # set approved flag to feat
     query = layer.feature_query()
     query.filter_by(id=feature_id)
+    feat = None
     for f in query():
         feat = f
         break
 
     if not feat:
-        return error_response('Feature not found!')
+        return 'Feature not found!'
 
     feat.fields['deviation_approved'] = 1
     feat.fields['approval_comment'] = comment
@@ -245,23 +256,38 @@ def apply_deviation(request):
         ConstructDeviation.object_num == feat.id
     ).first()
     if not deviation:
-        return error_response('Deviation not found in table')
+        return 'Deviation not found in table'
 
     deviation.deviation_approved = True
-    deviation.approval_author = request.user.display_name or request.user.keyname
+    deviation.approval_author = user.display_name or user.keyname
     deviation.approval_timestamp = datetime.now()
 
-    transaction.manager.commit()
-
-    return success_response()
+    return 0  # sex drugs and rock'n'roll
 
 
 def apply_bulk_deviation(request):
     comment = request.json_body['comment']
-    layersInfo = map(lambda x: {
-        'featureId': x['featureId'],
-        'layerId': x['layerId'],
-        'layerType': x['layerType']
+    deviations_info = map(lambda x: {
+        'focl_res_id': x['layerId'],
+        'object_num': x['featureId'],
+        'object_type': x['layerType']
     }, request.json_body['layers'])
 
+    ngw_session = DBSession()
+    transaction.manager.begin()
+
+    for dev_info in deviations_info:
+        focl_struct = ngw_session.query(FoclStruct).filter(FoclStruct.id == dev_info['focl_res_id']).first()
+
+        if not focl_struct:
+            return error_response('Focl not found!')
+
+        # get layers\focl_structs\etc
+        layer = DeviationChecker.get_layer_by_type(focl_struct.children, 'actual_real_' + dev_info['object_type'])
+
+        result = set_deviation_approve(ngw_session, request.user, layer, dev_info['object_num'], comment)
+        if result != 0:
+            error_response(result)
+
+    transaction.manager.commit()
     return success_response()
