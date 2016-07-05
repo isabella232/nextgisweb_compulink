@@ -11,38 +11,15 @@
     opacity: 0.3;
 }
 
-#statisticToolbar span.selectAndMove {
+#statisticToolbar span.iconFederalLevel {
     background: url('img/select_move.png') no-repeat;
 }
 
-#statisticToolbar span.removeFeature {
-    background: url('img/remove_feature.png') no-repeat;
+#statisticToolbar span.iconRegionlLevel {
+    background: url('img/select_move.png') no-repeat;
 }
 
-#statisticToolbar span.iconCreateSp {
-    background: url('img/create_sp.png') no-repeat;
+#statisticToolbar span.iconDistrictLevel {
+    background: url('img/select_move.png') no-repeat;
 }
 
-#statisticToolbar span.iconCreateVols {
-    background: url('img/create_vols.png') no-repeat;
-}
-
-#statisticToolbar span.iconCreateVols {
-    background: url('img/create_vols.png') no-repeat;
-}
-
-#statisticToolbar span.iconCreateVols {
-    background: url('img/create_vols.png') no-repeat;
-}
-
-#statisticToolbar span.undoOne {
-    background: url('img/undo-one.png') no-repeat;
-}
-
-#statisticToolbar span.undoAll {
-    background: url('img/undo-all.png') no-repeat;
-}
-
-#statisticToolbar span.updateLines {
-    background: url('img/update_line.png') no-repeat;
-}

@@ -6,36 +6,28 @@
 
         <div data-dojo-attach-point="federalLevelButton"
              id="federalLevelButton"
-             data-dojo-attach-event="onChange: selectAndMoveChanged"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'selectAndMove', showLabel: false, checked: true, title: 'Федеральные округа'">
+             data-dojo-props="iconClass: 'iconFederalLevel', showLabel: false, checked: true, title: 'Федеральные округа'">
         </div>
 
         <div data-dojo-attach-point="regionLevelButton"
              id="regionLevelButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconCreateVols', showLabel: false, checked: false, title: 'Регионы'">
+             data-dojo-props="iconClass: 'iconRegionlLevel', showLabel: false, checked: false, title: 'Регионы'">
         </div>
 
         <div data-dojo-attach-point="districtLevelButton"
              id="districtLevelButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconCreateSp', showLabel: false, checked: false, title: 'Районы'">
-        </div>
-
-        <div data-dojo-type="dijit/ToolbarSeparator"></div>
-
-        <div data-dojo-attach-point="removeFeatureButton"
-             id="removeFeatureButton"
-             data-dojo-attach-event="onClick: removeFeature"
-             data-dojo-type="dijit/form/Button"
-             data-dojo-props="iconClass: 'removeFeature', showLabel: false, checked: false, title: 'Удалить выбранный объект'">
+             data-dojo-props="iconClass: 'iconDistrictLevel', showLabel: false, checked: false, title: 'Районы'">
         </div>
 
         <div id="buildingObjectsSelect"
              data-dojo-attach-point="buildingObjectsSelect"
              data-dojo-props="url: '/compulink/reporting/resources/child'"
-             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect"></div>
+             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect">
+
+        </div>
 
     </div>
 </div>
