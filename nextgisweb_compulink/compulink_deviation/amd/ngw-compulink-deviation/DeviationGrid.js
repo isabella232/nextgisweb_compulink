@@ -142,7 +142,7 @@ define([
                     label: 'Дата/Время утверждения',
                     field: 'approval_timestamp',
                     name: 'approval_timestamp',
-                    get: lang.partial(_getDateCell, 'start_build_time'),
+                    get: lang.partial(_getDateCell, 'approval_timestamp'),
                     sortable: false
                 },
                 {
