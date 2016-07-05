@@ -217,21 +217,26 @@ define([
 
         _gridSelectEventHandler: null,
         _dgridDeselectEventHandler: null,
+        _rowClickDeselectHandler: null,
         _onSelectHandling: function () {
             this._gridSelectEventHandler = this._grid.on('dgrid-select', lang.hitch(this, this._dgridSelectEventHandle));
             this._dgridDeselectEventHandler = this._grid.on('dgrid-deselect', lang.hitch(this, this._dgridDeselectEventHandle));
+            this._rowClickDeselectHandler = this._grid.on('.dgrid-row:click', lang.hitch(this, this._rowClickDeselectHandle));
         },
 
         _selectedObjectsId: {},
         _offSelectHandling: function () {
             this._gridSelectEventHandler.remove();
             this._dgridDeselectEventHandler.remove();
+            this._rowClickDeselectHandler.remove();
         },
 
+        _afterSelectEvent: false,
         _dgridSelectEventHandle: function (evt) {
             var row = evt.rows[0];
             this._selectedObjectsId[row.data.id] = row;
             this._enableApplyDeviationBtns();
+            this._afterSelectEvent = true;
         },
 
         _dgridDeselectEventHandle: function (evt) {
@@ -239,6 +244,17 @@ define([
             delete this._selectedObjectsId[row.data.id];
             if (Object.keys(this._selectedObjectsId).length < 1) {
                 this._disableApplyDeviationBtns();
+            }
+        },
+
+        _rowClickDeselectHandle: function (evt) {
+            if (this._afterSelectEvent) {
+                this._afterSelectEvent = false;
+                return false;
+            }
+            var row = this._grid.row(evt);
+            if (this._grid.isSelected(row)) {
+                this._grid.deselect(row);
             }
         },
 
@@ -310,7 +326,8 @@ define([
             xhr.post(route('compulink.deviation.bulk.apply'), {
                 handleAs: 'json',
                 data: json.stringify(bulkDeviationData)
-            }).then(lang.hitch(this, function (response) {
+            }).then(lang.hitch(this, function () {
+                this._clearSelection();
                 this.buildDeviationGrid();
             }), lang.hitch(this, function (err) {
                 console.log(err);
