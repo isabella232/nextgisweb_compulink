@@ -3,6 +3,38 @@ from __future__ import unicode_literals
 from ..model import *
 from nextgisweb.resource.model import Resource
 
+federal_districts_dgrid_viewmodel = [
+    {
+        'data-property': 'id',
+        'grid-property': 'id',
+        'id': True,
+        'label': 'Идентификатор',
+        'cell-prop': {
+
+        }
+    },
+    {
+        'data-property': 'name',
+        'grid-property': 'name',
+        'label': 'Наименование',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'short_name',
+        'grid-property': 'short_name',
+        'label': 'Краткое название',
+        'cell-prop': {
+            'editor': 'text',
+            'editOn': 'dblclick',
+            'autoSave': True
+        }
+    }
+]
+
 regions_dgrid_viewmodel = [
     {
         'data-property': 'id',
@@ -40,6 +72,24 @@ regions_dgrid_viewmodel = [
         'cell-prop': {
             'editor': 'number',
             'editOn': 'dblclick',
+            'autoSave': True
+        }
+    },
+    {
+        'data-property': 'federal_dist',
+        'grid-property': 'federal_dist',
+        'relation': {
+            'id': 'id',
+            'label': 'name',
+            'relation-field': Region.federal_dist,
+            'sort-field': FederalDistrict.name,
+            'type': FederalDistrict
+        },
+        'label': 'Федеральный округ',
+        'cell-prop': {
+            'editor': 'widget=>RelationSelect',
+            'editOn': 'dblclick',
+            'editorArgs': '[data]',
             'autoSave': True
         }
     }

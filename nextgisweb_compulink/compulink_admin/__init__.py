@@ -22,6 +22,7 @@ class CompulinkAdminComponent(Component):
 
     @require('lookup_table')
     def initialize_db(self):
+        return
         #TODO: fake! Need refactoring
         args = self
         args.action = 'all'

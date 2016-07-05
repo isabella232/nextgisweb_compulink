@@ -38,6 +38,11 @@ def setup_pyramid(comp, config):
     class CompulinkAdminMenu(dm.DynItem):
         def build(self, kwargs):
             yield dm.Link(
+                self.sub('region_dict'), u'Справочник федеральных округов',
+                lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
+                                                        reference_book_type='federal_district')
+            )
+            yield dm.Link(
                 self.sub('region_dict'), u'Справочник регионов',
                 lambda kwargs: kwargs.request.route_url('compulink_admin.reference_books.get_page',
                                                         reference_book_type='region')

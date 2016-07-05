@@ -308,6 +308,15 @@ class ModelsUtils():
 
 
 # ---- DOMAIN MODELS ----
+class FederalDistrict(Base):
+    __tablename__ = 'federal_district'
+    __table_args__ = {'schema': 'compulink'}
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Unicode(length=300))
+    short_name = db.Column(db.Unicode(length=100), nullable=True)
+
+
 class Region(Base):
     __tablename__ = 'region'
     __table_args__ = {'schema': 'compulink'}
@@ -316,6 +325,10 @@ class Region(Base):
     name = db.Column(db.Unicode(length=300))
     short_name = db.Column(db.Unicode(length=100), nullable=True)
     region_code = db.Column(db.Integer, nullable=True)
+
+    federal_dist_id = db.Column(db.Integer, ForeignKey(FederalDistrict.id))
+
+    federal_dist = relationship(FederalDistrict)
 
 
 class District(Base):
@@ -418,6 +431,7 @@ def tometadata_event(self, metadata):
     return result
 
 
+FederalDistrict.__table__.tometadata = types.MethodType(tometadata_event, FederalDistrict.__table__)
 Region.__table__.tometadata = types.MethodType(tometadata_event, Region.__table__)
 District.__table__.tometadata = types.MethodType(tometadata_event, District.__table__)
 Project.__table__.tometadata = types.MethodType(tometadata_event, Project.__table__)

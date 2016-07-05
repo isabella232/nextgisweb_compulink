@@ -24,6 +24,8 @@ class ReferenceBooksView(ReferenceBookViewBase):
     @property
     def mapper_dict(self):
         return {
+            'federal_district': (FederalDistrict, federal_districts_dgrid_viewmodel,
+                       'nextgisweb_compulink:compulink_admin/reference_books/templates/federal_districts.mako'),
             'region': (Region, regions_dgrid_viewmodel,
                        'nextgisweb_compulink:compulink_admin/reference_books/templates/regions.mako'),
             'district': (District, districts_dgrid_viewmodel,

@@ -5,10 +5,9 @@
 <script>
     var columnsSettings = null;
     require([
-        'ngw-compulink-admin/reference_books/RelationSelect',
         'dojo/parser',
         'dojo/ready'
-    ], function (RelationSelect, parser, ready) {
+    ], function (parser, ready) {
         ready(function () {
             columnsSettings = ${columnsSettings | n};
             parser.parse();
@@ -17,5 +16,5 @@
 </script>
 
 
-<div data-dojo-type="ngw-compulink-admin/reference_books/Regions"
+<div data-dojo-type="ngw-compulink-admin/reference_books/FederalDistrict"
      data-dojo-props="config: columnsSettings"></div>

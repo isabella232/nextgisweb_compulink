@@ -14,6 +14,7 @@ from nextgisweb.vector_layer import VectorLayer
 from nextgisweb_compulink.compulink_admin.layers_struct import FOCL_REAL_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ModelsUtils, BASE_PATH, _PROJECT_STATUS_FINISHED, PROJECT_STATUS_PROJECT, \
     PROJECT_STATUS_IN_PROGRESS
+from nextgisweb_compulink.db_migrations.add_federal_dist_id_field import add_federal_dist_id_field
 from nextgisweb_compulink.db_migrations.add_guid_field import add_guid_field
 from nextgisweb_compulink.db_migrations.append_actual_layers import append_actual_layers
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater, StructUpdater
@@ -51,6 +52,7 @@ class DBMigrates():
                                 'append_actual_layers',
                                 'copy_existing_real_features',
                                 'copy_existing_real_feat_attaches',
+                                'add_federal_dist_id_field'
                             ])
 
     @classmethod
@@ -87,6 +89,8 @@ class DBMigrates():
             copy_existing_real_features(args)
         if args.migration == 'copy_existing_real_feat_attaches':  # 03.03.2016
             copy_existing_real_feat_attaches(args)
+        if args.migration == 'add_federal_dist_id_field':       # 05.07.2016
+            add_federal_dist_id_field(args)
 
     @classmethod
     def append_real_layers(cls):
