@@ -108,9 +108,14 @@ define([
                             widget._handleMenuItemClick(this.deviationData);
                         }
                     }));
-
                     idx++;
                 }, this);
+            }
+
+            if (deviationMenu.getChildren().length < 1) {
+                this._clearIdentifyLayer();
+                deviationMenu.destroy();
+                return false;
             }
 
             deviationMenu.startup();
