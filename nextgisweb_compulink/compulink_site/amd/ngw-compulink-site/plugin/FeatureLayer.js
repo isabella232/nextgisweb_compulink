@@ -153,9 +153,15 @@ define([
         postCreate: function () {
             this.display.itemMenu.addChild(this.menuItem);
             this.display.addTool(this.tool);
+            this.turnIdentifyBtn();
 
             new ToolbarSeparator().placeAt(this.display.infoNode, 'first');
             this.tbSearch.placeAt(this.display.infoNode, 'first');
+        },
+
+        turnIdentifyBtn: function () {
+            this.tool.toolbarBtn.set('checked', true);
+            this.tool.activate();
         },
 
         openFeatureGrid: function () {
