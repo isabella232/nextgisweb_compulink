@@ -18,8 +18,9 @@ define([
     'dojo/text!./templates/DeviationGrid.html',
     'ngw/route',
     //grid
-    'dgrid/Grid',
+    'dgrid/OnDemandGrid',
     'dgrid/Selection',
+    'dgrid/selector',
     'dgrid/ColumnSet',
     'dgrid/extensions/DijitRegistry',
     'dgrid/extensions/CompoundColumns',
@@ -57,14 +58,15 @@ define([
              template,
              route,
              Grid,
-             Selector,
+             Selection,
+             selector,
              ColumnSet,
              DijitRegistry,
              CompoundColumns,
              ColumnResizer,
              ConfirmDialog) {
     // Базовый класс ggrid над которым затем делается обертка в dijit виджет
-    var GridClass = declare([Grid, Selector, DijitRegistry, CompoundColumns, ColumnResizer], {});
+    var GridClass = declare([Grid, Selection, DijitRegistry, CompoundColumns, ColumnResizer], {});
 
     return declare([BorderContainer, _TemplatedMixin, _WidgetsInTemplateMixin], {
         gutters: true,
@@ -111,13 +113,15 @@ define([
                 handleAs: 'json',
                 query: this.get('value')
             }).then(lang.hitch(this, function (data) {
+                this._store = Memory({data: data});
+                this._grid.store = this._store;
                 this._grid.refresh();
-                this._grid.renderArray(data);
             }));
         },
 
         getColumnsDefault: function () {
             return [
+                selector({name: 'main_selector', id: 'main_selector'}),
                 {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false, renderCell: this._makeMapLink},
                 {label: 'Проект', field: 'focl_proj', name: 'focl_proj', sortable: false},
                 {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
@@ -205,7 +209,9 @@ define([
 
         initializeGrid: function () {
             this._grid = new GridClass({
-                selectionMode: 'multiple'
+                selectionMode: 'multiple',
+                store: Memory({data: []}),
+                allowSelectAll: true
             });
             this._bindGridEvents();
             this.setDeviationGridColumns(['Default']);
@@ -243,16 +249,12 @@ define([
 
         _afterSelectEvent: false,
         _dgridSelectEventHandle: function (evt) {
-            var row = evt.rows[0];
-            this._selectedObjectsId[row.data.id] = row;
             this._enableApplyDeviationBtns();
             this._afterSelectEvent = true;
         },
 
         _dgridDeselectEventHandle: function (evt) {
-            var row = evt.rows[0];
-            delete this._selectedObjectsId[row.data.id];
-            if (Object.keys(this._selectedObjectsId).length < 1) {
+            if (Object.keys(this._grid.selection).length < 1) {
                 this._disableApplyDeviationBtns();
             }
         },
@@ -309,16 +311,16 @@ define([
         },
 
         _applyBulkDeviation: function (comment) {
-            var selectObjectId,
+            var selectedID,
                 dataRow,
                 bulkDeviationData = {
                     layers: [],
                     comment: comment
                 };
 
-            for (selectObjectId in this._selectedObjectsId) {
-                if (this._selectedObjectsId.hasOwnProperty(selectObjectId)) {
-                    dataRow = this._selectedObjectsId[selectObjectId].data;
+            for (selectedID in this._grid.selection) {
+                dataRow = this._store.get(selectedID);
+                if (dataRow) {
                     bulkDeviationData.layers.push({
                         layerId: dataRow.focl_res_id,
                         featureId: dataRow.object_num,

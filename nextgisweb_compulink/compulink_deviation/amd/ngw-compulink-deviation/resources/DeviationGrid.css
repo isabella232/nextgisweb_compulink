@@ -16,12 +16,17 @@
 }
 
 
+.dgrid-content .dgrid-cell.dgrid-selector,
 .dgrid-content .dgrid-cell.field-deviation_distance,
 .dgrid-content .dgrid-cell.field-deviation_approved,
 .dgrid-content .dgrid-cell.field-approval_author,
 .dgrid-content .dgrid-cell.field-approval_timestamp
 {
     text-align: center;
+}
+
+.dgrid-column-main_selector {
+    width: 1em;
 }
 
 .field-focl_proj {
