@@ -15,7 +15,7 @@ from nextgisweb.env import env
 from nextgisweb.spatial_ref_sys import SRS
 from nextgisweb.vector_layer import VectorLayer
 from nextgisweb.vector_layer.model import _set_encoding, VE
-from nextgisweb_compulink.compulink_admin.model import ConstructObject
+from nextgisweb_compulink.compulink_admin.model import ConstructObject, FederalDistrict
 from nextgisweb_compulink.compulink_admin.well_known_resource import *
 from nextgisweb_compulink.db_migrations.common import VectorLayerUpdater
 from default_dicts import DEFAULT_COMPULINK_DICTS
@@ -265,43 +265,67 @@ class DBInit():
             dict_res.persist()
 
     @classmethod
-    def load_domain_dicts(cls, force=False):
+    def load_domain_dicts(cls, force=False, federal=True, region=True, district=True):
         print 'Loading domain dicts...'
         from ..compulink_admin.model import Region, District
         from csv import DictReader
 
-        db_session = DBSession()
-        db_session.autoflush = False
 
-
-        if (db_session.query(Region).count() > 0 or db_session.query(District).count() > 0) and not force:
-            print '     Domain dictionary already existings! Returning...'
+        if (region and not federal) or (district and not region):
+            print('Not consist params!')
             return
 
-        with open(path.join(BASE_PATH, 'regions.csv')) as reg_csv, \
-             open(path.join(BASE_PATH, 'districts.csv')) as dist_csv:
+        db_session = DBSession()
+        db_session.autoflush = False
+        with transaction.manager:
 
-            reg_reader = DictReader(reg_csv)
-            dist_reader = DictReader(dist_csv)
+            if ((db_session.query(FederalDistrict).count() > 0 and federal) or
+               (db_session.query(Region).count() > 0 and region) or
+               (db_session.query(District).count() > 0 and district)) and not force:
+                print '     Domain dictionary already existings! Returning...'
+                return
 
-            regs = {}
-            for reg_row in reg_reader:
-                region = Region()
-                region.name = reg_row['name']
-                region.short_name = reg_row['short_name']
-                region.region_code = reg_row['region_code']
-                region.persist()
-                regs[reg_row['id']] = region
+            with open(path.join(BASE_PATH, 'federal_districts.csv')) as fed_csv, \
+                 open(path.join(BASE_PATH, 'regions.csv')) as reg_csv, \
+                 open(path.join(BASE_PATH, 'districts.csv')) as dist_csv:
 
-            for dist_row in dist_reader:
-                district = District()
-                district.name = dist_row['name']
-                district.short_name = dist_row['short_name']
-                district.region = regs[dist_row['region_id']]
+                fed_reader = DictReader(fed_csv)
+                reg_reader = DictReader(reg_csv)
+                dist_reader = DictReader(dist_csv)
 
-                district.persist()
 
-        db_session.flush()
+                feds = {}
+                if federal:
+                    for fed_row in fed_reader:
+                        federal_dist = FederalDistrict()
+                        federal_dist.name = fed_row['name']
+                        federal_dist.short_name = fed_row['short_name']
+                        federal_dist.persist()
+                        feds[fed_row['id']] = federal_dist
+
+
+                regs = {}
+                if region:
+                    for reg_row in reg_reader:
+                        region = Region()
+                        region.name = reg_row['name']
+                        region.short_name = reg_row['short_name']
+                        region.region_code = reg_row['region_code']
+                        region.persist()
+                        regs[reg_row['id']] = region
+
+                if district:
+                    for dist_row in dist_reader:
+                        district = District()
+                        district.name = dist_row['name']
+                        district.short_name = dist_row['short_name']
+                        district.region = regs[dist_row['region_id']]
+
+                        district.persist()
+
+
+            db_session.flush()
+
 
 
     @classmethod

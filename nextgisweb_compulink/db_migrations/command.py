@@ -24,6 +24,7 @@ from nextgisweb_compulink.db_migrations.copy_existing_real_feat_attaches import 
 from nextgisweb_compulink.db_migrations.copy_existing_real_features import copy_existing_real_features
 from nextgisweb_compulink.db_migrations.fill_construct_obj import fill_construct_obj_12_10
 from nextgisweb_compulink.db_migrations.fill_guid_field import fill_guid_field
+from nextgisweb_compulink.db_migrations.load_federal_dist_dict import load_federal_dist_dict
 from nextgisweb_compulink.db_migrations.update_actual_lyr_names import update_actual_lyr_names
 
 
@@ -52,7 +53,8 @@ class DBMigrates():
                                 'append_actual_layers',
                                 'copy_existing_real_features',
                                 'copy_existing_real_feat_attaches',
-                                'add_federal_dist_id_field'
+                                'add_federal_dist_id_field',
+                                'load_federal_dist_dict'
                             ])
 
     @classmethod
@@ -91,6 +93,8 @@ class DBMigrates():
             copy_existing_real_feat_attaches(args)
         if args.migration == 'add_federal_dist_id_field':       # 05.07.2016
             add_federal_dist_id_field(args)
+        if args.migration == 'load_federal_dist_dict':  # 05.07.2016
+            load_federal_dist_dict(args)
 
     @classmethod
     def append_real_layers(cls):
