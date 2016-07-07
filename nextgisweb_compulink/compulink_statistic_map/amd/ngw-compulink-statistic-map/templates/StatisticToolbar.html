@@ -4,29 +4,30 @@
          style="border-bottom: none"
          id="statisticToolbar">
 
+        <div id="buildingObjectsSelect"
+             data-dojo-attach-point="buildingObjectsSelect"
+             data-dojo-props="url: '/compulink/reporting/resources/child'"
+             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect">
+        </div>
+
+        <div data-dojo-type="dijit/ToolbarSeparator"></div>
+
         <div data-dojo-attach-point="federalLevelButton"
              id="federalLevelButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconFederalLevel', showLabel: false, checked: true, title: 'Федеральные округа'">
+             data-dojo-props="iconClass: 'iconFederalLevel', showLabel: true, checked: true, label: 'Федеральные округа'">
         </div>
 
         <div data-dojo-attach-point="regionLevelButton"
              id="regionLevelButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconRegionlLevel', showLabel: false, checked: false, title: 'Регионы'">
+             data-dojo-props="iconClass: 'iconRegionlLevel', showLabel: true, checked: false, label: 'Регионы'">
         </div>
 
         <div data-dojo-attach-point="districtLevelButton"
              id="districtLevelButton"
              data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass: 'iconDistrictLevel', showLabel: false, checked: false, title: 'Районы'">
-        </div>
-
-        <div id="buildingObjectsSelect"
-             data-dojo-attach-point="buildingObjectsSelect"
-             data-dojo-props="url: '/compulink/reporting/resources/child'"
-             data-dojo-type="ngw-compulink-reporting/BuildingObjectsSelect">
-
+             data-dojo-props="iconClass: 'iconDistrictLevel', showLabel: true, checked: false, label: 'Районы'">
         </div>
 
     </div>

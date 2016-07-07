@@ -12,14 +12,14 @@
 }
 
 #statisticToolbar span.iconFederalLevel {
-    background: url('img/select_move.png') no-repeat;
+    background: url('img/federal_icon.png') no-repeat;
 }
 
 #statisticToolbar span.iconRegionlLevel {
-    background: url('img/select_move.png') no-repeat;
+    background: url('img/region_icon.png') no-repeat;
 }
 
 #statisticToolbar span.iconDistrictLevel {
-    background: url('img/select_move.png') no-repeat;
+    background: url('img/district.png') no-repeat;
 }
 
