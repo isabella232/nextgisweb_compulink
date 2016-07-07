@@ -122,10 +122,10 @@ define([
         getColumnsDefault: function () {
             return [
                 selector({name: 'main_selector', id: 'main_selector'}),
-                {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false, renderCell: this._makeMapLink},
-                {label: 'Проект', field: 'focl_proj', name: 'focl_proj', sortable: false},
-                {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
-                {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance', sortable: false}
+                {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', renderCell: this._makeMapLink},
+                {label: 'Проект', field: 'focl_proj', name: 'focl_proj'},
+                {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name'},
+                {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance'}
             ];
         },
 
@@ -149,21 +149,18 @@ define([
                     field: 'deviation_approved',
                     name: 'deviation_approved',
                     get: lang.partial(_getBoolean, 'deviation_approved'),
-                    sortable: false
                 },
-                {label: 'Автор утверждения', field: 'approval_author', name: 'approval_author', sortable: false},
+                {label: 'Автор утверждения', field: 'approval_author', name: 'approval_author'},
                 {
                     label: 'Дата/Время утверждения',
                     field: 'approval_timestamp',
                     name: 'approval_timestamp',
                     get: lang.partial(_getDateCell, 'approval_timestamp'),
-                    sortable: false
                 },
                 {
                     label: 'Комментарий к утверждению',
                     field: 'approval_comment',
                     name: 'approval_comment',
-                    sortable: false
                 }
             ];
         },
