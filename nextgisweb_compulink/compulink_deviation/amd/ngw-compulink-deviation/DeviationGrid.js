@@ -260,12 +260,10 @@ define([
 
         _enableApplyDeviationBtns: function () {
             this.applyDeviationBtn.set('disabled', false);
-            this.clearSelectionBtn.set('disabled', false);
         },
 
         _disableApplyDeviationBtns: function () {
             this.applyDeviationBtn.set('disabled', 'disabled');
-            this.clearSelectionBtn.set('disabled', 'disabled');
         },
 
         startup: function () {
@@ -273,10 +271,6 @@ define([
 
             this.gridPane.set('content', this._grid.domNode);
             this._grid.startup();
-
-            this.clearSelectionBtn.on('click', lang.hitch(this, function (evt) {
-                this._clearSelection();
-            }));
 
             this.applyDeviationBtn.on('click', lang.hitch(this, function () {
                 this._showApplyDeviationDialog();
