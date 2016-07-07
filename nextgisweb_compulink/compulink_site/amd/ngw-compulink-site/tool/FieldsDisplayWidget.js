@@ -79,6 +79,13 @@ define([
                     if(replace_dict.hasOwnProperty(val)) val = replace_dict[val];
                 }
 
+                //check deviation
+                if (field.keyname === 'is_deviation' && val === 1) {
+                    //TODO: Add link to Approve
+                    put(tbody, "tr th.display_name $ < td.value span.deviation $", fieldmap[k].display_name, 'Да');
+                    continue;
+                }
+
                 if (bool_fields.indexOf(field.keyname) >= 0) {
                     if (val==1)
                         val = "Да";
