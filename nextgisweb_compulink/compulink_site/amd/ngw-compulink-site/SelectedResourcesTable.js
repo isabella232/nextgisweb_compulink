@@ -72,7 +72,7 @@ define([
             });
 
             this._menu.addChild(new MenuItem({
-                label: 'Экспорт в KML',
+                label: 'Экспорт координат в KML',
                 onClick: lang.hitch(this, function(evt) {
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
@@ -82,7 +82,7 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Экспорт в GeoJSON',
+                label: 'Экспорт координат в GeoJSON',
                 onClick: lang.hitch(this, function(evt) {
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
@@ -92,7 +92,7 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Экспорт в CSV',
+                label: 'Экспорт координат в CSV',
                 onClick: lang.hitch(this, function(evt) {
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
@@ -113,7 +113,7 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Открыть карточку',
+                label: 'Открыть карточку объекта',
                 onClick: lang.hitch(this, function (evt) {
                     var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
                         item = this._grid.store.query({id: itemId});
@@ -128,7 +128,7 @@ define([
 
             this._menu.addChild(new MenuSeparator());
             this._menu.addChild(new MenuItem({
-                label: 'Редактировать',
+                label: 'Редактировать геометрию объекта',
                 onClick: lang.hitch(this, function (evt) {
                     // TODO: need check!
                     var extent = this._Display.map.olMap.getExtent().transform('EPSG:3857', 'EPSG:4326'),
