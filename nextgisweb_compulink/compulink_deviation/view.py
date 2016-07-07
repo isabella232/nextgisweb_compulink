@@ -261,6 +261,7 @@ def set_deviation_approve(ngw_session, user, layer, feature_id, comment):
     deviation.deviation_approved = True
     deviation.approval_author = user.display_name or user.keyname
     deviation.approval_timestamp = datetime.now()
+    deviation.approval_comment = comment
 
     return 0  # sex drugs and rock'n'roll
 
