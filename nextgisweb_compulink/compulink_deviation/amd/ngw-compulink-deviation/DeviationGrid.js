@@ -220,14 +220,6 @@ define([
         },
 
         _bindGridEvents: function () {
-            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
-                var row = this._grid.row(evt);
-                window.open(ngwConfig.compulinkMapUrl + '?resource_id=' + row.data.focl_res_id +
-                    '&object_type=' + row.data.object_type +
-                    '&object_num=' + row.data.object_num +
-                    '&layers=design_layers', '_blank');
-            }));
-
             this._onSelectHandling();
         },
 
