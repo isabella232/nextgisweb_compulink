@@ -118,11 +118,21 @@ define([
 
         getColumnsDefault: function () {
             return [
+                {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false, renderCell: this._makeMapLink},
                 {label: 'Проект', field: 'focl_proj', name: 'focl_proj', sortable: false},
-                {label: 'Объект строительства', field: 'focl_name', name: 'focl_name', sortable: false},
                 {label: 'Тип объекта', field: 'object_type_name', name: 'object_type_name', sortable: false},
                 {label: 'Отклонение в метрах', field: 'deviation_distance', name: 'deviation_distance', sortable: false}
             ];
+        },
+
+        _makeMapLink: function(object, value, node, options) {
+            var url = ngwConfig.compulinkMapUrl +
+                    '?resource_id=' + object['focl_res_id'] +
+                    '&object_type=' + object['object_type'] +
+                    '&object_num=' + object['object_num'] +
+                    '&layers=design_layers';
+            var htmlLink = '<a target="_blank" href="' + url + '">' + object['focl_name'] + '</a>';
+            return node.innerHTML = htmlLink;
         },
 
         getColumnsApproved: function () {
