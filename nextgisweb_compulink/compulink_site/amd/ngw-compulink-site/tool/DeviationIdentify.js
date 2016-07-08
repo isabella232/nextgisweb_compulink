@@ -32,13 +32,15 @@ define([
 
         deactivate: function () {
             this.inherited(arguments);
+            this.deviationIndentifyControl.deactivate();
+        },
+
+        _clearControls: function () {
+            this.inherited(arguments);
 
             if (this._deviationMenu) {
                 this._deviationMenu.destroy();
-                this._clearIdentifyLayer();
             }
-
-            this.deviationIndentifyControl.deactivate();
         },
 
         rightClickDeviation: function (pixel) {
@@ -49,6 +51,7 @@ define([
                 layersLabels,
                 isIdentifyActive = true;
 
+            this._clearControls();
             this._addIdentifyLoadingMarker(point);
 
             layersInfoIdentify = this._getLayersInfoIdentify();
@@ -70,7 +73,7 @@ define([
                 this._buildDeviationsMenu(response, layersLabels, marker.icon.imageDiv);
             }), lang.hitch(this, function (err) {
                 console.log(err);
-                this._clearIdentifyLayer();
+                this._clearControls();
             }));
         },
 
@@ -113,8 +116,7 @@ define([
             }
 
             if (deviationMenu.getChildren().length < 1) {
-                this._clearIdentifyLayer();
-                deviationMenu.destroy();
+                this._clearControls();
                 return false;
             }
 
@@ -123,8 +125,7 @@ define([
         },
 
         _handleMenuItemClick: function (deviationData) {
-            this._clearIdentifyLayer();
-            this._deviationMenu.destroy();
+            this._clearControls();
             this._showApplyDeviationDialog(deviationData);
         },
 

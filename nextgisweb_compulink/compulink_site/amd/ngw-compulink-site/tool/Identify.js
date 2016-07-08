@@ -130,11 +130,12 @@ define([
 
         deactivate: function () {
             this.control.deactivate();
+            this._clearControls();
+        },
 
-            if (this._popup) {
-                this.display.map.olMap.removePopup(this._popup);
-                this._popup = null;
-            }
+        _clearControls: function () {
+            this._removePopup();
+            this._clearIdentifyLayer();
         },
 
         execute: function (pixel) {
@@ -213,14 +214,12 @@ define([
                 this.map.olMap.removePopup(this._popup);
                 this._popup = null;
             }
-            this._clearIdentifyLayer();
         },
 
         _responsePopup: function (response, point, layerLabels) {
-            this._removePopup();
+            this._clearControls();
 
             if (!response.featureCount || response.featureCount === 0) {
-                this._clearIdentifyLayer();
                 return false;
             }
 
@@ -248,7 +247,7 @@ define([
 
             // Обработчик закрытия
             on(this._popup._closeSpan, "click", lang.hitch(this, function () {
-                this._removePopup();
+                this._clearControls();
             }));
         },
 
