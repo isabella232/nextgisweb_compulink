@@ -326,7 +326,8 @@ define([
         _currentIndexDate: null,
         _buildFeatures: function (from, to, isNeedRebuild) {
             var layer = this._featureManager._layer,
-                featureBuiltDateMs;
+                featureBuiltDateMs,
+                featuresToDrawing = [];
 
             if (isNeedRebuild) {
                 layer.removeAllFeatures();
@@ -344,18 +345,43 @@ define([
             if (from === this._featureManager.minBuiltDate.getTime()) {
                 from = 0;
             }
-
             array.forEach(this._featureManager._featuresByBuiltDate, function (feature, index) {
                 featureBuiltDateMs = feature.attributes.built_date_ms;
                 if (featureBuiltDateMs <= from) {
                     return true;
                 } else if  (featureBuiltDateMs > from  && featureBuiltDateMs <= to) {
-                    layer.addFeatures(feature);
+                    featuresToDrawing.push(feature);
                 } else if (featureBuiltDateMs > to) {
                     this._currentIndexDate = index - 1;
                     return false;
                 }
             }, this);
+            this._renderByTimeChunks(layer, featuresToDrawing);
+        },
+
+        _renderByTimeChunks: function (layer, featuresToDrawing) {
+            var chunksInSec = 5,
+                indexTimeChunk = 0,
+                chunkFeatures,
+                countInTimeChunk,
+
+                featuresToDrawingCount = featuresToDrawing.length;
+
+            if (featuresToDrawingCount > 0) {
+                countInTimeChunk = Math.ceil(featuresToDrawingCount / chunksInSec);
+                for (indexTimeChunk; indexTimeChunk < chunksInSec; indexTimeChunk++) {
+                    setTimeout(function (index) {
+                        return function () {
+                            chunkFeatures = featuresToDrawing.slice(
+                                index * countInTimeChunk,
+                                (index + 1) * countInTimeChunk
+                            );
+                            layer.addFeatures(chunkFeatures);
+                        };
+                    }(indexTimeChunk), 1000 * (indexTimeChunk / chunksInSec));
+                }
+            }
+
         },
 
         _normalizeDateToDay: function (dateTime) {
