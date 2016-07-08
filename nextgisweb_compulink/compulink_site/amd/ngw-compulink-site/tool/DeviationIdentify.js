@@ -155,10 +155,18 @@ define([
                 handleAs: 'json',
                 data: json.stringify(deviationData)
             }).then(lang.hitch(this, function (response) {
-                console.log(response);
+                this._updateMapLayers();
             }), lang.hitch(this, function (err) {
                 console.log(err);
             }));
+        },
+
+        _updateMapLayers: function () {
+            var olMap = this.display.map.olMap,
+                center = olMap.getCenter(),
+                zoom = olMap.getZoom();
+            center.lon++;
+            olMap.setCenter(center, zoom);
         }
     });
 });
