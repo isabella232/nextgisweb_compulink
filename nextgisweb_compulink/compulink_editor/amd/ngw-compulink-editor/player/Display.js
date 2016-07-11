@@ -346,7 +346,11 @@ define([
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
                     new Timeline();
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
-                        editorConfig, true, true);
+                        editorConfig, {
+                            isCreateLayer: true,
+                            isFillObjects: true,
+                            zoomToHidingPoints: 10
+                        });
                     this.EditorFeaturesManager._setEditorMode('off');
                     //this.AttributesEditor = registry.byId("attributesEditor");
                     //this.AttributesEditor.setNgwServiceFacade(this.NgwServiceFacade);

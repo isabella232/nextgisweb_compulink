@@ -25,13 +25,14 @@ define([
              GlobalStandBy, IdentifyLayers, FeaturesSelectorMenu) {
 
     return declare([], {
-        constructor: function (map, ngwServiceFacade, editorConfig, isCreateLayer, isFillObjects) {
+        constructor: function (map, ngwServiceFacade, editorConfig, settings) {
+            this.settings = lang.mixin({}, settings);
             this._map = map;
             this._editableLayersInfo = editorConfig.editableLayersInfo;
             this._resourceId = editorConfig.resourceId;
             this._ngwServiceFacade = ngwServiceFacade;
-            if (isCreateLayer) this.getLayer();
-            if (isFillObjects) this.fillObjects();
+            if (this.settings.isCreateLayer) this.getLayer();
+            if (this.settings.isFillObjects) this.fillObjects();
             this._bindEvents();
             this._setEditorMode('selectAndMove');
         },
@@ -283,6 +284,50 @@ define([
             topic.subscribe('/compulink/editor/map/select', lang.hitch(this, function (feature) {
                 this._selectFeature(feature);
             }));
+
+            if (this.settings.zoomToHidingPoints) {
+                this._map.olMap.events.register('zoomend', this._map.olMap, 
+                    lang.hitch(this, this.handlePointsVisibilityByZoom));
+            }
+        },
+
+        _pointsIsVisible: null,
+        setInitialPointsVisibilityState: function () {
+            var zoom = this._map.olMap.getZoom();
+            this._pointsIsVisible = zoom > this.settings.zoomToHidingPoints;
+            if (!this._pointsIsVisible) {
+                this.setPointsVisibility(false);
+            }
+        },
+
+        handlePointsVisibilityByZoom: function () {
+            var zoom;
+
+            if (!this.settings.zoomToHidingPoints) {
+                return false;
+            }
+
+            zoom = this._map.olMap.getZoom();
+
+            if (zoom <= this.settings.zoomToHidingPoints && this._pointsIsVisible) {
+                this.setPointsVisibility(false);
+            } else if (zoom > this.settings.zoomToHidingPoints && !this._pointsIsVisible) {
+                this.setPointsVisibility(true);
+            }
+        },
+
+        setPointsVisibility: function (visibility) {
+            array.forEach(this.getLayer().features, function (feature) {
+                if (feature.geometry.CLASS_NAME.indexOf('Point') > -1) {
+                    if (visibility) {
+                        delete feature.style['display'];
+                    } else {
+                        feature.style['display'] = 'none';
+                    }
+                }
+            }, this);
+            this._pointsIsVisible = visibility;
+            this.getLayer().redraw();
         },
 
         _selectFeature: function (feature) {
@@ -575,6 +620,9 @@ define([
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
                 this._createFeatures(ngwFeatureItems);
+                if (this.settings.zoomToHidingPoints) {
+                    this.setInitialPointsVisibilityState();
+                }
                 topic.publish('features/manager/filled', this);
                 deferred.resolve();
             }));
