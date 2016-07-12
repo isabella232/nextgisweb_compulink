@@ -5,6 +5,13 @@ __author__ = 'yellow'
 # common
 DICTIONARY_GROUP_KEYNAME = 'dictionary_group'
 
+# federal dict
+FEDERAL_KEYNAME = 'federal_district_dict'
+FEDERAL_ID_FIELD = 'fed_id'
+FEDERAL_NAME_FIELD = 'name'
+FEDERAL_SHORT_NAME_FIELD = 'short_name'
+
+
 # regions dict
 REGIONS_KEYNAME = 'regions_dict'
 REGIONS_ID_FIELD = 'reg_id'
