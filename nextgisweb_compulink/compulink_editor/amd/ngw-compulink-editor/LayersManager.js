@@ -85,7 +85,7 @@ define([
                         layersStackChanged = true;
                     }
                 }
-                //if (layersStackChanged) this._applyZIndexes();
+                //if (layersStackChanged) this.applyZIndexes();
             }));
 
             topic.subscribe('resources/changed', lang.hitch(this, function (bottom_selected, inserted, deleted) {
@@ -131,7 +131,7 @@ define([
                     this.clearLayers();
                 }
 
-                //this._applyZIndexes();
+                //this.applyZIndexes();
 
             }));
 
@@ -185,8 +185,8 @@ define([
             }, this);
 
             layer._layer_type = layerData.type;
-            //this.setZIndex(layer);
-            //this._applyZIndexes();
+            this.setZIndex(layer);
+            this.applyZIndexes();
         },
 
         clearLayers: function () {
@@ -244,16 +244,22 @@ define([
         },
 
         setZIndex: function (layer) {
-            var resourceType = layer.res_type,
-                layerType = layer.layer_type,
-                layerOrderConfig = this.LayersConfig[resourceType][layerType],
+            var layerType = layer.layer_type,
+                layerOrderConfig = this.LayersConfig[layerType],
                 order = layerOrderConfig.order,
                 multiplier = 1000,
-                countZIndexes = layerOrderConfig.zIndexes.length,
+                countZIndexes,
                 zIndexMin = order * multiplier + 1000,
                 zIndexMax = zIndexMin + multiplier + 1000,
                 indexArray = 0,
                 currentZIndex;
+
+            if (!layerOrderConfig.zIndexes) {
+                layerOrderConfig.zIndexes = [];
+                countZIndexes = 0;
+            } else {
+                countZIndexes = layerOrderConfig.zIndexes.length;
+            }
 
             if (countZIndexes === 0) {
                 currentZIndex = zIndexMin;
@@ -272,13 +278,14 @@ define([
             layer._zIndex = currentZIndex;
         },
 
-        _applyZIndexes: function () {
-            var layer_uniq_id,
+        applyZIndexes: function () {
+            var layerVectorId,
+                layersByVectorId = this.LayersByVectorId,
                 layer;
 
-            for (layer_uniq_id in this.Layers) {
-                if (this.Layers.hasOwnProperty(layer_uniq_id)) {
-                    layer = this.Layers[layer_uniq_id];
+            for (layerVectorId in layersByVectorId) {
+                if (layersByVectorId.hasOwnProperty(layerVectorId)) {
+                    layer = layersByVectorId[layerVectorId];
                     layer.olLayer.setZIndex(layer._zIndex);
                 }
             }
