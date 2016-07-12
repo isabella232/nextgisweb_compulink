@@ -349,7 +349,7 @@ define([
                         editorConfig, {
                             isCreateLayer: true,
                             isFillObjects: true,
-                            zoomToHidingPoints: 10
+                            zoomToHidingPoints: 14
                         });
                     this.EditorFeaturesManager._setEditorMode('off');
                     //this.AttributesEditor = registry.byId("attributesEditor");
