@@ -318,7 +318,8 @@ define([
 
         setPointsVisibility: function (visibility) {
             array.forEach(this.getLayer().features, function (feature) {
-                if (feature.geometry.CLASS_NAME.indexOf('Point') > -1) {
+                if (feature.attributes.keyname === 'actual_real_optical_cable_point' ||
+                        feature.attributes.keyname === 'actual_real_special_transition_point') {
                     if (visibility) {
                         delete feature.style['display'];
                     } else {
