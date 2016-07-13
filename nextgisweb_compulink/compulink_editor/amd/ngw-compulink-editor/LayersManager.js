@@ -80,12 +80,12 @@ define([
                             delete this.LayersByVectorId[vectorId];
                         }, this);
                         Display.removeLayerFromMap(layer);
-                        //this.removeZIndex(layer);
+                        this.removeZIndex(layer);
                         delete this.LayersByTypes[deleted[i]];
                         layersStackChanged = true;
                     }
                 }
-                //if (layersStackChanged) this.applyZIndexes();
+                if (layersStackChanged) this.applyZIndexes();
             }));
 
             topic.subscribe('resources/changed', lang.hitch(this, function (bottom_selected, inserted, deleted) {
@@ -130,9 +130,6 @@ define([
                 } else {
                     this.clearLayers();
                 }
-
-                //this.applyZIndexes();
-
             }));
 
             topic.subscribe('caclulate/resources/count', lang.hitch(this, function () {
@@ -172,7 +169,7 @@ define([
                     delete this.LayersByVectorId[vectorId];
                 }, this);
                 this.Display.removeLayerFromMap(layer);
-                //this.removeZIndex(this.LayersByTypes[layerType]);
+                this.removeZIndex(layer);
                 delete this.LayersByTypes[layerType];
             }
 
@@ -292,7 +289,7 @@ define([
         },
 
         removeZIndex: function (layer) {
-            var layerOrderConfig = this.LayersConfig[layer.res_type][layer.layer_type],
+            var layerOrderConfig = this.LayersConfig[layer.layer_type],
                 zIndex = parseInt(layer.olLayer.getZIndex()),
                 index;
 
