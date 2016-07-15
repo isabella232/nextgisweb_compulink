@@ -25,7 +25,7 @@ CSV_START_BUILD_DATE_FIELD = 'start_build_date'
 CSV_END_BUILD_DATE_FIELD = 'end_build_date'
 
 
-class DataStructImporter():
+class DataStructImporter:
     '''
     Генератор структур проектов и объектов строительства
     по заданному csv файлу, формата:
@@ -94,7 +94,7 @@ class DataStructImporter():
             return None
 
 
-    def import_data(self, force):
+    def import_data(self, force, plain_struct):
         self.session = DBSession
         transaction.manager.begin()
 
@@ -125,28 +125,32 @@ class DataStructImporter():
                 reg_full_name = get_region_name(reg_id)
                 dist_full_name = get_district_name(distr_id)
 
-                # get or create group (region)
-                try:
-                    reg_res = ResourceGroup.filter_by(display_name=reg_full_name, parent=root_res).one()
-                except:
-                    reg_res = ResourceGroup(parent=root_res,
-                                            owner_user=root_res.owner_user,
-                                            display_name=reg_full_name)
+                if plain_struct:
+                    target_res = root_res
+                else:
+                    # get or create group (region)
+                    try:
+                        reg_res = ResourceGroup.filter_by(display_name=reg_full_name, parent=root_res).one()
+                    except:
+                        reg_res = ResourceGroup(parent=root_res,
+                                                owner_user=root_res.owner_user,
+                                                display_name=reg_full_name)
 
-                # get or create focl project group (district)
-                try:
-                    dist_res = FoclProject.filter_by(display_name=dist_full_name, parent=reg_res).one()
-                except:
-                    dist_res = FoclProject(parent=reg_res,
-                                           owner_user=root_res.owner_user,
-                                           display_name=dist_full_name)
-                    dist_res.persist()
-                    FoclProjectSerializer.create_focl_project_content(dist_res)
+                    # get or create focl project group (district)
+                    try:
+                        dist_res = FoclProject.filter_by(display_name=dist_full_name, parent=reg_res).one()
+                    except:
+                        dist_res = FoclProject(parent=reg_res,
+                                               owner_user=root_res.owner_user,
+                                               display_name=dist_full_name)
+                        dist_res.persist()
+                        FoclProjectSerializer.create_focl_project_content(dist_res)
+                    target_res = dist_res
 
 
                 # create focl project
-                vols_struct = FoclStruct(parent=dist_res,
-                                         owner_user=dist_res.owner_user,
+                vols_struct = FoclStruct(parent=target_res,
+                                         owner_user=target_res.owner_user,
                                          display_name=focl_name)
                 vols_struct.region = reg_id
                 vols_struct.district = distr_id

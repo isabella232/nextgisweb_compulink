@@ -14,6 +14,7 @@ class ImportDataStructCommand():
         parser.add_argument('--parent-res-id')
         parser.add_argument('--only-check', action='store_true', default=False)
         parser.add_argument('--force', action='store_true', default=False)
+        parser.add_argument('--plain-struct', action='store_true', default=False)
 
     @classmethod
     def execute(cls, args, env):
@@ -21,7 +22,7 @@ class ImportDataStructCommand():
         if args.only_check:
             struct_importer.check_input()
         else:
-            struct_importer.import_data(args.force)
+            struct_importer.import_data(args.force, args.plain_struct)
 
 
 
