@@ -61,6 +61,17 @@ define([
             }
         },
 
+        _get_field_value: function(fieldmap, value, fieldKeyname) {
+            for (var k in value) {
+                var val = value[k];
+                var field = fieldmap[k];
+
+                if (field.keyname === fieldKeyname)
+                    return val;
+            }
+            return null;
+        },
+
         _render: function (value, fieldmap) {
             var tbody = put(this.domNode, "table.pure-table.pure-table-horizontal tbody");
 
@@ -80,7 +91,7 @@ define([
                 }
 
                 //check deviation
-                if (field.keyname === 'is_deviation' && val === 1) {
+                if (field.keyname === 'is_deviation' && val === 1 && this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
                     //TODO: Add link to Approve
                     put(tbody, "tr th.display_name $ < td.value span.deviation $", fieldmap[k].display_name, 'Да');
                     continue;
