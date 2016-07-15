@@ -94,7 +94,17 @@ class FoclStruct(Base, ResourceGroup):
 
     @classmethod
     def check_parent(cls, parent):
-        return isinstance(parent, FoclProject)
+        # tree review for unsupported parents
+        parent_temp = parent
+        while parent_temp:
+            for unsupported_res in [FoclStruct, SituationPlan]:
+                if isinstance(parent_temp, unsupported_res):
+                    return False
+            parent_temp = parent_temp.parent
+        # check parent
+        return isinstance(parent, ResourceGroup) or isinstance(parent, FoclProject)
+
+
 
 
 P_DS_READ = DataScope.read
