@@ -9,22 +9,22 @@ from .model import FoclProject, FoclStruct, SituationPlan, PROJECT_STATUS_PROJEC
     PROJECT_STATUS_IN_PROGRESS, PROJECT_STATUS_BUILT, PROJECT_STATUS_DELIVERED, Region, District
 
 
-class FoclProjectWidget(Widget):
-    resource = FoclProject
-    operation = ('create', 'update')
-    amdmod = 'ngw-compulink-admin/FoclProjectWidget'
-
-
-class FoclStructWidget(Widget):
-    resource = FoclStruct
-    operation = ('create', 'update')
-    amdmod = 'ngw-compulink-admin/FoclStructWidget'
-
-
-class SituationPlanWidget(Widget):
-    resource = SituationPlan
-    operation = ('create', 'update')
-    amdmod = 'ngw-compulink-admin/SituationPlanWidget'
+# class FoclProjectWidget(Widget):
+#     resource = FoclProject
+#     operation = ('create', 'update')
+#     amdmod = 'ngw-compulink-admin/FoclProjectWidget'
+#
+#
+# class FoclStructWidget(Widget):
+#     resource = FoclStruct
+#     operation = ('create', 'update')
+#     amdmod = 'ngw-compulink-admin/FoclStructWidget'
+#
+#
+# class SituationPlanWidget(Widget):
+#     resource = SituationPlan
+#     operation = ('create', 'update')
+#     amdmod = 'ngw-compulink-admin/SituationPlanWidget'
 
 
 def setup_pyramid(comp, config):
