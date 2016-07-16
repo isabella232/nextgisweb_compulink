@@ -176,11 +176,12 @@ define([
             var widget = this,
                 layerId = feature.layerId,
                 layerType = feature.layerType,
-                featureId = feature.id;
+                featureId = feature.id,
+                getFeatureInfo;
 
-            var iurl = route.feature_layer.feature.item({id: layerId, fid: featureId});
+            getFeatureInfo = route.feature_layer.feature.item({id: layerId, fid: featureId});
 
-            xhr.get(iurl, {
+            xhr.get(getFeatureInfo, {
                 method: "GET",
                 handleAs: "json"
             }).then(function (feature) {
