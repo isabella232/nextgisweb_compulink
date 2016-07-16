@@ -175,6 +175,7 @@ define([
         _displayFeature: function (feature) {
             var widget = this,
                 layerId = feature.layerId,
+                layerType = feature.layerType,
                 featureId = feature.id;
 
             var iurl = route.feature_layer.feature.item({id: layerId, fid: featureId});
@@ -210,6 +211,7 @@ define([
                     if (featureLayersettings.identify.attributes) {
                         var fwidget = new FieldsDisplayWidget({
                             resourceId: layerId,
+                            layerType: layerType,
                             featureId: featureId,
                             compact: true,
                             aliases: true, grid_visibility: true
