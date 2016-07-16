@@ -91,9 +91,9 @@ define([
                 }
 
                 //check deviation
-                if (field.keyname === 'is_deviation' && val === 1 && this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
-                    //TODO: Add link to Approve
-                    put(tbody, "tr th.display_name $ < td.value span.deviation $", fieldmap[k].display_name, 'Да');
+                if (field.keyname === 'is_deviation' && val === 1) {
+                    put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
+                        fieldmap[k].display_name, 'Да', 'Утвердить');
                     continue;
                 }
 
