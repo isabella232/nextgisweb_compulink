@@ -92,6 +92,9 @@ define([
                         label: label.outerHTML,
                         value: layerId + "/" + idx
                     });
+
+                    feature.layerType = layerOrderedItem.lt;
+
                     idx++;
                 }, this);
             }

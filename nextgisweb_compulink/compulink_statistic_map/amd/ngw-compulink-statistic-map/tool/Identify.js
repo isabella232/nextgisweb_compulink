@@ -106,6 +106,9 @@ define([
                         value: layerId + "/" + idx
                     });
                     idx++;
+
+                    feature.layerType = layerOrderedItem.lt;
+
                 }, this);
             }
 
