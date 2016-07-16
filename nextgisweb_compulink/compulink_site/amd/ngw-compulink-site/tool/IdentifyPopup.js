@@ -173,11 +173,11 @@ define([
         },
 
         _displayFeature: function (feature) {
-            var widget = this;
-            ident_lid = feature.layerId;
-            ident_fid = feature.id;
+            var widget = this,
+                layerId = feature.layerId,
+                featureId = feature.id;
 
-            var iurl = route.feature_layer.feature.item({id: ident_lid, fid: ident_fid});
+            var iurl = route.feature_layer.feature.item({id: layerId, fid: featureId});
 
             xhr.get(iurl, {
                 method: "GET",
@@ -209,8 +209,8 @@ define([
                     // это не отключено в настройках
                     if (featureLayersettings.identify.attributes) {
                         var fwidget = new FieldsDisplayWidget({
-                            resourceId: ident_lid,
-                            featureId: ident_fid,
+                            resourceId: layerId,
+                            featureId: featureId,
                             compact: true,
                             aliases: true, grid_visibility: true
                         });
@@ -234,7 +234,8 @@ define([
                         }
                         var cls = widget.extWidgetClasses[key];
                         var ewidget = new cls({
-                            resourceId: ident_lid, featureId: ident_fid,
+                            resourceId: layerId,
+                            featureId: featureId,
                             compact: true
                         });
 
