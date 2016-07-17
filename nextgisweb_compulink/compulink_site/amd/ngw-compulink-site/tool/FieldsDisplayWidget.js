@@ -5,8 +5,10 @@ define([
     "dojo/date/locale",
     "dojo/request/xhr",
     "dojo/dom-class",
+    "dojo/on",
     "put-selector/put",
     "ngw/route",
+    "ngw-compulink-site/ApplyDeviationDialog",
     "./DisplayWidget",
     // settings
     "ngw/settings!compulink_site",
@@ -19,8 +21,10 @@ define([
     locale,
     xhr,
     domClass,
+    on,
     put,
     route,
+    ApplyDeviationDialog,
     DisplayWidget,
     siteSettings
 ) {
@@ -91,9 +95,18 @@ define([
                 }
 
                 //check deviation
-                if (field.keyname === 'is_deviation' && val === 1) {
-                    put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
-                        fieldmap[k].display_name, 'Да', 'Утвердить');
+                if (field.keyname === "is_deviation" && val === 1) {
+                    var applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
+                        fieldmap[k].display_name, "Да", "Утвердить");
+                    on(applyDeviationLink, "click", lang.hitch(this, function () {
+                        new ApplyDeviationDialog({
+                            layerType: this.layerType,
+                            resourceId: this.resourceId,
+                            featureId: this.featureId,
+                            map: this.identifyTool.map,
+                            indentify: this.identifyTool
+                        });
+                    }));
                     continue;
                 }
 
