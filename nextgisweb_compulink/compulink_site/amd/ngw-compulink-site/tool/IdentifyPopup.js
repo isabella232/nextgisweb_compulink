@@ -174,6 +174,7 @@ define([
 
         _displayFeature: function (feature) {
             var widget = this,
+                identifyTool = this.tool,
                 layerId = feature.layerId,
                 layerType = feature.layerType,
                 featureId = feature.id,
@@ -214,6 +215,7 @@ define([
                             resourceId: layerId,
                             layerType: layerType,
                             featureId: featureId,
+                            identifyTool: identifyTool,
                             compact: true,
                             aliases: true, grid_visibility: true
                         });
