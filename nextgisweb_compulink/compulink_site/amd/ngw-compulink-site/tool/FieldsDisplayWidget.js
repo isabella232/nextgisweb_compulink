@@ -80,24 +80,30 @@ define([
             var tbody = put(this.domNode, "table.pure-table.pure-table-horizontal tbody");
 
             for (var k in value) {
-                var val = value[k];
-                var field = fieldmap[k];
+                var val = value[k],
+                    field = fieldmap[k],
+                    all_dicts,
+                    bool_fields,
+                    replace_dict,
+                    d_val,
+                    applyDeviationLink;
 
                 if (this.compact && !fieldmap[k].grid_visibility) { continue; }
 
-
-                var all_dicts = siteSettings.dicts;
-                var bool_fields = siteSettings.bool_fields;
+                all_dicts = siteSettings.dicts;
+                bool_fields = siteSettings.bool_fields;
 
                 if (all_dicts.hasOwnProperty(field.keyname)) {
-                    var replace_dict = all_dicts[field.keyname];
-                    if(replace_dict.hasOwnProperty(val)) val = replace_dict[val];
+                    replace_dict = all_dicts[field.keyname];
+                    if (replace_dict.hasOwnProperty(val)) {
+                        val = replace_dict[val];
+                    }
                 }
 
                 //check deviation
                 if (field.keyname === "is_deviation" && val === 1 &&
                     this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
-                    var applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
+                    applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
                         fieldmap[k].display_name, "Да", "Утвердить");
                     on(applyDeviationLink, "click", lang.hitch(this, function () {
                         new ApplyDeviationDialog({
@@ -112,7 +118,7 @@ define([
                 }
 
                 if (bool_fields.indexOf(field.keyname) >= 0) {
-                    if (val==1)
+                    if (val == 1)
                         val = "Да";
                     else
                         val = "Нет";
@@ -140,9 +146,11 @@ define([
                 }
 
                 if (val !== null) {
-                    put(tbody, "tr th.display_name $ < td.value $", fieldmap[k].display_name, val);
+                    put(tbody, "tr th.display_name $ < td.value $",
+                        fieldmap[k].display_name, val);
                 } else {
-                    put(tbody, "tr th.display_name $ < td.value span.null $", fieldmap[k].display_name, "Н/Д");
+                    put(tbody, "tr th.display_name $ < td.value span.null $",
+                        fieldmap[k].display_name, "Н/Д");
                 }
             }
         }
