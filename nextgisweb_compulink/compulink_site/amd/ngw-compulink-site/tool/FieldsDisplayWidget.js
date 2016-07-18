@@ -95,7 +95,8 @@ define([
                 }
 
                 //check deviation
-                if (field.keyname === "is_deviation" && val === 1) {
+                if (field.keyname === "is_deviation" && val === 1 &&
+                    this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
                     var applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
                         fieldmap[k].display_name, "Да", "Утвердить");
                     on(applyDeviationLink, "click", lang.hitch(this, function () {
