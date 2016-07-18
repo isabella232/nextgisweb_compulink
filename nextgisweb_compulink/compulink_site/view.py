@@ -185,7 +185,7 @@ def _get_user_resources_tree(user):
     def get_child_perms_recursive(resource):
         # add self
         if resource.identity == FoclStruct.identity:
-            if resource.has_permission(DataScope.write, user):
+            if resource.has_permission(DataScope.write, user) or resource.has_permission(DataScope.read, user):
                 allowed_res_ids.add(resource.id)
         elif resource.identity in [ResourceGroup.identity, FoclProject.identity]:
             allowed_res_ids.add(resource.id)
@@ -783,7 +783,7 @@ def get_focl_status(request):
     if not focl_resource:
         raise HTTPNotFound()
 
-    if not focl_resource.has_permission(DataScope.write, request.user):
+    if not (focl_resource.has_permission(DataScope.write, request.user) or focl_resource.has_permission(DataScope.read, request.user)):
         raise HTTPForbidden()
 
     resp = {
