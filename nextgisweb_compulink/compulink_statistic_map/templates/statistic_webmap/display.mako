@@ -18,9 +18,16 @@
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/css/dgrid.css')}"
           rel="stylesheet" type="text/css" media="screen"/>
 
+    <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/qtip/jquery.qtip.min.css')}"
+          rel="stylesheet" type="text/css" media="screen"/>
+
     <link href="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jstree-3.0.9/themes/default/style.css')}"
           rel="stylesheet" type="text/css"/>
+
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery.js')}"></script>
+
+    <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/qtip/jquery.qtip.js')}"></script>
+
 
     <script type="text/javascript">
             <% import json %>

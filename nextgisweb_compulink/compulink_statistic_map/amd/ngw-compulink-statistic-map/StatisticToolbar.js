@@ -37,70 +37,31 @@ define([
             this._bindEvents();
         },
 
-        _toggleButtonOn: null,
         _bindEvents: function () {
-            var toolbar = registry.byId('statisticToolbar'),
-                toolbarChildren = toolbar.getChildren(),
-                isToggleButton, context;
+            on(this.federalLevelButton, 'click', function() {
+                topic.publish('LayerLevel/changed', 3);  //TODO: change to enum!
+            });
+            
+            on(this.regionLevelButton, 'click', function() {
+                topic.publish('LayerLevel/changed', 2);  //TODO: change to enum!
+            });
+            
+            on(this.districtLevelButton, 'click', function() {
+                topic.publish('LayerLevel/changed', 1);  //TODO: change to enum!
+            });
+            
+            topic.subscribe('LayerLevel/switcher_state_changed', lang.hitch(this, function (switchersStates) {
+                this.federalLevelButton.set('disabled', !switchersStates.federal.enabled);
+                this.federalLevelButton.set('checked', switchersStates.federal.active);
 
-            array.forEach(toolbarChildren, function (toolbarChildrenControl) {
-                context = this;
-                on(toolbarChildrenControl, 'click', function () {
-                    isToggleButton = this instanceof ToggleButton;
-                    if (isToggleButton) {
-                        if (this.get('checked')) {
-                            if (context._toggleButtonOn) {
-                                context._toggleButtonOn.set('checked', false);
-                            }
-                        }
-                    }
-                });
-            }, this);
+                this.regionLevelButton.set('disabled', !switchersStates.region.enabled);
+                this.regionLevelButton.set('checked', switchersStates.region.active);
 
-            this._toggleButtonOn = registry.byId('selectAndMoveButton');
-        },
+                this.districtLevelButton.set('disabled', !switchersStates.district.enabled);
+                this.districtLevelButton.set('checked', switchersStates.district.active);
 
-        selectAndMoveChanged: function (val) {
-            registry.byId('undoOneButton').set('disabled', !val);
-            registry.byId('removeFeatureButton').set('disabled', !val);
-        },
-
-        removeFeature: function () {
-            topic.publish('/compulink/editor/features/remove');
-        },
-
-        createSp: function () {
-            var toolbar = registry.byId('editorToolbar'),
-                v = toolbar.getChildren()[1] instanceof ToggleButton,
-                checked = registry.byId('createSpButton').get('checked');
-            if (checked) {
-                registry.byId('createVolsButton').set('checked', false);
-                topic.publish('/compulink/editor/set/mode/', 'createSp');
-            } else {
-                topic.publish('/compulink/editor/set/mode/', 'edit');
-            }
-        },
-
-        createVols: function () {
-            var checked = registry.byId('createVolsButton').get('checked');
-            if (checked) {
-                registry.byId('createSpButton').set('checked', false);
-                topic.publish('/compulink/editor/set/mode/', 'createVols');
-            } else {
-                topic.publish('/compulink/editor/set/mode/', 'edit');
-            }
-        },
-
-        updateLines: function () {
-            topic.publish('/compulink/editor/lines/update');
-        },
-
-        undoOne: function () {
-            topic.publish('/compulink/editor/features/undo');
-        },
-
-        undoAll: function () {
-            topic.publish('/compulink/editor/features/undo_all');
+            }));
+            //registry.byId('selectAndMoveButton');
         }
     });
 });

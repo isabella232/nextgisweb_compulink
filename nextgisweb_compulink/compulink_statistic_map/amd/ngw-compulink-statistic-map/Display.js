@@ -250,7 +250,9 @@ define([
 
 
             this._mapDeferred.then(
-                function () { widget._itemStorePrepare(); }
+                function () {
+                    //widget._itemStorePrepare();
+                }
             );
 
             this.displayProjection = new openlayers.Projection("EPSG:3857");
@@ -586,7 +588,7 @@ define([
             this._zoomToInitialExtent();
 
             new LayersLoadingIndicator(this.map);
-            new LevelLayersManager(this.map);
+            this.levelLayersManager = new LevelLayersManager(this.map.olMap);
 
             this._mapDeferred.resolve();
         },
