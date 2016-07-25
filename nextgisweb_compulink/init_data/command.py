@@ -99,6 +99,14 @@ class DBInit():
         print 'Loading shapes...'
 
         shape_dicts = {
+            FEDERAL_KEYNAME:    ('federal_districts.zip',
+                                 'Федеральные округа',
+                                 {
+                                     FEDERAL_ID_FIELD: 'Идентификатор',
+                                     FEDERAL_NAME_FIELD: 'Наименование',
+                                     FEDERAL_SHORT_NAME_FIELD: 'Короткое название',
+                                 }
+            ),
             REGIONS_KEYNAME:    ('regions.zip',
                                  'Регионы РФ',
                                  {
