@@ -89,9 +89,6 @@ define([
             
             //load federal data
             this.updateFederalLayer(true);
-
-            //temp!!!
-            //this.updateRegionLayer(true);
         },
         
              
@@ -111,6 +108,9 @@ define([
 
         bindEvents: function () {
             topic.subscribe('LayerLevel/changed', lang.hitch(this, function (newLevel) {
+                //clear table
+                topic.publish('resources/changed', []);
+
                 this.activeLayerLevel = newLevel;
                 this.switchLayersVisibility(newLevel);
                 topic.publish('LayerLevel/switcher_state_changed', this.getSwitcherState());
@@ -144,6 +144,8 @@ define([
         routeFeatureSelect: function(olEvent) {
             //zoom to
             this.map.zoomToExtent(olEvent.feature.geometry.bounds);
+            //clear table
+            topic.publish('resources/changed', []);
             //exec handler
             if(olEvent.feature.layer===this.federalLayer) this.federalObjectSelected(olEvent.feature);
             if(olEvent.feature.layer===this.regionLayer) this.regionObjectSelected(olEvent.feature);
@@ -152,7 +154,6 @@ define([
             this.selectCtrl.unselectAll();
         },
         federalObjectSelected: function(feat) {
-            //TODO:
             // 0. start wait cursor
             this.regionLayer.destroyFeatures();
             this.districtLayer.destroyFeatures();
@@ -162,7 +163,6 @@ define([
             // 4. End wait cursor
         },
         regionObjectSelected: function(feat) {
-            //TODO:
             // 0. start wait cursor
             this.districtLayer.destroyFeatures();
             this.selectedRegion = feat.attributes.reg_id;
@@ -171,10 +171,9 @@ define([
             // 4. End wait cursor
         },
         districtObjectSelected: function(feat) {
-            //TODO:
-            // zoom to
             // 0. start wait cursor
-            // 1. Update table by distr id
+            this.selectedDistrict = feat.attributes.dist_id;
+            this.updateConstructObjectTable();
             // 4. End wait cursor
         },
         
@@ -222,6 +221,19 @@ define([
                 if(zoomTo) {
                     this.map.zoomToExtent(this.districtLayer.getDataExtent());
                 }
+            }))
+            .fail(function() {
+            })
+            .always(function() {
+            });
+        },
+
+        updateConstructObjectTable: function() {
+            $.get( "/compulink/statistic_map/get_district_co", {project_filter: this.filterResourceId, dist_id: this.selectedDistrict})
+            .done(lang.hitch(this, function (data) {
+                var co_res = [];
+                for (var i=0; i<data.length; i++) { co_res.push('res_' + data[i]); }  //ugly hack
+                topic.publish('resources/changed', co_res);
             }))
             .fail(function() {
             })

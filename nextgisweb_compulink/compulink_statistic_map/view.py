@@ -65,6 +65,10 @@ def setup_pyramid(comp, config):
         'compulink.statistic_map.get_district_layer',
         '/compulink/statistic_map/get_district_layer').add_view(get_district_layer)
 
+    config.add_route(
+        'compulink.statistic_map.get_district_co',
+        '/compulink/statistic_map/get_district_co').add_view(get_district_co)
+
 
 
 @view_config(renderer='json')
@@ -371,7 +375,7 @@ def get_district_layer(request):
     reg_id = request.params.get('reg_id', None)
     if reg_id is None:
         raise HTTPBadRequest('Set "reg_id" param!')
-    fed_id = int(reg_id) #todo check
+    reg_id = int(reg_id) #todo check
 
 
     # --- attribute parts
@@ -421,6 +425,51 @@ def get_district_layer(request):
         geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
         content_type=b'application/json',
         content_disposition=content_disposition)
+
+
+
+@view_config(renderer='json')
+def get_district_co(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    project_filter = request.params.get('project_filter', None)
+    if project_filter is None:
+        raise HTTPBadRequest('Set "project_filter" param!')
+
+    dist_id = request.params.get('dist_id', None)
+    if dist_id is None:
+        raise HTTPBadRequest('Set "dist_id" param!')
+    dist_id = int(dist_id) #todo check
+
+
+    # --- attribute parts
+    dbsession = DBSession()
+
+    # filter by rights
+    allowed_res_ids = None
+    if not request.user.is_administrator:
+        allowed_res_ids = get_user_writable_focls(request.user)
+    # filter by struct
+    project_res_ids = None
+    if project_filter and project_filter != 'root':
+        project_res_ids = get_project_focls(project_filter)
+
+    co_query = dbsession.query(ConstructObject.resource_id)
+    if allowed_res_ids:
+        co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
+    if project_res_ids:
+        co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
+
+    co_query = co_query.filter(ConstructObject.district_id==dist_id)
+
+    result = co_query.all()
+    result = list(f[0] for f in result)
+
+    return Response(
+        json.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
+        content_type=b'application/json')
+
 
 
 def get_child_regions_ids(federal_district_id):
