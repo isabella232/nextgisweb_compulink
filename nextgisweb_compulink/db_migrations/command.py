@@ -3,6 +3,7 @@ import json
 
 import codecs
 import os
+from nextgisweb_compulink.db_migrations.link_regions_to_fed import link_regions_to_fed
 from sqlalchemy import Table
 
 from sqlalchemy.orm import joinedload_all
@@ -54,7 +55,8 @@ class DBMigrates():
                                 'copy_existing_real_features',
                                 'copy_existing_real_feat_attaches',
                                 'add_federal_dist_id_field',
-                                'load_federal_dist_dict'
+                                'load_federal_dist_dict',
+                                'link_regions_to_fed'
                             ])
 
     @classmethod
@@ -95,6 +97,8 @@ class DBMigrates():
             add_federal_dist_id_field(args)
         if args.migration == 'load_federal_dist_dict':  # 05.07.2016
             load_federal_dist_dict(args)
+        if args.migration == 'link_regions_to_fed':  # 27.07.2016
+            link_regions_to_fed(args)
 
     @classmethod
     def append_real_layers(cls):
