@@ -39,6 +39,7 @@ define([
     "ngw-webmap/tool/Measure",
     "ngw-compulink-statistic-map/SelectedResourcesTable",
     "ngw-compulink-site/DisplayHeader",
+    "ngw-compulink-site/MapStandBy",
     "ngw-compulink-statistic-map/LayersLoadingIndicator",
     "ngw-compulink-statistic-map/LevelLayersManager",
     "ngw-compulink-statistic-map/StatisticToolbar",
@@ -100,6 +101,7 @@ define([
     ToolMeasure,
     SelectedResourcesTable,
     DisplayHeader,
+    MapStandBy,
     LayersLoadingIndicator,
     LevelLayersManager,
     StatisticToolbar,
@@ -413,6 +415,15 @@ define([
             //events
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
                  this.map.olMap.zoomToExtent(new_ext, false);
+            }));
+
+            topic.subscribe('map/mode/standby', lang.hitch(this, function () {
+                this.mapStandBy = new MapStandBy();
+                this.mapStandBy.show();
+            }));
+
+            topic.subscribe('map/mode/normal', lang.hitch(this, function () {
+                this.mapStandBy.hide();
             }));
         },
 

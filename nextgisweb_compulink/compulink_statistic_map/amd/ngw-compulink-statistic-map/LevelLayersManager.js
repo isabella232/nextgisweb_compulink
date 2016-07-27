@@ -183,6 +183,7 @@ define([
         },
         
         updateFederalLayer: function(zoomTo) {
+           topic.publish('map/mode/standby');
             $.get( "/compulink/statistic_map/get_federal_districts_layer", {project_filter: this.filterResourceId})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
@@ -196,10 +197,12 @@ define([
             .fail(function() {
             })
             .always(function() {
+                topic.publish('map/mode/normal');
             });
         },
 
         updateRegionLayer: function(zoomTo) {
+           topic.publish('map/mode/standby');
             $.get( "/compulink/statistic_map/get_regions_layer", {project_filter: this.filterResourceId, fed_id: this.selectedFederalDist})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
@@ -213,10 +216,12 @@ define([
             .fail(function() {
             })
             .always(function() {
+                topic.publish('map/mode/normal');
             });
         },
 
         updateDistrictLayer: function(zoomTo) {
+            topic.publish('map/mode/standby');
             $.get( "/compulink/statistic_map/get_district_layer", {project_filter: this.filterResourceId, reg_id: this.selectedRegion})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
@@ -230,6 +235,7 @@ define([
             .fail(function() {
             })
             .always(function() {
+                topic.publish('map/mode/normal');
             });
         },
 
