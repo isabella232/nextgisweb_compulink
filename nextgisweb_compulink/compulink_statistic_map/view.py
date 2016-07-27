@@ -56,6 +56,10 @@ def setup_pyramid(comp, config):
         'compulink.statistic_map.get_district_co',
         '/compulink/statistic_map/get_district_co').add_view(get_district_co)
 
+    config.add_route(
+        'compulink.statistic_map.get_region_co',
+        '/compulink/statistic_map/get_region_co').add_view(get_region_co)
+
 
 
 @view_config(renderer='json')
@@ -436,14 +440,33 @@ def get_district_co(request):
         raise HTTPBadRequest('Set "dist_id" param!')
     dist_id = int(dist_id) #todo check
 
+    return _get_co(request.user, project_filter, dist_id=dist_id)
 
+@view_config(renderer='json')
+def get_region_co(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    project_filter = request.params.get('project_filter', None)
+    if project_filter is None:
+        raise HTTPBadRequest('Set "project_filter" param!')
+
+    reg_id = request.params.get('reg_id', None)
+    if reg_id is None:
+        raise HTTPBadRequest('Set "reg_id" param!')
+    reg_id = int(reg_id) #todo check
+
+    return _get_co(request.user, project_filter, reg_id=reg_id)
+
+
+def _get_co(user, project_filter, dist_id=None, reg_id=None):
     # --- attribute parts
     dbsession = DBSession()
 
     # filter by rights
     allowed_res_ids = None
-    if not request.user.is_administrator:
-        allowed_res_ids = get_user_writable_focls(request.user)
+    if not user.is_administrator:
+        allowed_res_ids = get_user_writable_focls(user)
     # filter by struct
     project_res_ids = None
     if project_filter and project_filter != 'root':
@@ -454,8 +477,10 @@ def get_district_co(request):
         co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
     if project_res_ids:
         co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
-
-    co_query = co_query.filter(ConstructObject.district_id==dist_id)
+    if dist_id is not None:
+        co_query = co_query.filter(ConstructObject.district_id==dist_id)
+    if reg_id is not None:
+        co_query = co_query.filter(ConstructObject.region_id==reg_id)
 
     result = co_query.all()
     result = list(f[0] for f in result)

@@ -131,6 +131,7 @@ define([
                     this.updateFederalLayer();
                 }
                 if(this.activeLayerLevel==this.LayerLevels.region) {
+                    // TODO: double map standby!
                     this.updateFederalLayer();
                     this.updateRegionLayer();
                 }
@@ -180,27 +181,22 @@ define([
             this.selectCtrl.unselectAll();
         },
         federalObjectSelected: function(feat) {
-            // 0. start wait cursor
             this.regionLayer.destroyFeatures();
             this.districtLayer.destroyFeatures();
             this.selectedFederalDist = feat.attributes.fed_id;
             this.updateRegionLayer();
             topic.publish('LayerLevel/changed', this.LayerLevels.region);
-            // 4. End wait cursor
         },
         regionObjectSelected: function(feat) {
-            // 0. start wait cursor
             this.districtLayer.destroyFeatures();
             this.selectedRegion = feat.attributes.reg_id;
             this.updateDistrictLayer();
+            this.updateConstructObjectTable();
             topic.publish('LayerLevel/changed', this.LayerLevels.district);
-            // 4. End wait cursor
         },
         districtObjectSelected: function(feat) {
-            // 0. start wait cursor
             this.selectedDistrict = feat.attributes.dist_id;
             this.updateConstructObjectTable();
-            // 4. End wait cursor
         },
         
         updateFederalLayer: function(zoomTo) {
@@ -261,7 +257,18 @@ define([
         },
 
         updateConstructObjectTable: function() {
-            $.get( "/compulink/statistic_map/get_district_co", {project_filter: this.filterResourceId, dist_id: this.selectedDistrict})
+            var url, params;
+
+            if(this.activeLayerLevel == this.LayerLevels.region) {
+                url = "/compulink/statistic_map/get_region_co";
+                params = {project_filter: this.filterResourceId, reg_id: this.selectedRegion}
+            }
+            if(this.activeLayerLevel == this.LayerLevels.district) {
+                url = "/compulink/statistic_map/get_district_co";
+                params = {project_filter: this.filterResourceId, dist_id: this.selectedDistrict}
+            }
+
+            $.get( url, params)
             .done(lang.hitch(this, function (data) {
                 var co_res = [];
                 for (var i=0; i<data.length; i++) { co_res.push('res_' + data[i]); }  //ugly hack
