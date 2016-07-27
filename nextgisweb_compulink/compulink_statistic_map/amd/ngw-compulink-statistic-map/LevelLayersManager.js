@@ -39,12 +39,20 @@ define([
 
             this.regionLayer = new openlayers.Layer.Vector("Region", {
                         projection: new openlayers.Projection("EPSG:3857"),
+                        styleMap: this.getAreaStyle(),
+                        eventListeners: {
+                             'featureselected': lang.hitch(this, this.routeFeatureSelect)
+                        },
                         visible: false
                 });
             this.map.addLayer(this.regionLayer);
 
             this.districtLayer = new openlayers.Layer.Vector("Districts", {
                         projection: new openlayers.Projection("EPSG:3857"),
+                        styleMap: this.getAreaStyle(),
+                        eventListeners: {
+                             'featureselected': lang.hitch(this, this.routeFeatureSelect)
+                        },
                         visible: false
                 });
             this.map.addLayer(this.districtLayer);
@@ -83,7 +91,7 @@ define([
             this.updateFederalLayer(true);
 
             //temp!!!
-            this.updateRegionLayer(true);
+            //this.updateRegionLayer(true);
         },
         
              
@@ -145,19 +153,20 @@ define([
         },
         federalObjectSelected: function(feat) {
             //TODO:
-            // zoom to
             // 0. start wait cursor
-            // 1. Clear reg and distr layers
-            // 2. Update reg data (feat)
+            this.regionLayer.destroyFeatures();
+            this.districtLayer.destroyFeatures();
+            this.selectedFederalDist = feat.attributes.fed_id;
+            this.updateRegionLayer();
             topic.publish('LayerLevel/changed', this.LayerLevels.region);
             // 4. End wait cursor
         },
         regionObjectSelected: function(feat) {
             //TODO:
-            // zoom to
             // 0. start wait cursor
-            // 1. Clear distr layers
-            // 2. Update distr data (feat)
+            this.districtLayer.destroyFeatures();
+            this.selectedRegion = feat.attributes.reg_id;
+            this.updateDistrictLayer();
             topic.publish('LayerLevel/changed', this.LayerLevels.district);
             // 4. End wait cursor
         },
@@ -170,7 +179,7 @@ define([
         },
         
         updateFederalLayer: function(zoomTo) {
-            $.get( "/compulink/statistic_map/get_federal_districts", {project_filter: this.filterResourceId})  //496
+            $.get( "/compulink/statistic_map/get_federal_districts_layer", {project_filter: this.filterResourceId})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -187,7 +196,7 @@ define([
         },
 
         updateRegionLayer: function(zoomTo) {
-            $.get( "http://127.0.0.1:6543/api/resource/496/geojson", {filterId: this.filterResourceId})  //496
+            $.get( "/compulink/statistic_map/get_regions_layer", {project_filter: this.filterResourceId, fed_id: this.selectedFederalDist})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -195,6 +204,23 @@ define([
                 this.regionLayer.addFeatures(features);
                 if(zoomTo) {
                     this.map.zoomToExtent(this.regionLayer.getDataExtent());
+                }
+            }))
+            .fail(function() {
+            })
+            .always(function() {
+            });
+        },
+
+        updateDistrictLayer: function(zoomTo) {
+            $.get( "/compulink/statistic_map/get_district_layer", {project_filter: this.filterResourceId, reg_id: this.selectedRegion})
+            .done(lang.hitch(this, function (data) {
+                var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
+                var features = format.read(data);
+                this.districtLayer.destroyFeatures();
+                this.districtLayer.addFeatures(features);
+                if(zoomTo) {
+                    this.map.zoomToExtent(this.districtLayer.getDataExtent());
                 }
             }))
             .fail(function() {
