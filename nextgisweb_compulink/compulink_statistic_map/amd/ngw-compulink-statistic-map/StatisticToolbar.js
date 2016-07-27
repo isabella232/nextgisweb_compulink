@@ -49,6 +49,13 @@ define([
             on(this.districtLevelButton, 'click', function() {
                 topic.publish('LayerLevel/changed', 1);  //TODO: change to enum!
             });
+
+            on(this.buildingObjectsSelect, 'change', lang.hitch(this, function() {
+                if (this.buildingObjectsSelect.get('value')) {
+                    var resource_id = this.buildingObjectsSelect.get('value').replace('res_', '');
+                    topic.publish('ProjectFilter/changed', resource_id);
+                }
+            }));
             
             topic.subscribe('LayerLevel/switcher_state_changed', lang.hitch(this, function (switchersStates) {
                 this.federalLevelButton.set('disabled', !switchersStates.federal.enabled);
@@ -61,7 +68,6 @@ define([
                 this.districtLevelButton.set('checked', switchersStates.district.active);
 
             }));
-            //registry.byId('selectAndMoveButton');
         }
     });
 });

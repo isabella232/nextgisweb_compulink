@@ -412,13 +412,14 @@ define([
             this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable', this);
             this._startupDeferred.resolve();
 
+            this.mapStandBy = new MapStandBy();
+
             //events
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
                  this.map.olMap.zoomToExtent(new_ext, false);
             }));
 
             topic.subscribe('map/mode/standby', lang.hitch(this, function () {
-                this.mapStandBy = new MapStandBy();
                 this.mapStandBy.show();
             }));
 

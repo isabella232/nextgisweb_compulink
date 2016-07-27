@@ -120,6 +120,27 @@ define([
                 this.switchLayersVisibility(newLevel);
                 topic.publish('LayerLevel/switcher_state_changed', this.getSwitcherState());
             }));
+
+            topic.subscribe('ProjectFilter/changed', lang.hitch(this, function (res_id) {
+                //clear table
+                topic.publish('resources/changed', []);
+
+                this.filterResourceId = res_id;
+
+                if(this.activeLayerLevel==this.LayerLevels.federal) {
+                    this.updateFederalLayer();
+                }
+                if(this.activeLayerLevel==this.LayerLevels.region) {
+                    this.updateFederalLayer();
+                    this.updateRegionLayer();
+                }
+                if(this.activeLayerLevel==this.LayerLevels.district) {
+                    this.updateFederalLayer();
+                    this.updateRegionLayer();
+                    this.updateDistrictLayer();
+                }
+            }));
+
         },
 
         switchLayersVisibility: function(newLevel) {
