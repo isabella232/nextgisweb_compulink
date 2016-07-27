@@ -1,52 +1,39 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import json
-from datetime import date, datetime
-from dateutil.relativedelta import relativedelta
-import os
-from nextgisweb_compulink.compulink_reporting.view import get_user_writable_focls, get_project_focls
-from os import path, mkdir
-from shutil import rmtree
-import tempfile
-from zipfile import ZipFile, ZIP_DEFLATED
-import codecs
+
 import geojson
-from osgeo import ogr
-from shapely.geometry import shape, mapping
-from shapely.wkt import loads
-from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPBadRequest
-from pyramid.renderers import render_to_response
-from pyramid.response import Response, FileResponse
-from pyramid.view import view_config
-from sqlalchemy.orm import joinedload_all
-import sqlalchemy.sql as sql
-import subprocess
-from nextgisweb import DBSession, db
-from nextgisweb.feature_layer.view import PD_READ, ComplexEncoder
+from nextgisweb import DBSession
+from nextgisweb.feature_layer.view import ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
-from nextgisweb.vector_layer import VectorLayer, TableInfo
-from nextgisweb_compulink.compulink_reporting.utils import OverdueStatusCalculator
-from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
-    OBJECTS_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
-from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT, FoclStructScope, Region, District, ConstructObject, FederalDistrict
-from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME, FEDERAL_KEYNAME, REGIONS_KEYNAME, \
-    REGIONS_ID_FIELD, DISTRICT_KEYNAME
-from .. import compulink_admin
-from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
-    get_districts_from_resource, get_project_statuses
+from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUS_PROJECT, PROJECT_STATUS_IN_PROGRESS
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
-from nextgisweb_compulink.compulink_site import COMP_ID
-from nextgisweb_log.model import LogEntry, LogLevels
-from nextgisweb_lookuptable.model import LookupTable
-from nextgisweb_compulink.compulink_admin.reference_books.views.ReferenceBookViewBase import ReferenceBookViewBase
-from nextgisweb_compulink.compulink_admin.reference_books.dgrid_viewmodels import construct_objects_dgrid_viewmodel
+from nextgisweb_compulink.compulink_reporting.view import get_user_writable_focls, get_project_focls, _is_overdue, \
+    _is_month_overdue
+from os import path
+from pyramid.httpexceptions import HTTPForbidden, HTTPBadRequest
+from pyramid.renderers import render_to_response
+from pyramid.response import Response
+from pyramid.view import view_config
+from sqlalchemy.orm import joinedload_all
+
+from .. import compulink_admin
+from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, Region, District, ConstructObject, FederalDistrict
+from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME, FEDERAL_KEYNAME, REGIONS_KEYNAME, \
+    DISTRICT_KEYNAME
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 PERM_READ = DataScope.read
 
+# COLORS
+COLOR_GREEN = 'LightGreen'
+COLOR_YELLOW = 'Yellow'
+COLOR_PINK = 'Coral'
+COLOR_RED = 'Red'
+COLOR_GRAY = '#A0A0A0'
 
 def setup_pyramid(comp, config):
     config.add_route(
@@ -269,14 +256,16 @@ def get_federal_districts_layer(request):
 
     fd_colors = {}
     for fd in fds:
-        co_query = dbsession.query(ConstructObject)
-        if allowed_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
-        if project_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
+        co_query = dbsession.query(ConstructionStatusReport, ConstructObject)\
+        .outerjoin(ConstructObject, ConstructObject.resource_id == ConstructionStatusReport.focl_res_id)
+
+        if allowed_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+        if project_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(project_res_ids))
         # all regions in fd
         regions_ids = get_child_regions_ids(fd.id)
-        co_query = co_query.filter(ConstructObject.region_id.in_(regions_ids))
+        co_query = co_query.filter(ConstructionStatusReport.region.in_(regions_ids))
 
         construct_objects = co_query.all()
 
@@ -289,7 +278,7 @@ def get_federal_districts_layer(request):
     result = ColorizeProxy(query())
 
     # --- merge result
-    result.colorize(lambda feat: fd_colors[feat['properties']['fed_id']] if feat['properties']['fed_id'] in fd_colors.keys() else '#A0A0A0')
+    result.colorize(lambda feat: fd_colors[feat['properties']['fed_id']] if feat['properties']['fed_id'] in fd_colors.keys() else COLOR_GRAY)
 
     # --- return
     content_disposition = (b'attachment; filename=%s.geojson'
@@ -298,6 +287,7 @@ def get_federal_districts_layer(request):
         geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
         content_type=b'application/json',
         content_disposition=content_disposition)\
+
 
 @view_config(renderer='json')
 def get_regions_layer(request):
@@ -331,13 +321,15 @@ def get_regions_layer(request):
 
     region_colors = {}
     for region in regions:
-        co_query = dbsession.query(ConstructObject)
-        if allowed_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
-        if project_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
+        co_query = dbsession.query(ConstructionStatusReport, ConstructObject)\
+        .outerjoin(ConstructObject, ConstructObject.resource_id == ConstructionStatusReport.focl_res_id)
 
-        co_query = co_query.filter(ConstructObject.region_id==region.id)
+        if allowed_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+        if project_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(project_res_ids))
+
+        co_query = co_query.filter(ConstructionStatusReport.region==region.id)
 
         construct_objects = co_query.all()
 
@@ -352,7 +344,7 @@ def get_regions_layer(request):
     result.filter(lambda feat: feat['properties']['reg_id'] in regions_ids)
 
     # --- merge result
-    result.colorize(lambda feat: region_colors[feat['properties']['reg_id']] if feat['properties']['reg_id'] in region_colors.keys() else '#A0A0A0')
+    result.colorize(lambda feat: region_colors[feat['properties']['reg_id']] if feat['properties']['reg_id'] in region_colors.keys() else COLOR_GRAY)
 
     # --- return
     content_disposition = (b'attachment; filename=%s.geojson'
@@ -395,13 +387,15 @@ def get_district_layer(request):
 
     district_colors = {}
     for district in districts:
-        co_query = dbsession.query(ConstructObject)
-        if allowed_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
-        if project_res_ids:
-            co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
+        co_query = dbsession.query(ConstructionStatusReport, ConstructObject)\
+        .outerjoin(ConstructObject, ConstructObject.resource_id == ConstructionStatusReport.focl_res_id)
 
-        co_query = co_query.filter(ConstructObject.district_id==district.id)
+        if allowed_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(allowed_res_ids))
+        if project_res_ids is not None:
+            co_query = co_query.filter(ConstructionStatusReport.focl_res_id.in_(project_res_ids))
+
+        co_query = co_query.filter(ConstructionStatusReport.district==district.id)
 
         construct_objects = co_query.all()
 
@@ -416,7 +410,7 @@ def get_district_layer(request):
     result.filter(lambda feat: feat['properties']['dist_id'] in districts_ids)
 
     # --- merge result
-    result.colorize(lambda feat: district_colors[feat['properties']['dist_id']] if feat['properties']['dist_id'] in district_colors.keys() else '#A0A0A0')
+    result.colorize(lambda feat: district_colors[feat['properties']['dist_id']] if feat['properties']['dist_id'] in district_colors.keys() else COLOR_GRAY)
 
     # --- return
     content_disposition = (b'attachment; filename=%s.geojson'
@@ -471,14 +465,38 @@ def get_district_co(request):
         content_type=b'application/json')
 
 
-
 def get_child_regions_ids(federal_district_id):
     #TODO: check
     dbsession = DBSession()
     ids = dbsession.query(Region.id).filter(Region.federal_dist_id==federal_district_id)
     return list(ids.all())
 
+
 def get_color_for_co(construct_objects):
-    colors = ['LightGreen', 'yellow', 'coral', 'red']
-    import random
-    return colors[random.randint(0, 3)]
+
+    if not construct_objects:
+        return COLOR_GRAY
+
+    active_color = COLOR_GREEN
+
+    for report, const_obj in construct_objects:
+        if report.status not in (PROJECT_STATUS_PROJECT, PROJECT_STATUS_IN_PROGRESS):
+            continue
+
+        is_month_overdue = _is_month_overdue(const_obj.end_build_date, report.status)
+        if is_month_overdue:
+            active_color = COLOR_RED
+            return active_color
+
+        is_overdue = _is_overdue(const_obj.end_build_date, report.status)
+        if is_overdue:
+            active_color = COLOR_PINK
+        else:
+            if active_color != COLOR_PINK:
+                active_color = COLOR_YELLOW #temp! need add to sum percentage
+
+    # check 15%
+
+    return active_color
+
+
