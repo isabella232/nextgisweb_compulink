@@ -64,9 +64,9 @@ define([
                     hover: true,
                     highlightOnly: true,
                     renderIntent: "temporary"
-                    // ,eventListeners: {
-                    //     beforefeaturehighlighted: this.showQtip
-                    // }
+                    ,eventListeners: {
+                        beforefeaturehighlighted: this.showTooltip //showQtip
+                    }
             });
 
             this.selectCtrl = new openlayers.Control.SelectFeature(
@@ -91,7 +91,12 @@ define([
             this.updateFederalLayer(true);
         },
         
-             
+
+        showTooltip: function(olEvent){
+            var elem = document.getElementById(olEvent.feature.geometry.components[0].id);
+            $(elem).tooltip({content: olEvent.feature.attributes.name}).show();
+        },
+
         showQtip: function(olEvent){
             var elem = document.getElementById(olEvent.feature.geometry.components[0].id);
         
@@ -253,18 +258,19 @@ define([
             });
 
             var selectStyle = new OpenLayers.Style({
-                'pointRadius': 20
             });
 
             var highlightStyle = new OpenLayers.Style({
-                'pointRadius': 20
+                'fillColor': '${color}',
+                'fillOpacity': 0.6,
+                'strokeWidth': 2,
+                'strokeColor': '#66CCCC'
             });
 
             var styleMap = new OpenLayers.StyleMap({
-                'default': defaultStyle
-                // ,
+                'default': defaultStyle,
                 // 'select': selectStyle,
-                // 'temporary': highlightStyle
+                'temporary': highlightStyle
             });
 
             return styleMap;
