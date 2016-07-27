@@ -4,6 +4,7 @@ import json
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 import os
+from nextgisweb_compulink.compulink_reporting.view import get_user_writable_focls, get_project_focls
 from os import path, mkdir
 from shutil import rmtree
 import tempfile
@@ -29,8 +30,8 @@ from nextgisweb_compulink.compulink_reporting.utils import OverdueStatusCalculat
 from ..compulink_admin.layers_struct_group import FOCL_LAYER_STRUCT, SIT_PLAN_LAYER_STRUCT, FOCL_REAL_LAYER_STRUCT,\
     OBJECTS_LAYER_STRUCT, ACTUAL_FOCL_REAL_LAYER_STRUCT
 from ..compulink_admin.model import SituationPlan, FoclStruct, FoclProject, PROJECT_STATUS_DELIVERED, \
-    PROJECT_STATUS_BUILT, FoclStructScope, Region, District, ConstructObject
-from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
+    PROJECT_STATUS_BUILT, FoclStructScope, Region, District, ConstructObject, FederalDistrict
+from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME, FEDERAL_KEYNAME
 from .. import compulink_admin
 from ..compulink_admin.view import get_region_name, get_district_name, get_regions_from_resource, \
     get_districts_from_resource, get_project_statuses
@@ -43,12 +44,17 @@ from nextgisweb_compulink.compulink_admin.reference_books.dgrid_viewmodels impor
 
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
+PERM_READ = DataScope.read
 
 
 def setup_pyramid(comp, config):
     config.add_route(
         'compulink.statistic_map.map',
         '/compulink/statistic_map').add_view(show_map)
+
+    config.add_route(
+        'compulink.statistic_map.get_federal_districts',
+        '/compulink/statistic_map/get_federal_districts').add_view(get_federal_districts)
 
 
 @view_config(renderer='json')
@@ -201,3 +207,89 @@ def get_regions_tree(request):
     dbsession.close()
 
     return Response(json.dumps(child_json))
+
+
+@view_config(renderer='json')
+def get_federal_districts(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+
+    project_filter = request.params.get('project_filter', None)
+    if project_filter is None:
+        raise HTTPBadRequest('Set "project_filter" param!')
+
+    # --- attribute parts
+    dbsession = DBSession()
+    # all FD
+    fds = dbsession.query(FederalDistrict).order_by(FederalDistrict.name).all()
+    # filter by rights
+    allowed_res_ids = None
+    if not request.user.is_administrator:
+        allowed_res_ids = get_user_writable_focls(request.user)
+    # filter by struct
+    project_res_ids = None
+    if project_filter and project_filter != 'root':
+        project_res_ids = get_project_focls(project_filter)
+
+    fd_colors = {}
+    for fd in fds:
+        co_query = dbsession.query(ConstructObject)
+        if allowed_res_ids:
+            co_query = co_query.filter(ConstructObject.resource_id.in_(allowed_res_ids))
+        if project_res_ids:
+            co_query = co_query.filter(ConstructObject.resource_id.in_(project_res_ids))
+        # all regions in fd
+        regions_ids = get_child_regions_ids(fd.id)
+        if regions_ids: # temp
+            co_query = co_query.filter(ConstructObject.region_id.in_(regions_ids))
+        construct_objects = co_query.all()
+
+        fd_colors[fd.id] = get_color_for_co(construct_objects)
+
+
+
+    # --- geometry part
+    class ColorizeProxy(object):
+
+        def __init__(self, query):
+            self.query = query
+            self.result = self.query.__geo_interface__
+
+            self.result['crs'] = dict(type='name', properties=dict(
+                name='EPSG:3857'))
+
+        def colorize(self, color_func):
+            for feat in self.result['features']:
+                feat['properties']['color'] = color_func(feat)
+
+        @property
+        def __geo_interface__(self):
+            return self.result
+
+    geom_dict_resource = dbsession.query(Resource).filter(Resource.keyname == FEDERAL_KEYNAME).one()
+    query = geom_dict_resource.feature_query()
+    query.geom()
+    result = ColorizeProxy(query())
+
+    # --- merge result
+    result.colorize(lambda feat: fd_colors[feat['properties']['fed_id']] if feat['properties']['fed_id'] in fd_colors.keys() else '#A0A0A0')
+
+    # --- return
+    content_disposition = (b'attachment; filename=%s.geojson'
+                           % FEDERAL_KEYNAME)
+    return Response(
+        geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
+        content_type=b'application/json',
+        content_disposition=content_disposition)
+
+
+def get_child_regions_ids(federal_district_id):
+    #TODO: check
+    dbsession = DBSession()
+    ids = dbsession.query(Region.id).filter(Region.federal_dist_id==federal_district_id)
+    return list(ids.all())
+
+def get_color_for_co(construct_objects):
+    colors = ['LightGreen', 'yellow', 'coral', 'red']
+    import random
+    return colors[random.randint(0, 3)]

@@ -25,35 +25,17 @@ define([
             this.selectedFederalDist = null;
             this.selectedRegion = null;
             this.selectedDistrict = null;
-            this.filterResourceId = 0;
+            this.filterResourceId = 'root';
 
             //create layers
             this.federalLayer = new openlayers.Layer.Vector("Federal", {
-                        projection: new openlayers.Projection("EPSG:3857")
+                        projection: new openlayers.Projection("EPSG:3857"),
+                        styleMap: this.getAreaStyle(),
+                        eventListeners: {
+                             'featureselected': lang.hitch(this, this.routeFeatureSelect)
+                        }
                 });
             this.map.addLayer(this.federalLayer);
-
-            this.federalHighlight= new openlayers.Control.SelectFeature(this.federalLayer, {
-                hover: true,
-                highlightOnly: true,
-                renderIntent: "temporary",
-                eventListeners: {
-                    beforefeaturehighlighted: this.showQtip
-                }
-            });
-            
-            this.federalSelect = new openlayers.Control.SelectFeature(this.federalLayer,
-                {
-                    clickout: true
-                }
-            );
-
-            this.map.addControl(this.federalHighlight);
-            this.map.addControl(this.federalSelect);
-
-            this.federalHighlight.activate();
-            this.federalSelect.activate();
-
 
             this.regionLayer = new openlayers.Layer.Vector("Region", {
                         projection: new openlayers.Projection("EPSG:3857"),
@@ -67,6 +49,30 @@ define([
                 });
             this.map.addLayer(this.districtLayer);
 
+            //select controls
+            this.highlightCtrl= new openlayers.Control.SelectFeature(
+                [this.federalLayer, this.regionLayer, this.districtLayer],
+                {
+                    hover: true,
+                    highlightOnly: true,
+                    renderIntent: "temporary"
+                    // ,eventListeners: {
+                    //     beforefeaturehighlighted: this.showQtip
+                    // }
+            });
+
+            this.selectCtrl = new openlayers.Control.SelectFeature(
+                [this.federalLayer, this.regionLayer, this.districtLayer],
+                {clickout: true}
+            );
+
+            this.map.addControl(this.highlightCtrl);
+            this.map.addControl(this.selectCtrl);
+
+            this.highlightCtrl.activate();
+            this.selectCtrl.activate();
+
+
             //bind events
             this.bindEvents();
 
@@ -75,16 +81,23 @@ define([
             
             //load federal data
             this.updateFederalLayer(true);
+
+            //temp!!!
+            this.updateRegionLayer(true);
         },
         
              
         showQtip: function(olEvent){
-            var elem = document.getElementById(olEvent.feature.geometry.id);
+            var elem = document.getElementById(olEvent.feature.geometry.components[0].id);
         
             $(elem).qtip({
-                overwrite: false,
+                overwrite: true,
                 content: olEvent.feature.attributes.name,
-                show: { ready: true }
+                show: { ready: true },
+                position: {
+                    my: "top center",
+                    at: "center center"
+                }
             }).qtip('show');
         },
 
@@ -97,9 +110,9 @@ define([
         },
 
         switchLayersVisibility: function(newLevel) {
-            this.federalLayer.visible = newLevel==this.LayerLevels.federal;
-            this.regionLayer.visible = newLevel==this.LayerLevels.region;
-            this.districtLayer.visible = newLevel==this.LayerLevels.district;
+            this.federalLayer.setVisibility(newLevel==this.LayerLevels.federal);
+            this.regionLayer.setVisibility(newLevel==this.LayerLevels.region);
+            this.districtLayer.setVisibility(newLevel==this.LayerLevels.district);
         },
 
         getSwitcherState: function() {
@@ -119,32 +132,45 @@ define([
             }
         },
 
+
+        routeFeatureSelect: function(olEvent) {
+            //zoom to
+            this.map.zoomToExtent(olEvent.feature.geometry.bounds);
+            //exec handler
+            if(olEvent.feature.layer===this.federalLayer) this.federalObjectSelected(olEvent.feature);
+            if(olEvent.feature.layer===this.regionLayer) this.regionObjectSelected(olEvent.feature);
+            if(olEvent.feature.layer===this.districtLayer) this.districtObjectSelected(olEvent.feature);
+            //deselect all
+            this.selectCtrl.unselectAll();
+        },
         federalObjectSelected: function(feat) {
             //TODO:
+            // zoom to
             // 0. start wait cursor
             // 1. Clear reg and distr layers
             // 2. Update reg data (feat)
-            // 3. topic.publish('LayerLevel/changed', this.LayerLevels.region);
+            topic.publish('LayerLevel/changed', this.LayerLevels.region);
             // 4. End wait cursor
         },
         regionObjectSelected: function(feat) {
             //TODO:
+            // zoom to
             // 0. start wait cursor
             // 1. Clear distr layers
             // 2. Update distr data (feat)
-            // 3. topic.publish('LayerLevel/changed', this.LayerLevels.district);
+            topic.publish('LayerLevel/changed', this.LayerLevels.district);
             // 4. End wait cursor
         },
         districtObjectSelected: function(feat) {
             //TODO:
+            // zoom to
             // 0. start wait cursor
             // 1. Update table by distr id
             // 4. End wait cursor
         },
         
         updateFederalLayer: function(zoomTo) {
-
-            $.get( "http://127.0.0.1:6543/api/resource/496/geojson", {filterId: this.filterResourceId})
+            $.get( "/compulink/statistic_map/get_federal_districts", {project_filter: this.filterResourceId})  //496
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -155,11 +181,54 @@ define([
                 }
             }))
             .fail(function() {
-                alert( "error" );
             })
             .always(function() {
-                alert( "finished" );
             });
+        },
+
+        updateRegionLayer: function(zoomTo) {
+            $.get( "http://127.0.0.1:6543/api/resource/496/geojson", {filterId: this.filterResourceId})  //496
+            .done(lang.hitch(this, function (data) {
+                var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
+                var features = format.read(data);
+                this.regionLayer.destroyFeatures();
+                this.regionLayer.addFeatures(features);
+                if(zoomTo) {
+                    this.map.zoomToExtent(this.regionLayer.getDataExtent());
+                }
+            }))
+            .fail(function() {
+            })
+            .always(function() {
+            });
+        },
+
+        getAreaStyle: function() {
+            var defaultStyle = new OpenLayers.Style({
+                'fillColor': '${color}',
+                'strokeColor': '${color}',
+                'fillOpacity': 0.4
+                //, 'label' : "${short_name}",
+                // 'fontColor': 'black',
+                // 'labelOutlineColor': 'white'
+            });
+
+            var selectStyle = new OpenLayers.Style({
+                'pointRadius': 20
+            });
+
+            var highlightStyle = new OpenLayers.Style({
+                'pointRadius': 20
+            });
+
+            var styleMap = new OpenLayers.StyleMap({
+                'default': defaultStyle
+                // ,
+                // 'select': selectStyle,
+                // 'temporary': highlightStyle
+            });
+
+            return styleMap;
         }
     });
 });
