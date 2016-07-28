@@ -48,7 +48,8 @@ ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 def setup_pyramid(comp, config):
     config.add_route(
         'compulink.site.map',
-        '/compulink/monitoring_map').add_view(show_map)
+        '/compulink/monitoring_map',
+        client=()).add_view(show_map)
 
     config.add_route(
         'compulink.site.json',

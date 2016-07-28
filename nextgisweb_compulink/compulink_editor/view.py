@@ -54,11 +54,13 @@ def setup_pyramid(comp, config):
     # todo: check URL's
     config.add_route(
         'compulink.editor.map',
-        '/compulink/editor').add_view(show_map)
+        '/compulink/editor',
+        client=()).add_view(show_map)
 
     config.add_route(
         'compulink.player.map',
-        '/compulink/player').add_view(show_map_player)
+        '/compulink/player',
+        client=()).add_view(show_map_player)
 
     config.add_route(
         'compulink.editor.json',
