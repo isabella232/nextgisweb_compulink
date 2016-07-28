@@ -117,7 +117,7 @@ define([
                 },
                 hide: {
                     //target: targets, //$('[id^=OpenLayers_Geometry_Polygon_]'),
-                    //inactive: 2000
+                    inactive: 2000
                 },
                 style: {
                    classes: 'qtip-blue qtip-shadow qtip-rounded'
