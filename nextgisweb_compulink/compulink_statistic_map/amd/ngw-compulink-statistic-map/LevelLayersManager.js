@@ -5,9 +5,10 @@ define([
     'dojo/Deferred',
     'dojo/request/xhr',
     'dojo/on',
+    'ngw/route',
     'dijit/registry',
     'ngw/openlayers'
-], function (declare, lang, topic, Deferred, xhr, on, registry, openlayers) {
+], function (declare, lang, topic, Deferred, xhr, on, route, registry, openlayers) {
     return declare([], {
         settings: {},
 
@@ -201,7 +202,7 @@ define([
         
         updateFederalLayer: function(zoomTo) {
            topic.publish('map/mode/standby');
-            $.get( "/compulink/statistic_map/get_federal_districts_layer", {project_filter: this.filterResourceId})
+            $.get(route.compulink.statistic_map.get_federal_districts_layer(), {project_filter: this.filterResourceId})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -220,7 +221,7 @@ define([
 
         updateRegionLayer: function(zoomTo) {
            topic.publish('map/mode/standby');
-            $.get( "/compulink/statistic_map/get_regions_layer", {project_filter: this.filterResourceId, fed_id: this.selectedFederalDist})
+            $.get(route.compulink.statistic_map.get_regions_layer(), {project_filter: this.filterResourceId, fed_id: this.selectedFederalDist})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -239,7 +240,7 @@ define([
 
         updateDistrictLayer: function(zoomTo) {
             topic.publish('map/mode/standby');
-            $.get( "/compulink/statistic_map/get_district_layer", {project_filter: this.filterResourceId, reg_id: this.selectedRegion})
+            $.get(route.compulink.statistic_map.get_district_layer(), {project_filter: this.filterResourceId, reg_id: this.selectedRegion})
             .done(lang.hitch(this, function (data) {
                 var format = new openlayers.Format.GeoJSON({ignoreExtraDims: true});
                 var features = format.read(data);
@@ -260,11 +261,11 @@ define([
             var url, params;
 
             if(this.activeLayerLevel == this.LayerLevels.region) {
-                url = "/compulink/statistic_map/get_region_co";
+                url = route.compulink.statistic_map.get_region_co();
                 params = {project_filter: this.filterResourceId, reg_id: this.selectedRegion}
             }
             if(this.activeLayerLevel == this.LayerLevels.district) {
-                url = "/compulink/statistic_map/get_district_co";
+                url = route.compulink.statistic_map.get_district_co();
                 params = {project_filter: this.filterResourceId, dist_id: this.selectedDistrict}
             }
 

@@ -42,23 +42,28 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink.statistic_map.get_federal_districts_layer',
-        '/compulink/statistic_map/get_federal_districts_layer').add_view(get_federal_districts_layer)
+        '/compulink/statistic_map/get_federal_districts_layer',
+        client=()).add_view(get_federal_districts_layer)
 
     config.add_route(
         'compulink.statistic_map.get_regions_layer',
-        '/compulink/statistic_map/get_regions_layer').add_view(get_regions_layer)
+        '/compulink/statistic_map/get_regions_layer',
+        client=()).add_view(get_regions_layer)
 
     config.add_route(
         'compulink.statistic_map.get_district_layer',
-        '/compulink/statistic_map/get_district_layer').add_view(get_district_layer)
+        '/compulink/statistic_map/get_district_layer',
+        client=()).add_view(get_district_layer)
 
     config.add_route(
         'compulink.statistic_map.get_district_co',
-        '/compulink/statistic_map/get_district_co').add_view(get_district_co)
+        '/compulink/statistic_map/get_district_co',
+        client=()).add_view(get_district_co)
 
     config.add_route(
         'compulink.statistic_map.get_region_co',
-        '/compulink/statistic_map/get_region_co').add_view(get_region_co)
+        '/compulink/statistic_map/get_region_co',
+        client=()).add_view(get_region_co)
 
 
 
