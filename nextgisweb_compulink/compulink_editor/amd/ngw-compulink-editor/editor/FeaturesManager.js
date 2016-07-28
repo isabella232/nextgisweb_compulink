@@ -286,7 +286,7 @@ define([
             }));
 
             if (this.settings.zoomToHidingPoints) {
-                this._map.olMap.events.register('zoomend', this._map.olMap, 
+                this._map.olMap.events.register('zoomend', this._map.olMap,
                     lang.hitch(this, this.handlePointsVisibilityByZoom));
             }
         },
@@ -319,7 +319,7 @@ define([
         setPointsVisibility: function (visibility) {
             array.forEach(this.getLayer().features, function (feature) {
                 if (feature.attributes.keyname === 'actual_real_optical_cable_point' ||
-                        feature.attributes.keyname === 'actual_real_special_transition_point') {
+                    feature.attributes.keyname === 'actual_real_special_transition_point') {
                     if (visibility) {
                         delete feature.style['display'];
                     } else {
@@ -336,8 +336,60 @@ define([
             this._selectedFeature = feature;
             var clonedFeature = feature.clone();
             this._modifyLayer.addFeatures(clonedFeature);
+            this._createSkecthLinesForPoint(clonedFeature);
             this._modify.activate();
             this._modify.selectFeature(clonedFeature);
+        },
+
+        _createSkecthLinesForPoint: function (targetPointFeature) {
+            if (!this.isPoint(targetPointFeature.geometry)) {
+                return false;
+            }
+
+            var relativeLines = [],
+                geometryId,
+                pointStartEqualsResult,
+                pointEndEqualsResult,
+                clonedFeatureRelativeLine,
+                relativeVertexIndex,
+                relativeVertex;
+
+            array.forEach(this.getLayer().features, function (feature) {
+                geometryId = feature.geometry.id;
+                if (geometryId.indexOf('Line') > -1) {
+                    pointStartEqualsResult = this._pointEquals(feature.geometry.components[0].components[0],
+                        [{old: targetPointFeature.geometry.components[0]}]);
+                    pointEndEqualsResult = this._pointEquals(feature.geometry.components[0].components[1],
+                        [{old: targetPointFeature.geometry.components[0]}]);
+
+                    if (pointStartEqualsResult || pointEndEqualsResult) {
+                        clonedFeatureRelativeLine = feature.clone(feature);
+                        this._modifyLayer.addFeatures(clonedFeatureRelativeLine);
+                        relativeVertexIndex = pointStartEqualsResult ? 0 : 1;
+                        relativeLines.push({
+                            feature: clonedFeatureRelativeLine,
+                            relativeVertex: clonedFeatureRelativeLine.geometry.components[0].components[relativeVertexIndex]
+                        });
+                    }
+                }
+            }, this);
+
+
+            this._modifyLayer.events.register('vertexmodified', this._modifyLayer,
+                lang.hitch(this, function (event) {
+                    this._updateVertexSkecthLines(event.feature, relativeLines);
+                }));
+
+            return relativeLines;
+        },
+
+        _updateVertexSkecthLines: function (featurePoint, relativeLines) {
+            var geometryPoint = featurePoint.geometry.components[0];
+            array.forEach(relativeLines, function (line) {
+                line.relativeVertex.x = geometryPoint.x;
+                line.relativeVertex.y = geometryPoint.y;
+                this._modifyLayer.redraw();
+            }, this);
         },
 
         _unselectFeature: function (feature) {
@@ -756,11 +808,11 @@ define([
                 var geometryId = feature.geometry.id,
                     relativeFeature = null;
                 if (geometryId.indexOf('Point') > -1) {
-                    if (this.checkRelativePoint(feature.geometry.components[0], pointsAffected)) {
+                    if (this.redrawRelativePoint(feature.geometry.components[0], pointsAffected)) {
                         relativeFeature = feature;
                     }
                 } else if (geometryId.indexOf('Line') > -1) {
-                    if (this.checkRelativeLine(feature.geometry.components[0], pointsAffected)) {
+                    if (this.redrawRelativeLine(feature.geometry.components[0], pointsAffected)) {
                         relativeFeature = feature;
                     }
                 }
@@ -769,7 +821,7 @@ define([
             return relativeFeatures;
         },
 
-        checkRelativePoint: function (point, pointsAffected) {
+        redrawRelativePoint: function (point, pointsAffected) {
             var pointEqualsResult = this._pointEquals(point, pointsAffected);
             if (pointEqualsResult) {
                 point.x = pointEqualsResult.current.x;
@@ -780,7 +832,7 @@ define([
             return false;
         },
 
-        checkRelativeLine: function (line, pointsAffected) {
+        redrawRelativeLine: function (line, pointsAffected) {
             var pointStartEqualsResult = this._pointEquals(line.components[0], pointsAffected),
                 pointEndEqualsResult = this._pointEquals(line.components[1], pointsAffected),
                 needRedraw = false;
