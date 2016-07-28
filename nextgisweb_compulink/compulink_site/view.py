@@ -539,7 +539,8 @@ def get_object_extent(request):
         return Response('[]')
 
     if None in (object_num, object_type):
-        return {'extent': get_extent_by_resource_id(resource_id)}
+        resp = {'extent': get_extent_by_resource_id(resource_id)}
+        return Response(json.dumps(resp))
 
     extent = get_extent_by_objext_num(resource_id, object_type, object_num)
     if not extent:

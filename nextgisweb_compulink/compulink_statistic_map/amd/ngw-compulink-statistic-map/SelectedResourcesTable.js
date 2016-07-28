@@ -72,13 +72,12 @@ define([
 
             });
 
-
             this._menu.addChild(new MenuItem({
                 label: 'Открыть объект',
                 onClick: lang.hitch(this, function (evt) {
                     var res_id = Object.getOwnPropertyNames(this._grid.selection )[0];
                     var url = route.compulink.site.map() +
-                    '?layers=design_layers&resource_id=' + res_id;
+                    '?resource_id=' + res_id;
                     window.open(url);
 
 

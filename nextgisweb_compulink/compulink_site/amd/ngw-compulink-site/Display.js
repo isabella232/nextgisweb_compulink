@@ -428,14 +428,17 @@ define([
         },
 
         setExtentByResource: function () {
-            if (!this._urlParams['resource_id'] ||
-                !this._urlParams['object_type'] ||
-                !this._urlParams['object_num']) {
+            if (!this._urlParams['resource_id']){
                 return false;
             }
             var getExtentUrl = ngwConfig.applicationUrl + '/compulink/resources/object_extent?resource_id=' +
-                    this._urlParams['resource_id'] + '&object_type=' + this._urlParams['object_type'] +
-                    '&object_num=' + this._urlParams['object_num'];
+                    this._urlParams['resource_id']
+
+            if(this._urlParams['object_type'])
+                getExtentUrl += '&object_type=' + this._urlParams['object_type'];
+            if(this._urlParams['object_num'])
+                getExtentUrl += '&object_num=' + this._urlParams['object_num'];
+
             xhr(getExtentUrl, {
                 handleAs: 'json'
             }).then(lang.hitch(this, function (result) {
