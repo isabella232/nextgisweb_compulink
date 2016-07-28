@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/topic',
     'dojo/Deferred',
     'dojo/request/xhr',
@@ -8,7 +9,7 @@ define([
     'ngw/route',
     'dijit/registry',
     'ngw/openlayers'
-], function (declare, lang, topic, Deferred, xhr, on, route, registry, openlayers) {
+], function (declare, lang, array, topic, Deferred, xhr, on, route, registry, openlayers) {
     return declare([], {
         settings: {},
 
@@ -66,7 +67,7 @@ define([
                     highlightOnly: true,
                     renderIntent: "temporary"
                     ,eventListeners: {
-                        beforefeaturehighlighted: this.showTooltip //showQtip
+                        beforefeaturehighlighted: this.showQtip //.showTooltip //showQtip
                     }
             });
 
@@ -92,22 +93,34 @@ define([
             this.updateFederalLayer(true);
         },
         
-
-        showTooltip: function(olEvent){
-            var elem = document.getElementById(olEvent.feature.geometry.components[0].id);
-            $(elem).tooltip({content: olEvent.feature.attributes.name}).show();
-        },
+        tooltips: [],
 
         showQtip: function(olEvent){
+            //$('.qtip.ui-tooltip').qtip('hide');
+            $(".qtip").qtip('hide'); //.remove();
+
             var elem = document.getElementById(olEvent.feature.geometry.components[0].id);
-        
+
+            // var targets = $(elem);
+            // var segments = olEvent.feature.geometry.components;
+            // array.forEach(segments, function (segment) {
+            //     targets.add( document.getElementById(targets.push(segment.id)) );
+            // });
+
             $(elem).qtip({
                 overwrite: true,
                 content: olEvent.feature.attributes.name,
-                show: { ready: true },
+                //show: { ready: true },
                 position: {
-                    my: "top center",
+                    my: "center center",
                     at: "center center"
+                },
+                hide: {
+                    //target: targets, //$('[id^=OpenLayers_Geometry_Polygon_]'),
+                    //inactive: 2000
+                },
+                style: {
+                   classes: 'qtip-blue qtip-shadow qtip-rounded'
                 }
             }).qtip('show');
         },

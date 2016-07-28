@@ -25,7 +25,6 @@
           rel="stylesheet" type="text/css"/>
 
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery.js')}"></script>
-    <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery-ui.js')}"></script>
 
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/qtip/jquery.qtip.js')}"></script>
 
