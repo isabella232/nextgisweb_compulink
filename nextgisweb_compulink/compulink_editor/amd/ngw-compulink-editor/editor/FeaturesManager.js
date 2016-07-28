@@ -756,11 +756,11 @@ define([
                 var geometryId = feature.geometry.id,
                     relativeFeature = null;
                 if (geometryId.indexOf('Point') > -1) {
-                    if (this.checkRelativePoint(feature.geometry.components[0], pointsAffected)) {
+                    if (this.redrawRelativePoint(feature.geometry.components[0], pointsAffected)) {
                         relativeFeature = feature;
                     }
                 } else if (geometryId.indexOf('Line') > -1) {
-                    if (this.checkRelativeLine(feature.geometry.components[0], pointsAffected)) {
+                    if (this.redrawRelativeLine(feature.geometry.components[0], pointsAffected)) {
                         relativeFeature = feature;
                     }
                 }
@@ -769,7 +769,7 @@ define([
             return relativeFeatures;
         },
 
-        checkRelativePoint: function (point, pointsAffected) {
+        redrawRelativePoint: function (point, pointsAffected) {
             var pointEqualsResult = this._pointEquals(point, pointsAffected);
             if (pointEqualsResult) {
                 point.x = pointEqualsResult.current.x;
@@ -780,7 +780,7 @@ define([
             return false;
         },
 
-        checkRelativeLine: function (line, pointsAffected) {
+        redrawRelativeLine: function (line, pointsAffected) {
             var pointStartEqualsResult = this._pointEquals(line.components[0], pointsAffected),
                 pointEndEqualsResult = this._pointEquals(line.components[1], pointsAffected),
                 needRedraw = false;
