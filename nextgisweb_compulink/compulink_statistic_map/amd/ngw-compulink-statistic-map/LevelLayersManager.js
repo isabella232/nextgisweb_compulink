@@ -184,7 +184,8 @@ define([
 
         routeFeatureSelect: function(olEvent) {
             //zoom to
-            this.map.zoomToExtent(olEvent.feature.geometry.bounds);
+            if(olEvent.feature.layer!=this.districtLayer)
+                this.map.zoomToExtent(olEvent.feature.geometry.bounds);
             //clear table
             topic.publish('resources/changed', []);
             //exec handler
@@ -192,7 +193,8 @@ define([
             if(olEvent.feature.layer===this.regionLayer) this.regionObjectSelected(olEvent.feature);
             if(olEvent.feature.layer===this.districtLayer) this.districtObjectSelected(olEvent.feature);
             //deselect all
-            this.selectCtrl.unselectAll();
+            if(olEvent.feature.layer!=this.districtLayer)
+                this.selectCtrl.unselectAll();
         },
         federalObjectSelected: function(feat) {
             this.regionLayer.destroyFeatures();
