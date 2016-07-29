@@ -141,11 +141,6 @@ define([
                 this._lastGridState = selection;
                 this.updateDataStore(selection);
             }));
-
-            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
-                this.zoomToResource(evt);
-            }));
-
         },
 
         zoomToResource: function(evt) {

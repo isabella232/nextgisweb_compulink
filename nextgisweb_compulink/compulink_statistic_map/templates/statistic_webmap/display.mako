@@ -64,6 +64,7 @@
         ], function (parser, ready, RelationSelect, RegionSelect,
                      BuildingObjectsRelationSelect, DateTextBox) {
             ready(function () {
+                construct_object_editor_settings = ${construct_objects_attr_settings | n};
                 parser.parse();
             });
         });

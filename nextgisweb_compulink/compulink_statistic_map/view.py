@@ -9,6 +9,10 @@ from nextgisweb.feature_layer.view import ComplexEncoder
 from nextgisweb.resource import Resource, ResourceGroup, DataScope
 from nextgisweb.resource.model import ResourceACLRule
 from nextgisweb_compulink.compulink_admin.model import PROJECT_STATUS_PROJECT, PROJECT_STATUS_IN_PROGRESS
+from nextgisweb_compulink.compulink_admin.reference_books.dgrid_viewmodels import construct_objects_dgrid_viewmodel
+from nextgisweb_compulink.compulink_admin.reference_books.views.ReferenceBookViewBase import ReferenceBookViewBase
+from nextgisweb_compulink.compulink_editor.view import get_focl_layers_list
+from nextgisweb_compulink.compulink_editor.view import get_sit_plan_layers_list
 from nextgisweb_compulink.compulink_reporting.model import ConstructionStatusReport
 from nextgisweb_compulink.compulink_reporting.view import get_user_writable_focls, get_project_focls, _is_overdue, \
     _is_month_overdue
@@ -168,8 +172,16 @@ def show_map(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
+    focl_layers = get_focl_layers_list()
+    sit_plan_layers_type = get_sit_plan_layers_list()
     values = dict(
         show_header=True,
+        construct_objects_attr_settings=ReferenceBookViewBase\
+            ._get_json_column_settings(construct_objects_dgrid_viewmodel),
+        focl_layers_type=focl_layers['focl'],
+        objects_layers_type=focl_layers['objects'],
+        real_layers_type=focl_layers['real'],
+        sit_plan_layers_type=sit_plan_layers_type
     )
 
     return render_to_response('nextgisweb_compulink:compulink_statistic_map/templates/statistic_webmap/display.mako',
