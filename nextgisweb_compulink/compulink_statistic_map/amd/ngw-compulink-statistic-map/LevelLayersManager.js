@@ -297,8 +297,8 @@ define([
         getAreaStyle: function() {
             var defaultStyle = new OpenLayers.Style({
                 'fillColor': '${color}',
-                'strokeColor': '#A0A0A0', //${color}',
-                'strokeWidth': 0.6,
+                'strokeColor': '#6D6D6D', //${color}',
+                'strokeWidth': 0.9,
                 'fillOpacity': 0.4
                 //, 'label' : "${short_name}",
                 // 'fontColor': 'black',
