@@ -73,7 +73,7 @@ define([
             });
 
             this._menu.addChild(new MenuItem({
-                label: 'Открыть объект',
+                label: 'Показать объект на карте',
                 onClick: lang.hitch(this, function (evt) {
                     var res_id = Object.getOwnPropertyNames(this._grid.selection )[0];
                     var url = route.compulink.site.map() +
@@ -85,11 +85,16 @@ define([
             }));
 
             this._menu.addChild(new MenuItem({
-                label: 'Проиграть ход строительства',
+                label: 'Открыть карточку объекта',
                 onClick: lang.hitch(this, function (evt) {
-                    var res_id = Object.getOwnPropertyNames(this._grid.selection )[0];
-                    var url = route.compulink.player.map() + '?resource_id=' + res_id;
-                    window.open(url);
+                    var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
+                        item = this._grid.store.query({id: itemId});
+                    if (item) {
+                        ConstructObjectEditor.run(itemId, item[0].editable, lang.hitch(this, function () {
+                            this.updateDataStore(this._lastGridState);
+                            topic.publish('resources/tree/refresh');
+                        }));
+                    }
                 })
             }));
 
