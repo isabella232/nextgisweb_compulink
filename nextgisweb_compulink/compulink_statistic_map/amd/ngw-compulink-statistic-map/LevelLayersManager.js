@@ -82,6 +82,19 @@ define([
             this.highlightCtrl.activate();
             this.selectCtrl.activate();
 
+            //drag map workaround
+            if (typeof(this.highlightCtrl.handlers) != "undefined") { // OL 2.7
+                this.highlightCtrl.handlers.feature.stopDown = false;
+            } else if (typeof(this.highlightCtrl.handler) != "undefined") { // OL < 2.7
+                this.highlightCtrl.handler.stopDown = false;
+                this.highlightCtrl.handler.stopUp = false;
+            }
+            if (typeof(this.selectCtrl.handlers) != "undefined") { // OL 2.7
+                this.selectCtrl.handlers.feature.stopDown = false;
+            } else if (typeof(this.selectCtrl.handler) != "undefined") { // OL < 2.7
+                this.selectCtrl.handler.stopDown = false;
+                this.selectCtrl.handler.stopUp = false;
+            }
 
             //bind events
             this.bindEvents();
