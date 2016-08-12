@@ -78,7 +78,7 @@
                     "ngw/openlayers/layer/Google",
                     "ngw/openlayers/layer/Bing"
                 ],
-                "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
+                "plugin": ["`"]
             }
         };
 
