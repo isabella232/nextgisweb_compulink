@@ -15,9 +15,9 @@ define([
                 this.zIndex = baselayers[baselayers.length-1].getZIndex() + 100;
 
                 this.cadastreLayer = new OpenLayers.Layer.WMS("Ru Cadastre",
-                                   "http://maps.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer",
+                                   "http://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer",
                                    {
-                                       layers: "1,2,3,5,6,7,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24",
+                                       layers: "1,2,3,4,5,6,8,9,10,11,12,14,15,16,18,19,20,21,22,23,24,25,27,28,29,30,31,32,33",
                                        transparent: true
                                    },
                                    {
