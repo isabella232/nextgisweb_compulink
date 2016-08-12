@@ -123,11 +123,11 @@ define([
             this.tbSearch.on("blur", lang.hitch(this, function () {
                 var searchResults = this.searchResults;
                 if (searchResults && inputTimer == undefined) {
-                    blurTimer = setInterval(function() {
+                    blurTimer = setInterval(function () {
                         popup.close(this.searchResults);
                         clearInterval(blurTimer);
                     }, 500);
-                };
+                }
             }));
 
             this.tbSearch.on("focus", lang.hitch(this, function () {
@@ -136,19 +136,21 @@ define([
                         popup: this.searchResults,
                         around: this.tbSearch.domNode
                     });
-                };
+                }
                 clearInterval(blurTimer);
             }));
 
             this.tbSearch.on("input", lang.hitch(this, function () {
-                if (inputTimer) { clearInterval(inputTimer) };
+                if (inputTimer) {
+                    clearInterval(inputTimer)
+                }
                 inputTimer = setInterval(lang.hitch(this, function () {
                     clearInterval(inputTimer);
                     this.search();
                     inputTimer = undefined;
                 }), 750);
             }));
-       },
+        },
 
         postCreate: function () {
             this.display.itemMenu.addChild(this.menuItem);
