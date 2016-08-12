@@ -152,10 +152,14 @@ define([
             }));
         },
 
+        _turnIdentifyByDefault: true,
         postCreate: function () {
             this.display.itemMenu.addChild(this.menuItem);
             this.display.addTool(this.tool);
-            this.turnIdentifyBtn();
+
+            if (this._turnIdentifyByDefault) {
+                this.turnIdentifyBtn();
+            }
 
             new ToolbarSeparator().placeAt(this.display.infoNode, 'first');
             this.tbSearch.placeAt(this.display.infoNode, 'first');
