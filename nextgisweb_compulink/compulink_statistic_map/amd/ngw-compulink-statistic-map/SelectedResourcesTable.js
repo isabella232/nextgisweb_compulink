@@ -73,18 +73,6 @@ define([
             });
 
             this._menu.addChild(new MenuItem({
-                label: 'Показать объект на карте',
-                onClick: lang.hitch(this, function (evt) {
-                    var res_id = Object.getOwnPropertyNames(this._grid.selection )[0];
-                    var url = route.compulink.site.map() +
-                    '?resource_id=' + res_id;
-                    window.open(url);
-
-
-                })
-            }));
-
-            this._menu.addChild(new MenuItem({
                 label: 'Открыть карточку объекта',
                 onClick: lang.hitch(this, function (evt) {
                     var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
@@ -141,6 +129,16 @@ define([
                 this._lastGridState = selection;
                 this.updateDataStore(selection);
             }));
+
+            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function () {
+                var resourceId = Object.getOwnPropertyNames(this._grid.selection)[0];
+                this._openResourceMap(resourceId);
+            }));
+        },
+
+        _openResourceMap: function (resourceId) {
+            var url = route.compulink.site.map() + '?resource_id=' + resourceId;
+            window.open(url);
         },
 
         zoomToResource: function(evt) {
