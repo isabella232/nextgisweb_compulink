@@ -7,12 +7,6 @@
 
 .ngw-feature-layer-FieldsDisplayWidget span.null { color: #999; }
 
-.ngw-feature-layer-FieldsDisplayWidget span.deviation,
-div.ngw-feature-layer-FieldsDisplayWidget a.apply-deviation {
-    color: #a20200;
-    font-weight: bold;
-}
-
 .ngw-feature-layer-FieldsDisplayWidget.compact table.pure-table th.display_name { width: auto; }
 
 
@@ -21,8 +15,17 @@ div.ngw-feature-layer-FieldsDisplayWidget a.apply-deviation {
     padding: 1px 2px;
 }
 
+.ngw-feature-layer-FieldsDisplayWidget span.deviation,
+div.ngw-feature-layer-FieldsDisplayWidget a.apply-deviation {
+    color: #a20200;
+    font-weight: bold;
+}
+
 div.ngw-feature-layer-FieldsDisplayWidget a.apply-deviation {
     padding: 5px;
     text-decoration: underline;
 }
 
+div.ngw-feature-layer-FieldsDisplayWidget a.apply-deviation.inactive {
+    display: none;
+}

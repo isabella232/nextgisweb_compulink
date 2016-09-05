@@ -6,6 +6,7 @@ define([
     "dojo/request/xhr",
     "dojo/dom-class",
     "dojo/on",
+    "dojo/json",
     "put-selector/put",
     "ngw/route",
     "ngw-compulink-site/ApplyDeviationDialog",
@@ -22,6 +23,7 @@ define([
     xhr,
     domClass,
     on,
+    json,
     put,
     route,
     ApplyDeviationDialog,
@@ -85,8 +87,7 @@ define([
                     all_dicts,
                     bool_fields,
                     replace_dict,
-                    d_val,
-                    applyDeviationLink;
+                    d_val;
 
                 if (this.compact && !fieldmap[k].grid_visibility) { continue; }
 
@@ -101,19 +102,7 @@ define([
                 }
 
                 //check deviation
-                if (field.keyname === "is_deviation" && val === 1 &&
-                    this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
-                    applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation[href=javascript:void(0)] $",
-                        fieldmap[k].display_name, "Да", "Утвердить");
-                    on(applyDeviationLink, "click", lang.hitch(this, function () {
-                        new ApplyDeviationDialog({
-                            layerType: this.layerType,
-                            resourceId: this.resourceId,
-                            featureId: this.featureId,
-                            map: this.identifyTool.map,
-                            indentify: this.identifyTool
-                        });
-                    }));
+                if (this._checkDeviation(value, k, fieldmap, tbody)) {
                     continue;
                 }
 
@@ -153,6 +142,47 @@ define([
                         fieldmap[k].display_name, "Н/Д");
                 }
             }
+        },
+
+        _checkDeviation: function (value, key, fieldmap, tbody) {
+            var field = fieldmap[key],
+                val = value[key],
+                applyDeviationLink,
+                deviationData;
+
+            if (field.keyname === "is_deviation" && val === 1 &&
+                this._get_field_value(fieldmap, value, 'deviation_approved') != 1) {
+                applyDeviationLink = put(tbody, "tr th.display_name $ < td.value span.deviation $ < a.apply-deviation.inactive[href=javascript:void(0)] $",
+                    fieldmap[key].display_name, "Да", "Утвердить");
+
+                deviationData = {
+                    layerType: this.layerType,
+                    layerId: this.resourceId,
+                    featureId: this.featureId
+                };
+
+                xhr.post(route('compulink.deviation.apply.allowed'), {
+                    handleAs: 'json',
+                    data: json.stringify(deviationData)
+                }).then(lang.hitch(this, function (result) {
+                    if (result.allowed) {
+                        domClass.remove(applyDeviationLink, 'inactive');
+                        on(applyDeviationLink, "click", lang.hitch(this, function () {
+                            new ApplyDeviationDialog({
+                                layerType: this.layerType,
+                                resourceId: this.resourceId,
+                                featureId: this.featureId,
+                                map: this.identifyTool.map,
+                                indentify: this.identifyTool
+                            });
+                        }));
+                    }
+                }), lang.hitch(this, function (err) {
+                    console.log(err);
+                }));
+                return true;
+            }
+            return false;
         }
     });
 });
