@@ -20,7 +20,8 @@ define([
             this.inherited(arguments);
             this.deviationIndentifyControl = new DeviationIdentifyControl({
                 tool: this,
-                olMap: this.display.map.olMap
+                olMap: this.display.map.olMap,
+                rightClickHandler: false
             });
             this.display.map.olMap.addControl(this.deviationIndentifyControl);
         },
