@@ -69,6 +69,12 @@ def setup_pyramid(comp, config):
         client=()) \
         .add_view(apply_bulk_deviation)
 
+    config.add_route(
+        'compulink.deviation.apply.allowed',
+        '/compulink/deviation/apply/allowed',
+        client=()) \
+        .add_view(is_apply_deviation_allowed)
+
 
 @viewargs(renderer='nextgisweb_compulink:compulink_deviation/templates/deviation_grid.mako')
 def deviation_grid(request):
@@ -292,3 +298,16 @@ def apply_bulk_deviation(request):
 
     transaction.manager.commit()
     return success_response()
+
+
+def is_apply_deviation_allowed(request):
+    layer_id = int(request.json_body['layerId'])
+    ngw_session = DBSession()
+    transaction.manager.begin()
+    layer = ngw_session.query(VectorLayer).filter(VectorLayer.id == layer_id).first()
+
+    result = request.user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, request.user)
+
+    return Response(json.dumps({
+        'allowed': result
+    }))
