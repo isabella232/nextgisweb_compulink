@@ -226,7 +226,12 @@ def show_map(request):
 
 def show_map_player(request):
     values = _get_values_for_display(request)
-    values['player_sound_file'] = request.env.pyramid.settings.get('player_sound_file')
+
+    if 'player_sound_file' in request.env.pyramid.settings:
+        values['player_sound_file'] = request.env.pyramid.settings.get('player_sound_file')
+    else:
+        values['player_sound_file'] = ''
+
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/player/display.mako',
                               values,
                               request=request)
