@@ -9,11 +9,12 @@ define([
     });
 
     return declare(null, {
-        constructor: function () {
+        _activate: true,
 
-        },
+        constructor: function () {},
 
         play: function (position) {
+            if (!this._activate) return false;
             if (position) {
                 sound.seek(position);
             }
@@ -21,6 +22,16 @@ define([
         },
 
         stop: function () {
+            if (!this._activate) return false;
+            sound.stop();
+        },
+
+        activate: function () {
+            this._activate = true;
+        },
+
+        deactivate: function () {
+            this._activate = false;
             sound.stop();
         }
     });
