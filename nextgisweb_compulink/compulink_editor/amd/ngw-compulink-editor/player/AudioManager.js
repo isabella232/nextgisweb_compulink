@@ -11,11 +11,15 @@ define([
     return declare(null, {
         _activate: true,
 
-        constructor: function () {},
+        constructor: function () {
+        },
 
         play: function (position) {
             if (!this._activate) return false;
             if (position) {
+                if (position > sound.duration()) {
+                    position = position - Math.floor(position / sound.duration()) * sound.duration();
+                }
                 sound.seek(position);
             }
             sound.play();
