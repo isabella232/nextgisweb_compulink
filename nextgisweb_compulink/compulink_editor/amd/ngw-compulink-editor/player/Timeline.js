@@ -282,9 +282,12 @@ define([
             var tick = 1,
                 units = this._unitsSelector.get('value'),
                 countUnits = parseInt(this._countUnitSelector.get('value'), 10),
-                intervalTimeByTick;
+                intervalTimeByTick,
+                currentTips;
 
-            this._audio.play();
+            currentTips = this._getCurrentTips(start, units, countUnits);
+            this._audio.play(currentTips);
+
             this._interval = setInterval(lang.hitch(this, function () {
                 intervalTimeByTick = this._getIntervalTimeByTick(start, tick, units, countUnits);
                 tick++;
@@ -295,6 +298,24 @@ define([
                 this._timeline.setCustomTime(intervalTimeByTick.to, this._barId);
                 this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to);
             }), 1000);
+        },
+
+        _getCurrentTips: function (position, units, countUnits) {
+            var intervalMs = this._getIntervalTime(units, countUnits),
+                positionInMs = position.getTime(),
+                currentDuration,
+                currentTips;
+
+            currentDuration = positionInMs - this._featureManager.minBuiltDate.getTime();
+            currentTips = currentDuration / intervalMs;
+            currentTips = currentTips - (currentTips % 1);
+
+            return currentTips;
+        },
+
+        _getIntervalTime: function (units, countUnits) {
+            var interval = this._getIntervalTimeByTick(this._featureManager.minBuiltDate, 1, units, countUnits);
+            return interval.to.getTime() - interval.from.getTime();
         },
 
         _getIntervalTimeByTick: function (startDate, tick, units, countUnits) {
