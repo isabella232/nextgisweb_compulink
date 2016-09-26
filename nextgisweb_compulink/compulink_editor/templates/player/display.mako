@@ -80,7 +80,8 @@
                     "ngw/openlayers/layer/Bing"
                 ],
                 "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
-            }
+            },
+            "playerSoundFile": "${request.static_url(player_sound_file)}"
         };
 
         require([

@@ -226,6 +226,7 @@ def show_map(request):
 
 def show_map_player(request):
     values = _get_values_for_display(request)
+    values['player_sound_file'] = request.env.pyramid.settings.get('player_sound_file')
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/player/display.mako',
                               values,
                               request=request)
@@ -828,6 +829,7 @@ def editor_create_geom(request):
 
     return success_response()
 
+
 @view_config(renderer='json')
 def construct_line(request):
     res_id = request.matchdict['id']
@@ -852,6 +854,7 @@ def construct_line(request):
         return Response(json.dumps(resp), status=400)
 
     return success_response()
+
 
 @view_config(renderer='json')
 def reset_point(request):
