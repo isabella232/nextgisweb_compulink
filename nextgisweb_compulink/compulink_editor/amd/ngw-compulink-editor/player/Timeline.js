@@ -13,6 +13,7 @@ define([
     'ngw-compulink-libs/mustache/mustache',
     'ngw-compulink-libs/vis-4.16.1/vis.min',
     'dojo/text!./templates/Timeline.mustache',
+    'ngw-compulink-editor/player/AudioManager',
     'xstyle/css!./templates/Timeline.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -20,7 +21,7 @@ define([
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, dom, query, on,
-             topic, FloatingPane, Select, mustache, vis, template) {
+             topic, FloatingPane, Select, mustache, vis, template, AudioManager) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -43,10 +44,12 @@ define([
             {label: 'день(дней)', value: 'Days'},
             {label: 'месяц(ев)', value: 'Months'}
         ],
+        _audio: null,
 
         constructor: function (featuresManager) {
             mustache.parse(template);
             this._bindEvents(featuresManager);
+            this._audio = new AudioManager();
         },
 
         _bindEvents: function () {
@@ -274,6 +277,7 @@ define([
                 countUnits = parseInt(this._countUnitSelector.get('value'), 10),
                 intervalTimeByTick;
 
+            this._audio.play();
             this._interval = setInterval(lang.hitch(this, function () {
                 intervalTimeByTick = this._getIntervalTimeByTick(start, tick, units, countUnits);
                 tick++;
@@ -321,6 +325,7 @@ define([
             if (this._interval) {
                 clearInterval(this._interval);
             }
+            this._audio.stop();
         },
 
         _currentIndexDate: null,
