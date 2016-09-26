@@ -4,7 +4,8 @@ define([
 ], function (declare) {
 
     var sound = new Howl({
-        src: [displayConfig.playerSoundFile]
+        src: [displayConfig.playerSoundFile],
+        loop: true
     });
 
     return declare(null, {
@@ -12,7 +13,10 @@ define([
 
         },
 
-        play: function () {
+        play: function (position) {
+            if (position) {
+                sound.seek(position);
+            }
             sound.play();
         },
 
