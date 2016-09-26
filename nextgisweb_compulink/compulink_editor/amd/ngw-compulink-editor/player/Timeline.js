@@ -4,6 +4,7 @@ define([
     'dojo/_base/lang',
     'dojo/_base/array',
     'dojo/dom-construct',
+    'dojo/dom-class',
     'dojo/dom',
     'dojo/query',
     'dojo/on',
@@ -20,7 +21,7 @@ define([
     'xstyle/css!ngw-compulink-libs/font-awesome-4.6.3/css/font-awesome.min.css',
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
-], function (win, declare, lang, array, domConstruct, dom, query, on,
+], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, AudioManager) {
     return declare([], {
         _timelineWidgetDiv: null,
@@ -151,6 +152,12 @@ define([
                 this._handleTimeChanged({
                     time: this._featureManager.maxBuiltDate
                 });
+            }));
+
+            on(query('i.sound', this._dialog.domNode), 'click', lang.hitch(this, function () {
+                var volumeBtn = query('i.sound', this._dialog.domNode)[0];
+                domClass.toggle(volumeBtn, 'fa-volume-up');
+                domClass.toggle(volumeBtn, 'fa-volume-off');
             }));
         },
 

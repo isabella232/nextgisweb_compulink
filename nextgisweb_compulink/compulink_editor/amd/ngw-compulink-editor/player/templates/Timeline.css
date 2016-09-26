@@ -50,3 +50,7 @@ i.fa-fast-forward {
 div#timeline div.vis-current-time {
     background-color: green;
 }
+
+i.sound {
+    margin-left: 15px;
+}
