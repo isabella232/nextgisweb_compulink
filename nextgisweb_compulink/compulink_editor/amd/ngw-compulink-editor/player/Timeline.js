@@ -158,6 +158,11 @@ define([
                 var volumeBtn = query('i.sound', this._dialog.domNode)[0];
                 domClass.toggle(volumeBtn, 'fa-volume-up');
                 domClass.toggle(volumeBtn, 'fa-volume-off');
+                if (domClass.contains(volumeBtn, 'fa-volume-up')) {
+                    this._audio.activate();
+                } else {
+                    this._audio.deactivate();
+                }
             }));
         },
 
