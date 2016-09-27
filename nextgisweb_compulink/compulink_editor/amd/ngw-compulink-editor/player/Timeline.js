@@ -159,11 +159,24 @@ define([
                 domClass.toggle(volumeBtn, 'fa-volume-up');
                 domClass.toggle(volumeBtn, 'fa-volume-off');
                 if (domClass.contains(volumeBtn, 'fa-volume-up')) {
-                    this._audio.activate();
+                    this._activateSound();
                 } else {
                     this._audio.deactivate();
                 }
             }));
+        },
+
+        _activateSound: function () {
+            this._audio.activate();
+
+            if (this._state !== 'playing') return false;
+
+            var units = this._unitsSelector.get('value'),
+                countUnits = parseInt(this._countUnitSelector.get('value'), 10),
+                start = this._timeline.getCustomTime(this._barId),
+                currentTips = this._getCurrentTips(start, units, countUnits);
+
+            this._audio.play(currentTips);
         },
 
         _moveTimeBarToStart: function () {
@@ -358,6 +371,7 @@ define([
             if (this._interval) {
                 clearInterval(this._interval);
             }
+            this._state = 'wait';
             this._audio.stop();
         },
 
