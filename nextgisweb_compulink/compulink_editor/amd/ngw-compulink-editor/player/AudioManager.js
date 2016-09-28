@@ -15,7 +15,7 @@ define([
         },
 
         play: function (position) {
-            if (!this._activate) return false;
+            if (!this._activate || sound.playing()) return false;
             if (position) {
                 if (position > sound.duration()) {
                     position = position - Math.floor(position / sound.duration()) * sound.duration();
