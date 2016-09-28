@@ -122,6 +122,7 @@ define([
             }));
 
             this._timeline = timeline;
+            this._setDomElements();
             this._bindPlayerControlsEvents();
             this._moveTimeBarToStart();
         },
@@ -135,10 +136,13 @@ define([
             this._buildFeatures(minDate, timeChangedEvent.time, true);
         },
 
+        _playBtn: null,
+        _setDomElements: function () {
+            this._playBtn = query('i.fa-play-circle', this._dialog.domNode)[0];
+        },
+
         _bindPlayerControlsEvents: function () {
-            on(query('i.fa-play-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                this.play(this._timeline.getCustomTime(this._barId));
-            }));
+            this._makePlayBtnClickHandler();
 
             on(query('i.fa-stop-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
                 this.stop();
@@ -164,6 +168,28 @@ define([
                     this._audio.deactivate();
                 }
             }));
+        },
+
+        _playBtnClickHandler: null,
+        _makePlayBtnClickHandler: function () {
+            this._playBtnClickHandler = on(this._playBtn, 'click', lang.hitch(this, function () {
+                this.play(this._timeline.getCustomTime(this._barId));
+            }));
+        },
+
+        _enablePlayBtn: function () {
+            if (!this._playBtnClickHandler) {
+                this._makePlayBtnClickHandler();
+            }
+            domClass.remove(this._playBtn, 'disabled');
+        },
+
+        _disablePlayBtn: function () {
+            if (this._playBtnClickHandler) {
+                this._playBtnClickHandler.remove();
+                this._playBtnClickHandler = null;
+            }
+            domClass.add(this._playBtn, 'disabled');
         },
 
         _activateSound: function () {
@@ -293,6 +319,7 @@ define([
         _interval: null,
         play: function (start) {
             this._state = 'playing';
+            this._disablePlayBtn();
             if (start < this._featureManager.minBuiltDate) {
                 this._moveTimeBarToStart();
                 start = this._featureManager.minBuiltDate;
@@ -372,6 +399,7 @@ define([
                 clearInterval(this._interval);
             }
             this._state = 'wait';
+            this._enablePlayBtn();
             this._audio.stop();
         },
 
