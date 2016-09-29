@@ -15,6 +15,7 @@ define([
     'ngw-compulink-libs/vis-4.16.1/vis.min',
     'dojo/text!./templates/Timeline.mustache',
     'ngw-compulink-editor/player/AudioManager',
+    'ngw-compulink-editor/player/utils/ButtonClickHandler',
     'xstyle/css!./templates/Timeline.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -22,7 +23,7 @@ define([
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
-             topic, FloatingPane, Select, mustache, vis, template, AudioManager) {
+             topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -122,7 +123,6 @@ define([
             }));
 
             this._timeline = timeline;
-            this._setDomElements();
             this._bindPlayerControlsEvents();
             this._moveTimeBarToStart();
         },
@@ -133,29 +133,74 @@ define([
             var minDate = timeChangedEvent.time < this._featureManager.minBuiltDate ?
                 new Date(0) :
                 this._featureManager.minBuiltDate;
+            this._handleControlsState(timeChangedEvent.time);
             this._buildFeatures(minDate, timeChangedEvent.time, true);
         },
 
-        _playBtn: null,
-        _setDomElements: function () {
-            this._playBtn = query('i.fa-play-circle', this._dialog.domNode)[0];
+        _handleControlsState: function (time) {
+            if (time == this._featureManager.minBuiltDate) {
+                this._buttonsHandlers.play.enable();
+                this._buttonsHandlers.forward.enable();
+                this._buttonsHandlers.backward.disable();
+            }
+            if (time == this._featureManager.maxBuiltDate) {
+                this._buttonsHandlers.play.disable();
+                this._buttonsHandlers.forward.disable();
+                this._buttonsHandlers.backward.enable();
+            }
+            if ((this._featureManager.minBuiltDate < time) &&
+                (time < this._featureManager.maxBuiltDate)) {
+                if (this._state === 'playing') {
+                    this._buttonsHandlers.play.disable();
+                } else {
+                    this._buttonsHandlers.play.enable();
+                }
+                this._buttonsHandlers.forward.enable();
+                this._buttonsHandlers.backward.enable();
+            }
+            if (time > this._featureManager.maxBuiltDate) {
+                this._buttonsHandlers.play.disable();
+                this._buttonsHandlers.forward.enable();
+                this._buttonsHandlers.backward.enable();
+            }
+            if (time < this._featureManager.minBuiltDate) {
+                this._buttonsHandlers.play.enable();
+                this._buttonsHandlers.forward.enable();
+                this._buttonsHandlers.backward.enable();
+            }
         },
 
+        _buttonsHandlers: {},
+
         _bindPlayerControlsEvents: function () {
-            this._makePlayBtnClickHandler();
+            this._buttonsHandlers.play = new ButtonClickHandler(
+                query('i.fa-play-circle', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this.play(this._timeline.getCustomTime(this._barId));
+                }),
+                true
+            );
+
+            this._buttonsHandlers.backward = new ButtonClickHandler(
+                query('i.fa-fast-backward', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this._moveTimeBarToStart();
+                }),
+                true
+            );
+
+            this._buttonsHandlers.forward = new ButtonClickHandler(
+                query('i.fa-fast-forward', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this._handleTimeChanged({
+                        time: this._featureManager.maxBuiltDate
+                    });
+                }),
+                true
+            );
 
             on(query('i.fa-stop-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
                 this.stop();
-            }));
-
-            on(query('i.fa-fast-backward', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                this._moveTimeBarToStart();
-            }));
-
-            on(query('i.fa-fast-forward', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                this._handleTimeChanged({
-                    time: this._featureManager.maxBuiltDate
-                });
             }));
 
             on(query('i.sound', this._dialog.domNode), 'click', lang.hitch(this, function () {
@@ -168,28 +213,6 @@ define([
                     this._audio.deactivate();
                 }
             }));
-        },
-
-        _playBtnClickHandler: null,
-        _makePlayBtnClickHandler: function () {
-            this._playBtnClickHandler = on(this._playBtn, 'click', lang.hitch(this, function () {
-                this.play(this._timeline.getCustomTime(this._barId));
-            }));
-        },
-
-        _enablePlayBtn: function () {
-            if (!this._playBtnClickHandler) {
-                this._makePlayBtnClickHandler();
-            }
-            domClass.remove(this._playBtn, 'disabled');
-        },
-
-        _disablePlayBtn: function () {
-            if (this._playBtnClickHandler) {
-                this._playBtnClickHandler.remove();
-                this._playBtnClickHandler = null;
-            }
-            domClass.add(this._playBtn, 'disabled');
         },
 
         _activateSound: function () {
@@ -236,10 +259,10 @@ define([
         _setOptimalSpeed: function () {
             var diffMs = this._featureManager.maxBuiltDate.getTime() -
                     this._featureManager.minBuiltDate.getTime(),
-                    months = Math.round(diffMs / 2592000000),
-                    days = Math.round(diffMs / 86400000),
-                    hours = Math.round(diffMs / 3600000),
-                    minutes = Math.round(diffMs / 60000);
+                months = Math.round(diffMs / 2592000000),
+                days = Math.round(diffMs / 86400000),
+                hours = Math.round(diffMs / 3600000),
+                minutes = Math.round(diffMs / 60000);
             if (months > 0) {
                 if (months > 1 && months <= 5) {
                     this._unitsSelector.set('value', 'Days');
@@ -319,7 +342,7 @@ define([
         _interval: null,
         play: function (start) {
             this._state = 'playing';
-            this._disablePlayBtn();
+            this._buttonsHandlers.play.disable();
             if (start < this._featureManager.minBuiltDate) {
                 this._moveTimeBarToStart();
                 start = this._featureManager.minBuiltDate;
@@ -340,6 +363,7 @@ define([
                     intervalTimeByTick.to = this._featureManager.maxBuiltDate;
                     this.stop();
                 }
+                this._handleControlsState(intervalTimeByTick.to);
                 this._timeline.setCustomTime(intervalTimeByTick.to, this._barId);
                 this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to);
             }), 1000);
@@ -399,7 +423,7 @@ define([
                 clearInterval(this._interval);
             }
             this._state = 'wait';
-            this._enablePlayBtn();
+            this._buttonsHandlers.play.enable();
             this._audio.stop();
         },
 
@@ -429,7 +453,7 @@ define([
                 featureBuiltDateMs = feature.attributes.built_date_ms;
                 if (featureBuiltDateMs <= from) {
                     return true;
-                } else if  (featureBuiltDateMs > from  && featureBuiltDateMs <= to) {
+                } else if (featureBuiltDateMs > from && featureBuiltDateMs <= to) {
                     featuresToDrawing.push(feature);
                 } else if (featureBuiltDateMs > to) {
                     this._currentIndexDate = index - 1;
