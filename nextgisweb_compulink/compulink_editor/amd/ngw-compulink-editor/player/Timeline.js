@@ -48,10 +48,14 @@ define([
         ],
         _audio: null,
 
-        constructor: function (featuresManager) {
+        constructor: function () {
             mustache.parse(template);
-            this._bindEvents(featuresManager);
+            this._bindEvents();
             this._audio = new AudioManager();
+        },
+
+        initAudioManager: function () {
+            return this._audio.init();
         },
 
         _bindEvents: function () {

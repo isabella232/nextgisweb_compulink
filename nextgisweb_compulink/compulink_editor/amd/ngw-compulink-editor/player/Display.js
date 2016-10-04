@@ -340,14 +340,21 @@ define([
                     widget._mapSetup();
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
-                    new Timeline();
+                    var timeline = new Timeline();
+                    var audioDeferred = timeline.initAudioManager();
+
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
                         editorConfig, {
                             isCreateLayer: true,
-                            isFillObjects: true,
+                            isFillObjects: false,
                             zoomToHidingPoints: 14
                         });
                     this.EditorFeaturesManager._setEditorMode('off');
+                    var fillObjectsDeferred = this.EditorFeaturesManager.fillObjects();
+
+                    all([audioDeferred, fillObjectsDeferred]).then(lang.hitch(this, function () {
+                        this.hideStandBy();
+                    }));
                 })
             ).then(undefined, function (err) { console.error(err); });
 
@@ -489,7 +496,7 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            this.standBy();
+            this.showStandBy();
             this._startupDeferred.resolve();
 
             //events
@@ -499,12 +506,16 @@ define([
 
         },
 
-        standBy: function () {
-            var mapStandBy = new MapStandBy();
-            mapStandBy.show();
-            topic.subscribe('features/manager/filled', function () {
-                mapStandBy.hide();
-            });
+        _mapStandBy: null,
+        showStandBy: function () {
+            if (!this._mapStandBy) {
+                this._mapStandBy = new MapStandBy();
+            }
+            this._mapStandBy.show();
+        },
+
+        hideStandBy: function () {
+            this._mapStandBy.hide();
         },
 
         buildLayersSelector: function () {

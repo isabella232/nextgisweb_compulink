@@ -1,33 +1,45 @@
 define([
     'dojo/_base/declare',
+    'dojo/Deferred',
     'ngw-compulink-libs/howler-2.0.0/howler.min'
-], function (declare) {
-
-    var sound = new Howl({
-        src: [displayConfig.playerSoundFile],
-        loop: true
-    });
+], function (declare, Deferred) {
 
     return declare(null, {
         _activate: true,
+        _sound: null,
 
         constructor: function () {
         },
 
+        init: function () {
+            var deferred = new Deferred();
+
+            this._sound = new Howl({
+                src: [displayConfig.playerSoundFile],
+                loop: true
+            });
+
+            this._sound.once('load', function () {
+                deferred.resolve();
+            });
+
+            return deferred.promise;
+        },
+
         play: function (position) {
-            if (!this._activate || sound.playing()) return false;
+            if (!this._activate || this._sound.playing()) return false;
             if (position) {
-                if (position > sound.duration()) {
-                    position = position - Math.floor(position / sound.duration()) * sound.duration();
+                if (position > this._sound.duration()) {
+                    position = position - Math.floor(position / this._sound.duration()) * this._sound.duration();
                 }
-                sound.seek(position);
+                this._sound.seek(position);
             }
-            sound.play();
+            this._sound.play();
         },
 
         stop: function () {
             if (!this._activate) return false;
-            sound.stop();
+            this._sound.stop();
         },
 
         activate: function () {
@@ -36,7 +48,7 @@ define([
 
         deactivate: function () {
             this._activate = false;
-            sound.stop();
+            this._sound.stop();
         }
     });
 });
