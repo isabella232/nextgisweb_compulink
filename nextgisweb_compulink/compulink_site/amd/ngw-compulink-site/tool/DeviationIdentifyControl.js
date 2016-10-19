@@ -5,13 +5,16 @@ define([], function () {
 
         initialize: function (options) {
             OpenLayers.Control.prototype.initialize.apply(this, [options]);
-            this._setContextMenuHandler();
-            this.handler = new OpenLayers.Handler.Click(this, {
-                rightclick: this.clickCallback,
-                single: true,
-                'double': false,
-                pixelTolerance: null
-            });
+
+            if (options.rightClickHandler) {
+                this._setContextMenuHandler();
+                this.handler = new OpenLayers.Handler.Click(this, {
+                    rightclick: this.clickCallback,
+                    single: true,
+                    'double': false,
+                    pixelTolerance: null
+                });
+            }
         },
 
         _setContextMenuHandler: function () {

@@ -338,23 +338,23 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    //this.LayersSelector.selectLayers([
-                    //    'real_special_transition', 'real_special_transition_point',  'real_optical_cable',
-                    //    'real_optical_cable_point', 'real_fosc', 'real_optical_cross', 'real_access_point'
-                    //], 'focl_struct');
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
-                    new Timeline();
+                    var timeline = new Timeline();
+                    var audioDeferred = timeline.initAudioManager();
+
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
                         editorConfig, {
                             isCreateLayer: true,
-                            isFillObjects: true,
+                            isFillObjects: false,
                             zoomToHidingPoints: 14
                         });
                     this.EditorFeaturesManager._setEditorMode('off');
-                    //this.AttributesEditor = registry.byId("attributesEditor");
-                    //this.AttributesEditor.setNgwServiceFacade(this.NgwServiceFacade);
-                    //new EventsMediator(this);
+                    var fillObjectsDeferred = this.EditorFeaturesManager.fillObjects();
+
+                    all([audioDeferred, fillObjectsDeferred]).then(lang.hitch(this, function () {
+                        this.hideStandBy();
+                    }));
                 })
             ).then(undefined, function (err) { console.error(err); });
 
@@ -382,41 +382,8 @@ define([
                     widget.basemapSelect.dropDown = baseLayersMenu;
                     widget.basemapSelect.label = baseLayersMenu.getChildren()[0].label;
                     widget.basemapSelect.set('label', baseLayersMenu.getChildren()[0].label);
-
-
-                    /*
-                    // И добавляем возможность переключения
-                    widget.basemapSelect.watch("value", function (attr, oldVal, newVal) {
-                        widget.map.olMap.setBaseLayer(widget.map.layers[newVal].olLayer);
-                    });
-                    if (widget._urlParams.base) { widget.basemapSelect.set("value", widget._urlParams.base); }
-                    */
                 }
             ).then(undefined, function (err) { console.error(err); });
-
-            // Слои элементов
-            //all([this._midDeferred.adapter, this._itemStoreDeferred]).then(
-            //    function () {
-            //        widget._layersSetup();
-            //    }
-            //).then(undefined, function (err) { console.error(err); });
-            //
-            //all([this._layersDeferred, this._mapSetup]).then(
-            //    function () {
-            //        // Добавляем слои на карту
-            //        widget._mapAddLayers();
-            //
-            //        // Связываем изменение чекбокса с видимостью слоя
-            //        var store = widget.itemStore;
-            //        store.on("Set", function (item, attr, oldVal, newVal) {
-            //            if (attr === "checked" && store.getValue(item, "type") === "layer") {
-            //                var id = store.getValue(item, "id");
-            //                var layer = widget._layers[id];
-            //                layer.set("visibility", newVal);
-            //            }
-            //        });
-            //    }
-            //).then(undefined, function (err) { console.error(err); });
 
 
             // Иструменты по-умолчанию и плагины
@@ -529,7 +496,7 @@ define([
         startup: function () {
             this.inherited(arguments);
 
-            this.standBy();
+            this.showStandBy();
             this._startupDeferred.resolve();
 
             //events
@@ -539,12 +506,16 @@ define([
 
         },
 
-        standBy: function () {
-            var mapStandBy = new MapStandBy();
-            mapStandBy.show();
-            topic.subscribe('features/manager/filled', function () {
-                mapStandBy.hide();
-            });
+        _mapStandBy: null,
+        showStandBy: function () {
+            if (!this._mapStandBy) {
+                this._mapStandBy = new MapStandBy();
+            }
+            this._mapStandBy.show();
+        },
+
+        hideStandBy: function () {
+            this._mapStandBy.hide();
         },
 
         buildLayersSelector: function () {
