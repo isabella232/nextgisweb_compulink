@@ -72,3 +72,7 @@ SIT_PLAN_LAYER_STRUCT = [
 
 PROJECT_LAYER_STRUCT = [
 ]
+
+ADDITIONAL_LAYERS_STRUCT = [
+    'accepted_part',
+]

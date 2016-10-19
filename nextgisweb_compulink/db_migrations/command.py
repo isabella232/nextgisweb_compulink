@@ -3,6 +3,8 @@ import json
 
 import codecs
 import os
+
+from nextgisweb_compulink.db_migrations.append_accepted_part_layer import append_accepted_part_layer
 from nextgisweb_compulink.db_migrations.link_regions_to_fed import link_regions_to_fed
 from nextgisweb_compulink.db_migrations.link_shp_to_dict import link_shp_to_dict
 from sqlalchemy import Table
@@ -58,7 +60,8 @@ class DBMigrates():
                                 'add_federal_dist_id_field',
                                 'load_federal_dist_dict',
                                 'link_regions_to_fed',
-                                'link_shp_to_dict'
+                                'link_shp_to_dict',
+                                'append_accepted_part_layer'
                             ])
 
     @classmethod
@@ -103,6 +106,9 @@ class DBMigrates():
             link_regions_to_fed(args)
         if args.migration == 'link_shp_to_dict':  # 27.07.2016
             link_shp_to_dict(args)
+        if args.migration == 'append_accepted_part_layer':  # 19.10.2016
+            append_accepted_part_layer(args)
+
 
     @classmethod
     def append_real_layers(cls):

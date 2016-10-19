@@ -1,0 +1,19 @@
+<map>
+  <layer>
+    <type>Line</type>
+    <class>
+      <style>
+        <color blue="229" green="205" red="252"/>
+        <outlinecolor blue="64" green="64" red="64"/>
+      </style>
+    </class>
+  </layer>
+  <legend>
+    <keysize y="15" x="15"/>
+    <label>
+      <size>12</size>
+      <type>truetype</type>
+      <font>regular</font>
+    </label>
+  </legend>
+</map>

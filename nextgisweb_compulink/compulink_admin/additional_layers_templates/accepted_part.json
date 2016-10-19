@@ -1,0 +1,70 @@
+{
+    "resource": {
+        "permissions": [],
+        "keyname": null,
+        "display_name": "Принятые участки",
+        "description": null,
+        "identify_name": "Принятый участок"
+    },
+
+
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "act_number_date",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Номер и дата акта",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "acceptor",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Принял",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "subcontr_name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Субподрядчик",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "comment",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Комментарий",
+                "label_field": false,
+                "grid_visibility": true
+            },
+
+            {
+                "keyname": "change_author",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Автор изменений",
+                "label_field": false,
+                "grid_visibility": true
+            },
+            {
+                "keyname": "change_date",
+                "datatype": "DATETIME",
+                "typemod": null,
+                "display_name": "Дата изменений",
+                "label_field": false,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "LINESTRING",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
