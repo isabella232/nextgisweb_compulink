@@ -1,0 +1,4 @@
+
+.icon-plus:before { content: '\2b'; } /* '+' */
+.icon-eye:before { content: '\e09d'; } /* '' */
+.icon-eye-off:before { content: '\e102'; } /* '' */

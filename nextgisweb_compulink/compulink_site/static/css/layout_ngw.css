@@ -37,7 +37,7 @@ body { font-size: 12px; }
     .header img.logo { float: left; }
 
 .title {
-    padding: 0.5ex 1ex;
+    padding: 3px 4px;
     background: #F1F3F9;
     border-bottom: 1px solid #CBCBCB; }
 
@@ -102,3 +102,5 @@ body { font-size: 12px; }
     padding: 0ex 0ex 4px; }
 
     .content h2:first-child { margin-top: 0; }
+
+/* -- BOTTOM PANEL -- */

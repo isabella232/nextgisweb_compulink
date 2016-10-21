@@ -256,7 +256,7 @@
                              data-dojo-type="dijit/layout/ContentPane"
                              data-dojo-props="region: 'top', splitter: true"
                              data-right-panel="focl"
-                             style="padding: 0;height: 30%" class="vols">
+                             style="padding: 0;height: 15%" class="vols">
                             <div class="title">Слои ВОЛС</div>
                             <div class="tree-overlay"></div>
                             <div class="tree-wrapper">
@@ -269,7 +269,7 @@
                              data-dojo-type="dijit/layout/ContentPane"
                              data-dojo-props="region: 'bottom', splitter: true"
                              data-right-panel="legend"
-                             style="padding: 0;height: 40%" class="leg">
+                             style="padding: 0;height: 85%" class="leg">
                             <div class="title">Легенда</div>
                             <div class="legend_wrapper">
                                 <img src="${ngwConfig.compulinkAssetUrl}img/legend.png" />
@@ -278,17 +278,44 @@
                     </div>
                 </div>
 
-                <!-- Bottom panel -->
-                <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
-                    <!-- Resources table -->
-                    <div id="bottomPanel"
-                         data-dojo-attach-point="resourcesTablePane"
+                <div data-resource-type-filter=""
+                     data-dojo-type="dijit/layout/BorderContainer"
+                     data-dojo-props="region: 'bottom', splitter: true, gutters: false"
+                     style="width: 100%; height: 150px; padding: 0;">
+                    <div data-dojo-attach-point="resourcesTablePane"
                          data-dojo-type="dijit/layout/ContentPane"
-                         data-dojo-props="region: 'bottom', splitter: true, gutters: false"
-                         style="padding: 0; height: 100px; overflow: hidden">
-                        <div id="resourcesTable" style="height: 100%"></div>
+                         data-dojo-props="region: 'left', splitter: true, gutters: false"
+                         style="padding: 0; height: 100%; width:50%; display: inline-block; overflow: hidden;border: 1px #b5bcc7 solid;">
+                        <div class="title">Выбранные объекты строительства</div>
+                        <div id="resourcesTable" style="height: auto; position: absolute; display: block; top: 20px; bottom: 0; left: 0; right: 0;"></div>
                     </div>
 
+                    <div data-dojo-attach-point="acceptedPartsPanel"
+                         data-dojo-type="dijit/layout/ContentPane"
+                         data-dojo-props="region: 'center', splitter: true, gutters: false"
+                         style="padding: 0; height: 100%; width:49%;overflow: hidden; display: inline-block; position: absolute; right: 4px; border: 1px #b5bcc7 solid;">
+                        <div class="title">Принятые участки</div>
+                        <div data-dojo-attach-point="acceptedPartsToolbar"
+                             data-dojo-type="dijit/Toolbar"
+                             class="accepted-parts-toolbar"
+                             data-dojo-props="region: 'top'">
+
+                            <div data-dojo-type="dijit/form/Button"
+                                 data-dojo-props="iconClass:'icon icon-plus', showLabel:false">Cut
+                            </div>
+                            <div data-dojo-type="dijit/form/ToggleButton"
+                                 data-dojo-props="iconClass:'icon icon-eye', showLabel:false">Bold
+                            </div>
+                            <span data-dojo-type="dijit/ToolbarSeparator"></span>
+                            <input data-dojo-type="dijit/form/TextBox"
+                                   data-dojo-attach-point="acceptedPartsFilter"
+                                   type="text"
+                                   placeHolder="Фильтр"
+                                   value=""/>
+                        </div>
+                        <div data-dojo-attach-point="acceptedPartsTable"
+                             style="position: absolute; display: block; top: 46px; bottom: 0; left: 0; right: 0;height: auto;"></div>
+                    </div>
                 </div>
             </div>
 
