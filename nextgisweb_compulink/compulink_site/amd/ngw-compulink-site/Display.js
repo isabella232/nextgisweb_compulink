@@ -505,13 +505,11 @@ define([
                 mainContainer.removeChild(panel);
         },
 
-        switchBottomToolbar: function(val) {
-            panel = registry.byId("bottomPanel");
-            mainContainer = registry.byId("centerContainer");
-            if(val)
-                mainContainer.addChild(panel);
+        switchBottomToolbar: function (val) {
+            if (val)
+                this.mainContainer.addChild(this.bottomPanel);
             else
-                mainContainer.removeChild(panel);
+                this.mainContainer.removeChild(this.bottomPanel);
         },
 
         switchLegendPane: function(val) {
