@@ -20,24 +20,30 @@ define([
     'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog',
     'ngw-compulink-site/InfoDialog',
+    'dojox/dtl/_base',
     'ngw-compulink-site/ConstructObjectEditor',
-    'xstyle/css!./resource/AcceptedPartsTable.css'
+    'xstyle/css!./AcceptedPartsTable.css'
 ], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
-             ConfirmDialog, InfoDialog, ConstructObjectEditor) {
+             ConfirmDialog, InfoDialog, dtlBase, ConstructObjectEditor) {
     return declare(null, {
         _columns: {
-                display_name: 'Номер',
-                region: 'Дата',
-                district: 'ФИО принявшего',
-                status: 'Подрядчик',
-                cabling_plan: 'комментарий',
+                act_number_date: 'Номер и дата акта',
+                change_date: 'Дата изменений',
+                acceptor: 'Принял',
+                subcontr_name: 'Субподрядчик',
+                comment: 'Комментарий',
                 cabling_fact: 'Приложенные файлы'
         },
 
-        _get_focl_info_url: ngwConfig.applicationUrl + '/compulink/resources/focl_info',
-        _get_extent_url: ngwConfig.applicationUrl + '/compulink/resources/focl_extent',
-
+        GET_ACCEPTED_PART_LIST: new dtlBase.Template('/compulink/accepted_part/{{constructObjectId}}/', true),
+        getAcceptedPartList: function (constructObjectId) {
+            var dtlContext = new dtlBase.Context({constructObjectId: constructObjectId}),
+                url = this.ngwApplicationUrl + this.GET_ACCEPTED_PART_LIST.render(dtlContext);
+            return xhr.get(url, {
+                handleAs: 'json'
+            });
+        },
 
         constructor: function (domId, Display) {
             this._Display = Display;
@@ -50,7 +56,7 @@ define([
                     columns: this._columns,
                     selectionMode: 'single',
                     loadingMessage: 'Загрузка данных...',
-                    noDataMessage: 'Нет выбранных элементов'
+                    noDataMessage: 'Нет принятых участков'
                 }, domId);
 
             //context menu
@@ -143,19 +149,19 @@ define([
                         '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0]);
                 })
             }));
-            this.bindEvents();
+            this._bindEvents();
         },
 
         _lastGridState: null,
-        bindEvents: function () {
-            topic.subscribe('resources/changed', lang.hitch(this, function (selection) {
+        _bindEvents: function () {
+            topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (selection) {
                 this._lastGridState = selection;
                 this.updateDataStore(selection);
             }));
 
-            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
-                this.zoomToResource(evt);
-            }));
+            // this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
+            //     this.zoomToResource(evt);
+            // }));
 
         },
 

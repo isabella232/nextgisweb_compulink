@@ -291,31 +291,13 @@
                         <div id="resourcesTable" style="height: auto; position: absolute; display: block; top: 20px; bottom: 0; left: 0; right: 0;"></div>
                     </div>
 
-                    <div data-dojo-attach-point="acceptedPartsPanel"
+                    <div data-dojo-attach-point="acceptedPartsContentPane"
                          data-dojo-type="dijit/layout/ContentPane"
                          data-dojo-props="region: 'center', splitter: true, gutters: false"
                          style="padding: 0; height: 100%; width:49%;overflow: hidden; display: inline-block; position: absolute; right: 4px; border: 1px #b5bcc7 solid;">
-                        <div class="title">Принятые участки</div>
-                        <div data-dojo-attach-point="acceptedPartsToolbar"
-                             data-dojo-type="dijit/Toolbar"
-                             class="accepted-parts-toolbar"
-                             data-dojo-props="region: 'top'">
 
-                            <div data-dojo-type="dijit/form/Button"
-                                 data-dojo-props="iconClass:'icon icon-plus', showLabel:false">Cut
-                            </div>
-                            <div data-dojo-type="dijit/form/ToggleButton"
-                                 data-dojo-props="iconClass:'icon icon-eye', showLabel:false">Bold
-                            </div>
-                            <span data-dojo-type="dijit/ToolbarSeparator"></span>
-                            <input data-dojo-type="dijit/form/TextBox"
-                                   data-dojo-attach-point="acceptedPartsFilter"
-                                   type="text"
-                                   placeHolder="Фильтр"
-                                   value=""/>
-                        </div>
-                        <div data-dojo-attach-point="acceptedPartsTable"
-                             style="position: absolute; display: block; top: 46px; bottom: 0; left: 0; right: 0;height: auto;"></div>
+                        <div data-dojo-attach-point="acceptedPartsPanel"
+                             data-dojo-type="ngw-compulink-accepted-part/AcceptedPartsPanel/AcceptedPartsPanel"></div>
                     </div>
                 </div>
             </div>

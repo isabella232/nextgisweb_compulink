@@ -44,7 +44,7 @@ define([
     "ngw-compulink-site/ResourcesTypeSelector",
     "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
-    "ngw-compulink-site/_AcceptedPartsPanelMixin",
+    "ngw-compulink-accepted-part/AcceptedPartsPanel/AcceptedPartsPanel",
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
@@ -112,7 +112,7 @@ define([
     ResourcesTypeSelector,
     LayersManager,
     SelectedResourcesTable,
-    _AcceptedPartsPanelMixin,
+    AcceptedPartsPanel,
     CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
@@ -179,7 +179,7 @@ define([
         }
     });
 
-    return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin, _AcceptedPartsPanelMixin], {
+    return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
         ngwConfig: ngwConfig ? ngwConfig : null,
 
@@ -530,7 +530,6 @@ define([
 
             this.LayersSelector = this.buildLayersSelector();
             this.SelectedResourcesTable = new SelectedResourcesTable('resourcesTable', this);
-            if (this._AcceptedPartsPanelMixin) this.buildAcceptedPartsTable();
             this.ResourcesTree = new ResourcesTree("#resourcesTree", {
                 type: 'vols',
                 resourceToSelect: this._urlParams['resource_id']

@@ -1,0 +1,24 @@
+<div style="width: 100%; height: 100%;">
+    <div class="title">Принятые участки</div>
+    <div data-dojo-attach-point="acceptedPartsToolbar"
+         data-dojo-type="dijit/Toolbar"
+         class="accepted-parts-toolbar"
+         data-dojo-props="region: 'top'">
+
+        <div data-dojo-type="dijit/form/ToggleButton"
+             data-dojo-props="iconClass:'icon icon-plus', showLabel:false">Cut
+        </div>
+        <div data-dojo-type="dijit/form/ToggleButton"
+             data-dojo-attach-point="acceptedPartsLayerToggle"
+             data-dojo-props="iconClass:'icon icon-eye-off', showLabel:false">Bold
+        </div>
+        <span data-dojo-type="dijit/ToolbarSeparator"></span>
+        <input data-dojo-type="dijit/form/TextBox"
+               data-dojo-attach-point="acceptedPartsFilter"
+               type="text"
+               placeHolder="Фильтр"
+               value=""/>
+    </div>
+    <div data-dojo-attach-point="acceptedPartsTable"
+         style="position: absolute; display: block; top: 46px; bottom: 0; left: 0; right: 0;height: auto;"></div>
+</div>

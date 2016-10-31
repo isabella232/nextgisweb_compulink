@@ -38,6 +38,6 @@ def amd_packages():
         ('ngw-compulink-libs', 'nextgisweb_compulink:compulink_site/static/js'),
         ('ngw-compulink-statistic-map', 'nextgisweb_compulink:compulink_statistic_map/amd/ngw-compulink-statistic-map'),
         ('ngw-compulink-deviation', 'nextgisweb_compulink:compulink_deviation/amd/ngw-compulink-deviation'),
-        #('ngw-compulink-accepted-part', 'nextgisweb_compulink:compulink_accepted_part/amd/ngw-compulink-accepted-part'),
+        ('ngw-compulink-accepted-part', 'nextgisweb_compulink:compulink_accepted_part/amd/ngw-compulink-accepted-part'),
         ('jquery', 'nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2')
     )
