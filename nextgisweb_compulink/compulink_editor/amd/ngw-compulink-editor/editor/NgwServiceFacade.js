@@ -7,7 +7,13 @@ define([
 
     return declare([], {
         constructor: function (ngwApplicationUrl) {
-            this.ngwApplicationUrl = ngwApplicationUrl || '';
+            if (ngwApplicationUrl) {
+                this.ngwApplicationUrl = ngwApplicationUrl;
+            } else if (ngwConfig && ngwConfig.applicationUrl) {
+                this.ngwApplicationUrl = ngwConfig.applicationUrl;
+            } else {
+                this.ngwApplicationUrl = '';
+            }
         },
 
         GET_FEATURE: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}', true),
