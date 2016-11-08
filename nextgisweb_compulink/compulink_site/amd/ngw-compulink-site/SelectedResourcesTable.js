@@ -198,6 +198,11 @@ define([
                 this.zoomToResource(evt);
             }));
 
+            this._grid.on('dgrid-select', lang.hitch(this, function (evt) {
+                var row = evt.rows[0];
+                topic.publish('/table/construct_object/selected', row.data);
+            }));
+
         },
 
         zoomToResource: function(evt) {
@@ -218,6 +223,7 @@ define([
                 this._store = Memory([]);
                 this._store.data = data;
                 this._grid.store = this._store;
+                topic.publish('/table/construct_object/data/changed', this._store);
                 this._grid.refresh();
             }));
         },
