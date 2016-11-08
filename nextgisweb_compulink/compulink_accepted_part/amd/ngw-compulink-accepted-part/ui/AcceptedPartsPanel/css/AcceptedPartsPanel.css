@@ -2,3 +2,7 @@ div.accepted-parts-toolbar span.icon {
     color: #2074C3;
     font-size: 15px;
 }
+
+span.dijitToggleButtonDisabled {
+    opacity: 0.3;
+}

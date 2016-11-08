@@ -6,11 +6,12 @@
          data-dojo-props="region: 'top'">
 
         <div data-dojo-type="dijit/form/ToggleButton"
-             data-dojo-props="iconClass:'icon icon-plus', showLabel:false">Cut
+             data-dojo-attach-point="createAcceptedPartToggle"
+             data-dojo-props="iconClass:'icon icon-plus', showLabel:false, disabled: 'disabled'">Cut
         </div>
         <div data-dojo-type="dijit/form/ToggleButton"
              data-dojo-attach-point="acceptedPartsLayerToggle"
-             data-dojo-props="iconClass:'icon icon-eye-off', showLabel:false">Bold
+             data-dojo-props="iconClass:'icon icon-eye-off', showLabel:false, disabled: 'disabled'">Bold
         </div>
         <span data-dojo-type="dijit/ToolbarSeparator"></span>
         <input data-dojo-type="dijit/form/TextBox"

@@ -36,12 +36,15 @@ define([
                 cabling_fact: 'Приложенные файлы'
         },
 
-        GET_ACCEPTED_PART_LIST: new dtlBase.Template('/compulink/accepted_part/{{constructObjectId}}/', true),
+        GET_ACCEPTED_PART_LIST: new dtlBase.Template('/compulink/accepted-parts/', true),
         getAcceptedPartList: function (constructObjectId) {
-            var dtlContext = new dtlBase.Context({constructObjectId: constructObjectId}),
-                url = this.ngwApplicationUrl + this.GET_ACCEPTED_PART_LIST.render(dtlContext);
+            var dtlContext = new dtlBase.Context({}),
+                url = ngwConfig.applicationUrl + this.GET_ACCEPTED_PART_LIST.render(dtlContext);
             return xhr.get(url, {
-                handleAs: 'json'
+                handleAs: 'json',
+                query: {
+                    construct_object_id: constructObjectId
+                }
             });
         },
 
@@ -71,7 +74,7 @@ define([
             });
 
             this._menu.addChild(new MenuItem({
-                label: 'Экспорт координат в KML',
+                label: 'Редактировать атрибуты',
                 onClick: lang.hitch(this, function(evt) {
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
@@ -80,8 +83,10 @@ define([
                 })
             }));
 
+            this._menu.addChild(new MenuSeparator());
+
             this._menu.addChild(new MenuItem({
-                label: 'Экспорт координат в GeoJSON',
+                label: 'Удалить',
                 onClick: lang.hitch(this, function(evt) {
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
@@ -90,73 +95,17 @@ define([
                 })
             }));
 
-            this._menu.addChild(new MenuItem({
-                label: 'Экспорт координат в CSV',
-                onClick: lang.hitch(this, function(evt) {
-                    evt.preventDefault();
-                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
-                    var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_csv';
-                    var win = window.open(exportUrl, '_blank');
-                })
-            }));
-
-            this._menu.addChild(new MenuSeparator());
-
-            this._menu.addChild(new MenuItem({
-                label: 'Изменить статус',
-                onClick: lang.hitch(this, function (evt) {
-                    var itemId = Object.getOwnPropertyNames( this._grid.selection )[0];
-                    this._showChangeStatusDialog(itemId);
-                    this._loadStatuses(itemId);
-                })
-            }));
-
-            this._menu.addChild(new MenuItem({
-                label: 'Открыть карточку объекта',
-                onClick: lang.hitch(this, function (evt) {
-                    var itemId = Object.getOwnPropertyNames(this._grid.selection)[0],
-                        item = this._grid.store.query({id: itemId});
-                    if (item) {
-                        ConstructObjectEditor.run(itemId, item[0].editable, lang.hitch(this, function () {
-                            this.updateDataStore(this._lastGridState);
-                            topic.publish('resources/tree/refresh');
-                        }));
-                    }
-                })
-            }));
-
-            this._menu.addChild(new MenuSeparator());
-            this._menu.addChild(new MenuItem({
-                label: 'Редактировать геометрию объекта',
-                onClick: lang.hitch(this, function (evt) {
-                    // TODO: need check!
-                    var extent = this._Display.map.olMap.getExtent().transform('EPSG:3857', 'EPSG:4326'),
-                        extentArray = [
-                            extent.left,extent.bottom,
-                            extent.right, extent.top
-                        ];
-
-                    window.open(displayConfig.editorUrl +
-                        '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0] +
-                        '&extent=' + JSON.stringify(extentArray), '_blank');
-                })
-            }));
-
-            this._menu.addChild(new MenuItem({
-                label: 'Проиграть ход строительства',
-                onClick: lang.hitch(this, function (evt) {
-                    window.open(displayConfig.playerUrl +
-                        '?resource_id=' + Object.getOwnPropertyNames(this._grid.selection )[0]);
-                })
-            }));
             this._bindEvents();
         },
 
         _lastGridState: null,
         _bindEvents: function () {
-            topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (selection) {
-                this._lastGridState = selection;
-                this.updateDataStore(selection);
+            topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (constructObjectInfo) {
+                // this.getAcceptedPartList(constructObjectInfo.id).then(lang.hitch(this, function (acceptedParts) {
+                //
+                // }));
+                // this._lastGridState = selection;
+                // this.updateDataStore(selection);
             }));
 
             // this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {

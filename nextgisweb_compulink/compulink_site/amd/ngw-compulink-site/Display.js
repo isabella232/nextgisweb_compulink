@@ -44,7 +44,8 @@ define([
     "ngw-compulink-site/ResourcesTypeSelector",
     "ngw-compulink-site/LayersManager",
     "ngw-compulink-site/SelectedResourcesTable",
-    "ngw-compulink-accepted-part/AcceptedPartsPanel/AcceptedPartsPanel",
+    "ngw-compulink-accepted-part/ui/AcceptedPartsPanel/AcceptedPartsPanel",
+    "ngw-compulink-accepted-part/AcceptedPartsManager",
     "ngw-compulink-site/CadastreOverlay",
     "ngw-compulink-site/DisplayHeader",
     "ngw-compulink-site/LayersLoadingIndicator",
@@ -113,6 +114,7 @@ define([
     LayersManager,
     SelectedResourcesTable,
     AcceptedPartsPanel,
+    AcceptedPartsManager,
     CadastreOverlay,
     DisplayHeader,
     LayersLoadingIndicator,
@@ -547,7 +549,6 @@ define([
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
                  this.map.olMap.zoomToExtent(new_ext, false);
             }));
-
         },
 
         buildLayersSelector: function () {
@@ -780,6 +781,7 @@ define([
             this._zoomToInitialExtent();
 
             new LayersLoadingIndicator(this.map);
+            new AcceptedPartsManager(this.map, this.acceptedPartsPanel);
 
             this._mapDeferred.resolve();
         },
