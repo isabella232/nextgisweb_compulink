@@ -7,8 +7,9 @@ define([
     'dojo/Evented',
     'dojo/Deferred',
     'ngw/openlayers',
-    './_BaseLayer'
-], function (declare, lang, array, on, topic, Evented, Deferred, openlayers, _BaseLayer) {
+    './_BaseLayer',
+    './utils/OrderedMultilineMaker'
+], function (declare, lang, array, on, topic, Evented, Deferred, openlayers, _BaseLayer, OrderedMultilineMaker) {
     return declare([_BaseLayer], {
         LAYER_NAME: 'AcceptedParts.ActualRealOpticalCable',
         DEFAULT_STYLE: {
@@ -20,14 +21,14 @@ define([
             this.inherited(arguments);
 
             this._store.on('fetched', lang.hitch(this, function (features) {
-                var multilines = [],
-                    multilineGeometry;
-                array.forEach(features, function (ngwFeature) {
-                    var feature = this.WKT.read(ngwFeature.geom);
-                    multilines.push(feature);
+                var multilinesFetures = [],
+                    orderedMultiLine;
+                array.forEach(features, function (multilineNgwFeature) {
+                    var feature = this.WKT.read(multilineNgwFeature.geom);
+                    multilinesFetures.push(feature);
                 }, this);
-                multilineGeometry = this.mergeMultilines(multilines);
-                this._layer.addFeatures(new openlayers.Feature.Vector(multilineGeometry));
+                orderedMultiLine = (new OrderedMultilineMaker()).makeOrderedMultiline(multilinesFetures)
+                this._layer.addFeatures(new openlayers.Feature.Vector(orderedMultiLine));
             }));
 
             topic.subscribe('compulink/accepted-parts/ui/layer/visibility/changed', lang.hitch(this, function (state) {
@@ -39,18 +40,6 @@ define([
                     this._map.olMap.removeLayer(this._layer);
                 }
             }));
-        },
-
-        mergeMultilines: function (multilinesFeatures) {
-            var line,
-                linestrings = [];
-
-            array.forEach(multilinesFeatures, function (multiline) {
-                line = multiline.geometry.components[0].clone();
-                linestrings.push(line);
-            });
-
-            return new openlayers.Geometry.MultiLineString(linestrings);
         }
     });
 });
