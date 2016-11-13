@@ -10,6 +10,11 @@ define([
 ], function (declare, lang, on, topic, Evented, Deferred, openlayers, _BaseLayer) {
     return declare([_BaseLayer], {
         LAYER_NAME: 'AcceptedParts.AcceptedParts',
+        DEFAULT_STYLE: {
+            fillColor: '#ff0000',
+            strokeColor: '#ff0000',
+            width: 2
+        },
 
         _bindEvents: function () {
             topic.subscribe('compulink/accepted-parts/ui/layer/visibility/changed', lang.hitch(this, function (state) {

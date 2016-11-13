@@ -14,7 +14,8 @@ define([
         LAYER_NAME: 'AcceptedParts.ActualRealOpticalCable',
         DEFAULT_STYLE: {
             fillColor: '#6666ff',
-            strokeColor: '#6666ff'
+            strokeColor: '#6666ff',
+            width: 1
         },
 
         _bindEvents: function () {

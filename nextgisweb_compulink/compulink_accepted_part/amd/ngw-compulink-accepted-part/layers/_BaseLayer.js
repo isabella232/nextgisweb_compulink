@@ -19,7 +19,7 @@ define([
             this._map = map;
             this._store = store;
             this._layer = new openlayers.Layer.Vector(this.LAYER_NAME, {
-                // style: this.DEFAULT_STYLE,
+                style: this.DEFAULT_STYLE,
                 rendererOptions: {zIndexing: true}
             });
             this._bindEvents();
