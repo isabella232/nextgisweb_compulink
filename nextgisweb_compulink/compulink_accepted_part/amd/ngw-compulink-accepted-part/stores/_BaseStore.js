@@ -11,8 +11,10 @@ define([
     './_ServiceFacadeMixin'
 ], function (declare, lang, on, topic, Evented, Deferred, Memory, dtlBase, NgwServiceFacade, _ServiceFacadeMixin) {
     return declare([Memory, _ServiceFacadeMixin, Evented], {
-        _ngwServiceFacade: null,
         LAYER_TYPE: null,
+
+        _ngwServiceFacade: null,
+        _constructObjectId: null,
 
         constructor: function () {
             this.data = [];
@@ -21,6 +23,7 @@ define([
 
         fetch: function (constructObjectId) {
             var getLayerInfo = this.getLayerInfo(this.LAYER_TYPE, constructObjectId);
+            this._constructObjectId = constructObjectId;
             getLayerInfo.then(lang.hitch(this, function (layerInfo) {
                 var getAllFeatures = this._ngwServiceFacade.getAllFeatures(layerInfo.resource.id);
                 getAllFeatures.then(lang.hitch(this, function (features) {

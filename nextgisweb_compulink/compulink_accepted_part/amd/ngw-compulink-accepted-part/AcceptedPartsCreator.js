@@ -7,9 +7,14 @@ define([
     'dojo/aspect',
     'dojo/Evented',
     'dojo/Deferred',
-    'ngw/openlayers'
-], function (declare, lang, array, on, topic, aspect, Evented, Deferred, openlayers) {
+    'ngw/openlayers',
+    './ui/CreateAcceptedPartDialog/CreateAcceptedPartDialog'
+], function (declare, lang, array, on, topic, aspect, Evented, Deferred, openlayers,
+             CreateAcceptedPartDialog) {
     return declare(null, {
+        ACCEPTED_PARTS_TOLERANCE: 100,
+        OPTICAL_CABLE_LAYER_TOLERANCE: 20,
+
         _drawFeatureControl: null,
         _snappingControl: null,
         _acceptedPartsStore: null,
@@ -53,12 +58,12 @@ define([
                 targets: [
                     {
                         layer: this._acceptedPartsLayer._layer,
-                        tolerance: 100,
+                        tolerance: this.ACCEPTED_PARTS_TOLERANCE,
                         edge: false
                     },
                     {
                         layer: this._actualRealOpticalCableLayer._layer,
-                        tolerance: 20,
+                        tolerance: this.OPTICAL_CABLE_LAYER_TOLERANCE,
                         node: false,
                         vertex: false,
                         edge: true
@@ -114,11 +119,41 @@ define([
 
             // if this._lastPointVerifyResult.pointsInSketchLine !== 2 then current point is end point
             if (this._lastPointVerifyResult.result) {
-
+                var acceptedGeometry = this._createAcceptedPartGeometry();
+                if (acceptedGeometry) {
+                    this._drawFeatureControl.cancel();
+                    this._openCreateAcceptedPartsDialog(acceptedGeometry);
+                }
             } else {
                 this._drawFeatureControl.undo();
                 return true;
             }
+        },
+
+        _openCreateAcceptedPartsDialog: function (acceptedPartGeometry) {
+            var acceptedPartDialog = new CreateAcceptedPartDialog({
+                id: 'createAcceptedPartDialog',
+                title: 'Создать принятый участок',
+                handlerOk: lang.hitch(this, function () {
+                    this._createAcceptedPart(acceptedPartDialog, acceptedPartGeometry);
+                }),
+                handlerCancel: lang.hitch(this, function () {}),
+                isDestroyedAfterHiding: true
+            });
+            acceptedPartDialog.show();
+        },
+
+        _createAcceptedPart: function (acceptedPartDialog, acceptedPartGeometry) {
+            var wkt = new openlayers.Format.WKT(),
+                acceptedPartFeature = new openlayers.Feature.Vector(new openlayers.Geometry.MultiLineString([acceptedPartGeometry])),
+                acceptedPart = {},
+                $input;
+            $(acceptedPartDialog.domNode).find('input[data-field]').each(function (i, input) {
+                $input = $(input);
+                acceptedPart[$input.data('field')] = input.value;
+            });
+            acceptedPart.geom = wkt.write(acceptedPartFeature);
+            this._acceptedPartsStore.createAcceptedPart(acceptedPart);
         },
 
         _verifyStartPoint: function (point, sketchLine) {
@@ -134,6 +169,10 @@ define([
 
             if (this._isPointContainsInLinesLayer(endPoint, this._actualRealOpticalCableLayer._layer) !== true ||
                 this._isPointContainsInLinesLayer(endPoint, this._acceptedPartsLayer._layer) !== false) {
+                return false;
+            }
+
+            if (startPoint.distanceTo(endPoint) === 0) {
                 return false;
             }
 
@@ -184,5 +223,69 @@ define([
         _isPointContainsInLine: function (point, line) {
             return point.distanceTo(line) === 0;
         },
+
+        _createAcceptedPartGeometry: function () {
+            var verificationResult = this._lastPointVerifyResult.result,
+                startPoint = verificationResult.startPoint,
+                endPoint = verificationResult.endPoint,
+                linestringPoints = verificationResult.linestring.components,
+                linestringPointsCount = linestringPoints.length,
+                acceptedPartGeometry = new openlayers.Geometry.LineString(),
+                acceptedPartGeometryCreating = false,
+                startPointContained, endPointContained,
+                pointContained,
+                linePoint,
+                segment;
+
+            for (var i = 0; i < linestringPointsCount; i++) {
+                linePoint = linestringPoints[i];
+
+                if (i === 0 && (linePoint.equals(startPoint) || linePoint.equals(endPoint))) {
+                    acceptedPartGeometry.addComponent(linePoint);
+                    acceptedPartGeometryCreating = true;
+                    continue;
+                }
+
+                if (i === linestringPointsCount - 1) {
+                    break;
+                }
+
+                segment = new openlayers.Geometry.LineString([linestringPoints[i - 1], linePoint]);
+
+                startPointContained = this._isPointContainsInLine(startPoint, segment);
+                endPointContained = this._isPointContainsInLine(endPoint, segment);
+
+                if (startPointContained && endPointContained) {
+                    acceptedPartGeometry = new openlayers.Geometry.LineString([startPoint, endPoint]);
+                    break;
+                }
+
+                if (startPointContained || endPointContained) {
+                    pointContained = startPointContained ? startPoint : endPoint;
+                    if (acceptedPartGeometryCreating) {
+                        acceptedPartGeometry.addComponent(pointContained);
+                        break;
+                    }
+                    if (linestringPoints[i + 1].equals(pointContained)) {
+                        acceptedPartGeometry.addComponent(pointContained);
+                    } else {
+                        acceptedPartGeometry.addComponent(pointContained);
+                        acceptedPartGeometry.addComponent(linestringPoints[i + 1]);
+                    }
+                    acceptedPartGeometryCreating = true;
+                    continue;
+                }
+
+                if (acceptedPartGeometryCreating) {
+                    acceptedPartGeometry.addComponent(linePoint);
+                }
+            }
+
+            if (acceptedPartGeometry.components.length > 1) {
+                return acceptedPartGeometry;
+            } else {
+                return null;
+            }
+        }
     });
 });

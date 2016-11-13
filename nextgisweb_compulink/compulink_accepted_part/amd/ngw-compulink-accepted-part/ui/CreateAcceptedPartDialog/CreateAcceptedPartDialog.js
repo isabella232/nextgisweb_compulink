@@ -9,7 +9,9 @@ define([
     'dijit/_WidgetsInTemplateMixin',
     'ngw-compulink-site/ConfirmDialog',
     'dojo/on',
-    'dojo/text!./CreateAcceptedPartDialog.html'
+    'dojo/text!./CreateAcceptedPartDialog.html',
+    'dojox/layout/TableContainer',
+    'dijit/form/TextBox'
 ], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, ConfirmDialog, on,
              template) {
     return declare([ConfirmDialog], {
@@ -38,46 +40,6 @@ define([
             this.content = contentWidget;
 
             this.hide = this._hideDialog;
-        },
-
-        postCreate: function () {
-            this.inherited(arguments);
-            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
-
-            if (this.handlerOk) {
-                on(this.content.okButton, 'click', lang.hitch(this, function () {
-                    this.handlerOk.call();
-                    if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
-                }));
-            }
-            if (this.handlerCancel) {
-                on(this.content.cancelButton, 'click', lang.hitch(this, function () {
-                    this.handlerCancel.call();
-                    if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
-                }));
-            }
-        },
-
-        disableButtons: function () {
-            this.contentNode = query('div.cd-contentNode', this.containerNode)[0];
-            this.content.okButton.setDisabled(true);
-            this.content.cancelButton.setDisabled(true);
-        },
-
-        enableButtons: function () {
-            this.content.okButton.setDisabled(false);
-            this.content.cancelButton.setDisabled(false);
-        },
-
-        config: function (params) {
-            lang.mixin(this, params);
-            return this;
-        },
-
-        _hideDialog: function () {
-            if (this.isDestroyedAfterHiding) this.destroyRecursive();
         }
     });
 });

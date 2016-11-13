@@ -2,7 +2,12 @@
 
     <div class="dijitDialogPaneContentArea">
         <div data-dojo-attach-point="contentNode" class="cd-contentNode">
-            dfsdfafasdfasdfasdfsadfasdfasf
+            <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols:1" id="tc1">
+                <input data-field="act_number_date" data-dojo-type="dijit/form/TextBox" title="Номер и дата акта"/>
+                <input data-field="acceptor" data-dojo-type="dijit/form/TextBox" title="Принял"/>
+                <input data-field="subcontr_name" data-dojo-type="dijit/form/TextBox" title="Субподрядчик"/>
+                <input data-field="comment" data-dojo-type="dijit/form/TextBox" title="Комментарий"/>
+            </div>
         </div>
     </div>
 
@@ -11,14 +16,14 @@
         <button
                 data-dojo-type="dijit.form.Button"
                 data-dojo-attach-point="okButton"
-                >
+        >
             ${buttonOk}
         </button>
 
         <button
                 data-dojo-type="dijit.form.Button"
                 data-dojo-attach-point="cancelButton"
-                >
+        >
             ${buttonCancel}
         </button>
 
