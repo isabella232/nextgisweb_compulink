@@ -6,11 +6,18 @@ from __future__ import unicode_literals
 
 import json
 
+import transaction
+from datetime import datetime
+
+from nextgisweb.feature_layer import Feature
+
+from nextgisweb_compulink.compulink_admin.model import FoclStructScope, FoclStruct
+
 from nextgisweb import DBSession
 from nextgisweb.resource import Resource
 from nextgisweb.resource.serialize import CompositeSerializer
 from nextgisweb.vector_layer import VectorLayer
-from nextgisweb_compulink.utils import error_response
+from nextgisweb_compulink.utils import error_response, success_response
 from pyramid.httpexceptions import HTTPForbidden, HTTPNotFound, HTTPBadRequest
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -67,8 +74,52 @@ def create_accepted_part(request):
         raise HTTPForbidden()
     if request.method != 'PUT':
         return error_response(u'Метод не поддерживается! Необходим PUT')
-    # todo: implement
-    raise NotImplementedError()
+    construct_object_id = request.matchdict['construct_object_id']
+
+    try:
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        #get project
+        parent_res = db_session.query(FoclStruct).get(construct_object_id)
+
+        #check exists and perms
+        if not parent_res:
+            return error_response(u'Не найден объект строительства')
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)): #TODO: special rights!
+            return error_response(u'У вас недостаточно прав для изменения информации о принятых участках')
+
+
+        accepted_part_layer = [res for res in parent_res.children if (res.keyname and res.keyname.startswith(u'accepted_part_'))]
+
+        if len(accepted_part_layer) < 0:
+            return error_response(u'Не найден слой с принятыми участками')
+        accepted_part_layer = accepted_part_layer[0]
+
+        #create feat
+        data = request.POST
+        info = {
+            'act_number_date': data['act_number_date'],
+            'acceptor': data['acceptor'],
+            'subcontr_name': data['subcontr_name'],
+            'comment': data['comment'],
+            'change_author': request.user.display_name or request.user.keyname,
+            'change_date': datetime.now(),
+        }
+        feature = Feature(
+            fields=info,
+            geom=data['geom']
+        )
+
+        # save feat
+        accepted_part_layer.feature_create(feature)
+        transaction.manager.commit()
+
+    except Exception as ex:
+        error_response(ex.message)
+
+    success_response()
+
 
 
 @view_config(renderer='json')
