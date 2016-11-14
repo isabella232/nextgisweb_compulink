@@ -166,5 +166,57 @@ def update_accepted_part(request):
         raise HTTPForbidden()
     if request.method != 'POST':
         return error_response(u'Метод не поддерживается! Необходим POST')
-    # todo: implement
-    raise NotImplementedError()
+
+    construct_object_id = request.matchdict['construct_object_id']
+
+    try:
+        db_session = DBSession()
+        transaction.manager.begin()
+
+        #get project
+        parent_res = db_session.query(FoclStruct).get(construct_object_id)
+
+        #check exists and perms
+        if not parent_res:
+            return error_response(u'Не найден объект строительства')
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)): #TODO: special rights!
+            return error_response(u'У вас недостаточно прав для изменения информации о принятых участках')
+
+        #get layer
+        accepted_part_layer = [res for res in parent_res.children if (res.keyname and res.keyname.startswith(u'accepted_part_'))]
+        if len(accepted_part_layer) < 0:
+            return error_response(u'Не найден слой с принятыми участками')
+        accepted_part_layer = accepted_part_layer[0]
+
+        # get feat
+        feature_id = request.POST['feature_id']
+
+        query = accepted_part_layer.feature_query()
+        query.geom()
+        query.filter_by(id=feature_id)
+        query.limit(1)
+
+        feature = None
+        for f in query():
+            feature = f
+
+        if not feature:
+            return error_response(u'Редактируемый объект не найден')
+
+        #update feat
+        data = request.POST
+        feature.fields['act_number_date'] = data['act_number_date'],
+        feature.fields['acceptor'] = data['acceptor'],
+        feature.fields['subcontr_name'] = data['subcontr_name'],
+        feature.fields['comment'] = data['comment'],
+        feature.fields['change_author'] = request.user.display_name or request.user.keyname
+        feature.fields['change_date'] = datetime.now()
+        feature.geom = data['geom']
+
+        accepted_part_layer.feature_put(feature)
+        transaction.manager.commit()
+
+    except Exception as ex:
+        error_response(ex.message)
+
+    success_response()
