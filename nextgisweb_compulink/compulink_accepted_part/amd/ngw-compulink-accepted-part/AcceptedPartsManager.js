@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/query',
     'dojo/on',
     'dojo/topic',
@@ -10,7 +11,7 @@ define([
     './layers/ActualRealOpticalCableLayer',
     './AcceptedPartsCreator',
     './ui/AcceptedPartsTable/AcceptedPartsTable'
-], function (declare, lang, query, on, topic,
+], function (declare, lang, array, query, on, topic,
              AcceptedPartsStore, ActualRealOpticalCableStore,
              AcceptedPartsLayer, ActualRealOpticalCableLayer,
              AcceptedPartsCreator, AcceptedPartsTable) {
@@ -48,6 +49,17 @@ define([
             topic.subscribe('/table/construct_object/selected', lang.hitch(this, this._selectConstructObjectHandler));
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this,
                 this._dataConstructObjectsTableChangedHandler));
+
+            this._map.olMap.events.register('addlayer', this._map, lang.hitch(this, this._applyZIndexes));
+            this._map.olMap.events.register('removelayer', this._map, lang.hitch(this, this._applyZIndexes));
+        },
+
+        _applyZIndexes: function () {
+            array.forEach(this._map.olMap.layers, function (layer) {
+                    if (layer.hasOwnProperty('_ap_zindex')) {
+                        layer.setZIndex(layer._ap_zindex);
+                    }
+                });
         },
 
         _selectConstructObjectHandler: function (constructObjectInfo) {

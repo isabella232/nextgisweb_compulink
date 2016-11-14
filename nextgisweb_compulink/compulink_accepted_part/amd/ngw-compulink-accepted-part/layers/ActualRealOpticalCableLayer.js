@@ -15,8 +15,10 @@ define([
         DEFAULT_STYLE: {
             fillColor: '#6666ff',
             strokeColor: '#6666ff',
-            width: 1
+            width: 1,
+            opacity: 0.5
         },
+        Z_INDEX: 2000,
 
         _bindEvents: function () {
             this.inherited(arguments);
@@ -28,14 +30,13 @@ define([
                     var feature = this.WKT.read(multilineNgwFeature.geom);
                     multilinesFetures.push(feature);
                 }, this);
-                orderedMultiLine = (new OrderedMultilineMaker()).makeOrderedMultiline(multilinesFetures)
+                orderedMultiLine = (new OrderedMultilineMaker()).makeOrderedMultiline(multilinesFetures);
                 this._layer.addFeatures(new openlayers.Feature.Vector(orderedMultiLine));
             }));
 
             topic.subscribe('compulink/accepted-parts/ui/layer/visibility/changed', lang.hitch(this, function (state) {
                 if (state) {
                     this._map.olMap.addLayer(this._layer);
-                    this._map.olMap.setLayerIndex(this._layer, 2000);
                     this._map.olMap.zoomToExtent(this._layer.getDataExtent());
                 } else {
                     this._map.olMap.removeLayer(this._layer);

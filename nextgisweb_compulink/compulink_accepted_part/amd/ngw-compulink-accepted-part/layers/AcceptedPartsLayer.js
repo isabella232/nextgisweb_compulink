@@ -14,8 +14,10 @@ define([
         DEFAULT_STYLE: {
             fillColor: '#ff0000',
             strokeColor: '#ff0000',
-            width: 2
+            width: 2,
+            opacity: 0.8
         },
+        Z_INDEX: 2001,
         _featuresById: null,
 
         _bindEvents: function () {
@@ -24,7 +26,6 @@ define([
             topic.subscribe('compulink/accepted-parts/ui/layer/visibility/changed', lang.hitch(this, function (state) {
                 if (state) {
                     this._map.olMap.addLayer(this._layer);
-                    this._map.olMap.setLayerIndex(this._layer, 2100);
                 } else {
                     this._map.olMap.removeLayer(this._layer);
                 }

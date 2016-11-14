@@ -13,6 +13,7 @@ define([
         _layer: null,
         LAYER_NAME: null,
         DEFAULT_STYLE: null,
+        Z_INDEX: null,
         WKT: new openlayers.Format.WKT(),
 
         constructor: function (map, store) {
@@ -22,6 +23,7 @@ define([
                 style: this.DEFAULT_STYLE,
                 rendererOptions: {zIndexing: true}
             });
+            this._layer._ap_zindex = this.Z_INDEX;
             this._bindEvents();
         },
 
