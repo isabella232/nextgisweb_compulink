@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/on',
     'dojo/aspect',
     'dojo/dom-style',
     'dojo/topic',
@@ -23,61 +24,52 @@ define([
     'dojox/dtl/_base',
     'ngw-compulink-site/ConstructObjectEditor',
     'xstyle/css!./AcceptedPartsTable.css'
-], function (declare, lang, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
+], function (declare, lang, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
              ConfirmDialog, InfoDialog, dtlBase, ConstructObjectEditor) {
     return declare(null, {
         _columns: {
-                act_number_date: 'Номер и дата акта',
-                change_date: 'Дата изменений',
-                acceptor: 'Принял',
-                subcontr_name: 'Субподрядчик',
-                comment: 'Комментарий',
-                cabling_fact: 'Приложенные файлы'
-        },
-
-        GET_ACCEPTED_PART_LIST: new dtlBase.Template('/compulink/accepted-parts/', true),
-        getAcceptedPartList: function (constructObjectId) {
-            var dtlContext = new dtlBase.Context({}),
-                url = ngwConfig.applicationUrl + this.GET_ACCEPTED_PART_LIST.render(dtlContext);
-            return xhr.get(url, {
-                handleAs: 'json',
-                query: {
-                    construct_object_id: constructObjectId
+            act_number_date: 'Номер и дата акта',
+            change_date: {
+                label: "Дата изменений",
+                formatter: function (ngwDate) {
+                    return ngwDate.day + '/' + ngwDate.month + '/' + ngwDate.year;
                 }
-            });
+            },
+            acceptor: 'Принял',
+            subcontr_name: 'Субподрядчик',
+            comment: 'Комментарий',
+            cabling_fact: 'Приложенные файлы'
         },
 
-        constructor: function (domId, Display) {
-            this._Display = Display;
-            this._store = Memory({data: []});
+        constructor: function (domId, acceptedPartsStore) {
+            this._acceptedPartsStore = acceptedPartsStore;
 
-            //grid
             this._grid = new (declare([OnDemandGrid, ColumnResizer, Selection]))(
                 {
-                    store: this._store,
+                    store: acceptedPartsStore.getAttributesStore(),
                     columns: this._columns,
                     selectionMode: 'single',
                     loadingMessage: 'Загрузка данных...',
-                    noDataMessage: 'Нет принятых участков'
+                    noDataMessage: 'Нет принятых участков'
                 }, domId);
 
             //context menu
             this._menu = new Menu({
                 targetNodeIds: [this._grid.domNode],
                 selector: 'div.dgrid-row',
-                onShow: lang.hitch(this, function(evt) {
+                onShow: lang.hitch(this, function (evt) {
                     evt.preventDefault();
-                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var item = Object.getOwnPropertyNames(this._grid.selection)[0];
                 })
 
             });
 
             this._menu.addChild(new MenuItem({
                 label: 'Редактировать атрибуты',
-                onClick: lang.hitch(this, function(evt) {
+                onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
-                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var item = Object.getOwnPropertyNames(this._grid.selection)[0];
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_kml';
                     var win = window.open(exportUrl, '_blank');
                 })
@@ -87,9 +79,9 @@ define([
 
             this._menu.addChild(new MenuItem({
                 label: 'Удалить',
-                onClick: lang.hitch(this, function(evt) {
+                onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
-                    var item = Object.getOwnPropertyNames( this._grid.selection )[0];
+                    var item = Object.getOwnPropertyNames(this._grid.selection)[0];
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_geojson';
                     var win = window.open(exportUrl, '_blank');
                 })
@@ -100,39 +92,13 @@ define([
 
         _lastGridState: null,
         _bindEvents: function () {
-            topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (constructObjectInfo) {
-                // this.getAcceptedPartList(constructObjectInfo.id).then(lang.hitch(this, function (acceptedParts) {
-                //
-                // }));
-                // this._lastGridState = selection;
-                // this.updateDataStore(selection);
-            }));
-
-            // this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
-            //     this.zoomToResource(evt);
-            // }));
-
-        },
-
-        zoomToResource: function(evt) {
-            var row = this._grid.row(evt); //row.id == id of group resource
-
-            xhr.post(this._get_extent_url, {handleAs: 'json', data: {id: row.id}}).then(lang.hitch(this, function (data) {
-                if (data && data.extent) {
-                    topic.publish('map/zoom_to', data.extent);
-                }
-            }));
-        },
-
-        updateDataStore: function(ids) {
-            ids_num = [];
-            for (var i=0; i<ids.length; i++) { ids_num.push(ids[i].replace('res_','')); }
-
-            xhr.post(this._get_focl_info_url, {handleAs: 'json', data: {ids: ids_num}}).then(lang.hitch(this, function (data) {
-                this._store = Memory([]);
-                this._store.data = data;
-                this._grid.store = this._store;
+            on(this._acceptedPartsStore, 'fetched', lang.hitch(this, function () {
+                this._grid.store = this._acceptedPartsStore.getAttributesStore();
                 this._grid.refresh();
+            }));
+
+            this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
+                topic.publish('compulink/accepted-parts/zoom', this._grid.row(evt));
             }));
         },
 
@@ -141,12 +107,12 @@ define([
         _showChangeStatusDialog: function (itemId) {
             this._changeStatusDialog = new ConfirmDialog({
                 title: 'Изменение статуса объекта строительства',
-                id: 'changeStatusDialog',
-                message: '',
-                buttonOk: 'Сохранить',
+                id: 'deleteAcceptedPartDialog',
+                message: 'Удалить принятый участок?',
+                buttonOk: 'Удалить',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
-                handlerOk: lang.hitch(this, function() {
+                handlerOk: lang.hitch(this, function () {
                     this._saveSelectedStatus().then(
                         lang.hitch(this, function () {
                             this.updateDataStore(this._lastGridState);
@@ -180,12 +146,12 @@ define([
 
         _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{{id}}/focl_status',
         _loadStatuses: function (itemId) {
-            var get_statuses_url = mustache.render(this._get_statuses_url, { id: itemId });
+            var get_statuses_url = mustache.render(this._get_statuses_url, {id: itemId});
 
             xhr.get(get_statuses_url, {handleAs: 'json'})
                 .then(lang.hitch(this, function (statusesInfo) {
                     this._buildStatusesSelector(statusesInfo);
-            }));
+                }));
         },
 
         _buildStatusesSelector: function (statusesInfo) {

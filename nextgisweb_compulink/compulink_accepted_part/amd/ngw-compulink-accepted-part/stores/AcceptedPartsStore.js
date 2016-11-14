@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/on',
     'dojo/topic',
     'dojo/Evented',
@@ -9,7 +10,7 @@ define([
     'dojox/dtl/_base',
     'dojo/request/xhr',
     './_BaseStore'
-], function (declare, lang, on, topic, Evented, Deferred, Memory, dtlBase, xhr, _BaseStore) {
+], function (declare, lang, array, on, topic, Evented, Deferred, Memory, dtlBase, xhr, _BaseStore) {
     return declare([_BaseStore], {
         LAYER_TYPE: 'accepted_part',
 
@@ -41,6 +42,17 @@ define([
             }).then(lang.hitch(this, function (result) {
                 this.fetch(this._constructObjectId);
             }));
+        },
+
+        getAttributesStore: function () {
+            var memory = new Memory(),
+                feature;
+            array.forEach(this.query(), function (ngwFeature) {
+                feature = ngwFeature.fields;
+                feature.id = ngwFeature.id;
+                memory.add(feature);
+            });
+            return memory;
         }
     });
 });

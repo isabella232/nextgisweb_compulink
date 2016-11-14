@@ -26,8 +26,6 @@ define([
         constructor: function (map, acceptedPartsPanel) {
             this._map = map;
 
-            this.AcceptedPartsTable = new AcceptedPartsTable(acceptedPartsPanel.acceptedPartsTable, acceptedPartsPanel);
-
             this._acceptedPartsStore = new AcceptedPartsStore();
             this._acceptedPartsLayer = new AcceptedPartsLayer(map, this._acceptedPartsStore);
 
@@ -41,6 +39,8 @@ define([
                 this._actualRealOpticalCableStore,
                 this._actualRealOpticalCableLayer
             );
+
+            this.AcceptedPartsTable = new AcceptedPartsTable(acceptedPartsPanel.acceptedPartsTable, this._acceptedPartsStore);
 
             this._bindEvents();
         },
@@ -56,10 +56,10 @@ define([
 
         _applyZIndexes: function () {
             array.forEach(this._map.olMap.layers, function (layer) {
-                    if (layer.hasOwnProperty('_ap_zindex')) {
-                        layer.setZIndex(layer._ap_zindex);
-                    }
-                });
+                if (layer.hasOwnProperty('_ap_zindex')) {
+                    layer.setZIndex(layer._ap_zindex);
+                }
+            });
         },
 
         _selectConstructObjectHandler: function (constructObjectInfo) {
