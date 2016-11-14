@@ -38,9 +38,9 @@ define([
                 handleAs: 'json',
                 method: 'PUT',
                 data: acceptedPart
-            }).then(function (result) {
-
-            });
+            }).then(lang.hitch(this, function (result) {
+                this.fetch(this._constructObjectId);
+            }));
         }
     });
 });
