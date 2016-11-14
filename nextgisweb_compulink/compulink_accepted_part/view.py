@@ -115,9 +115,9 @@ def create_accepted_part(request):
         transaction.manager.commit()
 
     except Exception as ex:
-        error_response(ex.message)
+        return error_response(ex.message)
 
-    success_response()
+    return success_response()
 
 
 
@@ -155,9 +155,9 @@ def delete_accepted_part(request):
         transaction.manager.commit()
 
     except Exception as ex:
-        error_response(ex.message)
+        return error_response(ex.message)
 
-    success_response()
+    return success_response()
 
 
 @view_config(renderer='json')
@@ -217,6 +217,6 @@ def update_accepted_part(request):
         transaction.manager.commit()
 
     except Exception as ex:
-        error_response(ex.message)
+        return error_response(ex.message)
 
-    success_response()
+    return success_response()
