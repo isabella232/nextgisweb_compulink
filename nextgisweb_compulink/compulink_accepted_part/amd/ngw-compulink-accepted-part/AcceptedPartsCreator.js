@@ -159,7 +159,7 @@ define([
         _verifyStartPoint: function (point, sketchLine) {
             var startPoint = sketchLine.components[0];
             return (this._isPointContainsInLinesLayer(startPoint, this._actualRealOpticalCableLayer._layer) === true) &&
-                (this._isPointContainsInLinesLayer(startPoint, this._acceptedPartsLayer._layer) === false);
+                (this._verifyPointByAcceptedPartsLayer(startPoint));
         },
 
         _verifyEndPoint: function (point, sketchLine) {
@@ -168,7 +168,7 @@ define([
                 linestring;
 
             if (this._isPointContainsInLinesLayer(endPoint, this._actualRealOpticalCableLayer._layer) !== true ||
-                this._isPointContainsInLinesLayer(endPoint, this._acceptedPartsLayer._layer) !== false) {
+                this._verifyPointByAcceptedPartsLayer(startPoint) !== true) {
                 return false;
             }
 
@@ -186,6 +186,26 @@ define([
                 endPoint: endPoint,
                 linestring: linestring
             };
+        },
+
+        _verifyPointByAcceptedPartsLayer: function (point) {
+            if (this._isPointContainsInLinesLayer(point, this._acceptedPartsLayer._layer) === false) {
+                return true;
+            }
+
+            var acceptedPartFeatures = this._acceptedPartsLayer._layer.features,
+                countAcceptedParts = acceptedPartFeatures.length,
+                countPointsInAcceptedPart,
+                acceptedPartLine;
+
+            for (var i = 0; i < countAcceptedParts; i++) {
+                acceptedPartLine = acceptedPartFeatures[i].geometry.components[0];
+                countPointsInAcceptedPart = acceptedPartLine.components.length;
+                if (point.equals(acceptedPartLine.components[0])) return true;
+                if (point.equals(acceptedPartLine.components[countPointsInAcceptedPart - 1])) return true;
+            }
+
+            return false;
         },
 
         _pointsOnOneLine: function (startPoint, endPoint, multiline) {
