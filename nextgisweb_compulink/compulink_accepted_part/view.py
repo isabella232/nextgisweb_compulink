@@ -150,7 +150,11 @@ def delete_accepted_part(request):
         accepted_part_layer = accepted_part_layer[0]
 
         # del feat
-        feature_id = request.POST['feature_id']
+        k,v = request.body.split('=')
+        if k != 'feature_id':
+            return error_response(u'Не найден параметр feature_id')
+        feature_id = int(v)
+
         accepted_part_layer.feature_delete(feature_id)
         transaction.manager.commit()
 
