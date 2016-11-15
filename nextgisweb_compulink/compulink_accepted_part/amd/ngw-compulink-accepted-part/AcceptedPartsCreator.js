@@ -132,15 +132,17 @@ define([
 
         _openCreateAcceptedPartsDialog: function (acceptedPartGeometry) {
             var acceptedPartDialog = new CreateAcceptedPartDialog({
-                id: 'createAcceptedPartDialog',
-                title: 'Создать принятый участок',
-                handlerOk: lang.hitch(this, function () {
-                    this._createAcceptedPart(acceptedPartDialog, acceptedPartGeometry);
-                }),
-                handlerCancel: lang.hitch(this, function () {}),
-                isDestroyedAfterHiding: true
+                acceptedPartsStore: this._acceptedPartsStore,
+                acceptedPartGeometryWkt: this._getAcceptedPartWkt(acceptedPartGeometry)
             });
             acceptedPartDialog.show();
+        },
+
+        _getAcceptedPartWkt: function (acceptedPartGeometry) {
+            var wkt = new openlayers.Format.WKT(),
+                multiLinestring = new openlayers.Geometry.MultiLineString([acceptedPartGeometry]),
+                acceptedPartFeature = new openlayers.Feature.Vector(multiLinestring);
+            return wkt.write(acceptedPartFeature);
         },
 
         _createAcceptedPart: function (acceptedPartDialog, acceptedPartGeometry) {
