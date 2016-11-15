@@ -77,6 +77,14 @@ define([
                 memory.add(feature);
             });
             return memory;
+        },
+
+        getAcceptedPartAttributes: function (acceptedPartId) {
+            var acceptedPart = this.query({id: acceptedPartId})[0],
+                attributes;
+            attributes = acceptedPart.fields;
+            attributes.id = acceptedPart.id;
+            return attributes;
         }
     });
 });

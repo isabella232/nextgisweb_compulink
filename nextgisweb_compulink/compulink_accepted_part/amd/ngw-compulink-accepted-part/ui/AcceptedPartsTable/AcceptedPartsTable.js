@@ -21,12 +21,11 @@ define([
     'dijit/form/Select',
     'ngw-compulink-site/ConfirmDialog',
     'ngw-compulink-site/InfoDialog',
-    'dojox/dtl/_base',
-    'ngw-compulink-site/ConstructObjectEditor',
+    '../CreateAcceptedPartDialog/CreateAcceptedPartDialog',
     'xstyle/css!./AcceptedPartsTable.css'
 ], function (declare, lang, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
-             ConfirmDialog, InfoDialog, dtlBase, ConstructObjectEditor) {
+             ConfirmDialog, InfoDialog, CreateAcceptedPartDialog) {
     return declare(null, {
         _columns: {
             act_number_date: 'Номер и дата акта',
@@ -69,9 +68,14 @@ define([
                 label: 'Редактировать атрибуты',
                 onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
-                    var item = Object.getOwnPropertyNames(this._grid.selection)[0];
-                    var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_kml';
-                    var win = window.open(exportUrl, '_blank');
+                    var acceptedPartId = Object.getOwnPropertyNames(this._grid.selection)[0],
+                        acceptedPartAttributes = this._acceptedPartsStore.getAcceptedPartAttributes(acceptedPartId),
+                        acceptedPartDialog;
+                    acceptedPartDialog = new CreateAcceptedPartDialog({
+                        acceptedPartsStore: this._acceptedPartsStore,
+                        acceptedPartAttributes: acceptedPartAttributes
+                    });
+                    acceptedPartDialog.show();
                 })
             }));
 
@@ -110,7 +114,8 @@ define([
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function () {
                     this._acceptedPartsStore.deleteAcceptedPart(itemId).then(
-                        lang.hitch(this, function () {}),
+                        lang.hitch(this, function () {
+                        }),
                         lang.hitch(this, function () {
                             new InfoDialog({
                                 isDestroyedAfterHiding: true,
@@ -119,7 +124,8 @@ define([
                             }).show();
                         }));
                 }),
-                handlerCancel: lang.hitch(this, function () {})
+                handlerCancel: lang.hitch(this, function () {
+                })
             });
 
             deleteAcceptedPartDialog.show();
