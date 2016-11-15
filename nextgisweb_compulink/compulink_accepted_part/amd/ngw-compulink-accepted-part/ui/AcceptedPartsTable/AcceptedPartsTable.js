@@ -81,9 +81,7 @@ define([
                 label: 'Удалить',
                 onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
-                    var item = Object.getOwnPropertyNames(this._grid.selection)[0];
-                    var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_geojson';
-                    var win = window.open(exportUrl, '_blank');
+                    this._deleteAcceptedPart(Object.getOwnPropertyNames(this._grid.selection)[0]);
                 })
             }));
 
@@ -102,103 +100,29 @@ define([
             }));
         },
 
-        _changeStatusDialog: null,
-        _statusesSelector: null,
-        _showChangeStatusDialog: function (itemId) {
-            this._changeStatusDialog = new ConfirmDialog({
-                title: 'Изменение статуса объекта строительства',
+        _deleteAcceptedPart: function (itemId) {
+            var deleteAcceptedPartDialog = new ConfirmDialog({
+                title: 'Удалить принятый участок',
                 id: 'deleteAcceptedPartDialog',
                 message: 'Удалить принятый участок?',
                 buttonOk: 'Удалить',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
                 handlerOk: lang.hitch(this, function () {
-                    this._saveSelectedStatus().then(
-                        lang.hitch(this, function () {
-                            this.updateDataStore(this._lastGridState);
-                        }),
+                    this._acceptedPartsStore.deleteAcceptedPart(itemId).then(
+                        lang.hitch(this, function () {}),
                         lang.hitch(this, function () {
                             new InfoDialog({
                                 isDestroyedAfterHiding: true,
-                                title: 'Изменение статуса объекта строительства',
-                                message: 'Изменить статус не удалось.<br/>Попробуйте еще раз.'
+                                title: 'Удаление принятого участка',
+                                message: 'Удалить принятый участок не удалось. Попробуйте еще раз.'
                             }).show();
                         }));
-                    this._changeStatusDialog = null;
-                    this._statusesSelector = null;
                 }),
-                handlerCancel: lang.hitch(this, function () {
-                    this._changeStatusDialog = null;
-                    this._statusesSelector = null;
-                })
+                handlerCancel: lang.hitch(this, function () {})
             });
 
-            this._changeStatusDialog._itemId = itemId;
-
-            var pStatus = domConstruct.create('p', {
-                innerHTML: 'Загрузка статусов...',
-                class: 'loading-statuses'
-            });
-            domConstruct.place(pStatus, this._changeStatusDialog.contentNode);
-
-            this._changeStatusDialog.show();
-        },
-
-        _get_statuses_url: ngwConfig.applicationUrl + '/compulink/resources/{{id}}/focl_status',
-        _loadStatuses: function (itemId) {
-            var get_statuses_url = mustache.render(this._get_statuses_url, {id: itemId});
-
-            xhr.get(get_statuses_url, {handleAs: 'json'})
-                .then(lang.hitch(this, function (statusesInfo) {
-                    this._buildStatusesSelector(statusesInfo);
-                }));
-        },
-
-        _buildStatusesSelector: function (statusesInfo) {
-            var availableStatuses = statusesInfo.statuses,
-                countStatuses = availableStatuses.length,
-                statusesOptions = [],
-                statusesOptionItem,
-                statusInfo, i;
-
-            for (i = 0; i < countStatuses; i++) {
-                statusInfo = availableStatuses[i];
-                statusesOptionItem = {
-                    label: statusInfo.name, value: statusInfo.id
-                };
-
-                if (statusInfo.id === statusesInfo.focl_status) {
-                    statusesOptionItem.selected = true;
-                }
-
-                statusesOptions.push(statusesOptionItem);
-            }
-
-            this._removeLoadingStatusesMessage();
-
-            domConstruct.place('<label for="statusesSelector">Выберите статус </label>',
-                this._changeStatusDialog.contentNode);
-
-            this._statusesSelector = new Select({
-                id: "statusesSelector",
-                options: statusesOptions
-            });
-            this._statusesSelector.placeAt(this._changeStatusDialog.contentNode).startup()
-        },
-
-        _removeLoadingStatusesMessage: function () {
-            query('p.loading-statuses', this._changeStatusDialog.contentNode).forEach(domConstruct.destroy);
-        },
-
-        _set_status_url: '/compulink/resources/{{id}}/set_focl_status?status={{status}}',
-        _saveSelectedStatus: function () {
-            var status = this._statusesSelector.get("value"),
-                setStatusUrl = mustache.render(this._set_status_url, {
-                    id: this._changeStatusDialog._itemId,
-                    status: status
-                });
-
-            return xhr.get(setStatusUrl, {handleAs: 'json'});
+            deleteAcceptedPartDialog.show();
         }
     });
 });

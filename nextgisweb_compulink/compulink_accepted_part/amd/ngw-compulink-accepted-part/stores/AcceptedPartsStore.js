@@ -44,6 +44,30 @@ define([
             }));
         },
 
+        deleteAcceptedPart: function (acceptedPartId) {
+            var deferred = new Deferred(),
+                ngwApplicationUrl = ngwConfig.applicationUrl,
+                dtlContext = new dtlBase.Context({
+                    constructObjectId: this._constructObjectId
+                }),
+                url = ngwApplicationUrl + this.URL.render(dtlContext);
+
+            xhr(url, {
+                handleAs: 'json',
+                method: 'DELETE',
+                data: {
+                    feature_id: acceptedPartId
+                }
+            }).then(lang.hitch(this, function (result) {
+                this.fetch(this._constructObjectId);
+                deferred.resolve(result);
+            }), lang.hitch(this, function (result) {
+                deferred.reject(result);
+            }));
+
+            return deferred.promise;
+        },
+
         getAttributesStore: function () {
             var memory = new Memory(),
                 feature;
