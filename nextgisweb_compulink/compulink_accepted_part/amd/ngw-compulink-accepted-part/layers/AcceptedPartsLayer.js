@@ -35,6 +35,8 @@ define([
                 var feature,
                     attributes;
 
+                this._layer.destroyFeatures();
+
                 this._featuresById = {};
 
                 array.forEach(ngwFeatures, function (ngwFeature) {
