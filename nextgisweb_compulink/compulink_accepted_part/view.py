@@ -31,8 +31,8 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink.accepted_part_crud',
-        '/compulink/accepted-parts/{construct_object_id:\d+}/accepted-part',
-        client=('layer_type', 'construct_object_id',)) \
+        '/compulink/accepted-parts/{construct_object_id:\d+}/accepted-part/{accepted_part_id:\d+}',
+        client=('layer_type', 'construct_object_id', 'accepted_part_id',)) \
         .add_view(create_accepted_part, request_method='PUT') \
         .add_view(delete_accepted_part, request_method='DELETE') \
         .add_view(update_accepted_part, request_method='POST')
@@ -101,7 +101,7 @@ def create_accepted_part(request):
             'act_number_date': data['act_number_date'],
             'acceptor': data['acceptor'],
             'subcontr_name': data['subcontr_name'],
-            'comment': data['comment'],
+            'comment': data['comment'] if 'comment' in data else None,
             'change_author': request.user.display_name or request.user.keyname,
             'change_date': datetime.now(),
         }
@@ -120,7 +120,6 @@ def create_accepted_part(request):
     return success_response()
 
 
-
 @view_config(renderer='json')
 def delete_accepted_part(request):
     if request.user.keyname == 'guest':
@@ -129,6 +128,7 @@ def delete_accepted_part(request):
         return error_response(u'Метод не поддерживается! Необходим DELETE')
 
     construct_object_id = request.matchdict['construct_object_id']
+    accepted_part_id = request.matchdict['accepted_part_id']
 
     try:
         db_session = DBSession()
@@ -149,11 +149,7 @@ def delete_accepted_part(request):
             return error_response(u'Не найден слой с принятыми участками')
         accepted_part_layer = accepted_part_layer[0]
 
-        # del feat
-        k,v = request.body.split('=')
-        if k != 'feature_id':
-            return error_response(u'Не найден параметр feature_id')
-        feature_id = int(v)
+        feature_id = int(accepted_part_id)
 
         accepted_part_layer.feature_delete(feature_id)
         transaction.manager.commit()
@@ -172,6 +168,7 @@ def update_accepted_part(request):
         return error_response(u'Метод не поддерживается! Необходим POST')
 
     construct_object_id = request.matchdict['construct_object_id']
+    accepted_part_id = request.matchdict['accepted_part_id']
 
     try:
         db_session = DBSession()
@@ -192,12 +189,9 @@ def update_accepted_part(request):
             return error_response(u'Не найден слой с принятыми участками')
         accepted_part_layer = accepted_part_layer[0]
 
-        # get feat
-        feature_id = request.POST['feature_id']
-
         query = accepted_part_layer.feature_query()
         query.geom()
-        query.filter_by(id=feature_id)
+        query.filter_by(id=accepted_part_id)
         query.limit(1)
 
         feature = None
@@ -212,10 +206,10 @@ def update_accepted_part(request):
         feature.fields['act_number_date'] = data['act_number_date'],
         feature.fields['acceptor'] = data['acceptor'],
         feature.fields['subcontr_name'] = data['subcontr_name'],
-        feature.fields['comment'] = data['comment'],
+        feature.fields['comment'] = data['comment'] if 'comment' in data else feature.fields['comment'],
         feature.fields['change_author'] = request.user.display_name or request.user.keyname
         feature.fields['change_date'] = datetime.now()
-        feature.geom = data['geom']
+        feature.geom = data['geom'] if 'geom' in data else feature.geom
 
         accepted_part_layer.feature_put(feature)
         transaction.manager.commit()

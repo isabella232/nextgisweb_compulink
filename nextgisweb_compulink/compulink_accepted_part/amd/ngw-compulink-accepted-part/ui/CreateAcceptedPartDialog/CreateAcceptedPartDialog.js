@@ -26,8 +26,10 @@ define([
         },
         isDestroyedAfterHiding: true,
         isClosedAfterButtonClick: true,
+
         acceptedPartGeometryWkt: null,
         acceptedPartAttributes: null,
+        acceptedPartId: null,
         _mode: null,
 
         constructor: function (kwArgs) {
@@ -82,7 +84,6 @@ define([
 
         _createAcceptedPart: function () {
             var acceptedPart = {};
-
             this._fillAcceptedPartAttributes(acceptedPart);
             acceptedPart.geom = this.acceptedPartGeometryWkt;
             this.acceptedPartsStore.createAcceptedPart(acceptedPart);
@@ -100,7 +101,10 @@ define([
         },
 
         _editAcceptedPart: function () {
-
+            var acceptedPart = {};
+            this._fillAcceptedPartAttributes(acceptedPart);
+            acceptedPart.id = this.acceptedPartId;
+            this.acceptedPartsStore.modifyAcceptedPart(acceptedPart);
         }
     });
 });

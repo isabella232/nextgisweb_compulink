@@ -27,11 +27,12 @@ define([
             });
         },
 
-        URL: new dtlBase.Template('/compulink/accepted-parts/{{constructObjectId}}/accepted-part', true),
+        URL: new dtlBase.Template('/compulink/accepted-parts/{{constructObjectId}}/accepted-part/{{acceptedPartId}}', true),
         createAcceptedPart: function (acceptedPart) {
             var ngwApplicationUrl = ngwConfig.applicationUrl,
                 dtlContext = new dtlBase.Context({
-                    constructObjectId: this._constructObjectId
+                    constructObjectId: this._constructObjectId,
+                    acceptedPartId: 1
                 }),
                 url = ngwApplicationUrl + this.URL.render(dtlContext);
 
@@ -44,11 +45,29 @@ define([
             }));
         },
 
+        modifyAcceptedPart: function (acceptedPart) {
+            var ngwApplicationUrl = ngwConfig.applicationUrl,
+                dtlContext = new dtlBase.Context({
+                    constructObjectId: this._constructObjectId,
+                    acceptedPartId: acceptedPart.id
+                }),
+                url = ngwApplicationUrl + this.URL.render(dtlContext);
+
+            xhr(url, {
+                handleAs: 'json',
+                method: 'POST',
+                data: acceptedPart
+            }).then(lang.hitch(this, function (result) {
+                this.fetch(this._constructObjectId);
+            }));
+        },
+
         deleteAcceptedPart: function (acceptedPartId) {
             var deferred = new Deferred(),
                 ngwApplicationUrl = ngwConfig.applicationUrl,
                 dtlContext = new dtlBase.Context({
-                    constructObjectId: this._constructObjectId
+                    constructObjectId: this._constructObjectId,
+                    acceptedPartId: acceptedPartId
                 }),
                 url = ngwApplicationUrl + this.URL.render(dtlContext);
 
@@ -56,7 +75,7 @@ define([
                 handleAs: 'json',
                 method: 'DELETE',
                 data: {
-                    feature_id: acceptedPartId
+                    id: acceptedPartId
                 }
             }).then(lang.hitch(this, function (result) {
                 this.fetch(this._constructObjectId);

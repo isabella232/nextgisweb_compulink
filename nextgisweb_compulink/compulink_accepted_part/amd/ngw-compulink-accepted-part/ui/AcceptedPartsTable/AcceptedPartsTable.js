@@ -72,6 +72,7 @@ define([
                         acceptedPartAttributes = this._acceptedPartsStore.getAcceptedPartAttributes(acceptedPartId),
                         acceptedPartDialog;
                     acceptedPartDialog = new CreateAcceptedPartDialog({
+                        acceptedPartId: acceptedPartId,
                         acceptedPartsStore: this._acceptedPartsStore,
                         acceptedPartAttributes: acceptedPartAttributes
                     });
