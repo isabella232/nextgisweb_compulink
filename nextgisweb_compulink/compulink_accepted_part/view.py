@@ -101,7 +101,7 @@ def create_accepted_part(request):
             'act_number_date': data['act_number_date'],
             'acceptor': data['acceptor'],
             'subcontr_name': data['subcontr_name'],
-            'comment': data['comment'] if 'comment' in data else None,
+            'comment': data.get('comment'),
             'change_author': request.user.display_name or request.user.keyname,
             'change_date': datetime.now(),
         }
@@ -206,7 +206,7 @@ def update_accepted_part(request):
         feature.fields['act_number_date'] = data['act_number_date'],
         feature.fields['acceptor'] = data['acceptor'],
         feature.fields['subcontr_name'] = data['subcontr_name'],
-        feature.fields['comment'] = data['comment'] if 'comment' in data else feature.fields['comment'],
+        feature.fields['comment'] = data.get('comment', feature.fields['comment']),
         feature.fields['change_author'] = request.user.display_name or request.user.keyname
         feature.fields['change_date'] = datetime.now()
         feature.geom = data['geom'] if 'geom' in data else feature.geom
