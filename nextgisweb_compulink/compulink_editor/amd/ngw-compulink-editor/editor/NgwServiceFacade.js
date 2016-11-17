@@ -147,6 +147,21 @@ define([
             return xhr.post(url, {
                 handleAs: 'json'
             });
+        },
+
+        ATTACHMENT_TO_FEATURE_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/', true),
+        applyAttachmentToFeature: function (resourceId, featureId, attachmentInfo) {
+            var dtlContext = new dtlBase.Context({
+                    resourceId: resourceId,
+                    featureId: featureId
+                }),
+                url = this.ngwApplicationUrl + this.ATTACHMENT_TO_FEATURE_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'POST',
+                data: JSON.stringify(attachmentInfo)
+            });
         }
     });
 });
