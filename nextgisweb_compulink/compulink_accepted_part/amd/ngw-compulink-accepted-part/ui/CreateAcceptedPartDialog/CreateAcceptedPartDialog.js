@@ -92,6 +92,8 @@ define([
 
             this._dropzone.on('success', lang.hitch(this, this._uploadSuccessHandler));
             this._dropzone.on('error', lang.hitch(this, this._uploadErrorHandler));
+
+            this._fillExistingFiles(this.acceptedPartAttributes);
         },
 
         _uploadSuccessHandler: function (fileResponse) {
@@ -116,7 +118,8 @@ define([
                 attachmentInfo
             );
 
-            applyAttachmentToFeature.then(lang.hitch(this, function (result) {}),
+            applyAttachmentToFeature.then(lang.hitch(this, function (result) {
+                }),
                 lang.hitch(this, this._uploadErrorHandler));
         },
 
@@ -131,6 +134,18 @@ define([
                 title: 'Сохранение файла',
                 message: 'Сохранить файл не удалось. Попробуйте еще раз.'
             }).show();
+        },
+
+        _fillExistingFiles: function (acceptedPartAttributes) {
+            var file;
+            array.forEach(acceptedPartAttributes.attachment, lang.hitch(this, function (attachment) {
+                file = {
+                    name: attachment.name,
+                    size: attachment.size,
+                    id: attachment.id
+                };
+                this._dropzone.emit("addedfile", file);
+            }));
         },
 
         _fillAcceptedPartInputs: function (acceptedPartAttributes) {
