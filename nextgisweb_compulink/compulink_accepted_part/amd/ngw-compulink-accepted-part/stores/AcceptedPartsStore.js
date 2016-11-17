@@ -102,6 +102,7 @@ define([
             var acceptedPart = this.query({id: acceptedPartId})[0],
                 attributes;
             attributes = acceptedPart.fields;
+            attributes.attachment = acceptedPart.extensions.attachment;
             attributes.id = acceptedPart.id;
             return attributes;
         }
