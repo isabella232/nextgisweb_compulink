@@ -15,6 +15,7 @@ define([
 
         _ngwServiceFacade: null,
         _constructObjectId: null,
+        _layerId: null,
 
         constructor: function () {
             this.data = [];
@@ -25,7 +26,8 @@ define([
             var getLayerInfo = this.getLayerInfo(this.LAYER_TYPE, constructObjectId);
             this._constructObjectId = constructObjectId;
             getLayerInfo.then(lang.hitch(this, function (layerInfo) {
-                var getAllFeatures = this._ngwServiceFacade.getAllFeatures(layerInfo.resource.id);
+                this._layerId = layerInfo.resource.id;
+                var getAllFeatures = this._ngwServiceFacade.getAllFeatures(this._layerId);
                 getAllFeatures.then(lang.hitch(this, function (features) {
                     this.data = features;
                     this.emit('fetched', features);
