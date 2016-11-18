@@ -23,11 +23,14 @@ define([
     'ngw-compulink-site/ConfirmDialog',
     'ngw-compulink-site/InfoDialog',
     '../CreateAcceptedPartDialog/CreateAcceptedPartDialog',
+    'ngw-compulink-editor/editor/NgwServiceFacade',
     'xstyle/css!./AcceptedPartsTable.css'
 ], function (declare, lang, array, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
-             ConfirmDialog, InfoDialog, CreateAcceptedPartDialog) {
+             ConfirmDialog, InfoDialog, CreateAcceptedPartDialog, NgwServiceFacade) {
     return declare(null, {
+        _ngwServiceFacade: new NgwServiceFacade(),
+
         _columns: {
             act_number_date: 'Номер и дата акта',
             change_date: {
@@ -41,14 +44,22 @@ define([
             comment: 'Комментарий',
             attachment: {
                 label: 'Приложенные файлы',
-                formatter: lang.hitch(this, function (attachments) {
-                    var attachmentsHtml = ['<div class="ap_row_attachment">'];
-                    array.forEach(attachments, function (attachment) {
-                        attachmentsHtml.push('<a class="icon icon-doc-text" title="' + attachment.name + '" href=""></a>');
-                    });
+                formatter: function (attachments, feature) {
+                    var attachmentsHtml = ['<div class="ap_row_attachment">'],
+                        grid = this.grid,
+                        url;
+                    array.forEach(attachments, lang.hitch(this, function (attachment) {
+                        url = grid._ngwServiceFacade.getAttachmentUrlForDownload(
+                            grid._acceptedPartsStore._layerId,
+                            feature.id,
+                            attachment.id
+                        );
+                        attachmentsHtml.push('<a class="icon icon-doc-text" target="_blank" title="' +
+                            attachment.name + '" href="' + url + '"></a>');
+                    }));
                     attachmentsHtml.push('</div>');
                     return attachmentsHtml.join(' ');
-                })
+                }
             }
         },
 
@@ -61,7 +72,9 @@ define([
                     columns: this._columns,
                     selectionMode: 'single',
                     loadingMessage: 'Загрузка данных...',
-                    noDataMessage: 'Нет принятых участков'
+                    noDataMessage: 'Нет принятых участков',
+                    _ngwServiceFacade: this._ngwServiceFacade,
+                    _acceptedPartsStore: this._acceptedPartsStore
                 }, domId);
 
             //context menu

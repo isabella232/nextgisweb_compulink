@@ -14,8 +14,6 @@ define([
     'dojo/text!./CreateAcceptedPartDialog.html',
     'ngw-compulink-libs/dropzone/dropzone.min',
     'xstyle/css!./CreateAcceptedPartDialog.css',
-    // 'xstyle/css!ngw-compulink-libs/dropzone/basic.css',
-    // 'xstyle/css!ngw-compulink-libs/dropzone/dropzone.min.css',
     'dojox/layout/TableContainer',
     'dijit/form/TextBox',
     'dijit/form/Form'
