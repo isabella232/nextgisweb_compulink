@@ -173,6 +173,21 @@ define([
             });
 
             return this.ngwApplicationUrl + this.DOWNLOAD_ATTACHMENT_URL.render(dtlContext);
+        },
+
+        DELETE_ATTACHMENT_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/{{attachmentId}}', true),
+        deleteAttachment: function (resourceId, featureId, attachmentId) {
+            var dtlContext = new dtlBase.Context({
+                    resourceId: resourceId,
+                    featureId: featureId,
+                    attachmentId: attachmentId
+                }),
+                url = this.ngwApplicationUrl + this.DELETE_ATTACHMENT_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'DELETE'
+            });
         }
     });
 });
