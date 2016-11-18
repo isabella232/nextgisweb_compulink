@@ -41,7 +41,7 @@
 #ap_files.dropzone div.dz-filename span {
     text-overflow: ellipsis;
     display: block;
-    width: 100%;
+    width: 90%;
     overflow: hidden;
 }
 
