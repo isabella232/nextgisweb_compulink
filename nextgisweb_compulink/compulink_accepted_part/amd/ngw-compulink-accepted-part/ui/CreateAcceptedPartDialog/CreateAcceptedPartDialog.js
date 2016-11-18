@@ -90,16 +90,17 @@ define([
 
             this._dropzone.on('success', lang.hitch(this, this._uploadSuccessHandler));
             this._dropzone.on('error', lang.hitch(this, this._uploadErrorHandler));
+            this._dropzone.on('addedfile', lang.hitch(this, this._addedFileHandler));
 
             this._fillExistingFiles(this.acceptedPartAttributes);
         },
 
-        _uploadSuccessHandler: function (fileResponse) {
+        _uploadSuccessHandler: function (file) {
             var upload_meta,
                 attachmentInfo,
                 applyAttachmentToFeature;
 
-            upload_meta = JSON.parse(fileResponse.xhr.responseText).upload_meta[0];
+            upload_meta = JSON.parse(file.xhr.responseText).upload_meta[0];
             attachmentInfo = {
                 file_upload: {
                     id: upload_meta.id,
@@ -116,8 +117,7 @@ define([
                 attachmentInfo
             );
 
-            applyAttachmentToFeature.then(lang.hitch(this, function (result) {
-                }),
+            applyAttachmentToFeature.then(lang.hitch(this, function (result) { file.id = result.id;}),
                 lang.hitch(this, this._uploadErrorHandler));
         },
 
@@ -132,6 +132,49 @@ define([
                 title: 'Сохранение файла',
                 message: 'Сохранить файл не удалось. Попробуйте еще раз.'
             }).show();
+        },
+
+        _addedFileHandler: function (file) {
+            var previewElement = file.previewElement,
+                $fileName = $(previewElement).find('div.dz-filename'),
+                removeElement;
+
+            removeElement = $fileName.append('<a class="remove-file icon icon-cancel-circled2" href="javascript:void(0);"></a>');
+
+            removeElement.find('a.remove-file').click(lang.hitch(this, function () {
+                this._deleteAttachment(file);
+            }));
+        },
+
+        _deleteAttachment: function (file) {
+            var deleteAttachmentXhr,
+                deleteFile,
+                deleteConfirmDialog;
+
+            deleteFile = lang.hitch(this, function () {
+                deleteAttachmentXhr = this._ngwServiceFacade.deleteAttachment(this.acceptedPartsStore._layerId, this.acceptedPartId, file.id);
+                deleteAttachmentXhr.then(lang.hitch(this, function () {
+                    this._dropzone.removeFile(file);
+                }), lang.hitch(this, function () {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Удаление файла',
+                        message: 'Удалить файл не удалось. Попробуйте еще раз.'
+                    }).show();
+                }));
+            });
+
+            deleteConfirmDialog = new ConfirmDialog({
+                title: "Удаление файла",
+                id: "deleteConfirmDialog",
+                message: "Удалить файл?",
+                buttonOk: "Да",
+                buttonCancel: "Отменить",
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, deleteFile)
+            });
+            deleteConfirmDialog.show();
+
         },
 
         _fillExistingFiles: function (acceptedPartAttributes) {

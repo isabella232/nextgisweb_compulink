@@ -9,8 +9,6 @@
     text-align: center;
 }
 
-#ap_files.dropzone
-
 #ap_files.dropzone .dz-preview,
 #ap_files.dropzone.dz-started .dz-message {
     display: block;
@@ -40,6 +38,13 @@
     max-width: 100%;
 }
 
+#ap_files.dropzone div.dz-filename span {
+    text-overflow: ellipsis;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+}
+
 #ap_files.dropzone .dz-preview.dz-file-preview .dz-image,
 #ap_files.dropzone .dz-preview.dz-image-preview .dz-image,
 #ap_files.dropzone .dz-preview .dz-details .dz-size,
@@ -47,4 +52,19 @@
 #ap_files.dropzone .dz-preview .dz-success-mark,
 #ap_files.dropzone .dz-preview .dz-error-mark {
     display: none;
+}
+
+#ap_files.dropzone .dz-preview a.remove-file,
+#ap_files.dropzone .dz-preview a.remove-file:visited {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 1px;
+    opacity: 0.7;
+    text-decoration: none;
+    color: #759DC0;
+}
+
+#ap_files.dropzone .dz-preview a.remove-file:hover {
+    opacity: 1;
 }
