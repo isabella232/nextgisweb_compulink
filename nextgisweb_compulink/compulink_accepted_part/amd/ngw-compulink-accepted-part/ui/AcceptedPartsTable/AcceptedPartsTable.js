@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/_base/lang',
+    'dojo/_base/array',
     'dojo/on',
     'dojo/aspect',
     'dojo/dom-style',
@@ -23,7 +24,7 @@ define([
     'ngw-compulink-site/InfoDialog',
     '../CreateAcceptedPartDialog/CreateAcceptedPartDialog',
     'xstyle/css!./AcceptedPartsTable.css'
-], function (declare, lang, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
+], function (declare, lang, array, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
              ConfirmDialog, InfoDialog, CreateAcceptedPartDialog) {
     return declare(null, {
@@ -38,7 +39,17 @@ define([
             acceptor: 'Принял',
             subcontr_name: 'Субподрядчик',
             comment: 'Комментарий',
-            cabling_fact: 'Приложенные файлы'
+            attachment: {
+                label: 'Приложенные файлы',
+                formatter: lang.hitch(this, function (attachments) {
+                    var attachmentsHtml = ['<div class="ap_row_attachment">'];
+                    array.forEach(attachments, function (attachment) {
+                        attachmentsHtml.push('<a class="icon icon-doc-text" title="' + attachment.name + '" href=""></a>');
+                    });
+                    attachmentsHtml.push('</div>');
+                    return attachmentsHtml.join(' ');
+                })
+            }
         },
 
         constructor: function (domId, acceptedPartsStore) {

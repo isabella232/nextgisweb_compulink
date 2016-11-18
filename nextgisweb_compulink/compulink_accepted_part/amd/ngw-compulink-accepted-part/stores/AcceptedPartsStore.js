@@ -92,6 +92,7 @@ define([
                 feature;
             array.forEach(this.query(), function (ngwFeature) {
                 feature = ngwFeature.fields;
+                feature.attachment = ngwFeature.extensions.attachment;
                 feature.id = ngwFeature.id;
                 memory.add(feature);
             });

@@ -10,3 +10,25 @@
 .field-start_deliver_time { width: 9em; }
 .field-end_deliver_time { width: 9em; }
 .field-subcontr { width: 12em; }
+
+div.ap_row_attachment a.icon-doc-text,
+div.ap_row_attachment a.icon-doc-text:visited {
+    color: #2074C3;
+    opacity: 0.5;
+    width: auto;
+    height: auto;
+
+    display: inline-block;
+}
+
+div.ap_row_attachment a.icon-doc-text:hover {
+    opacity: 1.0;
+}
+
+div.ap_row_attachment a.icon-doc-text:before {
+    width: auto;
+    height: auto;
+    margin: 0;
+    font-size: 16px;
+    padding: 1px;
+}
