@@ -162,6 +162,17 @@ define([
                 method: 'POST',
                 data: JSON.stringify(attachmentInfo)
             });
+        },
+
+        DOWNLOAD_ATTACHMENT_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/{{attachmentId}}/download', true),
+        getAttachmentUrlForDownload: function (resourceId, featureId, attachmentId) {
+            var dtlContext = new dtlBase.Context({
+                resourceId: resourceId,
+                featureId: featureId,
+                attachmentId: attachmentId
+            });
+
+            return this.ngwApplicationUrl + this.DOWNLOAD_ATTACHMENT_URL.render(dtlContext);
         }
     });
 });
