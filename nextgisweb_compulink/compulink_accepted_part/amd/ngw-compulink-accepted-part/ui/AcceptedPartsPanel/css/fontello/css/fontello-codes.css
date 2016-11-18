@@ -1,5 +1,6 @@
 
 .icon-plus:before { content: '\2b'; } /* '+' */
+.icon-cancel-circled2:before { content: '\e04d'; } /* '' */
 .icon-eye:before { content: '\e09d'; } /* '' */
 .icon-eye-off:before { content: '\e102'; } /* '' */
 .icon-doc-text:before { content: '\f0f6'; } /* '' */
