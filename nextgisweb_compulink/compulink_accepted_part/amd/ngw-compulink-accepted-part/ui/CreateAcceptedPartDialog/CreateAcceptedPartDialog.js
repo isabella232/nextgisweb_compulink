@@ -37,6 +37,7 @@ define([
         acceptedPartId: null,
         _mode: null,
         _ngwServiceFacade: new NgwServiceFacade(),
+        _attachmentsChanged: false,
 
         constructor: function (kwArgs) {
             lang.mixin(this, kwArgs);
@@ -52,6 +53,7 @@ define([
 
             if (editing) {
                 this.handlerOk = lang.hitch(this, this._editAcceptedPart);
+                this.handlerCancel = lang.hitch(this, this._cancelDialogHandler);
                 this._mode = 'edit';
             }
 
@@ -117,7 +119,10 @@ define([
                 attachmentInfo
             );
 
-            applyAttachmentToFeature.then(lang.hitch(this, function (result) { file.id = result.id;}),
+            applyAttachmentToFeature.then(lang.hitch(this, function (result) {
+                    file.id = result.id;
+                    this._attachmentsChanged = true;
+                }),
                 lang.hitch(this, this._uploadErrorHandler));
         },
 
@@ -155,6 +160,7 @@ define([
                 deleteAttachmentXhr = this._ngwServiceFacade.deleteAttachment(this.acceptedPartsStore._layerId, this.acceptedPartId, file.id);
                 deleteAttachmentXhr.then(lang.hitch(this, function () {
                     this._dropzone.removeFile(file);
+                    this._attachmentsChanged = true;
                 }), lang.hitch(this, function () {
                     new InfoDialog({
                         isDestroyedAfterHiding: true,
@@ -223,6 +229,12 @@ define([
             this._fillAcceptedPartAttributes(acceptedPart);
             acceptedPart.id = this.acceptedPartId;
             this.acceptedPartsStore.modifyAcceptedPart(acceptedPart);
+        },
+
+        _cancelDialogHandler: function () {
+            if (this._attachmentsChanged) {
+                this.acceptedPartsStore.fetch();
+            }
         }
     });
 });
