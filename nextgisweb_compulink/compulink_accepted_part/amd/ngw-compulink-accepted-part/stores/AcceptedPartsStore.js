@@ -14,6 +14,14 @@ define([
     return declare([_BaseStore], {
         LAYER_TYPE: 'accepted_part',
 
+        constructor: function () {
+            this.inherited(arguments);
+
+            on(this, 'fetched', function () {
+                topic.publish('compulink/accepted-parts/store/accepted-parts/fetched');
+            });
+        },
+
         getLayerInfo: function (layerType, constructObjectId) {
             var ngwApplicationUrl = ngwConfig.applicationUrl,
                 dtlContext = new dtlBase.Context({
