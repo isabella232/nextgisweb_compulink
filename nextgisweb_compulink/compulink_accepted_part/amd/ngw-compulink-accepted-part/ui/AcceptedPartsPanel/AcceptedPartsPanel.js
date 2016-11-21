@@ -40,7 +40,7 @@ define([
                 topic.publish('compulink/accepted-parts/ui/create-new-accepted-part/changed', state);
             }));
 
-            topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (constructObjectInfo) {
+            topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this, function () {
                 this.acceptedPartsLayerToggle.set('disabled', false);
                 this.acceptedPartsFilter.set('value', '');
                 this.acceptedPartsFilter.set('disabled', false);
