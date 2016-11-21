@@ -48,6 +48,10 @@ define([
                 this.acceptedPartsLayerToggle.set('disabled', 'disabled');
                 this.createAcceptedPartToggle.set('disabled', 'disabled');
             }));
+
+            on(this.acceptedPartsFilter, 'keyup', lang.hitch(this, function (event) {
+                topic.publish('compulink/accepted-parts/ui/table/filter/changed', this.acceptedPartsFilter.get('value'));
+            }));
         }
     });
 });

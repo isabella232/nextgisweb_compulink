@@ -117,16 +117,40 @@ define([
             this._bindEvents();
         },
 
-        _lastGridState: null,
+        _sourceStore: null,
+        _filter: '',
         _bindEvents: function () {
             on(this._acceptedPartsStore, 'fetched', lang.hitch(this, function () {
-                this._grid.store = this._acceptedPartsStore.getAttributesStore();
-                this._grid.refresh();
+                this._sourceStore = this._acceptedPartsStore.getAttributesStore();
+                this._refreshTable();
             }));
 
             this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
                 topic.publish('compulink/accepted-parts/zoom', this._grid.row(evt));
             }));
+
+            topic.subscribe('compulink/accepted-parts/ui/table/filter/changed', lang.hitch(this, function (value) {
+                this._filter = value;
+                this._refreshTable();
+            }));
+        },
+
+        _refreshTable: function () {
+            this._grid.store = this._getFilteredStore();
+            this._grid.refresh();
+        },
+
+        _getFilteredStore: function () {
+            var filteredStore = new Memory([]);
+
+            array.forEach(this._sourceStore.data, lang.hitch(this, function (item) {
+                if (item.act_number_date.indexOf(this._filter) !== -1 ||
+                    item.subcontr_name.indexOf(this._filter) !== -1) {
+                    filteredStore.add(item);
+                }
+            }));
+
+            return filteredStore;
         },
 
         _deleteAcceptedPart: function (itemId) {
