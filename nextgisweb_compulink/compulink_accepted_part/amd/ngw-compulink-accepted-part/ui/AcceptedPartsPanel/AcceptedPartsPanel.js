@@ -42,6 +42,8 @@ define([
 
             topic.subscribe('/table/construct_object/selected', lang.hitch(this, function (constructObjectInfo) {
                 this.acceptedPartsLayerToggle.set('disabled', false);
+                this.acceptedPartsFilter.set('value', '');
+                this.acceptedPartsFilter.set('disabled', false);
             }));
 
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this, function (store) {
