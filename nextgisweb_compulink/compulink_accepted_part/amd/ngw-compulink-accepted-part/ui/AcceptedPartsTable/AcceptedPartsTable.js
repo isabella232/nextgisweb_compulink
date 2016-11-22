@@ -133,6 +133,11 @@ define([
                 this._filter = value;
                 this._refreshTable();
             }));
+
+            this._grid.on('dgrid-select', lang.hitch(this, function (evt) {
+                var row = evt.rows[0];
+                topic.publish('compulink/accepted-parts/ui/table/selected', row.data);
+            }));
         },
 
         _refreshTable: function () {
