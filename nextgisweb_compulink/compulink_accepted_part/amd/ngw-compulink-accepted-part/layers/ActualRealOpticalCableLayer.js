@@ -16,7 +16,7 @@ define([
             fillColor: '#6666ff',
             strokeColor: '#6666ff',
             width: 1,
-            opacity: 0.5
+            strokeOpacity: 0.5
         },
         Z_INDEX: 2000,
 
