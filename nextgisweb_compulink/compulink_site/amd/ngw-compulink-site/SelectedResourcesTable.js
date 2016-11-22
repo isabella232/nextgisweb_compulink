@@ -202,7 +202,6 @@ define([
                 var row = evt.rows[0];
                 topic.publish('/table/construct_object/selected', row.data);
             }));
-
         },
 
         zoomToResource: function(evt) {
