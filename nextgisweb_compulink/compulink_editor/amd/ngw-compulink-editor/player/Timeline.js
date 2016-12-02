@@ -217,6 +217,17 @@ define([
                     this._audio.deactivate();
                 }
             }));
+
+            on(query('i.photo', this._dialog.domNode), 'click', lang.hitch(this, function () {
+                var photoBtn = query('i.photo', this._dialog.domNode)[0];
+                domClass.toggle(photoBtn, 'fa-eye');
+                domClass.toggle(photoBtn, 'fa-low-vision');
+                if (domClass.contains(photoBtn, 'fa-eye')) {
+                    console.log('photo on');
+                } else {
+                    console.log('photo off');
+                }
+            }));
         },
 
         _activateSound: function () {

@@ -57,6 +57,7 @@ div#timeline div.vis-current-time {
     background-color: green;
 }
 
-div.timeline i.sound {
+div.timeline i.sound,
+div.timeline i.photo {
     margin-left: 15px;
 }
