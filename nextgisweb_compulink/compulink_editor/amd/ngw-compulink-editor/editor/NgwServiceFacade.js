@@ -175,6 +175,22 @@ define([
             return this.ngwApplicationUrl + this.DOWNLOAD_ATTACHMENT_URL.render(dtlContext);
         },
 
+        PHOTO_ATTACHMENT_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/{{attachmentId}}/image?size={{width}}x{{height}}', true),
+        getAttachmentPhotoUrl: function (resourceId, featureId, attachmentId, width, height) {
+            width = (width === undefined) ? 64 : width;
+            height = (height === undefined) ? 64 : height;
+
+            var dtlContext = new dtlBase.Context({
+                resourceId: resourceId,
+                featureId: featureId,
+                attachmentId: attachmentId,
+                width: width,
+                height: height
+            });
+
+            return this.ngwApplicationUrl + this.PHOTO_ATTACHMENT_URL.render(dtlContext);
+        },
+
         DELETE_ATTACHMENT_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/{{attachmentId}}', true),
         deleteAttachment: function (resourceId, featureId, attachmentId) {
             var dtlContext = new dtlBase.Context({
