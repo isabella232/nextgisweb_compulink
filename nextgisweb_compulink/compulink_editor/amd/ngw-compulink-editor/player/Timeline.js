@@ -377,7 +377,7 @@ define([
             this._audio.play(currentTips);
 
             this._interval = setInterval(lang.hitch(this, function () {
-                intervalTimeByTick = this._getIntervalTimeByTick(start, tick, units, countUnits);
+                intervalTimeByTick = this._getIntervalTimeByTickTo(start, tick, units, countUnits);
                 tick++;
                 if (intervalTimeByTick.to > this._featureManager.maxBuiltDate) {
                     intervalTimeByTick.to = this._featureManager.maxBuiltDate;
@@ -401,21 +401,29 @@ define([
             }
 
             currentDuration = positionInMs - minBuiltDate;
-            currentTips = currentDuration / intervalMs;
-            currentTips = currentTips - (currentTips % 1);
+            currentTips = Math.floor(currentDuration / intervalMs);
 
             return currentTips;
         },
 
         _getIntervalTime: function (units, countUnits) {
-            var interval = this._getIntervalTimeByTick(this._featureManager.minBuiltDate, 1, units, countUnits);
+            var interval = this._getIntervalTimeByTickTo(this._featureManager.minBuiltDate, 1, units, countUnits);
             return interval.to.getTime() - interval.from.getTime();
         },
 
-        _getIntervalTimeByTick: function (startDate, tick, units, countUnits) {
+        _getIntervalTimeByTickTo: function (startDate, tickTo, units, countUnits, countTicks) {
+            countTicks = typeof countTicks !== 'undefined' ? countTicks : 1;
             return {
-                from: this['add' + units](startDate, (tick - 1) * countUnits),
+                from: this['add' + units](startDate, (tick - countTicks) * countUnits),
                 to: this['add' + units](startDate, tick * countUnits)
+            }
+        },
+
+        _getIntervalTimeByTickFrom: function (startDate, tickFrom, units, countUnits, countTicks) {
+            countTicks = typeof countTicks !== 'undefined' ? countTicks : 1;
+            return {
+                from: this['add' + units](startDate, tickFrom * countUnits),
+                to: this['add' + units](startDate, (tickFrom + countTicks) * countUnits)
             }
         },
 
