@@ -16,6 +16,7 @@ define([
     'dojo/text!./templates/Timeline.mustache',
     'ngw-compulink-editor/player/AudioManager',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
+    './PhotoTimeline',
     'xstyle/css!./templates/Timeline.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -23,7 +24,8 @@ define([
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
-             topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler) {
+             topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler,
+             PhotoTimeline) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -52,6 +54,7 @@ define([
             mustache.parse(template);
             this._bindEvents();
             this._audio = new AudioManager();
+            this._photoTimeline = new PhotoTimeline();
         },
 
         initAudioManager: function () {
@@ -129,6 +132,8 @@ define([
             this._timeline = timeline;
             this._bindPlayerControlsEvents();
             this._moveTimeBarToStart();
+
+            topic.publish('compulink/player/timeline/builded', this);
         },
 
         _handleTimeChanged: function (timeChangedEvent) {
@@ -483,7 +488,6 @@ define([
                 indexTimeChunk = 0,
                 chunkFeatures,
                 countInTimeChunk,
-
                 featuresToDrawingCount = featuresToDrawing.length;
 
             if (featuresToDrawingCount > 0) {

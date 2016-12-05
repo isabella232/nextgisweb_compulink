@@ -61,3 +61,10 @@ div.timeline i.sound,
 div.timeline i.photo {
     margin-left: 15px;
 }
+
+/* Randoms photo of the player styles */
+div.olMapViewport div.olPopup.createdPopup {
+    display: none;
+    margin-top: -100px;
+    margin-left: -50px;
+}
