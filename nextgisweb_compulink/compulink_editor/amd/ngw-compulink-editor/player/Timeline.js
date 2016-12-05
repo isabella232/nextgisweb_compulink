@@ -240,8 +240,8 @@ define([
 
             if (this._state !== 'playing') return false;
 
-            var units = this._unitsSelector.get('value'),
-                countUnits = parseInt(this._countUnitSelector.get('value'), 10),
+            var units = this.getUnits(),
+                countUnits = this.getCountUnitsPerSecond(),
                 start = this._timeline.getCustomTime(this._barId),
                 currentTips = this._getCurrentTips(start, units, countUnits);
 
@@ -368,8 +368,8 @@ define([
                 start = this._featureManager.minBuiltDate;
             }
             var tick = 1,
-                units = this._unitsSelector.get('value'),
-                countUnits = parseInt(this._countUnitSelector.get('value'), 10),
+                units = this.getUnits(),
+                countUnits = this.getCountUnitsPerSecond(),
                 intervalTimeByTick,
                 currentTips;
 
@@ -392,10 +392,15 @@ define([
         _getCurrentTips: function (position, units, countUnits) {
             var intervalMs = this._getIntervalTime(units, countUnits),
                 positionInMs = position.getTime(),
+                minBuiltDate = this._featureManager.minBuiltDate.getTime(),
                 currentDuration,
                 currentTips;
 
-            currentDuration = positionInMs - this._featureManager.minBuiltDate.getTime();
+            if (positionInMs < minBuiltDate) {
+                return null;
+            }
+
+            currentDuration = positionInMs - minBuiltDate;
             currentTips = currentDuration / intervalMs;
             currentTips = currentTips - (currentTips % 1);
 
@@ -519,6 +524,14 @@ define([
             var result = new Date(date);
             result.setDate(result.getDate() + days);
             return result;
+        },
+
+        getUnits: function () {
+           return this._unitsSelector.get('value');
+        },
+
+        getCountUnitsPerSecond: function () {
+            return parseInt(this._countUnitSelector.get('value'), 10);
         }
     });
 });
