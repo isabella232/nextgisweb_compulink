@@ -31,6 +31,10 @@ define([
             topic.subscribe('compulink/player/features/builded', lang.hitch(this, function (from, to) {
                 this._renderPopup(from, to);
             }));
+
+            topic.subscribe('compulink/player/controls/speed/changed', lang.hitch(this, function () {
+                this.fillImages();
+            }));
         },
 
         init: function (timeline) {

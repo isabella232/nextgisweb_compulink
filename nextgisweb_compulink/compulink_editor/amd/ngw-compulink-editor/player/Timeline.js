@@ -262,6 +262,7 @@ define([
 
             this._unitsSelector.on('change', lang.hitch(this, function (changedEvent) {
                 this.stop();
+                topic.publish('compulink/player/controls/speed/changed');
             }));
 
             this._countUnitSelector = new Select({
@@ -272,6 +273,7 @@ define([
 
             this._countUnitSelector.on('change', lang.hitch(this, function (changedEvent) {
                 this.stop();
+                topic.publish('compulink/player/controls/speed/changed');
             }));
         },
 
