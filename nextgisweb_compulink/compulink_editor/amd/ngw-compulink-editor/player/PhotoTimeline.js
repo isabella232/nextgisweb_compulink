@@ -19,6 +19,7 @@ define([
         _featureManager: null,
         _timeline: null,
         _intervals: null,
+        _turned: true,
 
         constructor: function () {
             this.bindEvents();
@@ -29,11 +30,21 @@ define([
 
         bindEvents: function () {
             topic.subscribe('compulink/player/features/builded', lang.hitch(this, function (from, to) {
+                if (!this._turned) return false;
                 this._renderPopup(from, to);
             }));
 
             topic.subscribe('compulink/player/controls/speed/changed', lang.hitch(this, function () {
                 this.fillImages();
+            }));
+
+            topic.subscribe('compulink/player/photo-timeline/toggle', lang.hitch(this, function (turned) {
+                this._turned = turned;
+                if (this._turned) {
+                    this._renderPopup(null, this._timeline.getCurrentTime());
+                } else {
+                    this._hideLastPopup();
+                }
             }));
         },
 

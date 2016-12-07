@@ -226,11 +226,7 @@ define([
                 var photoBtn = query('i.photo', this._dialog.domNode)[0];
                 domClass.toggle(photoBtn, 'fa-eye');
                 domClass.toggle(photoBtn, 'fa-low-vision');
-                if (domClass.contains(photoBtn, 'fa-eye')) {
-                    console.log('photo on');
-                } else {
-                    console.log('photo off');
-                }
+                topic.publish('compulink/player/photo-timeline/toggle', domClass.contains(photoBtn, 'fa-eye'));
             }));
         },
 
