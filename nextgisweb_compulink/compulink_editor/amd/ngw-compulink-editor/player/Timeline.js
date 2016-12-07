@@ -67,6 +67,7 @@ define([
                 this._buildTimeline(featureManager);
                 this._buildSpeedSelectors();
                 this._setOptimalSpeed();
+                topic.publish('compulink/player/timeline/builded', this);
             }));
         },
 
@@ -132,8 +133,6 @@ define([
             this._timeline = timeline;
             this._bindPlayerControlsEvents();
             this._moveTimeBarToStart();
-
-            topic.publish('compulink/player/timeline/builded', this);
         },
 
         _handleTimeChanged: function (timeChangedEvent) {
@@ -420,10 +419,22 @@ define([
         },
 
         _getIntervalTimeByTickFrom: function (startDate, tickFrom, units, countUnits, countTicks) {
+            var from, fromMs, to, toMs;
+
             countTicks = typeof countTicks !== 'undefined' ? countTicks : 1;
+
+            from = this['add' + units](startDate, tickFrom * countUnits);
+            to = this['add' + units](startDate, (tickFrom + countTicks) * countUnits);
+            fromMs = from.getTime();
+            toMs = to.getTime();
+
             return {
-                from: this['add' + units](startDate, tickFrom * countUnits),
-                to: this['add' + units](startDate, (tickFrom + countTicks) * countUnits)
+                from: from,
+                fromMs: fromMs,
+                tickFrom: tickFrom,
+                to: to,
+                toMs: toMs,
+                tickTo: tickFrom + countTicks
             }
         },
 
@@ -540,6 +551,17 @@ define([
 
         getCountUnitsPerSecond: function () {
             return parseInt(this._countUnitSelector.get('value'), 10);
+        },
+
+        getFeatureManager: function () {
+            return this._featureManager;
+        },
+
+        getUnitsInfo: function () {
+            return {
+                units: this.getUnits(),
+                unitsPerSec: this.getCountUnitsPerSecond()
+            };
         }
     });
 });
