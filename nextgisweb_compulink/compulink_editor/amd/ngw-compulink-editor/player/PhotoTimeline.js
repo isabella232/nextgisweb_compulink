@@ -5,7 +5,8 @@ define([
     'dojo/topic',
     'ngw/openlayers',
     'ngw-compulink-editor/editor/NgwServiceFacade'
-], function (declare, lang, array, topic, openlayers, NgwServiceFacade) {
+], function (declare, lang, array,
+             topic, openlayers, NgwServiceFacade) {
     return declare(null, {
         SECONDS_FOR_ONE_PHOTO: 2,
         FADE_EFFECT_TIME: 200,
@@ -17,6 +18,7 @@ define([
         _lastPopup: null,
         _featureManager: null,
         _timeline: null,
+        _intervals: null,
 
         constructor: function () {
             this.bindEvents();
@@ -26,17 +28,100 @@ define([
         },
 
         bindEvents: function () {
-            topic.subscribe('compulink/player/timeline/builded', lang.hitch(this, function (timeline) {
-                this._timeline = timeline;
-                this._featureManager = timeline.getFeatureManager();
-                this.fillImages();
+            topic.subscribe('compulink/player/features/builded', lang.hitch(this, function (from, to) {
+                this._renderPopup(from, to);
             }));
+        },
+
+        init: function (timeline) {
+            this._timeline = timeline;
+            this._featureManager = timeline.getFeatureManager();
+            this.fillImages();
+        },
+
+        _renderPopup: function (from, to) {
+            var interval = this._getInterval(to),
+                photoInfo = interval.photoInfo,
+                layer = this._featureManager.getLayer(),
+                popupId, geometry, popup;
+
+            popupId = photoInfo.featureId + '-' + photoInfo.layerId;
+
+            if (this._lastPopup && this._lastPopup.id === popupId) {
+                return true;
+            }
+
+            this._hideLastPopup();
+
+            geometry = photoInfo.feature.geometry.getCentroid();
+            popup = new openlayers.Popup(
+                popupId,
+                new openlayers.LonLat(geometry.x, geometry.y),
+                new openlayers.Size(this.PHOTO_HEIGHT, this.PHOTO_WIDTH),
+                popupId,
+                true);
+
+            popup.contentHTML = jQuery('<div />').append(interval.$img.clone()).html();
+            popup.$popup = jQuery(popup.div);
+            popup.$popup.addClass('createdPopup');
+            layer.map.addPopup(popup);
+            this._lastPopup = popup;
+            console.log(popup.id + ': created');
+            popup.$popup.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
+                popup._displayingTime = Date.now();
+                console.log(popup.id + ': displaying');
+            }));
+        },
+
+        _hideLastPopup: function () {
+            var popupId,
+                popups,
+                targetPopup;
+
+            if (!this._lastPopup) {
+                return true;
+            }
+
+            popupId = this._lastPopup.id;
+            popups = this._featureManager.getLayer().map.popups;
+
+            this._lastPopup.$popup.fadeOut(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
+                array.forEach(popups, function (popup) {
+                    if (popup.id === popupId) {
+                        targetPopup = popup;
+                    }
+                });
+                if (targetPopup) targetPopup.destroy();
+            }));
+
+        },
+
+        _getInterval: function (to) {
+            var intervals = this._intervals,
+                toMs = to.getTime(),
+                currentInterval;
+
+            for (var i = 0; i < intervals.count; i++) {
+                currentInterval = intervals[i];
+
+                if (toMs > currentInterval.fromMs && toMs <= currentInterval.toMs) {
+                    break;
+                }
+            }
+
+            if (!currentInterval) {
+                throw 'PhotoTimeline: target interval not found!';
+            }
+
+            return currentInterval;
         },
 
         fillImages: function () {
             var intervalsTicks = this._fillImagesInfo(),
                 analyzedIntervals = this._analyzeIntervals(intervalsTicks),
                 img;
+
+            this._intervals = null;
 
             this.$photoTimeline.empty();
 
@@ -45,6 +130,9 @@ define([
                 this.$photoTimeline.append(img);
                 interval.$img = img;
             }));
+
+            this._intervals = analyzedIntervals;
+            this._intervals.count = analyzedIntervals.length;
         },
 
         _analyzeIntervals: function (intervalsTicks) {
@@ -194,78 +282,6 @@ define([
                 featureId: featurePhoto.attributes.ngwFeatureId,
                 layerId: featurePhoto.attributes.ngwLayerId
             }
-        },
-
-        _buildPopup: function (layer, chunkFeatures) {
-            var chunkFeaturesCount = chunkFeatures.length,
-                feature,
-                attachments,
-                attachmentPhoto,
-                featurePhoto,
-                photoUrl,
-                popupId,
-                geometryPopup,
-                popup,
-                $popup;
-
-            if (chunkFeaturesCount < 0) {
-                return false;
-            }
-
-            for (var i = 0; i < chunkFeaturesCount; i++) {
-                feature = chunkFeatures[i];
-                attachments = chunkFeatures[0].attributes.attachments;
-                if (attachments) {
-                    array.forEach(attachments, function (attachment) {
-                        if (attachment.is_image) {
-                            attachmentPhoto = attachments[0];
-                            featurePhoto = feature;
-                        }
-                    });
-                    if (attachmentPhoto) break;
-                }
-            }
-
-            if (!attachmentPhoto || !featurePhoto) return false;
-
-            photoUrl = this._ngwServiceFacade.getAttachmentPhotoUrl(
-                featurePhoto.attributes.ngwLayerId,
-                featurePhoto.attributes.ngwFeatureId,
-                attachmentPhoto.id,
-                100, 100
-            );
-
-            if (this._lastPopup) {
-                var lastPopup = this._lastPopup;
-                var displayingTime = Date.now() - lastPopup._displayingTime;
-                var timeoutDuration = displayingTime > this.MIN_TIME_POPUP_DISPLAYING ?
-                    0 : this.MIN_TIME_POPUP_DISPLAYING - displayingTime;
-                setTimeout(lang.hitch(this, function () {
-                    lastPopup.$popup.fadeOut(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
-                        // console.log(lastPopup.id + ': destroyed');
-                        lastPopup.destroy();
-                    }));
-                }), timeoutDuration);
-            }
-
-            popupId = featurePhoto.attributes.ngwFeatureId + '-' + featurePhoto.attributes.ngwLayerId;
-            geometryPopup = chunkFeatures[0].geometry.getCentroid();
-            popup = new openlayers.Popup(
-                popupId,
-                new openlayers.LonLat(geometryPopup.x, geometryPopup.y),
-                new openlayers.Size(100, 100),
-                popupId,
-                true);
-            popup.contentHTML = '<img src="' + photoUrl + '" />';
-            popup.$popup = jQuery(popup.div);
-            popup.$popup.addClass('createdPopup');
-            layer.map.addPopup(popup);
-            this._lastPopup = popup;
-            // console.log(popup.id + ': created');
-            popup.$popup.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
-                popup._displayingTime = Date.now();
-                // console.log(popup.id + ': displaying');
-            }));
         }
     });
 });

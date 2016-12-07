@@ -67,7 +67,8 @@ define([
                 this._buildTimeline(featureManager);
                 this._buildSpeedSelectors();
                 this._setOptimalSpeed();
-                topic.publish('compulink/player/timeline/builded', this);
+                this._photoTimeline.init(this);
+                this._moveTimeBarToStart();
             }));
         },
 
@@ -132,7 +133,6 @@ define([
 
             this._timeline = timeline;
             this._bindPlayerControlsEvents();
-            this._moveTimeBarToStart();
         },
 
         _handleTimeChanged: function (timeChangedEvent) {
@@ -413,8 +413,8 @@ define([
         _getIntervalTimeByTickTo: function (startDate, tickTo, units, countUnits, countTicks) {
             countTicks = typeof countTicks !== 'undefined' ? countTicks : 1;
             return {
-                from: this['add' + units](startDate, (tick - countTicks) * countUnits),
-                to: this['add' + units](startDate, tick * countUnits)
+                from: this['add' + units](startDate, (tickTo - countTicks) * countUnits),
+                to: this['add' + units](startDate, tickTo * countUnits)
             }
         },
 
@@ -473,6 +473,7 @@ define([
 
         _currentIndexDate: null,
         _buildFeatures: function (from, to, isNeedRebuild) {
+            topic.publish('compulink/player/features/builded', from, to);
             var layer = this._featureManager._layer,
                 featureBuiltDateMs,
                 featuresToDrawing = [];
@@ -524,6 +525,7 @@ define([
                                 (index + 1) * countInTimeChunk
                             );
                             layer.addFeatures(chunkFeatures);
+                            console.log(Date.now() + ': layer.addFeatures');
                         };
                     }(indexTimeChunk), 1000 * (indexTimeChunk / chunksInSec));
                 }
