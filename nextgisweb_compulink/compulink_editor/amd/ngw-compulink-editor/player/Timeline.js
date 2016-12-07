@@ -566,6 +566,10 @@ define([
                 units: this.getUnits(),
                 unitsPerSec: this.getCountUnitsPerSecond()
             };
+        },
+
+        getCurrentTime: function () {
+            return this._timeline.getCustomTime(this._barId);
         }
     });
 });
