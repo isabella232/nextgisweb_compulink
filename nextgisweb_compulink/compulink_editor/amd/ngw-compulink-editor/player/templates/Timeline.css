@@ -67,4 +67,12 @@ div.olMapViewport div.olPopup.createdPopup {
     display: none;
     margin-top: -100px;
     margin-left: -50px;
+    width: auto !important;
+    height: auto !important;
+}
+
+div.olMapViewport div.olPopup.createdPopup div.olPopupContent {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden;
 }

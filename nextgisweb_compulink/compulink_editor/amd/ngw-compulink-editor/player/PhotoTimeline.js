@@ -58,7 +58,7 @@ define([
             var interval = this._getInterval(to),
                 photoInfo = interval.photoInfo,
                 layer = this._featureManager.getLayer(),
-                popupId, geometry, popup;
+                $img, popupId, popupSize, geometry, popup;
 
             popupId = photoInfo.featureId + '-' + photoInfo.layerId;
 
@@ -69,10 +69,16 @@ define([
             this._hideLastPopup();
 
             geometry = photoInfo.feature.geometry.getCentroid();
+
+            $img = interval.$img;
+            popupSize = new openlayers.Size(
+                $img.attr('data-w') || this.PHOTO_WIDTH,
+                $img.attr('data-h') || this.PHOTO_HEIGHT);
+
             popup = new openlayers.Popup(
                 popupId,
                 new openlayers.LonLat(geometry.x, geometry.y),
-                new openlayers.Size(this.PHOTO_HEIGHT, this.PHOTO_WIDTH),
+                popupSize,
                 popupId,
                 true);
 
@@ -133,17 +139,22 @@ define([
 
         fillImages: function () {
             var intervalsTicks = this._fillImagesInfo(),
-                analyzedIntervals = this._analyzeIntervals(intervalsTicks),
-                img;
+                analyzedIntervals = this._analyzeIntervals(intervalsTicks);
 
             this._intervals = null;
 
             this.$photoTimeline.empty();
 
             array.forEach(analyzedIntervals, lang.hitch(this, function (interval) {
-                img = jQuery('<img src="' + interval.photoInfo.photoUrl + '"/>');
-                this.$photoTimeline.append(img);
-                interval.$img = img;
+                var $img = jQuery('<img src="' + interval.photoInfo.photoUrl + '"/>');
+
+                $img.load(function () {
+                    $img.attr('data-w', $img.width());
+                    $img.attr('data-h', $img.height());
+                });
+
+                this.$photoTimeline.append($img);
+                interval.$img = $img;
             }));
 
             this._intervals = analyzedIntervals;
