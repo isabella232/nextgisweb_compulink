@@ -87,10 +87,8 @@ define([
             popup.$popup.addClass('createdPopup');
             layer.map.addPopup(popup);
             this._lastPopup = popup;
-            console.log(popup.id + ': created');
             popup.$popup.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
                 popup._displayingTime = Date.now();
-                console.log(popup.id + ': displaying');
             }));
         },
 
