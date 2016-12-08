@@ -120,17 +120,24 @@ define([
         _getInterval: function (to) {
             var intervals = this._intervals,
                 toMs = to.getTime(),
+                targetInterval,
                 currentInterval;
 
             for (var i = 0; i < intervals.count; i++) {
                 currentInterval = intervals[i];
 
-                if (toMs > currentInterval.fromMs && toMs <= currentInterval.toMs) {
+                if (i === 0 && toMs >= currentInterval.fromMs && toMs <= currentInterval.toMs) {
+                    targetInterval = currentInterval;
+                    break;
+                }
+
+                if (i > 0 && toMs > currentInterval.fromMs && toMs <= currentInterval.toMs) {
+                    targetInterval = currentInterval;
                     break;
                 }
             }
 
-            if (!currentInterval) {
+            if (!targetInterval) {
                 throw 'PhotoTimeline: target interval not found!';
             }
 

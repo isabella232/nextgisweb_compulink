@@ -523,7 +523,6 @@ define([
                                 (index + 1) * countInTimeChunk
                             );
                             layer.addFeatures(chunkFeatures);
-                            console.log(Date.now() + ': layer.addFeatures');
                         };
                     }(indexTimeChunk), 1000 * (indexTimeChunk / chunksInSec));
                 }
