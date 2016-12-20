@@ -9,7 +9,7 @@ define([
              topic, openlayers, NgwServiceFacade) {
     return declare(null, {
         SECONDS_FOR_ONE_PHOTO: 2,
-        FADE_EFFECT_TIME: 200,
+        FADE_EFFECT_TIME: 1000,
         PHOTO_WIDTH: 100,
         PHOTO_HEIGHT: 100,
 
