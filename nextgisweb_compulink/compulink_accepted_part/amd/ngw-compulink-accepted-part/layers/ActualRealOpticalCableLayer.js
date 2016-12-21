@@ -13,12 +13,12 @@ define([
     return declare([_BaseLayer], {
         LAYER_NAME: 'AcceptedParts.ActualRealOpticalCable',
         DEFAULT_STYLE: {
-            fillColor: '#6666ff',
-            strokeColor: '#6666ff',
-            width: 1,
-            strokeOpacity: 0.5
+            fillColor: '#339900',
+            strokeColor: '#339900',
+            strokeWidth: 4,
+            strokeOpacity: 1
         },
-        Z_INDEX: 2000,
+        Z_INDEX: 99998,
 
         _bindEvents: function () {
             this.inherited(arguments);
