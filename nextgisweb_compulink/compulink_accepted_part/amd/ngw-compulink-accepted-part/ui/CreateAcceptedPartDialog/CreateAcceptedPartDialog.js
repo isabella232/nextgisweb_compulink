@@ -23,7 +23,7 @@ define([
         title: 'Создать принятый участок',
         message: 'Are you sure?',
         buttonOk: 'OK',
-        buttonCancel: 'Закрыть',
+        buttonCancel: 'Отмена',
         id: 'createAcceptedPartDialog',
         handlerOk: function () {
         },
