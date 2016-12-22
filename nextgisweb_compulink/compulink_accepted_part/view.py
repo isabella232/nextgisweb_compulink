@@ -99,7 +99,7 @@ def create_accepted_part(request):
         data = request.POST
         info = {
             'act_number_date': data['act_number_date'],
-            'acceptor': data['acceptor'],
+            'acceptor': request.user.display_name or request.user.keyname,
             'subcontr_name': data['subcontr_name'],
             'comment': data.get('comment'),
             'change_author': request.user.display_name or request.user.keyname,
@@ -204,7 +204,6 @@ def update_accepted_part(request):
         #update feat
         data = request.POST
         feature.fields['act_number_date'] = data['act_number_date'],
-        feature.fields['acceptor'] = data['acceptor'],
         feature.fields['subcontr_name'] = data['subcontr_name'],
         feature.fields['comment'] = data.get('comment', feature.fields['comment']),
         feature.fields['change_author'] = request.user.display_name or request.user.keyname
