@@ -1,21 +1,12 @@
 Font license info
 
 
-## Elusive
+## Iconic
 
-   Copyright (C) 2013 by Aristeides Stathopoulos
+   Copyright (C) 2012 by P.J. Onori
 
-   Author:    Aristeides Stathopoulos
+   Author:    P.J. Onori
    License:   SIL (http://scripts.sil.org/OFL)
-   Homepage:  http://aristeides.com/
-
-
-## Font Awesome
-
-   Copyright (C) 2016 by Dave Gandy
-
-   Author:    Dave Gandy
-   License:   SIL ()
-   Homepage:  http://fortawesome.github.com/Font-Awesome/
+   Homepage:  http://somerandomdude.com/work/iconic/
 
 

@@ -39,6 +39,7 @@ define([
                     this._activate();
                 } else {
                     this._deactivate();
+                    topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 }
             }));
         },
@@ -109,7 +110,10 @@ define([
         },
 
         _afterDrawUpHandler: function () {
-            if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) return true;
+            if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) {
+                topic.publish('compulink/accepted-parts/layers/first-point/undo/on');
+                return true;
+            }
 
             // if start point, then this._lastPointVerifyResult.pointsInSketchLine === 2
             if (this._lastPointVerifyResult.pointsInSketchLine === 2) {
@@ -119,6 +123,7 @@ define([
 
             // if this._lastPointVerifyResult.pointsInSketchLine !== 2 then current point is end point
             if (this._lastPointVerifyResult.result) {
+                topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 var acceptedGeometry = this._createAcceptedPartGeometry();
                 if (acceptedGeometry) {
                     this._drawFeatureControl.cancel();

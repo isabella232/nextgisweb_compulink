@@ -32,6 +32,7 @@ define([
                 } else {
                     this.acceptedPartsLayerToggle.set('iconClass', 'icon icon-eye-off');
                     this.createAcceptedPartToggle.set('disabled', 'disabled');
+                    topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 }
                 topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', state);
             }));
@@ -53,6 +54,14 @@ define([
 
             on(this.acceptedPartsFilter, 'keyup', lang.hitch(this, function (event) {
                 topic.publish('compulink/accepted-parts/ui/table/filter/changed', this.acceptedPartsFilter.get('value'));
+            }));
+
+            topic.subscribe('compulink/accepted-parts/layers/first-point/undo/on', lang.hitch(this, function () {
+                this.undoFirstPoint.set('disabled', false);
+            }));
+
+            topic.subscribe('compulink/accepted-parts/layers/first-point/undo/off', lang.hitch(this, function () {
+                this.undoFirstPoint.set('disabled', 'disabled');
             }));
         }
     });

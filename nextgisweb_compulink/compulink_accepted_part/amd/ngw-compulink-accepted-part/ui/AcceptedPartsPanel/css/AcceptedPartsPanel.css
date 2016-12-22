@@ -3,6 +3,7 @@ div.accepted-parts-toolbar span.icon {
     font-size: 15px;
 }
 
-span.dijitToggleButtonDisabled {
+span.dijitToggleButtonDisabled,
+span.dijitButtonDisabled {
     opacity: 0.3;
 }
