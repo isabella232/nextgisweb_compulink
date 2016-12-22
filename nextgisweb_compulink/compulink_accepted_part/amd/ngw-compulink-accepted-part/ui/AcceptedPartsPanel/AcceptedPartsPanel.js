@@ -32,6 +32,7 @@ define([
                 } else {
                     this.acceptedPartsLayerToggle.set('iconClass', 'icon icon-eye-off');
                     this.createAcceptedPartToggle.set('disabled', 'disabled');
+                    this.createAcceptedPartToggle.attr('checked', false);
                     topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 }
                 topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', state);
