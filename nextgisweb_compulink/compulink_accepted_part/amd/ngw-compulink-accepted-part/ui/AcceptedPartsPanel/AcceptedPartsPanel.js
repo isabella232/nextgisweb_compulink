@@ -64,6 +64,10 @@ define([
             topic.subscribe('compulink/accepted-parts/layers/first-point/undo/off', lang.hitch(this, function () {
                 this.undoFirstPoint.set('disabled', 'disabled');
             }));
+
+            on(this.undoFirstPoint, 'click', lang.hitch(this, function () {
+                topic.publish('compulink/accepted-parts/layers/first-point/undo');
+            }));
         }
     });
 });

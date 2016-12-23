@@ -42,6 +42,14 @@ define([
                     topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 }
             }));
+
+            topic.subscribe('compulink/accepted-parts/layers/first-point/undo', lang.hitch(this, function () {
+                if (this._lastPointVerifyResult.pointsInSketchLine === 2) {
+                    this._drawFeatureControl.cancel();
+                    topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
+                    return true;
+                }
+            }));
         },
 
         _createControls: function () {
