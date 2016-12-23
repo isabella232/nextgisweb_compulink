@@ -10,8 +10,8 @@ define([
     return declare(null, {
         SECONDS_FOR_ONE_PHOTO: 2,
         FADE_EFFECT_TIME: 1000,
-        PHOTO_WIDTH: 100,
-        PHOTO_HEIGHT: 100,
+        PHOTO_WIDTH: 300,
+        PHOTO_HEIGHT: 300,
 
         $photoTimeline: null,
         _ngwServiceFacade: null,
