@@ -49,6 +49,11 @@ div.timeline i.fa-fast-backward {
     margin-right: 5px;
 }
 
+div.timeline i.icon {
+    font-size: 21px;
+    color: #599BFF;
+}
+
 div.timeline i.fa-fast-forward {
     margin-left: 5px;
 }

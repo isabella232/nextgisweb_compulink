@@ -22,6 +22,7 @@ define([
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
     'xstyle/css!ngw-compulink-libs/font-awesome-4.6.3/css/font-awesome.min.css',
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
+    'xstyle/css!./templates/fontello/css/fontello.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler,
@@ -213,9 +214,9 @@ define([
 
             on(query('i.sound', this._dialog.domNode), 'click', lang.hitch(this, function () {
                 var volumeBtn = query('i.sound', this._dialog.domNode)[0];
-                domClass.toggle(volumeBtn, 'fa-volume-up');
-                domClass.toggle(volumeBtn, 'fa-volume-off');
-                if (domClass.contains(volumeBtn, 'fa-volume-up')) {
+                domClass.toggle(volumeBtn, 'icon-volume-down');
+                domClass.toggle(volumeBtn, 'icon-volume-off');
+                if (domClass.contains(volumeBtn, 'icon-volume-down')) {
                     this._activateSound();
                 } else {
                     this._audio.deactivate();
