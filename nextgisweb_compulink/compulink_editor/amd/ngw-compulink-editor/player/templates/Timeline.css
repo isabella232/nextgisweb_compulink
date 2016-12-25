@@ -17,13 +17,19 @@ div.timeline div.controls {
     margin-top: 5px;
 }
 
-div.timeline i.fa {
+div.timeline i.fa,
+div.timeline i.icon {
     color: #599BFF;
     cursor: pointer;
 }
 
-div.timeline i.fa:hover {
+div.timeline i.fa:hover,
+div.timeline i.icon:hover {
     color: #0166FF;
+}
+
+div.timeline i.icon {
+    font-size: 21px;
 }
 
 div.timeline i.fa.disabled,
@@ -47,11 +53,6 @@ div.timeline div.vis-custom-time.currentTime {
 
 div.timeline i.fa-fast-backward {
     margin-right: 5px;
-}
-
-div.timeline i.icon {
-    font-size: 21px;
-    color: #599BFF;
 }
 
 div.timeline i.fa-fast-forward {
