@@ -178,12 +178,12 @@ define([
                 {name: 'legend', region: 'bottom', height: '40%', splitter: true}
             ],
             sit: [
-                {name: 'sit', region: 'top', height: '50%', splitter: true},
-                {name: 'legend', region: 'center', height: '50%', splitter: true}
+                {name: 'sit', region: 'top', height: '25%', splitter: true},
+                {name: 'legend', region: 'center', height: '75%', splitter: true}
             ],
             vols: [
-                {name: 'focl', region: 'top', height: '50%', splitter: true},
-                {name: 'legend', region: 'center', height: '50%', splitter: true}
+                {name: 'focl', region: 'top', height: '25%', splitter: true},
+                {name: 'legend', region: 'center', height: '75%', splitter: true}
             ]
         },
         setPanelsDomElements: function () {
