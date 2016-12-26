@@ -112,13 +112,16 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
 /*height: 21px; *//* todo: for centering icon by text, need implement this by background-position */
 /*}*/
 
-#rightPanel div.dijitContentPane {
+#rightPanel div.dijitContentPane,
+#leftPanel div.dijitContentPane {
     overflow: hidden;
 }
 
 #rightPanel div.tree-wrapper,
+#leftPanel div.tree-wrapper,
 #rightPanel div.legend_wrapper,
-#rightPanel div.tree-overlay {
+#rightPanel div.tree-overlay,
+#leftPanel div.tree-overlay {
     position: absolute;
     top: 23px;
     bottom: 0;
@@ -127,6 +130,7 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
 }
 
 #rightPanel div.tree-wrapper,
+#leftPanel div.tree-wrapper,
 #rightPanel div.legend_wrapper {
     overflow: auto;
 }
