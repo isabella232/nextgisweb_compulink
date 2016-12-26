@@ -276,6 +276,11 @@ define([
             }
         },
 
+        collapseAllNodes: function (resourceType) {
+            var resourcesTypesConfig = this.settings.resources;
+            resourcesTypesConfig[resourceType]['$tree'].jstree('close_all');
+        },
+
         getLayersTypesSelected: function (type) {
             var result = [],
                 tree;
