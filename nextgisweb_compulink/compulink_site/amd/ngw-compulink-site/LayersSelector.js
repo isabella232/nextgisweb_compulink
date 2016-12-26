@@ -60,9 +60,7 @@ define([
                 'core': {
                     'dblclick_toggle': false,
                     'themes': {
-                        'variant': 'small',
-                        'dots': false,
-                        'icons': true
+                        'variant': 'small'
                     },
                     'data': layersTreeData
                 },

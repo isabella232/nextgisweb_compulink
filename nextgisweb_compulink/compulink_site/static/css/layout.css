@@ -131,14 +131,6 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     overflow: auto;
 }
 
-#rightPanel i.jstree-ocl {
-    display: none;
-}
-
-#rightPanel i.jstree-checkbox {
-    margin-right: 2px;
-}
-
 /*layers types icons*/
 #rightPanel i.jstree-icon.jstree-themeicon {
     width: 16px;
