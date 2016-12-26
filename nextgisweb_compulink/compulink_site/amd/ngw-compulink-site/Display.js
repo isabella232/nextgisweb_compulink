@@ -351,6 +351,8 @@ define([
                         ], 'focl_struct');
                     }
 
+                    this.LayersSelector.collapseAllNodes('focl_struct');
+
                     new EventsMediator(this);
                 })
             ).then(undefined, function (err) { console.error(err); });
@@ -436,7 +438,7 @@ define([
                 return false;
             }
             var getExtentUrl = ngwConfig.applicationUrl + '/compulink/resources/object_extent?resource_id=' +
-                    this._urlParams['resource_id']
+                    this._urlParams['resource_id'];
 
             if(this._urlParams['object_type'])
                 getExtentUrl += '&object_type=' + this._urlParams['object_type'];
