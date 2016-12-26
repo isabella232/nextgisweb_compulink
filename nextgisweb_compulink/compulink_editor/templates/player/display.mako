@@ -32,7 +32,7 @@
                 "icon": "sp_optical_cross",
                 "id": "design_data_layers",
                 "state": {
-                    "opened": true
+                    "opened": false
                 },
                 "children": ${json.dumps(focl_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n}
             },
@@ -42,7 +42,7 @@
                 "icon": "sp_optical_cross",
                 "id": "objects_layers",
                 "state": {
-                    "opened": true
+                    "opened": false
                 },
                 "children": ${json.dumps(objects_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n}
             },
@@ -52,7 +52,7 @@
                 "icon": "sp_optical_cross",
                 "id": "fact_data_layers",
                 "state": {
-                    "opened": true
+                    "opened": false
                 },
                 "children": ${json.dumps(real_layers_type, indent=4).replace('\n', '\n' + (8 * ' ')) | n}
             }
