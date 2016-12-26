@@ -334,10 +334,6 @@ define([
             all([this._midDeferred.basemap, this._startupDeferred]).then(
                 lang.hitch(this, function () {
                     widget._mapSetup();
-                    //this.LayersSelector.selectLayers([
-                    //    'real_special_transition', 'real_special_transition_point',  'real_optical_cable',
-                    //    'real_optical_cable_point', 'real_fosc', 'real_optical_cross', 'real_access_point'
-                    //], 'focl_struct');
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
