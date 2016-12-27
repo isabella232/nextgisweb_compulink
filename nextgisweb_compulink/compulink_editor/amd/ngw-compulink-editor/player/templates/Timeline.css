@@ -1,5 +1,5 @@
-div#timeline {
-    height: 175px !important;
+#timeline {
+    height: 180px !important;
 }
 
 div.dojoxFloatingPaneCanvas {
