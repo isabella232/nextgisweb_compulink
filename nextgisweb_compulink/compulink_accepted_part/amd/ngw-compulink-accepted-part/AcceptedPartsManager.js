@@ -52,6 +52,7 @@ define([
 
             this._map.olMap.events.register('addlayer', this._map, lang.hitch(this, this._applyZIndexes));
             this._map.olMap.events.register('removelayer', this._map, lang.hitch(this, this._applyZIndexes));
+            this._map.olMap.events.register('changelayer', this._map, lang.hitch(this, this._applyZIndexesByChangeLayer));
         },
 
         _applyZIndexes: function () {
@@ -60,6 +61,12 @@ define([
                     layer.setZIndex(layer._ap_zindex);
                 }
             });
+        },
+
+        _applyZIndexesByChangeLayer: function (e) {
+            if (e.property === 'order') {
+                this._applyZIndexes();
+            }
         },
 
         _selectConstructObjectHandler: function (constructObjectInfo) {
