@@ -13,8 +13,8 @@ define([
     return declare([_BaseLayer], {
         LAYER_NAME: 'AcceptedParts.ActualRealOpticalCable',
         DEFAULT_STYLE: {
-            fillColor: '#339900',
-            strokeColor: '#339900',
+            fillColor: '#ff9900',
+            strokeColor: '#ff9900',
             strokeWidth: 4,
             strokeOpacity: 1
         },

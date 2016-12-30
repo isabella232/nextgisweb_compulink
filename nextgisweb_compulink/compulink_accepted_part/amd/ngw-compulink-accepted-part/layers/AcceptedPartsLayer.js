@@ -12,15 +12,15 @@ define([
     return declare([_BaseLayer], {
         LAYER_NAME: 'AcceptedParts.AcceptedParts',
         DEFAULT_STYLE: {
-            fillColor: '#ff0000',
-            strokeColor: '#ff0000',
+            fillColor: '#70db70',
+            strokeColor: '#70db70',
             strokeWidth: 4,
             strokeOpacity: 1
         },
 
         HIGHLIGHT_STYLE: {
-            fillColor: '#990000',
-            strokeColor: '#990000',
+            fillColor: '#145214',
+            strokeColor: '#145214',
             strokeWidth: 8,
             strokeOpacity: 1
         },
