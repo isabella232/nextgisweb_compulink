@@ -224,8 +224,13 @@ define([
         // Для загрузки изображения
         assetUrl: ngwConfig.assetUrl,
 
+        // for possibility overriding in parent classes
+        _TimelineClass: null,
+
         constructor: function (options) {
             declare.safeMixin(this, options);
+
+            this._setTimelineClass();
 
             // Извлекаем GET-параметры из URL
             this._urlParams = (function(){
@@ -340,7 +345,7 @@ define([
                     widget._mapSetup();
 
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
-                    var timeline = new Timeline();
+                    var timeline = new this._TimelineClass();
                     var audioDeferred = timeline.initAudioManager();
 
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
@@ -414,6 +419,10 @@ define([
 
             // Инструменты
             this.tools = [];
+        },
+
+        _setTimelineClass: function () {
+            this._TimelineClass = Timeline;
         },
 
         postCreate: function () {
