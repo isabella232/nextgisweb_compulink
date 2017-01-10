@@ -70,6 +70,7 @@ define([
                 this._setOptimalSpeed();
                 this._photoTimeline.init(this);
                 this._moveTimeBarToStart();
+                topic.publish('compulink/player/loaded');
             }));
         },
 
@@ -468,6 +469,7 @@ define([
             this._state = 'wait';
             this._buttonsHandlers.play.enable();
             this._audio.stop();
+            topic.publish('compulink/player/stopped');
         },
 
         _currentIndexDate: null,
