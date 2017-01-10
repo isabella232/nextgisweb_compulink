@@ -119,10 +119,10 @@
         </div>
     </div>
     <div class="body-wrapper">
-        <div data-dojo-id="display"
-             data-dojo-type="ngw-compulink-editor/player/Display"
-             data-dojo-props="config: displayConfig"
-             style="width: 100%; height: 100%">
-        </div>
+        %if is_recording:
+            <%include file="display_widget/player_for_recording_video.mako"></%include>
+        %else:
+            <%include file="display_widget/player.mako"></%include>
+        %endif
     </div>
 </div>
