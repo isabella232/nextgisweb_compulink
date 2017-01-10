@@ -2,7 +2,7 @@
     require([
         "dojo/parser",
         "dojo/ready",
-        "ngw-compulink-editor/player/Display",
+        "ngw-compulink-editor/player/recording_video/Display",
         "ngw-compulink-site/DisplayHeader"
     ], function (parser, ready) {
         ready(function () {
