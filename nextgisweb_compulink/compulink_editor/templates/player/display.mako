@@ -1,6 +1,5 @@
 <%inherit file='nextgisweb_compulink:compulink_editor/templates/base_site.mako' />
 
-
 <%def name="title()">
     Карта контроля хода выполнения работ
 </%def>
@@ -22,6 +21,10 @@
           rel="stylesheet" type="text/css"/>
 
     <script src="${request.static_url('nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2/jquery.js')}"></script>
+
+    %if is_recording:
+        <%include file="_video_recording_js_params.mako"></%include>
+    %endif
 
     <script type="text/javascript">
             <% import json %>
@@ -83,18 +86,13 @@
             },
             "playerSoundFile": "${request.static_url(player_sound_file)}"
         };
-
-        require([
-            "dojo/parser",
-            "dojo/ready",
-            "ngw-compulink-editor/player/Display",
-            "ngw-compulink-site/DisplayHeader"
-        ], function (parser, ready) {
-            ready(function () {
-                parser.parse();
-            });
-        });
     </script>
+
+    %if is_recording:
+        <%include file="display_dojo_parser/player_for_recording_video.mako"></%include>
+    %else:
+        <%include file="display_dojo_parser/player.mako"></%include>
+    %endif
 
     <style type="text/css">
         body, html {
