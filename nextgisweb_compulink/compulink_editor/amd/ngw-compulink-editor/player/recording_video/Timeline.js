@@ -11,6 +11,7 @@ define([
 
             topic.subscribe('compulink/player/loaded', lang.hitch(this, function () {
                 setTimeout(lang.hitch(this, function () {
+                    this._audio.deactivate();
                     this._setParameters();
                     this._overrideGlobalFunctions();
                     this._setStoppedHandler();
