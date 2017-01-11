@@ -27,6 +27,7 @@ define([
         },
 
         play: function (position) {
+            if (!this._sound) return false;
             if (!this._activate || this._sound.playing()) return false;
             if (position) {
                 if (position > this._sound.duration()) {
@@ -38,15 +39,17 @@ define([
         },
 
         stop: function () {
-            if (!this._activate) return false;
+            if (!this._activate || !this._sound) return false;
             this._sound.stop();
         },
 
         activate: function () {
+            if (!this._sound) return false;
             this._activate = true;
         },
 
         deactivate: function () {
+            if (!this._sound) return false;
             this._activate = false;
             this._sound.stop();
         }
