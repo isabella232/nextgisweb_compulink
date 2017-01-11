@@ -33,6 +33,9 @@ define([
         _playerState: 'ready',
         _overrideGlobalFunctions: function () {
             window.startPlayer = lang.hitch(this, function () {
+                if (this._playerState === 'playing') {
+                    return false;
+                }
                 this._playerState = 'playing';
                 this.play(this._timeline.getCustomTime(this._barId));
             });
