@@ -254,6 +254,15 @@ def show_player_for_recording_video(request):
 
     values['is_recording'] = True
 
+    values['player_parameters'] = {
+        'count_units': request.GET.get('count_units'),
+        'units': request.GET.get('units'),
+        'sound': request.GET.get('sound'),
+        'photo': request.GET.get('photo'),
+        'DELAY_AFTER_LOADED': 3000,
+        'DELAY_AFTER_PLAY_FINISHED': 3000
+    }
+
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/player/display.mako',
                               values,
                               request=request)
