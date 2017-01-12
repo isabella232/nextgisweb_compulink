@@ -53,9 +53,9 @@ define([
 
         constructor: function () {
             mustache.parse(template);
-            this._bindEvents();
             this._audio = new AudioManager();
             this._photoTimeline = new PhotoTimeline();
+            this._bindEvents();
         },
 
         initAudioManager: function () {

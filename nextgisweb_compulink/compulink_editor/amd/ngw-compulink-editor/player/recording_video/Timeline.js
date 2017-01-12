@@ -22,8 +22,6 @@ define([
         },
 
         _bindEvents: function () {
-            this.inherited(arguments);
-
             this._setParameters();
 
             topic.subscribe('compulink/player/loaded', lang.hitch(this, function () {
@@ -32,6 +30,8 @@ define([
                     this._setStoppedHandler();
                 }), this.DELAY_AFTER_LOADED);
             }));
+
+            this.inherited(arguments);
         },
 
         _setStoppedHandler: function () {
@@ -47,7 +47,9 @@ define([
             this._handleParameter('units');
 
             this._handleParameter('sound');
+
             this._handleParameter('photo');
+            this._setPhotoMode();
 
             if (this._handleParameter('DELAY_AFTER_LOADED')) {
                 this.DELAY_AFTER_LOADED = parseInt(this.DELAY_AFTER_LOADED, 10);
@@ -65,6 +67,14 @@ define([
                 return true;
             } else {
                 this.inherited(arguments);
+            }
+        },
+
+        _setPhotoMode: function () {
+            if (this.photo && this.photo === 'true') {
+                this._photoTimeline.toggle(true);
+            } else {
+                this._photoTimeline.toggle(false);
             }
         },
 
