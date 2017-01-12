@@ -24,12 +24,13 @@ define([
         _bindEvents: function () {
             this.inherited(arguments);
 
+            this._setParameters();
+
             topic.subscribe('compulink/player/loaded', lang.hitch(this, function () {
                 setTimeout(lang.hitch(this, function () {
-                    this._setParameters();
                     this._overrideGlobalFunctions();
                     this._setStoppedHandler();
-                }), 3000);
+                }), this.DELAY_AFTER_LOADED);
             }));
         },
 
@@ -37,32 +38,42 @@ define([
             topic.subscribe('compulink/player/stopped', lang.hitch(this, function () {
                 setTimeout(lang.hitch(this, function () {
                     this._playerState = 'finished';
-                }), 3000);
+                }), this.DELAY_AFTER_PLAY_FINISHED);
             }));
         },
 
         _setParameters: function () {
             this._handleParameter('count_units');
-            if (this.count_units) {
-                this._countUnitSelector.set('value', this.count_units);
-            }
-
             this._handleParameter('units');
-            if (this.units) {
-                this._unitsSelector.set('value', this.units);
-            }
 
             this._handleParameter('sound');
             this._handleParameter('photo');
 
-            this._handleParameter('DELAY_AFTER_LOADED');
-            this._handleParameter('DELAY_AFTER_PLAY_FINISHED');
+            if (this._handleParameter('DELAY_AFTER_LOADED')) {
+                this.DELAY_AFTER_LOADED = parseInt(this.DELAY_AFTER_LOADED, 10);
+            }
+
+            if (this._handleParameter('DELAY_AFTER_PLAY_FINISHED')) {
+                this.DELAY_AFTER_PLAY_FINISHED = parseInt(this.DELAY_AFTER_PLAY_FINISHED, 10);
+            }
+        },
+
+        _setOptimalSpeed: function () {
+            if (this.units && this.count_units) {
+                this._unitsSelector.set('value', this.units);
+                this._countUnitSelector.set('value', this.count_units);
+                return true;
+            } else {
+                this.inherited(arguments);
+            }
         },
 
         _handleParameter: function (parameterName) {
             if (window.playerParams[parameterName]) {
                 this[parameterName] = window.playerParams[parameterName];
+                return true;
             }
+            return false;
         },
 
         _playerState: 'ready',
