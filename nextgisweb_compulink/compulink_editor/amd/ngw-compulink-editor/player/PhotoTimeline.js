@@ -39,12 +39,7 @@ define([
             }));
 
             topic.subscribe('compulink/player/photo-timeline/toggle', lang.hitch(this, function (turned) {
-                this._turned = turned;
-                if (this._turned) {
-                    this._renderPopup(null, this._timeline.getCurrentTime());
-                } else {
-                    this._hideLastPopup();
-                }
+                this.toggle(turned);
             }));
         },
 
@@ -251,8 +246,7 @@ define([
                 return feature.attributes.built_date_ms >= currentInterval.fromMs &&
                     feature.attributes.built_date_ms < currentInterval.toMs;
             }
-        }
-        ,
+        },
 
         _getIntervalsTicks: function () {
             var minBuiltDate = this._featureManager.minBuiltDate,
@@ -312,6 +306,15 @@ define([
                 feature: featurePhoto,
                 featureId: featurePhoto.attributes.ngwFeatureId,
                 layerId: featurePhoto.attributes.ngwLayerId
+            }
+        },
+
+        toggle: function (state) {
+            this._turned = state;
+            if (this._turned) {
+                this._renderPopup(null, this._timeline.getCurrentTime());
+            } else {
+                this._hideLastPopup();
             }
         }
     });
