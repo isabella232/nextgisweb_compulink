@@ -7,6 +7,13 @@ define([
     'xstyle/css!./Timeline.css'
 ], function (declare, lang, topic, Deferred, Timeline) {
     return declare([Timeline], {
+        DELAY_AFTER_LOADED: 3000,
+        DELAY_AFTER_PLAY_FINISHED: 3000,
+        count_units: null,
+        units: null,
+        sound: null,
+        photo: null,
+
         // audio should be off for recording video
         initAudioManager: function () {
             var deferred = new Deferred();
@@ -35,7 +42,27 @@ define([
         },
 
         _setParameters: function () {
+            this._handleParameter('count_units');
+            if (this.count_units) {
+                this._countUnitSelector.set('value', this.count_units);
+            }
 
+            this._handleParameter('units');
+            if (this.units) {
+                this._unitsSelector.set('value', this.units);
+            }
+
+            this._handleParameter('sound');
+            this._handleParameter('photo');
+
+            this._handleParameter('DELAY_AFTER_LOADED');
+            this._handleParameter('DELAY_AFTER_PLAY_FINISHED');
+        },
+
+        _handleParameter: function (parameterName) {
+            if (window.playerParams[parameterName]) {
+                this[parameterName] = window.playerParams[parameterName];
+            }
         },
 
         _playerState: 'ready',
