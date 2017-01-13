@@ -57,6 +57,7 @@ define([
     "ngw-compulink-site/PrintMap",
     "ngw-compulink-site/MapStandBy",
     "ngw-compulink-editor/player/Timeline",
+    "ngw-compulink-editor/player/VideoManager",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",
@@ -133,6 +134,7 @@ define([
     PrintMap,
     MapStandBy,
     Timeline,
+    VideoManager,
     Adapter,
     clientSettings
 ) {
@@ -226,6 +228,8 @@ define([
 
         // for possibility overriding in parent classes
         _TimelineClass: null,
+
+        _videoManagerOn: true,
 
         constructor: function (options) {
             declare.safeMixin(this, options);
@@ -347,6 +351,9 @@ define([
                     this.NgwServiceFacade = new NgwServiceFacade(ngwConfig.applicationUrl);
                     var timeline = new this._TimelineClass();
                     var audioDeferred = timeline.initAudioManager();
+                    if (this._videoManagerOn) {
+                        var videoManager = new VideoManager(timeline);
+                    }
 
                     this.EditorFeaturesManager = new EditorFeaturesManager(this.map, this.NgwServiceFacade,
                         editorConfig, {
