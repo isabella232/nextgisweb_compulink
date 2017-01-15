@@ -1,3 +1,10 @@
 
+.icon-plus-circled:before { content: '\2795'; } /* '➕' */
 .icon-volume-off:before { content: '\e00c'; } /* '' */
 .icon-volume-down:before { content: '\e00d'; } /* '' */
+.icon-video:before { content: '\e012'; } /* '' */
+.icon-cancel-circled2:before { content: '\e04d'; } /* '' */
+.icon-arrows-cw:before { content: '\e04f'; } /* '' */
+.icon-download-alt:before { content: '\e0c3'; } /* '' */
+.icon-video-alt:before { content: '\e0e9'; } /* '' */
+.icon-spin6:before { content: '\e839'; } /* '' */

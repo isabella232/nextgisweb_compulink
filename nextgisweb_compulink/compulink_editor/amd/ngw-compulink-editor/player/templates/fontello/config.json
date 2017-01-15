@@ -17,6 +17,76 @@
       "css": "volume-off",
       "code": 57356,
       "src": "elusive"
+    },
+    {
+      "uid": "09b251f36844ae25d58767d85d21bf88",
+      "css": "video-alt",
+      "code": 57577,
+      "src": "elusive"
+    },
+    {
+      "uid": "31accb20e8819b200c297df608e68830",
+      "css": "video",
+      "code": 57362,
+      "src": "elusive"
+    },
+    {
+      "uid": "74415da8e36ed0afcea9b2b1454f4176",
+      "css": "cancel-circled2",
+      "code": 57421,
+      "src": "elusive"
+    },
+    {
+      "uid": "d5fabfa46384953ae055fceacb2229a7",
+      "css": "arrows-cw",
+      "code": 57423,
+      "src": "elusive"
+    },
+    {
+      "uid": "05a2f4c4839012434774cc1ceb4c0f9b",
+      "css": "download-alt",
+      "code": 57539,
+      "src": "elusive"
+    },
+    {
+      "uid": "9bc2902722abb366a213a052ade360bc",
+      "css": "spin6",
+      "code": 59449,
+      "src": "fontelico"
+    },
+    {
+      "uid": "4ba33d2607902cf690dd45df09774cb0",
+      "css": "plus-circled",
+      "code": 10133,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "6c77e8afcd0e694c523eba8649428cc5",
+      "css": "volume-off",
+      "code": 57356,
+      "src": "custom_icons",
+      "selected": false,
+      "svg": {
+        "path": "M0 299L305 299 650 17 650 982 305 703 76 703ZM713 582Q713 578 715 576L791 500 715 424Q713 422 713 418T715 412L768 359Q770 357 773 357T779 359L855 435 932 359Q936 357 938 357T943 359L998 412Q1000 414 1000 418T998 424L922 500 998 576Q1000 580 1000 583T998 588L943 642Q941 644 938 644T932 642L855 564 779 642Q777 644 774 644T768 642L715 588Q713 586 713 582Z",
+        "width": 1000
+      },
+      "search": [
+        "volume-off"
+      ]
+    },
+    {
+      "uid": "432093866e44352298bf5275980f3759",
+      "css": "volume-down",
+      "code": 57357,
+      "src": "custom_icons",
+      "selected": false,
+      "svg": {
+        "path": "M0 709L0 291 236 291 594 0 594 1000 236 709 0 709ZM656 672Q730 598 730 498 730 394 656 318L729 244Q832 350 836 500 836 644 729 746Z",
+        "width": 836
+      },
+      "search": [
+        "volume-down"
+      ]
     }
   ]
 }

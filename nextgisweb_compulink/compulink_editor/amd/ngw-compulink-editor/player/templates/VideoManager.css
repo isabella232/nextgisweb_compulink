@@ -1,0 +1,30 @@
+#videoManager div.video-manager-wrapper {
+    overflow: hidden;
+}
+
+#videoManager div.video-list {
+    height: 110px;
+    width: 334px;
+    border: 1px solid #bfbfbf;
+    margin-top: 1px;
+}
+
+#videoManager div.controls {
+    border: 1px solid #bfbfbf;
+    width: 98%;
+    height: 25px;
+    text-align: center;
+}
+
+#videoManager div.controls i.icon {
+    display: inline-block;
+    font-size: 16px;
+    color: #599BFF;
+    margin: 2px 2px 0 0;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+#videoManager div.controls i.icon:hover {
+    opacity: 1;
+}
