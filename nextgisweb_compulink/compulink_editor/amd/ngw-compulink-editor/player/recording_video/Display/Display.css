@@ -1,0 +1,7 @@
+body.claro div.main-wrapper div.body-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
