@@ -5,3 +5,11 @@ body.claro div.main-wrapper div.body-wrapper {
     left: 0;
     bottom: 0;
 }
+
+div.olControlZoom,
+div.olControlScaleLine,
+#permalink,
+#LayersLoadingIndicator,
+div.olControlAttribution {
+    display: none;
+}
