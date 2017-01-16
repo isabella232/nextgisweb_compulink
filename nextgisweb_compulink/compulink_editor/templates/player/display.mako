@@ -107,17 +107,21 @@
 
 
 <div class="main-wrapper">
-    <div class="header-wrapper">
-        <div id="headerContainer"
-             data-dojo-type="dijit/layout/ContentPane"
-             data-dojo-props="region: 'top'"
-             style="width: 100%; overflow:visible;">
-            <div data-dojo-id="displayHeader"
-                 data-dojo-type="ngw-compulink-site/DisplayHeader"
-                 data-dojo-props="">
+
+    %if not is_recording:
+        <div class="header-wrapper">
+            <div id="headerContainer"
+                 data-dojo-type="dijit/layout/ContentPane"
+                 data-dojo-props="region: 'top'"
+                 style="width: 100%; overflow:visible;">
+                <div data-dojo-id="displayHeader"
+                     data-dojo-type="ngw-compulink-site/DisplayHeader"
+                     data-dojo-props="">
+                </div>
             </div>
         </div>
-    </div>
+    %endif
+
     <div class="body-wrapper">
         %if is_recording:
             <%include file="display_widget/player_for_recording_video.mako"></%include>
