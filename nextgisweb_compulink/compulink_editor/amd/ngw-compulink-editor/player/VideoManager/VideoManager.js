@@ -13,14 +13,14 @@ define([
     'dijit/form/Select',
     'ngw-compulink-libs/mustache/mustache',
     'ngw-compulink-libs/vis-4.16.1/vis.min',
-    'dojo/text!./templates/VideoManager.mustache',
+    'dojo/text!./VideoManager.mustache',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
-    'xstyle/css!./templates/VideoManager.css',
+    'xstyle/css!./VideoManager.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
     'xstyle/css!ngw-compulink-libs/font-awesome-4.6.3/css/font-awesome.min.css',
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
-    'xstyle/css!./templates/fontello/css/fontello.css',
+    'xstyle/css!../templates/fontello/css/fontello.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, ButtonClickHandler) {
@@ -56,8 +56,6 @@ define([
             this._dialog.startup();
             this._dialog.show();
             this._dialog.bringToTop();
-
-            this._timelineWidgetDiv = document.getElementById('timelineWidget');
         }
     });
 });

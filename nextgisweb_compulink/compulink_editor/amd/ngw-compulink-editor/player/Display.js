@@ -57,7 +57,7 @@ define([
     "ngw-compulink-site/PrintMap",
     "ngw-compulink-site/MapStandBy",
     "ngw-compulink-editor/player/Timeline",
-    "ngw-compulink-editor/player/VideoManager",
+    "ngw-compulink-editor/player/VideoManager/VideoManager",
     "ngw-webmap/ImageAdapter",
     // settings
     "ngw/settings!webmap",

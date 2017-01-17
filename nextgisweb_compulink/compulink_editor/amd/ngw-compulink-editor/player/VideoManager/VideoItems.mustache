@@ -1,0 +1,14 @@
+<ul>
+    {{#videoItems}}
+        <li data-id="{{id}}">
+            <span class="caption">{{name}} [{{size}}]</span>
+            {{#status_creating}}
+                <i class="icon icon-spin6" href="{{src}}"></i>
+            {{/status_creating}}
+            {{#status_ready}}
+                <i class="icon icon-download-alt" href="{{src}}"></i>
+                <i class="icon icon-cancel-circled2" href="javascript:void(0)"></i>
+            {{/status_ready}}
+        </li>
+    {{/videoItems}}
+</ul>
