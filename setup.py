@@ -17,6 +17,9 @@ requires = (
     'openpyxl',
     'pyproj',
     'rpy2',
+    'PIL',
+    'splinter',
+    'babel'
 )
 
 entry_points = {
@@ -45,5 +48,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requires,
-    entry_points=entry_points, requires=requires
+    entry_points=entry_points, requires=requires,
 )

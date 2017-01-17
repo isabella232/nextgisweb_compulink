@@ -9,6 +9,7 @@ from .compulink_data_reactor import command  # NOQA
 from .legend_generator import command  # NOQA
 from .real_data_importer import command  # NOQA
 from .compulink_deviation import command  # NOQA
+from .compulink_video_producer import command  # NOQA
 
 
 def pkginfo():
@@ -25,6 +26,7 @@ def pkginfo():
             compulink_statistic_map='nextgisweb_compulink.compulink_statistic_map',
             compulink_deviation='nextgisweb_compulink.compulink_deviation',
             compulink_accepted_part='nextgisweb_compulink.compulink_accepted_part',
+            compulink_video_producer='nextgisweb_compulink.compulink_video_producer',
         )
     )
 
