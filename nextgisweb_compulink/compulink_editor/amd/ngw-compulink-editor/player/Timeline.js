@@ -283,7 +283,11 @@ define([
                 hours = Math.round(diffMs / 3600000),
                 minutes = Math.round(diffMs / 60000);
             if (months > 0) {
-                if (months > 1 && months <= 5) {
+                if (months === 1) {
+                    this._unitsSelector.set('value', 'Days');
+                    this._countUnitSelector.set('value', '5');
+                    return true;
+                } else if (months > 1 && months <= 5) {
                     this._unitsSelector.set('value', 'Days');
                     this._countUnitSelector.set('value', '10');
                     return true;
