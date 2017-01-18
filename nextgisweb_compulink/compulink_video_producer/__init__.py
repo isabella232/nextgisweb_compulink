@@ -21,4 +21,5 @@ class CompulinkVideoProducerComponent(Component):
         view.setup_pyramid(self, config)
 
     settings_info = (
+        dict(key='browser_driver', desc=u"Драйвер браузера. Может быть 'phantomjs' или 'firefox'. Второй только для тестов!"),
     )

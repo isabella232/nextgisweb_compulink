@@ -6,5 +6,7 @@ class VideoOptions:
     sound_enabled = True
     photo_enabled = True
 
-    start_delay = 3
-    end_delay = 3
+    start_delay = 5
+    end_delay = 5
+
+    transition_time = 1

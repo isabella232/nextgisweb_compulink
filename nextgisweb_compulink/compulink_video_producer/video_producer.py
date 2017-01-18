@@ -30,6 +30,9 @@ class VideoProducer:
     FPS = 25
     FRAME_INC = 100
 
+    TEMPORARY_OUT_V_FILE_NAME = 'out.avi'
+    TEMPORARY_OUT_VA_FILE_NAME = 'out_audio.avi'
+
     def __init__(self):
         self.context = RecordingContext()
 
@@ -76,23 +79,35 @@ class VideoProducer:
         # create splash screen
         splash_img = SplashGenerator.generate_start_splash(self.context)
         # add frames
-        frame_count = self.context.video_opt.start_delay * self.FPS
-        transp_delta = 1.0 / (frame_count/2)
+        frame_count_total = self.context.video_opt.start_delay * self.FPS
+        frame_count_transition = self.context.video_opt.transition_time * self.FPS
+        transp_delta = 1.0 / frame_count_transition
         # write only background
-        for i in range(0, frame_count/2):
+        for i in range(0, frame_count_total - frame_count_transition):
             self.add_frame(splash_img)
         # write transp
-        for i in range(0, frame_count/2):
+        for i in range(0, frame_count_transition):
             img = Image.blend(splash_img, start_img, i * transp_delta)
             self.add_frame(img)
 
     def make_end_frames(self, video_page):
+        # get finish frame
         scr = self.context.browser.screenshot()
-        im = Image.open(scr)
+        end_im = Image.open(scr)
         os.remove(scr)
-        # TODO: get active frame
-        # TODO: make frames transp = 0% -> 100%
-        # TODO: save it
+        # create splash screen
+        splash_img = SplashGenerator.generate_end_splash(self.context)
+        # add frames
+        frame_count_total = self.context.video_opt.end_delay * self.FPS
+        frame_count_transition = self.context.video_opt.transition_time * self.FPS
+        transp_delta = 1.0 / frame_count_transition
+        # write transp
+        for i in range(0, frame_count_transition):
+            img = Image.blend(end_im, splash_img, i * transp_delta)
+            self.add_frame(img)
+        # write only background
+        for i in range(0, frame_count_total - frame_count_transition):
+            self.add_frame(splash_img)
 
     def add_labels_for_frames(self):
         pass
@@ -116,8 +131,6 @@ class VideoProducer:
         self.make_start_frames(video_page)
 
         # generate main frames
-        # while not video_page.is_finished:
-        #    video_page.tick()
         start_time = datetime.now()
         start_frame_num = self.context.frame_counter
 
@@ -150,7 +163,10 @@ class VideoProducer:
         if video_opt.sound_enabled:
             self.append_audio()
         # copy file to output path
-        src_path = os.path.join(self.context.temp_dir, 'out_audio.mp4') if video_opt.sound_enabled else os.path.join(self.context.temp_dir, 'out.mp4') # TODO: make CONST
+        if video_opt.sound_enabled:
+            src_path = os.path.join(self.context.temp_dir, self.TEMPORARY_OUT_VA_FILE_NAME)
+        else:
+            src_path = os.path.join(self.context.temp_dir, self.TEMPORARY_OUT_V_FILE_NAME)
         shutil.copy(src_path, self.context.out_path)
 
         # clean
@@ -163,19 +179,20 @@ class VideoProducer:
             'ffmpeg',
             '-pattern_type', 'glob',
             '-i', '*.png',
-            '-c:v', 'libx264',  # TODO: make OPTIONS
-            #'-r', '25', # TODO: find options for framerate
-            'out.mp4'  # TODO: make CONST
+            '-c:v', 'mpeg4',
+            '-r', '30',
+            # TODO: find options for framerate
+            self.TEMPORARY_OUT_V_FILE_NAME
         ]
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 
     def append_audio(self):
         args = [
             'ffmpeg',
-            '-i', 'out.mp4',  # TODO: make CONST
+            '-i', self.TEMPORARY_OUT_V_FILE_NAME,
             '-i', '/home/yellow/Project/Compulink/test_env/nextgisweb_compulink/nextgisweb_compulink/compulink_site/static/sound/player-sound.mp3', # TODO: get OPTS
             '-shortest',
-            'out_audio.mp4'  # TODO: make CONST
+            self.TEMPORARY_OUT_VA_FILE_NAME
         ]
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 

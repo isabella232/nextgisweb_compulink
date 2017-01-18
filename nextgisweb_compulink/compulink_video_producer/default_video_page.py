@@ -1,18 +1,28 @@
+from __future__ import print_function
 from time import sleep
-
 from datetime import datetime
 
-from nextgisweb_compulink.compulink_video_producer.video_page import VideoPage
+
+UNITS = ('Minutes', 'Hours', 'Days', 'Months')
+PHOTO = ('true', 'false')
 
 
-class DefaultVideoPage(VideoPage):
-    _base_url = 'http://localhost:6543/compulink/player/recording_video?resource_id={res_id}'
+class DefaultVideoPage:
+    # TODO: move urls to ?
+    _base_url = 'http://localhost:6543/compulink/player/recording_video?resource_id={res_id}&units={units}&count_units={count_units}&photo={photo}'
     _login_url = 'http://localhost:6543/login?next=/resource/0'
 
+    def __init__(self, res_id, units=UNITS[0], count_units=1, photo=PHOTO[0]):
+        self._res_id = res_id
+        self._units = units
+        self._count_units = count_units
+        self._photo = photo
+
+    def set_context(self, context):
+        self.context = context
 
     def start_play(self):
         self.context.browser.driver.execute_script('window.startPlayer()')
-
 
     def login(self, user, passw):
         self.context.browser.visit(self._login_url)
@@ -32,8 +42,8 @@ class DefaultVideoPage(VideoPage):
             return False
         return True
 
-
     def sync_load(self):
+        print(self.url)
         self.context.browser.visit(self.url)
         sleep(3)
         # white DOM
@@ -53,11 +63,17 @@ class DefaultVideoPage(VideoPage):
 
         sleep(3)
 
-
     @property
     def is_finished(self):
         return self.context.browser.driver.execute_script('return window.getPlayerState()') == 'finished'
 
+    @property
+    def url(self):
+        return self._base_url.format(res_id=self._res_id, count_units=self._count_units, units=self._units, photo=self._photo)
+
+    @property
+    def res_id(self):
+        return self._res_id
 
 
 
