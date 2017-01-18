@@ -28,6 +28,7 @@ define([
                 setTimeout(lang.hitch(this, function () {
                     this._overrideGlobalFunctions();
                     this._setStoppedHandler();
+                    this._setPhotoMode();
                 }), this.DELAY_AFTER_LOADED);
             }));
 
@@ -49,7 +50,6 @@ define([
             this._handleParameter('sound');
 
             this._handleParameter('photo');
-            this._setPhotoMode();
 
             if (this._handleParameter('DELAY_AFTER_LOADED')) {
                 this.DELAY_AFTER_LOADED = parseInt(this.DELAY_AFTER_LOADED, 10);
