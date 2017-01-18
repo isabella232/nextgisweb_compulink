@@ -14,6 +14,8 @@ define([
     'ngw-compulink-libs/mustache/mustache',
     'ngw-compulink-libs/vis-4.16.1/vis.min',
     'dojo/text!./VideoManager.mustache',
+    'dojo/text!./VideoItems.mustache',
+    'ngw-compulink-editor/editor/NgwServiceFacade',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
     'xstyle/css!./VideoManager.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
@@ -23,20 +25,21 @@ define([
     'xstyle/css!../templates/fontello/css/fontello.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
-             topic, FloatingPane, Select, mustache, vis, template, ButtonClickHandler) {
+             topic, FloatingPane, Select, mustache, vis, template, videoItemsTemplate,
+             NgwServiceFacade, ButtonClickHandler) {
     return declare(null, {
         _timeline: null,
         _dialog: null,
+        _buttonsHandlers: {},
+        _ngwServiceFacade: null,
 
         constructor: function (timeline) {
             this._timeline = timeline;
+            this._ngwServiceFacade = new NgwServiceFacade();
             mustache.parse(template);
+            mustache.parse(videoItemsTemplate);
             this._buildFloatingPane();
             this._bindEvents();
-        },
-
-        _bindEvents: function () {
-
         },
 
         _buildFloatingPane: function () {
@@ -56,6 +59,42 @@ define([
             this._dialog.startup();
             this._dialog.show();
             this._dialog.bringToTop();
+        },
+
+        _bindEvents: function () {
+            this._buttonsHandlers.make = new ButtonClickHandler(
+                query('i.icon-plus-circled', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this._makeVideo();
+                }),
+                true
+            );
+
+            this._buttonsHandlers.update = new ButtonClickHandler(
+                query('i.icon-arrows-cw', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this._updateVideoList();
+                }),
+                true
+            );
+        },
+
+        _makeVideo: function () {
+
+        },
+
+        _updateVideoList: function () {
+            var templateItems = {
+                videoInfoItems: null
+            };
+
+            this._ngwServiceFacade.getVideoList().then(lang.hitch(this, function (videoInfoItems) {
+                array.forEach(videoInfoItems, function (videoInfo) {
+                    videoInfo['status_' + videoInfo.status] = true;
+                });
+                templateItems.videoInfoItems = videoInfoItems;
+                domConstruct.place(mustache.render(videoItemsTemplate, templateItems), query('div.video-list', this._dialog.domNode)[0], "only");
+            }));
         }
     });
 });
