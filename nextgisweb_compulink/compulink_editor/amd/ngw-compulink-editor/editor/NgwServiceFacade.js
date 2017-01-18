@@ -206,7 +206,7 @@ define([
             });
         },
 
-        BASE_VIDEO_URL: new dtlBase.Template('/compulink/compulink/player/video', true),
+        BASE_VIDEO_URL: new dtlBase.Template('/compulink/player/video', true),
         getVideoList: function () {
             var dtlContext = new dtlBase.Context({}),
                 url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
@@ -238,6 +238,19 @@ define([
                 handleAs: 'json',
                 method: 'POST',
                 data: JSON.stringify(playerParameters)
+            });
+        },
+
+        GET_VIDEO_STATUS: new dtlBase.Template('/compulink/player/video/status/{{videoId}', true),
+        getVideoStatus: function (videoId) {
+            var dtlContext = new dtlBase.Context({
+                    videoId: videoId
+                }),
+                url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'GET'
             });
         }
     });
