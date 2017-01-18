@@ -204,6 +204,41 @@ define([
                 handleAs: 'json',
                 method: 'DELETE'
             });
+        },
+
+        BASE_VIDEO_URL: new dtlBase.Template('/compulink/compulink/player/video', true),
+        getVideoList: function () {
+            var dtlContext = new dtlBase.Context({}),
+                url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'GET'
+            });
+        },
+
+        removeVideo: function (videoId) {
+            var dtlContext = new dtlBase.Context({}),
+                url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'DELETE',
+                data: JSON.stringify({
+                    id: videoId
+                })
+            });
+        },
+
+        makeVideo: function (playerParameters) {
+            var dtlContext = new dtlBase.Context({}),
+                url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'POST',
+                data: JSON.stringify(playerParameters)
+            });
         }
     });
 });
