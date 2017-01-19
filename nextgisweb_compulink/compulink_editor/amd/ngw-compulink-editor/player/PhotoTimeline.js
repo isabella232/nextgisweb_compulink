@@ -316,6 +316,10 @@ define([
             } else {
                 this._hideLastPopup();
             }
+        },
+
+        getState: function () {
+            return this._turned;
         }
     });
 });

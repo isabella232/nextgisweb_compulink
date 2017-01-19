@@ -572,6 +572,21 @@ define([
 
         getCurrentTime: function () {
             return this._timeline.getCustomTime(this._barId);
+        },
+
+        getRecordingVideoParams: function () {
+            var map = this._featureManager._layer.map;
+
+            return {
+                resource_id: this._featureManager._resourceId,
+                units: this.getUnits(),
+                count_units: this.getCountUnitsPerSecond(),
+                photo: this._photoTimeline.getState(),
+                audio: this._audio._activate,
+                zoom: map.getZoom(),
+                lat_center: map.getCenter().lat,
+                lon_center: map.getCenter().lon
+            }
         }
     });
 });
