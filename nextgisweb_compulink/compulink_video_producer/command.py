@@ -18,6 +18,7 @@ class ProduceVideoCommand():
     def execute(cls, args, env):
         # TEST 18537 18395
         vo = VideoOptions()
+        vo.sound_enabled = False
 
         vp = DefaultVideoPage(args.res_id, units=UNITS[2])
 

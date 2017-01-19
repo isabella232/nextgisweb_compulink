@@ -7,7 +7,9 @@ import tempfile
 import os
 from datetime import datetime
 from PIL import Image
+
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
+from nextgisweb.env import env
 
 from nextgisweb import DBSession
 from splinter.browser import Browser
@@ -38,10 +40,14 @@ class VideoProducer:
 
     # BROWSER STUFF
     def create_browser(self):
+        browser_driver = env.compulink_video_producer.settings.get('browser_driver', 'phantomjs')
+
+        # if not browser_driver:
+        #     raise AssertionError('Set browser_driver in config!')
+
         params = {
-        'driver_name': 'phantomjs',  # TODO: make OPT
-        #'driver_name': 'firefox',
-        'wait_time': 3
+            'driver_name': browser_driver,
+            'wait_time': 3
         }
         self.context.browser = Browser(**params)
         self.context.browser.driver.set_window_size(self.context.video_opt.width, self.context.video_opt.height)
@@ -124,7 +130,11 @@ class VideoProducer:
         # prepare video page
         video_page.set_context(self.context)
         # login to page
-        video_page.login('administrator', 'admin1')  # TODO REPLACE TO SETTINGS
+        user = env.compulink_video_producer.settings.get('video_rec_user')
+        passw = env.compulink_video_producer.settings.get('video_rec_pass')
+        if not user or not passw:
+            AssertionError('Setup user and pass for video recording in config file')
+        video_page.login(user, passw)
 
         # generate frames for start
         video_page.sync_load()
@@ -179,7 +189,10 @@ class VideoProducer:
             'ffmpeg',
             '-pattern_type', 'glob',
             '-i', '*.png',
-            '-c:v', 'mpeg4',
+            '-c:v', 'libx264',
+            #'-c:v', 'libxvid',
+            #'-q:v', '2',
+            #'-b:v', '2600k',
             '-r', '30',
             # TODO: find options for framerate
             self.TEMPORARY_OUT_V_FILE_NAME
@@ -187,10 +200,17 @@ class VideoProducer:
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 
     def append_audio(self):
+        sound_file_sett = env.pyramid.settings.get('player_sound_file', None)
+        if not sound_file_sett:
+            AssertionError('Setup sound_file_sett in config file')
+
+        from nextgisweb.pyramidcomp import resource_filename
+        sound_file_path = resource_filename(sound_file_sett.split(':')[0], sound_file_sett.split(':')[1])
+
         args = [
             'ffmpeg',
             '-i', self.TEMPORARY_OUT_V_FILE_NAME,
-            '-i', '/home/yellow/Project/Compulink/test_env/nextgisweb_compulink/nextgisweb_compulink/compulink_site/static/sound/player-sound.mp3', # TODO: get OPTS
+            '-i', sound_file_path,
             '-shortest',
             self.TEMPORARY_OUT_VA_FILE_NAME
         ]

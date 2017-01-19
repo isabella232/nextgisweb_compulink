@@ -22,4 +22,6 @@ class CompulinkVideoProducerComponent(Component):
 
     settings_info = (
         dict(key='browser_driver', desc=u"Драйвер браузера. Может быть 'phantomjs' или 'firefox'. Второй только для тестов!"),
+        dict(key='video_rec_user', desc=u"Пользователь, из под которого происходит запись"),
+        dict(key='video_rec_pass', desc=u"Пароль пользователя"),
     )
