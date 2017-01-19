@@ -4,7 +4,7 @@
 
 #videoManager div.video-list {
     height: 120px;
-    width: 334px;
+    overflow: auto;
     border: 1px solid #bfbfbf;
     margin-top: 1px;
 }
@@ -25,5 +25,33 @@
 }
 
 #videoManager div.controls i.icon:hover {
+    opacity: 1;
+}
+
+#videoManager div.video-list ul.video-items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#videoManager div.video-list ul.video-items li {
+    margin: 1px 0 0 0;
+    padding: 2px;
+    border-bottom: 1px solid #c9cbee;
+}
+
+#videoManager div.video-list ul.video-items li:hover {
+    background-color: #E8ECF6;
+}
+
+#videoManager div.video-list ul.video-items li i.icon {
+    float: right;
+    display: inline-block;
+    color: #599BFF;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+#videoManager div.video-list ul.video-items li i.icon:hover {
     opacity: 1;
 }
