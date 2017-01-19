@@ -43,6 +43,10 @@ define([
                 domClass.add(this._btn, this.disabledClass);
             }
             this.enabled = false;
+        },
+
+        getBtnElement: function () {
+            return this._btn;
         }
     });
 });

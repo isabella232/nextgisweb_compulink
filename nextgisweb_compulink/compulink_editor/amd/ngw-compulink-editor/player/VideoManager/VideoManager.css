@@ -18,7 +18,7 @@
 #videoManager div.controls i.icon {
     display: inline-block;
     font-size: 20px;
-    color: #599BFF;
+    color: #0065FF;
     margin: 5px 2px 0 0;
     cursor: pointer;
     opacity: 0.7;
@@ -26,6 +26,13 @@
 
 #videoManager div.controls i.icon:hover {
     opacity: 1;
+}
+
+#videoManager div.controls i.disabled.icon,
+#videoManager div.controls i.disabled.icon:hover {
+    opacity: 0.5;
+    cursor: default;
+    color: gray;
 }
 
 #videoManager div.video-list ul.video-items {
@@ -47,7 +54,7 @@
 #videoManager div.video-list ul.video-items li i.icon {
     float: right;
     display: inline-block;
-    color: #599BFF;
+    color: #0065FF;
     cursor: pointer;
     opacity: 0.7;
 }

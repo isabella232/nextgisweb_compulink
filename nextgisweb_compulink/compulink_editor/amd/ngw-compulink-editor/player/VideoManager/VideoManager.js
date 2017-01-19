@@ -80,7 +80,25 @@ define([
         },
 
         _makeVideo: function () {
+            this._toggleMakeButton(false);
 
+            var recordingVideoParams = this._timeline.getRecordingVideoParams();
+            this._ngwServiceFacade.makeVideo(recordingVideoParams).then(lang.hitch(this, function (videoInfo) {
+
+            }))
+        },
+
+        _toggleMakeButton: function (state) {
+            var $makeVideoBtn = $(this._buttonsHandlers.make.getBtnElement());
+            if (state) {
+                this._buttonsHandlers.make.enable();
+                $makeVideoBtn.removeClass('disabled');
+                $makeVideoBtn.attr('title', 'Записать видео');
+            } else {
+                this._buttonsHandlers.make.disable();
+                $makeVideoBtn.addClass('disabled');
+                $makeVideoBtn.attr('title', 'Запись невозможна - идет создание видео...');
+            }
         },
 
         _updateVideoList: function () {
