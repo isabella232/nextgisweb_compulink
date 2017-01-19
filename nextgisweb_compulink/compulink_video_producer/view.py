@@ -80,7 +80,7 @@ def get_video_list(request):
             'status': 'ready'
         },
         {
-            'id': 1,
+            'id': 4,
             'name': u'Видео 15/01/2017',
             'size': u'1 Мб',
             'url': '#',
@@ -88,7 +88,7 @@ def get_video_list(request):
             'status': 'ready'
         },
         {
-            'id': 2,
+            'id': 5,
             'name': u'Видео 18/01/2017',
             'size': None,
             'url': None,
@@ -96,7 +96,7 @@ def get_video_list(request):
             'status': 'creating'
         },
         {
-            'id': 3,
+            'id': 6,
             'name': u'Видео 17/01/2017',
             'size': u'3 Мб',
             'url': '#',
@@ -109,7 +109,11 @@ def get_video_list(request):
 @view_config(renderer='json')
 def make_video(request):
     # todo: get user info by session info and implement other logic
-    return success_response()
+    return Response(json.dumps({
+        'id': 7,
+        'name': u'Видео 17/01/2017',
+        'status': 'creating'
+    }))
 
 
 @view_config(renderer='json')
@@ -127,5 +131,6 @@ def get_video_status(request):
     import random
     return Response(json.dumps({
         'id': video_id,
+        'name': u'Видео 17/01/2017',
         'status': random.choice(['creating', 'ready'])
     }))
