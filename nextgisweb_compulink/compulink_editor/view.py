@@ -257,8 +257,10 @@ def show_player_for_recording_video(request):
     values['player_parameters'] = {
         'count_units': request.GET.get('count_units'),
         'units': request.GET.get('units'),
-        'sound': request.GET.get('sound'),
         'photo': request.GET.get('photo'),
+        'zoom': request.GET.get('zoom'),
+        'lat_center': request.GET.get('lat_center'),
+        'lon_center': request.GET.get('lon_center'),
         'DELAY_AFTER_LOADED': 3000,
         'DELAY_AFTER_PLAY_FINISHED': 3000
     }

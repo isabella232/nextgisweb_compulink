@@ -26,9 +26,10 @@ define([
 
             topic.subscribe('compulink/player/loaded', lang.hitch(this, function () {
                 setTimeout(lang.hitch(this, function () {
-                    this._overrideGlobalFunctions();
                     this._setStoppedHandler();
                     this._setPhotoMode();
+                    this._setMapParams();
+                    this._overrideGlobalFunctions();
                 }), this.DELAY_AFTER_LOADED);
             }));
 
@@ -46,9 +47,9 @@ define([
         _setParameters: function () {
             this._handleParameter('count_units');
             this._handleParameter('units');
-
-            this._handleParameter('sound');
-
+            this._handleParameter('zoom');
+            this._handleParameter('lat_center');
+            this._handleParameter('lon_center');
             this._handleParameter('photo');
 
             if (this._handleParameter('DELAY_AFTER_LOADED')) {
@@ -76,6 +77,16 @@ define([
             } else {
                 this._photoTimeline.toggle(false);
             }
+        },
+
+        _setMapParams: function () {
+            if (!this.zoom || !this.lat_center || !this.lon_center) { return false; }
+
+            var map = this._featureManager._layer.map;
+            map.setCenter({
+                lat: this.lat_center,
+                lon: this.lon_center
+            }, this.zoom);
         },
 
         _handleParameter: function (parameterName) {
