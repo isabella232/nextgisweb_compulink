@@ -84,13 +84,35 @@ define([
         },
 
         _makeVideo: function () {
-            this._toggleMakeButton(false);
+            var makeVideoItemDialog = new ConfirmDialog({
+                title: 'Запись видео',
+                id: 'makeVideoItem',
+                message: 'Записать новое видео с текущими параметрами проигрывания?',
+                buttonOk: 'ОК',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._toggleMakeButton(false);
+                    var recordingVideoParams = this._timeline.getRecordingVideoParams();
+                    this._ngwServiceFacade.makeVideo(recordingVideoParams).then(
+                        lang.hitch(this, function (videoInfo) {
+                            this._updateVideoList();
+                            this._startUpdateTimer(videoInfo.id);
+                        }),
+                        lang.hitch(this, function () {
+                            new InfoDialog({
+                                isDestroyedAfterHiding: true,
+                                title: 'Запись видео',
+                                message: 'Записать новое видео не удалось. Попробуйте еще раз.'
+                            }).show();
+                        })
+                    );
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                })
+            });
 
-            var recordingVideoParams = this._timeline.getRecordingVideoParams();
-            this._ngwServiceFacade.makeVideo(recordingVideoParams).then(lang.hitch(this, function (videoInfo) {
-                this._updateVideoList();
-                this._startUpdateTimer(videoInfo.id);
-            }));
+            makeVideoItemDialog.show();
         },
 
         _startUpdateTimer: function (videoId) {
