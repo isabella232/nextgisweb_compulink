@@ -9,13 +9,17 @@
     margin-top: 1px;
 }
 
+#videoManager a.icon {
+    text-decoration: none;
+}
+
 #videoManager div.controls {
     width: 98%;
     height: 25px;
     text-align: left;
 }
 
-#videoManager div.controls i.icon {
+#videoManager div.controls a.icon {
     display: inline-block;
     font-size: 20px;
     color: #0065FF;
@@ -24,12 +28,12 @@
     opacity: 0.7;
 }
 
-#videoManager div.controls i.icon:hover {
+#videoManager div.controls a.icon:hover {
     opacity: 1;
 }
 
-#videoManager div.controls i.disabled.icon,
-#videoManager div.controls i.disabled.icon:hover {
+#videoManager div.controls a.disabled.icon,
+#videoManager div.controls a.disabled.icon:hover {
     opacity: 0.5;
     cursor: default;
     color: gray;
@@ -51,7 +55,7 @@
     background-color: #E8ECF6;
 }
 
-#videoManager div.video-list ul.video-items li i.icon {
+#videoManager div.video-list ul.video-items li a.icon {
     float: right;
     display: inline-block;
     color: #0065FF;
@@ -59,6 +63,6 @@
     opacity: 0.7;
 }
 
-#videoManager div.video-list ul.video-items li i.icon:hover {
+#videoManager div.video-list ul.video-items li a.icon:hover {
     opacity: 1;
 }

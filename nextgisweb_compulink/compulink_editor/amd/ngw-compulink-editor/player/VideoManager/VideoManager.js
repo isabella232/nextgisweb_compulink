@@ -17,6 +17,8 @@ define([
     'dojo/text!./VideoItems.mustache',
     'ngw-compulink-editor/editor/NgwServiceFacade',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
+    'ngw-compulink-site/ConfirmDialog',
+    'ngw-compulink-site/InfoDialog',
     'xstyle/css!./VideoManager.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -26,7 +28,7 @@ define([
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, videoItemsTemplate,
-             NgwServiceFacade, ButtonClickHandler) {
+             NgwServiceFacade, ButtonClickHandler, ConfirmDialog, InfoDialog) {
     return declare(null, {
         _timeline: null,
         _dialog: null,
@@ -65,7 +67,7 @@ define([
 
         _bindEvents: function () {
             this._buttonsHandlers.make = new ButtonClickHandler(
-                query('i.icon-plus-circled', this._dialog.domNode)[0],
+                query('a.icon-plus-circled', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
                     this._makeVideo();
                 }),
@@ -73,7 +75,7 @@ define([
             );
 
             this._buttonsHandlers.update = new ButtonClickHandler(
-                query('i.icon-arrows-cw', this._dialog.domNode)[0],
+                query('a.icon-arrows-cw', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
                     this._updateVideoList();
                 }),
@@ -119,7 +121,8 @@ define([
         },
 
         _updateVideoList: function () {
-            var templateItems = {
+            var videoListElement = query('div.video-list', this._dialog.domNode)[0],
+                templateItems = {
                 videoInfoItems: null
             };
 
@@ -128,8 +131,47 @@ define([
                     videoInfo['status_' + videoInfo.status] = true;
                 });
                 templateItems.videoInfoItems = videoInfoItems;
-                domConstruct.place(mustache.render(videoItemsTemplate, templateItems), query('div.video-list', this._dialog.domNode)[0], "only");
+                domConstruct.place(mustache.render(videoItemsTemplate, templateItems), videoListElement, "only");
+                this._bindVideoListEvents(videoListElement);
             }));
+        },
+
+        _bindVideoListEvents: function (videoListElement) {
+            var context = this;
+            $('a.remove-video-item', videoListElement).on('click', function () {
+                var $this = $(this),
+                    videoId = $this.data('id'),
+                    videoName = $this.data('name');
+                context._removeVideoItem(videoId, videoName);
+            });
+        },
+
+        _removeVideoItem: function (videoId, videoName) {
+            var removeVideoItemDialog = new ConfirmDialog({
+                title: 'Удалить видео',
+                id: 'deleteVideoItem',
+                message: 'Удалить видео "' + videoName + '"?',
+                buttonOk: 'Удалить',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._ngwServiceFacade.removeVideo(videoId).then(
+                        lang.hitch(this, function () {
+                            this._updateVideoList();
+                        }),
+                        lang.hitch(this, function () {
+                            new InfoDialog({
+                                isDestroyedAfterHiding: true,
+                                title: 'Удаление видео',
+                                message: 'Удалить видео "' + videoName + '" не удалось. Попробуйте еще раз.'
+                            }).show();
+                        }));
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                })
+            });
+
+            removeVideoItemDialog.show();
         }
     });
 });

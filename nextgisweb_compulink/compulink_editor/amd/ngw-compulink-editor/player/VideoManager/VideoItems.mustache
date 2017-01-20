@@ -1,13 +1,13 @@
 <ul class="video-items">
     {{#videoInfoItems}}
-        <li data-id="{{id}}">
+        <li>
             <span class="caption">{{name}} {{#size}}[{{size}}]{{/size}}</span>
             {{#status_creating}}
-                <i class="icon icon-spin6" href="{{src}}" title="Создается"></i>
+                <a class="icon icon-spin6" href="javascript:void(0)" title="Создается"></a>
             {{/status_creating}}
             {{#status_ready}}
-                <i class="icon icon-cancel-circled2" href="javascript:void(0)" title="Удалить"></i>
-                <i class="icon icon-download-alt" href="{{src}}" title="Скачать"></i>
+                <a class="icon remove-video-item icon-cancel-circled2" data-id="{{id}}" data-name="{{name}}" href="javascript:void(0)" title="Удалить"></a>
+                <a class="icon icon-download-alt" {{#url}}href="{{url}}"{{/url}} {{^url}}href="javascript:void(0)"{{/url}} title="Скачать"></a>
             {{/status_ready}}
         </li>
     {{/videoInfoItems}}
