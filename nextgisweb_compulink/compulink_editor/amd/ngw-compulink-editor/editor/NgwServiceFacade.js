@@ -241,17 +241,24 @@ define([
             });
         },
 
-        GET_VIDEO_STATUS: new dtlBase.Template('/compulink/player/video/status/{{videoId}', true),
-        getVideoStatus: function (videoId) {
+        GET_VIDEO_STATUS: new dtlBase.Template('/compulink/player/video/status/{{videoId}}', true),
+        getVideoStatus: function (videoId, xhrAdditionalParams) {
             var dtlContext = new dtlBase.Context({
                     videoId: videoId
                 }),
-                url = this.ngwApplicationUrl + this.BASE_VIDEO_URL.render(dtlContext);
+                url = this.ngwApplicationUrl + this.GET_VIDEO_STATUS.render(dtlContext),
+                xhrParams;
 
-            return xhr(url, {
+            xhrParams = {
                 handleAs: 'json',
                 method: 'GET'
-            });
+            };
+
+            if (xhrAdditionalParams) {
+                lang.mixin(xhrParams, xhrAdditionalParams);
+            }
+
+            return xhr(url, xhrParams);
         }
     });
 });
