@@ -33,6 +33,8 @@ define([
         _buttonsHandlers: {},
         _ngwServiceFacade: null,
 
+        CHECK_STATUS_INTERVAL: 5000,
+
         constructor: function (timeline) {
             this._timeline = timeline;
             this._ngwServiceFacade = new NgwServiceFacade();
@@ -84,8 +86,23 @@ define([
 
             var recordingVideoParams = this._timeline.getRecordingVideoParams();
             this._ngwServiceFacade.makeVideo(recordingVideoParams).then(lang.hitch(this, function (videoInfo) {
+                this._updateVideoList();
+                this._startUpdateTimer(videoInfo.id);
+            }));
+        },
 
-            }))
+        _startUpdateTimer: function (videoId) {
+            var timerId = setInterval(lang.hitch(this, function () {
+                this._ngwServiceFacade.getVideoStatus(videoId, {
+                    timeout: this.CHECK_STATUS_INTERVAL
+                }).then(lang.hitch(this, function (videoInfo) {
+                    if (videoInfo.status === 'ready') {
+                        clearInterval(timerId);
+                        this._updateVideoList();
+                        this._toggleMakeButton(true);
+                    }
+                }));
+            }), this.CHECK_STATUS_INTERVAL);
         },
 
         _toggleMakeButton: function (state) {
