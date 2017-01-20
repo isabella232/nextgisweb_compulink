@@ -18,8 +18,8 @@ def setup_pyramid(comp, config):
         '/compulink/player/video',
         client=()) \
         .add_view(get_video_list, request_method='GET') \
-        .add_view(make_video, request_method='DELETE') \
-        .add_view(remove_video, request_method='POST')
+        .add_view(make_video, request_method='POST') \
+        .add_view(remove_video, request_method='DELETE')
 
     config.add_route(
         'compulink.player.video.get_status',
