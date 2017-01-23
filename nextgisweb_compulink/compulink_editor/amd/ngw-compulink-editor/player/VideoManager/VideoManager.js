@@ -42,8 +42,15 @@ define([
             this._ngwServiceFacade = new NgwServiceFacade();
             mustache.parse(template);
             mustache.parse(videoItemsTemplate);
-            this._buildFloatingPane();
             this._bindEvents();
+        },
+
+        _bindEvents: function () {
+            topic.subscribe('features/manager/filled', lang.hitch(this, function () {
+                this._buildFloatingPane();
+                this._bindControlsEvents();
+                this._updateVideoList();
+            }));
         },
 
         _buildFloatingPane: function () {
@@ -65,7 +72,7 @@ define([
             this._dialog.bringToTop();
         },
 
-        _bindEvents: function () {
+        _bindControlsEvents: function () {
             this._buttonsHandlers.make = new ButtonClickHandler(
                 query('a.icon-plus-circled', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
