@@ -13,7 +13,7 @@ define([
         PHOTO_WIDTH: 300,
         PHOTO_HEIGHT: 300,
 
-        $photoTimeline: null,
+        $photoLayerSrc: null,
         _ngwServiceFacade: null,
         _lastPopup: null,
         _featureManager: null,
@@ -24,8 +24,8 @@ define([
         constructor: function () {
             this.bindEvents();
             this._ngwServiceFacade = new NgwServiceFacade();
-            jQuery('body').append('<div id="photoTimeline"></div>');
-            this.$photoTimeline = jQuery('#photoTimeline');
+            jQuery('body').append('<div id="photoLayerSrc"></div>');
+            this.$photoLayerSrc = jQuery('#photoLayerSrc');
         },
 
         bindEvents: function () {
@@ -143,7 +143,7 @@ define([
 
             this._intervals = null;
 
-            this.$photoTimeline.empty();
+            this.$photoLayerSrc.empty();
 
             array.forEach(analyzedIntervals, lang.hitch(this, function (interval) {
                 var $img = jQuery('<img src="' + interval.photoInfo.photoUrl + '"/>');
@@ -153,7 +153,7 @@ define([
                     $img.attr('data-h', $img.height());
                 });
 
-                this.$photoTimeline.append($img);
+                this.$photoLayerSrc.append($img);
                 interval.$img = $img;
             }));
 
