@@ -16,7 +16,7 @@ define([
     'dojo/text!./templates/Timeline.mustache',
     'ngw-compulink-editor/player/AudioManager',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
-    './PhotoTimeline/PhotoLayer',
+    './PhotoTimeline/PhotoPointer/PhotoPointer',
     'xstyle/css!./templates/Timeline.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -26,7 +26,7 @@ define([
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler,
-             PhotoLayer) {
+             PhotoPointer) {
     return declare([], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -54,7 +54,7 @@ define([
         constructor: function () {
             mustache.parse(template);
             this._audio = new AudioManager();
-            this._photoTimeline = new PhotoLayer();
+            this._photoTimeline = new PhotoPointer();
             this._bindEvents();
         },
 
