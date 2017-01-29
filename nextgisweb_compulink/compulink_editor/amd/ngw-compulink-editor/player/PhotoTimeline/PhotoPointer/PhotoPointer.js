@@ -35,14 +35,14 @@ define([
             var interval = this._getInterval(to),
                 photoInfo = interval.photoInfo,
                 $imgCloned,
-                $img, imageId, geometry;
+                $img, imageId;
 
             imageId = photoInfo.featureId + '-' + photoInfo.layerId;
             if (this._$lastImg && this._$lastImg.attr('data-id') === imageId) {
                 return true;
             }
 
-            geometry = photoInfo.feature.geometry.getCentroid();
+            this._olControl.makePointerLine(photoInfo.feature.geometry, [this.PHOTO_WIDTH, this.PHOTO_HEIGHT]);
 
             $img = interval.$img;
             $imgCloned = $img.clone();
