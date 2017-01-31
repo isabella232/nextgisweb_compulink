@@ -37,8 +37,8 @@ define([
                 cabling_percent: '% выполнения',
                 start_build_time: 'Начало СМР',
                 end_build_time: 'Окончание СМР',
-                start_deliver_time: 'Начало сдачи заказчику',
-                end_deliver_time: 'Окончание сдачи заказчику',
+                start_deliver_time: 'Начало сдачи заказчику в эксплуатацию',
+                end_deliver_time: 'Окончание сдачи заказчику в эксплуатацию',
                 subcontr: 'Субподрядчик'
         },
 
@@ -166,7 +166,7 @@ define([
                     var plan_overhead = (cabling_fact - cabling_plan_today)/cabling_plan_today;
 
                     if (plan_overhead < -0.15 ) {
-                        domStyle.set(row, 'color', '#e35408');
+                        domStyle.set(row, 'color', '#fe5c08');
                     }
                 }
 
