@@ -14,18 +14,20 @@ define([
         DEFAULT_STYLE: {
             fillColor: '#70db70',
             strokeColor: '#70db70',
-            strokeWidth: 4,
+            graphicZIndex : 401,
+            strokeWidth: 10,
             strokeOpacity: 1
         },
 
         HIGHLIGHT_STYLE: {
-            fillColor: '#145214',
-            strokeColor: '#145214',
-            strokeWidth: 8,
+            fillColor: '#27a127',
+            strokeColor: '#27a127',
+            graphicZIndex : 410,
+            strokeWidth: 15,
             strokeOpacity: 1
         },
 
-        Z_INDEX: 99999,
+        Z_INDEX: 401,
         _featuresById: null,
 
         _bindEvents: function () {
