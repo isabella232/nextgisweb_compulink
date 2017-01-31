@@ -166,7 +166,7 @@ define([
                     var plan_overhead = (cabling_fact - cabling_plan_today)/cabling_plan_today;
 
                     if (plan_overhead < -0.15 ) {
-                        domStyle.set(row, 'background-color', '#FFE7E5');
+                        domStyle.set(row, 'color', '#e35408');
                     }
                 }
 
