@@ -16,9 +16,9 @@ define([
             fillColor: '#ff9900',
             strokeColor: '#ff9900',
             strokeWidth: 4,
-            strokeOpacity: 1
+            strokeOpacity: 0
         },
-        Z_INDEX: 99998,
+        Z_INDEX: 400,
 
         _bindEvents: function () {
             this.inherited(arguments);
