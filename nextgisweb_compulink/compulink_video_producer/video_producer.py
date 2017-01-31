@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 from PIL import Image
 
-from nextgisweb_compulink.compulink_admin.model import FoclStruct
+from nextgisweb_compulink.compulink_admin.model import FoclStruct, ConstructObject
 from nextgisweb.env import env
 
 from nextgisweb import DBSession
@@ -25,6 +25,7 @@ class RecordingContext:
         self.out_path = None
         self.temp_dir = None
         self.obj_name = None
+        self.build_dates = None
         self.frame_counter = 0
 
 
@@ -32,8 +33,8 @@ class VideoProducer:
     FPS = 25
     FRAME_INC = 100
 
-    TEMPORARY_OUT_V_FILE_NAME = 'out.avi'
-    TEMPORARY_OUT_VA_FILE_NAME = 'out_audio.avi'
+    TEMPORARY_OUT_V_FILE_NAME = 'out.avi' #'out.avi'
+    TEMPORARY_OUT_VA_FILE_NAME = 'out_audio.avi' #'out_audio.avi'
 
     def __init__(self):
         self.context = RecordingContext()
@@ -126,6 +127,7 @@ class VideoProducer:
         self.context.video_opt = video_opt
         self.context.temp_dir = tempfile.mkdtemp()
         self.context.obj_name = self.get_resource_name(video_page.res_id)
+        self.context.build_dates = self.get_buildings_dates(video_page.res_id)
         self.create_browser()
         # prepare video page
         video_page.set_context(self.context)
@@ -189,10 +191,10 @@ class VideoProducer:
             'ffmpeg',
             '-pattern_type', 'glob',
             '-i', '*.png',
-            '-c:v', 'libx264',
-            #'-c:v', 'libxvid',
-            #'-q:v', '2',
-            #'-b:v', '2600k',
+            #'-c:v', 'libx264',
+            '-c:v', 'libxvid',
+            #'-q:v', '1',
+            '-b:v', '2000k',
             '-r', '30',
             # TODO: find options for framerate
             self.TEMPORARY_OUT_V_FILE_NAME
@@ -211,6 +213,7 @@ class VideoProducer:
             'ffmpeg',
             '-i', self.TEMPORARY_OUT_V_FILE_NAME,
             '-i', sound_file_path,
+            '-c:v', 'copy',
             '-shortest',
             self.TEMPORARY_OUT_VA_FILE_NAME
         ]
@@ -224,6 +227,15 @@ class VideoProducer:
             return fs_resource.display_name
         else:
             return ''
+
+    def get_buildings_dates(self, res_id):
+        db_session = DBSession()
+        co = db_session.query(ConstructObject).filter(ConstructObject.resource_id == res_id).first()
+        if co:
+            return (co.start_build_date, co.end_build_date)
+        else:
+            return (None, None)
+
 
 
 

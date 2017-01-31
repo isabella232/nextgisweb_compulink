@@ -45,6 +45,15 @@ class SplashGenerator:
         return d_str
 
     @classmethod
+    def get_dates(cls, context):
+        start_date, end_date = context.build_dates
+        if not start_date or not end_date:
+            return ''
+        start_date_str = format_date(start_date, 'd MMMM YYYY', locale='ru')
+        end_date_str = format_date(end_date, 'd MMMM YYYY', locale='ru')
+        return u'%s  -  %s' % (start_date_str, end_date_str)
+
+    @classmethod
     def get_img_path(cls, subpath):
         curr_path = os.path.dirname(os.path.abspath(__file__))
         full_path = os.path.join(curr_path, 'art', subpath)
@@ -69,7 +78,7 @@ class SplashGenerator:
             spacing=title_spacing
         )
         # draw date
-        date_str = cls.get_date(context)
+        date_str = cls.get_dates(context)
         date_font = ImageFont.truetype(cls.SS_FONT_NAME, int(cls.SS_DATE_FONT_SIZE_RATIO * splash_img.width))
         date_pos = (
             title_pos[0] + title_font.size * cls.SS_DATE_POSITION_REL_TITLE_RATIO_FS[0],
