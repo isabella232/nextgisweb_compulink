@@ -70,6 +70,21 @@ class SplashGenerator:
         title_font = ImageFont.truetype(cls.SS_FONT_NAME, int(cls.SS_TITLE_FONT_SIZE_RATIO * splash_img.width))
         title_pos = (splash_img.width * cls.SS_TITLE_POSITION_REL[0], splash_img.height * cls.SS_TITLE_POSITION_REL[1])
         title_spacing = title_font.size * cls.SS_TITLE_SPASING_FS_RATIO
+        ## check title size vs page size (x only)
+        max_title_width = context.video_opt.width - title_pos[0]
+        title_width = drw.multiline_textsize(title, title_font, title_spacing)[0]
+        if title_width > max_title_width:
+            transformed_title = title
+            words = title.split(' ')
+            words_for_move = 1
+
+            while words_for_move < len(words) and title_width > max_title_width:
+                transformed_title = ' '.join(words[0:-words_for_move]) + '\n' + ' '.join(words[-words_for_move:])
+                title_width = drw.multiline_textsize(transformed_title, title_font, title_spacing)[0]
+                words_for_move += 1
+
+            title = transformed_title
+
         drw.multiline_text(
             title_pos,
             title,
