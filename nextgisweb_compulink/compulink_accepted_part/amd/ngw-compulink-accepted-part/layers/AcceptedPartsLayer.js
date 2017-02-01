@@ -60,11 +60,12 @@ define([
                 }, this);
             }));
 
+            topic.subscribe('compulink/accepted-parts/zoom', lang.hitch(this, this._highlightAndZoomFeature));
             topic.subscribe('compulink/accepted-parts/ui/table/selected', lang.hitch(this, this._highlightAndZoomFeature));
         },
 
         _highlightingFeature: null,
-        _highlightAndZoomFeature: function (acceptedPart) {
+        _highlightAndZoomFeature: function (acceptedPart, zoomed) {
             var feature;
 
             if (!this._layer.map) return false;
@@ -79,7 +80,9 @@ define([
             feature.style = this.HIGHLIGHT_STYLE;
             this._layer.drawFeature(feature);
 
-            this._map.olMap.zoomToExtent(feature.geometry.getBounds());
+            if (zoomed) {
+                this._map.olMap.zoomToExtent(feature.geometry.getBounds());
+            }
         }
     });
 });

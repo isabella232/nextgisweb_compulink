@@ -126,7 +126,8 @@ define([
             }));
 
             this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
-                topic.publish('compulink/accepted-parts/zoom', this._grid.row(evt));
+                var row = this._grid.row(evt);
+                topic.publish('compulink/accepted-parts/zoom', row.data, true);
             }));
 
             topic.subscribe('compulink/accepted-parts/ui/table/filter/changed', lang.hitch(this, function (value) {
