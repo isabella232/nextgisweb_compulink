@@ -1,5 +1,7 @@
 div.olMapViewport div.olControlPhotoPointer {
     display: none;
+    width: 100%;
+    height: 100%;
 }
 
 div.olMapViewport.olControlPhotoPointerActive div.olControlPhotoPointer {
@@ -7,14 +9,27 @@ div.olMapViewport.olControlPhotoPointerActive div.olControlPhotoPointer {
 }
 
 div.olControlPhotoPointer {
-    bottom: 5px;
-    left: 11px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     border: none;
     background-color: transparent;
 }
 
 div.olControlPhotoPointer div.image-wrapper {
-    position: relative;
+    position: absolute;
+}
+
+div.olControlPhotoPointer div.image-wrapper.left-bottom {
+    bottom: 5px;
+    left: 11px;
+}
+
+div.olControlPhotoPointer div.image-wrapper.right-top {
+    top: 44px;
+    right: 4px;
 }
 
 div.olControlPhotoPointer img {
