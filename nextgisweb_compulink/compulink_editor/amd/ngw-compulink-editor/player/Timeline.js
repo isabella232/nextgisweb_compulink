@@ -230,6 +230,13 @@ define([
                 domClass.toggle(photoBtn, 'fa-low-vision');
                 topic.publish('compulink/player/photo-timeline/toggle', domClass.contains(photoBtn, 'fa-eye'));
             }));
+
+            on(query('i.video', this._dialog.domNode), 'click', lang.hitch(this, function () {
+                var photoBtn = query('i.video', this._dialog.domNode)[0];
+                domClass.toggle(photoBtn, 'icon-video');
+                domClass.toggle(photoBtn, 'icon-video-alt');
+                topic.publish('compulink/player/video-manager/toggle', domClass.contains(photoBtn, 'icon-video-alt'));
+            }));
         },
 
         _activateSound: function () {

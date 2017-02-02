@@ -64,7 +64,8 @@ div#timeline div.vis-current-time {
 }
 
 div.timeline i.sound,
-div.timeline i.photo {
+div.timeline i.photo,
+div.timeline i.video {
     margin-left: 15px;
 }
 

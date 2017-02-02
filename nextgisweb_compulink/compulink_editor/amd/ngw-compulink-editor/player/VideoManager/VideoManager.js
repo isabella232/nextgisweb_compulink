@@ -51,6 +51,15 @@ define([
                 this._bindControlsEvents();
                 this._updateVideoList();
             }));
+
+            topic.subscribe('compulink/player/video-manager/toggle', lang.hitch(this, function (turned) {
+                if (turned) {
+                    this._dialog.show();
+                    this._dialog.bringToTop();
+                } else {
+                    this._dialog.hide();
+                }
+            }));
         },
 
         _buildFloatingPane: function () {
@@ -61,15 +70,13 @@ define([
                 title: 'Запись видео',
                 content: htmlContent,
                 closable: false,
-                resizable: true,
+                resizable: false,
                 dockable: false,
                 maxable: false,
                 style: 'position:absolute;bottom:100px;right:100px;width:300px;height:160px;visibility:hidden;'
             }, floatingDiv);
 
             this._dialog.startup();
-            this._dialog.show();
-            this._dialog.bringToTop();
         },
 
         _bindControlsEvents: function () {
