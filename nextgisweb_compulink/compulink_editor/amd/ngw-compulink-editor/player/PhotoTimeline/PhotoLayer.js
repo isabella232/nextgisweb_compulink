@@ -12,7 +12,7 @@ define([
         _imagesContainerId: 'photoLayerImgs',
 
         _renderPhoto: function (from, to) {
-            var interval = this._getInterval(to),
+            var interval = this._getIntervalInfo(to),
                 photoInfo = interval.photoInfo,
                 layer = this._featureManager.getLayer(),
                 $img, popupId, popupSize, geometry, popup;

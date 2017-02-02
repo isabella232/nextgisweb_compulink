@@ -48,7 +48,7 @@ define([
             this.fillImages();
         },
 
-        _getInterval: function (to) {
+        _getIntervalInfo: function (to) {
             var intervals = this._intervals,
                 toMs = to.getTime(),
                 targetInterval,
