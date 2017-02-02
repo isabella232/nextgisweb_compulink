@@ -34,9 +34,11 @@ div.olControlPhotoPointer div.image-wrapper.right-top {
 
 div.olControlPhotoPointer img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
     -webkit-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
