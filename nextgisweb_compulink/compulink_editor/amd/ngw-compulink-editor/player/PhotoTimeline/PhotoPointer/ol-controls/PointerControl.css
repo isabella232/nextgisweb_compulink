@@ -32,6 +32,11 @@ div.olControlPhotoPointer div.image-wrapper.right-top {
     right: 4px;
 }
 
+div.olControlPhotoPointer div.image-wrapper.right-bottom {
+    bottom: 5px;
+    right: 11px;
+}
+
 div.olControlPhotoPointer img {
     position: absolute;
     left: 0;
