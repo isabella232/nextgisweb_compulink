@@ -5,8 +5,8 @@ define([
     'dojo/topic',
     'ngw/openlayers',
     '../BasePhotoTimeline',
-    './PhotoPointerControl'
-], function (declare, lang, array, topic, openlayers, BasePhotoTimeline, PhotoPointerControl) {
+    './ol-controls/PointerControl'
+], function (declare, lang, array, topic, openlayers, BasePhotoTimeline, PointerControl) {
     return declare([BasePhotoTimeline], {
         _imagesContainerId: 'photoPointerImgs',
         _olControl: null,
@@ -18,7 +18,7 @@ define([
         },
 
         _makeOlControl: function () {
-            this._olControl = new PhotoPointerControl({
+            this._olControl = new PointerControl({
                 width: this.PHOTO_WIDTH,
                 height: this.PHOTO_HEIGHT
             });
@@ -32,8 +32,8 @@ define([
         },
 
         _renderPhoto: function (from, to) {
-            var interval = this._getInterval(to),
-                photoInfo = interval.photoInfo,
+            var intervalInfo = this._getIntervalInfo(to),
+                photoInfo = intervalInfo.photoInfo,
                 $imgCloned,
                 $img, imageId;
 
@@ -44,7 +44,7 @@ define([
 
             this._olControl.makePointerLine(photoInfo.feature.geometry, [this.PHOTO_WIDTH, this.PHOTO_HEIGHT]);
 
-            $img = interval.$img;
+            $img = intervalInfo.$img;
             $imgCloned = $img.clone();
             $imgCloned.attr('data-id', imageId);
             $imgCloned.hide();

@@ -2,8 +2,8 @@ define([
     'dojo/_base/lang',
     'ngw/openlayers',
     'ngw-compulink-libs/mustache/mustache',
-    'dojo/text!./PhotoPointer.mustache',
-    'xstyle/css!./PhotoPointer.css'
+    'dojo/text!./PointerControl.mustache',
+    'xstyle/css!./PointerControl.css'
 ], function (lang, openlayers, mustache, template) {
     return openlayers.Class(openlayers.Control, {
         CLASS_NAME: 'OpenLayers.Control.PhotoPointer',
@@ -73,7 +73,8 @@ define([
         },
 
         /**
-         * Cached height of view port for calculating position of start point
+         * Cached pixel position of start point
+         * Cached value will be cleared if view port of the map will be changed
          */
         _startPixel: null,
 
