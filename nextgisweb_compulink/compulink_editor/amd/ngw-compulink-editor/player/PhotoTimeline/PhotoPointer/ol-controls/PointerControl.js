@@ -3,12 +3,15 @@ define([
     'ngw/openlayers',
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./PointerControl.mustache',
+    './Strategies/MaximumMeasureStrategy',
     'xstyle/css!./PointerControl.css'
-], function (lang, openlayers, mustache, template) {
+], function (lang, openlayers, mustache, template, DefaultPhotoOrderStrategy) {
     return openlayers.Class(openlayers.Control, {
         CLASS_NAME: 'OpenLayers.Control.PhotoPointer',
         template: mustache.parse(template),
+        photoOrderStrategy: null,
         _pointerLayer: null,
+        _imageContainers: null,
 
         _style: {
             strokeColor: '#2175C3',
@@ -17,10 +20,114 @@ define([
             strokeDashstyle: 'longdash'
         },
 
+        $div: null,
+
+        initialize: function (options) {
+            openlayers.Control.prototype.initialize.apply(this, [options]);
+
+            if (options.orderStrategy) {
+                this.photoOrderStrategy = new options.orderStrategy(this);
+            } else {
+                this.photoOrderStrategy = new DefaultPhotoOrderStrategy(this);
+            }
+        },
+
+        activate: function () {
+            openlayers.Control.prototype.activate.apply(this);
+
+            if (!this.$div) {
+                this.$div = $(this.div);
+            }
+
+            this._activateLayer();
+            this._makeImageContainers();
+        },
+
+        deactivate: function () {
+            openlayers.Control.prototype.deactivate.apply(this);
+            this._deactivateLayer();
+        },
+
         draw: function () {
             var div = openlayers.Control.prototype.draw.apply(this);
             div.innerHTML = mustache.render(template, this);
             return div;
+        },
+
+
+        _$lastImg: null,
+
+        renderPhoto: function (intervalInfo) {
+            var photoInfo = intervalInfo.photoInfo,
+                $imgCloned,
+                $img, imageId,
+                imageContainer,
+                $imageWrapper;
+
+            imageId = photoInfo.featureId + '-' + photoInfo.layerId;
+            if (this._$lastImg && this._$lastImg.attr('data-id') === imageId) {
+                return true;
+            }
+
+            $img = intervalInfo.$img;
+            $imgCloned = $img.clone();
+            $imgCloned.attr('data-id', imageId);
+            $imgCloned.hide();
+
+            if (this._$lastImg) {
+                this._$lastImg.fadeOut(this.FADE_EFFECT_TIME, function () {
+                    $(this).remove();
+                });
+            }
+
+            imageContainer = this.photoOrderStrategy.getImageContainer(photoInfo);
+            $imageWrapper = imageContainer.$wrapper;
+            this._$lastImg = $imgCloned.appendTo($imageWrapper);
+
+            this.makePointerLine(photoInfo.feature.geometry, [this.PHOTO_WIDTH, this.PHOTO_HEIGHT]);
+
+            this._$lastImg.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
+
+            }));
+        },
+
+        _makeImageContainers: function () {
+            var $imageWrappers = this.$div.find('div.image-wrapper'),
+                imageContainers = [],
+                imageContainer;
+
+            $imageWrappers.each(lang.hitch(this, function (i, imageWrapper) {
+                imageContainer = {
+                    $wrapper: $(imageWrapper),
+                    position: {
+                        pixel: null,
+                        point: null
+                    }
+                };
+                this._calculatePixelPosition(imageContainer);
+                this._calculateLatlonPosition(imageContainer);
+                imageContainers.push(imageContainer);
+            }));
+
+            this._imageContainers = imageContainers;
+        },
+
+        _calculatePixelPosition: function (imageContainer) {
+            imageContainer.position.pixel = new openlayers.Pixel(
+                imageContainer.$wrapper.offset().left - this.$div.offset().left + this.width / 2,
+                imageContainer.$wrapper.offset().top - this.$div.offset().top + this.height / 2
+            );
+        },
+
+        _calculateLatlonPosition: function (imageContainer) {
+            var latlon;
+
+            if (!this.map) {
+                return false;
+            }
+
+            latlon = this.map.getLonLatFromPixel(imageContainer.position.pixel);
+            imageContainer.position.point = new openlayers.Geometry.Point(latlon.lon, latlon.lat);
         },
 
         /**
@@ -34,6 +141,10 @@ define([
          * @param {Array.<number>} sizeInfo - Size of photo container in format [width, height].
          */
         makePointerLine: function (targetGeometry, sizeInfo) {
+
+            // TODO Implement logic for #544
+            return true;
+
             var map = this._pointerLayer.map,
                 startPoint,
                 linePointer, featurePointer,
@@ -99,16 +210,6 @@ define([
             this._startPixel = new openlayers.Pixel(sizeInfo[0] / 2, height - sizeInfo[1] / 2);
 
             return this._startPixel;
-        },
-
-        activate: function () {
-            openlayers.Control.prototype.activate.apply(this);
-            this._activateLayer();
-        },
-
-        deactivate: function () {
-            openlayers.Control.prototype.deactivate.apply(this);
-            this._deactivateLayer();
         },
 
         _moveHandle: function (event) {

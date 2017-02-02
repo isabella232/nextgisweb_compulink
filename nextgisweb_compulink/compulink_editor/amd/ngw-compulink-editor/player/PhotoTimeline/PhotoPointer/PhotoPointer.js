@@ -6,11 +6,11 @@ define([
     'ngw/openlayers',
     '../BasePhotoTimeline',
     './ol-controls/PointerControl'
-], function (declare, lang, array, topic, openlayers, BasePhotoTimeline, PointerControl) {
+], function (declare, lang, array, topic, openlayers, BasePhotoTimeline,
+             PointerControl) {
     return declare([BasePhotoTimeline], {
         _imagesContainerId: 'photoPointerImgs',
         _olControl: null,
-        _$imgWrapper: null,
         _$lastImg: null,
 
         constructor: function () {
@@ -28,36 +28,10 @@ define([
             this.inherited(arguments);
             this._featureManager.getLayer().map.addControl(this._olControl);
             this._olControl.activate();
-            this._$imgWrapper = $(this._olControl.div).find('div.image-wrapper');
         },
 
         _renderPhoto: function (from, to) {
-            var intervalInfo = this._getIntervalInfo(to),
-                photoInfo = intervalInfo.photoInfo,
-                $imgCloned,
-                $img, imageId;
-
-            imageId = photoInfo.featureId + '-' + photoInfo.layerId;
-            if (this._$lastImg && this._$lastImg.attr('data-id') === imageId) {
-                return true;
-            }
-
-            this._olControl.makePointerLine(photoInfo.feature.geometry, [this.PHOTO_WIDTH, this.PHOTO_HEIGHT]);
-
-            $img = intervalInfo.$img;
-            $imgCloned = $img.clone();
-            $imgCloned.attr('data-id', imageId);
-            $imgCloned.hide();
-
-            if (this._$lastImg) {
-                this._$lastImg.fadeOut(this.FADE_EFFECT_TIME, function () {
-                    $(this).remove();
-                });
-            }
-            this._$lastImg = $imgCloned.appendTo(this._$imgWrapper);
-            this._$lastImg.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
-
-            }));
+            this._olControl.renderPhoto(this._getIntervalInfo(to));
         },
 
         toggle: function (state) {
