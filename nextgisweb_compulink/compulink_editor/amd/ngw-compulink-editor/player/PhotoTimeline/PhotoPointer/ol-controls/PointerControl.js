@@ -4,7 +4,7 @@ define([
     'ngw/openlayers',
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./PointerControl.mustache',
-    './Strategies/MaximumMeasureStrategy',
+    './Strategies/RandomStrategy',
     'xstyle/css!./PointerControl.css'
 ], function (lang, array, openlayers, mustache, template, DefaultPhotoOrderStrategy) {
     return openlayers.Class(openlayers.Control, {
