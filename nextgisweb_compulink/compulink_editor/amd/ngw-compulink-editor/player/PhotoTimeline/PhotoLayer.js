@@ -25,7 +25,7 @@ define([
 
             this._hideLastPopup();
 
-            geometry = photoInfo.feature.geometry.getCentroid();
+            geometry = photoInfo.geometry;
 
             $img = interval.$img;
             popupSize = new openlayers.Size(

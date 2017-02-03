@@ -241,10 +241,14 @@ define([
 
             return {
                 photoUrl: photoUrl,
-                feature: featurePhoto,
+                geometry: this._getPhotoInfoGeometry(featurePhoto),
                 featureId: featurePhoto.attributes.ngwFeatureId,
                 layerId: featurePhoto.attributes.ngwLayerId
             }
+        },
+
+        _getPhotoInfoGeometry: function (feature) {
+            return feature.geometry.getCentroid();
         },
 
         getState: function () {

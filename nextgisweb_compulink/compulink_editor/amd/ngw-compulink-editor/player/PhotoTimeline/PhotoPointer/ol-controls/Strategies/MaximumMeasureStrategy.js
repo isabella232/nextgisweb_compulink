@@ -11,7 +11,7 @@ define([
 
         getImageContainer: function (photoInfo) {
             var pointerControl = this.pointerControl,
-                geometry = photoInfo.feature.geometry,
+                geometry = photoInfo.geometry,
                 imagePoint,
                 distance, maxDistance = -1,
                 targetImageContainerInfo;
