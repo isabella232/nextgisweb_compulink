@@ -9,7 +9,7 @@ define([
 ], function (lang, array, openlayers, mustache, template, DefaultPhotoOrderStrategy) {
     return openlayers.Class(openlayers.Control, {
         CLASS_NAME: 'OpenLayers.Control.PhotoPointer',
-        template: mustache.parse(template),
+        template: template,
         photoOrderStrategy: null,
         _pointerLayer: null,
         _imageContainers: null,
@@ -51,7 +51,7 @@ define([
 
         draw: function () {
             var div = openlayers.Control.prototype.draw.apply(this);
-            div.innerHTML = mustache.render(template, this);
+            div.innerHTML = mustache.render(this.template, this);
             return div;
         },
 

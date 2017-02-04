@@ -4,8 +4,9 @@ define([
     'dojo/topic',
     'dojo/Deferred',
     '../Timeline',
+    './PhotoPointer/PhotoPointer',
     'xstyle/css!./Timeline.css'
-], function (declare, lang, topic, Deferred, Timeline) {
+], function (declare, lang, topic, Deferred, Timeline, PhotoPointer) {
     return declare([Timeline], {
         DELAY_AFTER_LOADED: 3000,
         DELAY_AFTER_PLAY_FINISHED: 3000,
@@ -19,6 +20,10 @@ define([
             var deferred = new Deferred();
             deferred.resolve();
             return deferred;
+        },
+
+        initPhotoTimeline: function () {
+            this._photoTimeline = new PhotoPointer();
         },
 
         _bindEvents: function () {

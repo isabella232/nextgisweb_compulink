@@ -1,0 +1,19 @@
+div.olControlPhotoPointer div.recording-video.image-wrapper.left-top {
+    top: 5px;
+    left: 5px;
+}
+
+div.olControlPhotoPointer div.recording-video.image-wrapper.right-bottom {
+    right: 5px;
+    bottom: 5px;
+}
+
+div.olControlPhotoPointer div.recording-video.image-wrapper.right-top {
+    top: 34px;
+    right: 5px;
+}
+
+div.olControlPhotoPointer div.recording-video.image-wrapper.right-bottom {
+    bottom: 5px;
+    right: 5px;
+}
