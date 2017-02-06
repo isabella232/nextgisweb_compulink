@@ -12,6 +12,7 @@ define([
         _imagesContainerId: 'photoPointerImgs',
         _olControl: null,
         _$lastImg: null,
+        _turned: true,
 
         constructor: function () {
             this._makeOlControl();
