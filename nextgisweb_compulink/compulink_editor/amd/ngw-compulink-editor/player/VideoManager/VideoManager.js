@@ -134,7 +134,7 @@ define([
                 this._ngwServiceFacade.getVideoStatus(videoId, {
                     timeout: this.CHECK_STATUS_INTERVAL
                 }).then(lang.hitch(this, function (videoInfo) {
-                    if (videoInfo.status === 'ready') {
+                    if (videoInfo.status === 'ready' || videoInfo.status == 'error') {
                         clearInterval(timerId);
                         this._updateVideoList();
                         this._toggleMakeButton(true);

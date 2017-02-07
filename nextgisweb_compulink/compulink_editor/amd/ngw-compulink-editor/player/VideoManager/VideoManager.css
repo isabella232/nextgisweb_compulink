@@ -66,3 +66,7 @@
 #videoManager div.video-list ul.video-items li a.icon:hover {
     opacity: 1;
 }
+
+#videoManager div.video-list ul.video-items li a.icon.red {
+    color: red;
+}

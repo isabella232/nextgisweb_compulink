@@ -9,6 +9,10 @@
                 <a class="icon remove-video-item icon-cancel-circled2" data-id="{{id}}" data-name="{{name}}" href="javascript:void(0)" title="Удалить"></a>
                 <a class="icon icon-download-alt" {{#url}}href="{{url}}"{{/url}} {{^url}}href="javascript:void(0)"{{/url}} title="Скачать"></a>
             {{/status_ready}}
+            {{#status_error}}
+                <a class="icon remove-video-item icon-cancel-circled2 red" data-id="{{id}}" data-name="{{name}}" href="javascript:void(0)" title="Удалить"></a>
+                <a class="icon icon-attention red" href="javascript:void(0)" title="Ошибка при создании"></a>
+            {{/status_error}}
         </li>
     {{/videoInfoItems}}
 </ul>

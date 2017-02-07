@@ -1,4 +1,5 @@
 
+.icon-attention:before { content: '\26a0'; } /* '⚠' */
 .icon-plus-circled:before { content: '\2795'; } /* '➕' */
 .icon-volume-off:before { content: '\e00c'; } /* '' */
 .icon-volume-down:before { content: '\e00d'; } /* '' */

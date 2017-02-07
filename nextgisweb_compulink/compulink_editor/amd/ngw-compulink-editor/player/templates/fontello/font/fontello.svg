@@ -6,6 +6,8 @@
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
 <missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="attention" unicode="&#x26a0;" d="M1113-70q0-39-27-60t-68-20h-923q-40 0-67 21t-28 59q0 30 18 61l461 804q33 55 78 55t76-55l462-805q18-32 18-60z m-487 511v146h-139v-146q0-14 2-26t6-28 5-27l26-162h59l27 162q2 10 6 26t6 29 2 26z m0-387q0 29-20 49t-50 20q-28 0-48-20t-21-49 21-49 48-21q29 0 50 21t20 49z" horiz-adv-x="1113" />
+
 <glyph glyph-name="plus-circled" unicode="&#x2795;" d="M679 314v72q0 14-11 25t-25 10h-143v143q0 15-11 25t-25 11h-71q-15 0-25-11t-11-25v-143h-143q-14 0-25-10t-10-25v-72q0-14 10-25t25-10h143v-143q0-15 11-25t25-11h71q15 0 25 11t11 25v143h143q14 0 25 10t11 25z m178 36q0-117-57-215t-156-156-215-58-216 58-155 156-58 215 58 215 155 156 216 58 215-58 156-156 57-215z" horiz-adv-x="857.1" />
 
 <glyph glyph-name="volume-off" unicode="&#xe00c;" d="M0 551l305 0 345 282 0-965-345 279-229 0z m713-283q0 4 2 6l76 76-76 76q-2 2-2 6t2 6l53 53q2 2 5 2t6-2l76-76 77 76q4 2 6 2t5-2l55-53q2-2 2-6t-2-6l-76-76 76-76q2-4 2-7t-2-5l-55-54q-2-2-5-2t-6 2l-77 78-76-78q-2-2-5-2t-6 2l-53 54q-2 2-2 6z" horiz-adv-x="1000" />

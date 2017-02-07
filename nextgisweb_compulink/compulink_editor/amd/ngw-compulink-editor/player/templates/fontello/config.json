@@ -61,6 +61,12 @@
       "src": "fontawesome"
     },
     {
+      "uid": "97ac1a82370ae58f02e4ff1bdc58ee86",
+      "css": "attention",
+      "code": 9888,
+      "src": "websymbols"
+    },
+    {
       "uid": "6c77e8afcd0e694c523eba8649428cc5",
       "css": "volume-off",
       "code": 57356,
