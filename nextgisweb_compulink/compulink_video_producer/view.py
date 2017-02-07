@@ -101,7 +101,7 @@ def get_video_list(request):
             'size': u'3 Мб',
             'url': '#',
             'created_date_time': 1484680941,
-            'status': 'ready'
+            'status': 'error'
         }
     ]))
 
@@ -132,5 +132,5 @@ def get_video_status(request):
     return Response(json.dumps({
         'id': video_id,
         'name': u'Видео 17/01/2017',
-        'status': random.choice(['creating', 'ready'])
+        'status': random.choice(['error'])
     }))
