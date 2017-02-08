@@ -54,7 +54,7 @@ def get_video_list(request):
     for task in user_tasks:
         video_list.append({
             'id': task.id,
-            'url': '/compulink/player/video/download/' + str(task.id),
+            'url': request.route_url('compulink.player.video.get_file', id=task.id),
             'name': get_task_full_name(task),
             'size': u'%.2f Мб' % (task.file_size/(1024*1024)) if task.file_size else '--',
             'created_date_time': (task.creation_dt - datetime(1970, 1, 1)).total_seconds(),
