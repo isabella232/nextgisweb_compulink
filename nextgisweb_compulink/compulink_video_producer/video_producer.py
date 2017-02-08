@@ -68,7 +68,8 @@ class VideoProducer(object):
         browser_driver = env.compulink_video_producer.settings.get('browser_driver', 'phantomjs')
         browser_params = {
             'driver_name': browser_driver,
-            'wait_time': 3
+            'wait_time': 3,
+            'service_log_path': '/tmp/ghostdriver.log'  #TODO: move to config?
         }
         self.context.browser = Browser(**browser_params)
         self.context.browser.driver.set_window_size(self.context.video_opt.width, self.context.video_opt.height)
