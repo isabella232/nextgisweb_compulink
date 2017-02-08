@@ -18,7 +18,7 @@ requires = (
     'openpyxl',
     'pyproj',
     'rpy2',
-    'PIL',
+    'pillow',
     'splinter',
     'babel',
 )
