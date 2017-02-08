@@ -226,7 +226,7 @@ class VideoProducer(object):
         if not sound_file_sett:
             AssertionError('Setup sound_file_sett in config file')
 
-        from nextgisweb.pyramid import resource_filename
+        from pkg_resources import resource_filename
         sound_file_path = resource_filename(sound_file_sett.split(':')[0], sound_file_sett.split(':')[1])
 
         vf = self.context.video_format
