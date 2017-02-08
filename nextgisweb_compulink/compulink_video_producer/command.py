@@ -20,7 +20,7 @@ class ProduceVideoCommand():
         vo = VideoOptions()
         vo.sound_enabled = False
 
-        vp = DefaultVideoPage(args.res_id, units=UNITS[2])
+        vp = DefaultVideoPage(args.res_id) #, units=UNITS[2]
 
         video_producer = VideoProducer()
         video_producer.make_video(vp, vo, args.out_path)

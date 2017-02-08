@@ -9,6 +9,7 @@ requires = (
     'nextgisweb_mapserver',
     'nextgisweb_mobile_debug',
     'nextgisweb_log',
+    'nextgisweb_celery',
     'lxml',
     'shapely',
     'transaction',
@@ -19,7 +20,7 @@ requires = (
     'rpy2',
     'PIL',
     'splinter',
-    'babel'
+    'babel',
 )
 
 entry_points = {
