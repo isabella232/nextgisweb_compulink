@@ -260,7 +260,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'start_deliver_date',
         'grid-property': 'start_deliver_date',
-        'label': 'Начало сдачи заказчику',
+        'label': 'Начало сдачи заказчику в эксплуатацию',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
             'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
@@ -271,7 +271,7 @@ construct_objects_dgrid_viewmodel = [
     {
         'data-property': 'end_deliver_date',
         'grid-property': 'end_deliver_date',
-        'label': 'Окончание сдачи заказчику',
+        'label': 'Окончание сдачи заказчику в эксплуатацию',
         'cell-prop': {
             'editor': 'widget=>DateTextBox',
             'editorArgs': 'object=>{selector:\'date\', constraints: {datePattern: \'dd.MM.yyyy\'}}=end',
