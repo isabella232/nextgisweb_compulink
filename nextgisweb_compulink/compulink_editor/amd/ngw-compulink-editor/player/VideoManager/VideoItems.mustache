@@ -1,7 +1,7 @@
 <ul class="video-items">
     {{#videoInfoItems}}
         <li>
-            <span class="caption">{{name}} {{#size}}[{{size}}]{{/size}}</span>
+            <span class="caption {{#status_error}}red{{/status_error}}">{{name}} {{#size}}[{{size}}]{{/size}}</span>
             {{#status_creating}}
                 <a class="icon icon-spin6" href="javascript:void(0)" title="Создается"></a>
             {{/status_creating}}
