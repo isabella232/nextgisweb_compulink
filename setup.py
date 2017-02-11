@@ -9,6 +9,7 @@ requires = (
     'nextgisweb_mapserver',
     'nextgisweb_mobile_debug',
     'nextgisweb_log',
+    'nextgisweb_celery',
     'lxml',
     'shapely',
     'transaction',
@@ -17,9 +18,9 @@ requires = (
     'openpyxl',
     'pyproj',
     'rpy2',
-    'PIL',
+    'pillow',
     'splinter',
-    'babel'
+    'babel',
 )
 
 entry_points = {

@@ -38,8 +38,8 @@ define([
                 cabling_percent: '% выполнения',
                 start_build_time: 'Начало СМР',
                 end_build_time: 'Окончание СМР',
-                start_deliver_time: 'Начало сдачи заказчику',
-                end_deliver_time: 'Окончание сдачи заказчику',
+                start_deliver_time: 'Начало сдачи заказчику в эксплуатацию',
+                end_deliver_time: 'Окончание сдачи заказчику в эксплуатацию',
                 subcontr: 'Субподрядчик'
         },
 

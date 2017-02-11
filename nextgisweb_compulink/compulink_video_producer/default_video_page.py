@@ -4,19 +4,36 @@ from datetime import datetime
 
 
 UNITS = ('Minutes', 'Hours', 'Days', 'Months')
-PHOTO = ('true', 'false')
+PHOTO = ('false', 'true')
 
 
 class DefaultVideoPage:
-    # TODO: move urls to ?
-    _base_url = 'http://localhost:6543/compulink/player/recording_video?resource_id={res_id}&units={units}&count_units={count_units}&photo={photo}'
-    _login_url = 'http://localhost:6543/login?next=/resource/0'
+    _base_url = '/compulink/player/recording_video?resource_id={res_id}&units={units}&count_units={count_units}&photo={photo}'
+    _base_url_extra = '&zoom={zoom}&lat_center={lat_center}&lon_center={lon_center}'
+    _login_url = '/login?next=/resource/0'
 
-    def __init__(self, res_id, units=UNITS[0], count_units=1, photo=PHOTO[0]):
+    @property
+    def login_url(self):
+        return self._site_address + self._login_url
+
+    @property
+    def base_url(self):
+        return self._site_address + self._base_url
+
+    @property
+    def base_url_extra(self):
+        return self._base_url_extra
+
+
+    def __init__(self, res_id, site_address, units=UNITS[0], count_units=1, photo=PHOTO[1], zoom=None, lat_center=None, lon_center=None):
+        self._site_address = site_address
         self._res_id = res_id
         self._units = units
         self._count_units = count_units
         self._photo = photo
+        self._zoom = zoom
+        self._lat_center = lat_center
+        self._lon_center = lon_center
 
     def set_context(self, context):
         self.context = context
@@ -25,7 +42,7 @@ class DefaultVideoPage:
         self.context.browser.driver.execute_script('window.startPlayer()')
 
     def login(self, user, passw):
-        self.context.browser.visit(self._login_url)
+        self.context.browser.visit(self.login_url)
 
         field = self.context.browser.find_by_name('login')
         field.first.fill(user)
@@ -38,7 +55,7 @@ class DefaultVideoPage:
         while self.context.browser.driver.execute_script('return document.readyState') != 'complete':
             pass
 
-        if self._login_url in self.context.browser.url:
+        if self.login_url in self.context.browser.url:
             return False
         return True
 
@@ -60,7 +77,6 @@ class DefaultVideoPage:
             sleep(3)
             if (datetime.now() - timeout_start).seconds >max_timeout:
                 break
-
         sleep(3)
 
     @property
@@ -69,13 +85,11 @@ class DefaultVideoPage:
 
     @property
     def url(self):
-        return self._base_url.format(res_id=self._res_id, count_units=self._count_units, units=self._units, photo=self._photo)
+        url = self.base_url.format(res_id=self._res_id, count_units=self._count_units, units=self._units, photo=self._photo)
+        if self._zoom and self._lat_center and self._lon_center:
+            url += self.base_url_extra.format(zoom=self._zoom, lat_center=self._lat_center, lon_center=self._lat_center)
+        return url
 
     @property
     def res_id(self):
         return self._res_id
-
-
-
-
-

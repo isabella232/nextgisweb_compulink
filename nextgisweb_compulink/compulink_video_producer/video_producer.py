@@ -22,6 +22,7 @@ class RecordingContext:
     def __init__(self):
         self.browser = None
         self.video_opt = None
+        self.video_format = None
         self.out_path = None
         self.temp_dir = None
         self.obj_name = None
@@ -29,28 +30,48 @@ class RecordingContext:
         self.frame_counter = 0
 
 
-class VideoProducer:
+class VideoProducer(object):
     FPS = 25
     FRAME_INC = 100
 
-    TEMPORARY_OUT_V_FILE_NAME = 'out.avi' #'out.avi'
-    TEMPORARY_OUT_VA_FILE_NAME = 'out_audio.avi' #'out_audio.avi'
-
+    # INIT && FINALIZE
     def __init__(self):
         self.context = RecordingContext()
+
+    def __enter__(self):
+        self.context = RecordingContext()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try:
+            self.kill_browser()
+        except:
+            pass
+        try:
+            shutil.rmtree(self.context.temp_dir)
+        except:
+            pass
+
+    @property
+    def temporary_out_v_file_name(self):
+        vf = self.context.video_format
+        return 'out.%s' % vf.file_ext
+
+    @property
+    def temporary_out_va_file_name(self):
+        vf = self.context.video_format
+        return 'out_audio.%s' % vf.file_ext
+
 
     # BROWSER STUFF
     def create_browser(self):
         browser_driver = env.compulink_video_producer.settings.get('browser_driver', 'phantomjs')
-
-        # if not browser_driver:
-        #     raise AssertionError('Set browser_driver in config!')
-
-        params = {
+        browser_params = {
             'driver_name': browser_driver,
-            'wait_time': 3
+            'wait_time': 3,
+            'service_log_path': '/tmp/ghostdriver.log'  #TODO: move to config?
         }
-        self.context.browser = Browser(**params)
+        self.context.browser = Browser(**browser_params)
         self.context.browser.driver.set_window_size(self.context.video_opt.width, self.context.video_opt.height)
 
     def kill_browser(self):
@@ -119,12 +140,12 @@ class VideoProducer:
     def add_labels_for_frames(self):
         pass
 
-    def make_video(self, video_page, video_opt, out_path):
-        # TODO: Make common try-except and safety delete temp dir
+    def make_video(self, video_page, video_opt, video_format, out_path):
         # prepare context
         self.context = RecordingContext()
         self.context.out_path = out_path
         self.context.video_opt = video_opt
+        self.context.video_format = video_format
         self.context.temp_dir = tempfile.mkdtemp()
         self.context.obj_name = self.get_resource_name(video_page.res_id)
         self.context.build_dates = self.get_buildings_dates(video_page.res_id)
@@ -171,34 +192,33 @@ class VideoProducer:
 
         # generate video file
         self.compile_video()
-        # append video if needed
+        # append audio if needed
         if video_opt.sound_enabled:
             self.append_audio()
         # copy file to output path
         if video_opt.sound_enabled:
-            src_path = os.path.join(self.context.temp_dir, self.TEMPORARY_OUT_VA_FILE_NAME)
+            src_path = os.path.join(self.context.temp_dir, self.temporary_out_va_file_name)
         else:
-            src_path = os.path.join(self.context.temp_dir, self.TEMPORARY_OUT_V_FILE_NAME)
+            src_path = os.path.join(self.context.temp_dir, self.temporary_out_v_file_name)
         shutil.copy(src_path, self.context.out_path)
 
         # clean
-        shutil.rmtree(self.context.temp_dir)
         self.kill_browser()
+        shutil.rmtree(self.context.temp_dir)
 
     # VIDEO & AUDIO FILE STUFF
     def compile_video(self):
+        vf = self.context.video_format
         args = [
             'ffmpeg',
+            '-v', 'error',
             '-pattern_type', 'glob',
             '-i', '*.png',
-            #'-c:v', 'libx264',
-            '-c:v', 'libxvid',
-            #'-q:v', '1',
-            '-b:v', '2000k',
+            '-c:v', vf.ffmpeg_video_codec,
             '-r', '30',
-            # TODO: find options for framerate
-            self.TEMPORARY_OUT_V_FILE_NAME
         ]
+        args.extend(vf.ffmpeg_extra_args)
+        args.append(self.temporary_out_v_file_name)
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 
     def append_audio(self):
@@ -206,17 +226,20 @@ class VideoProducer:
         if not sound_file_sett:
             AssertionError('Setup sound_file_sett in config file')
 
-        from nextgisweb.pyramidcomp import resource_filename
+        from pkg_resources import resource_filename
         sound_file_path = resource_filename(sound_file_sett.split(':')[0], sound_file_sett.split(':')[1])
 
+        vf = self.context.video_format
         args = [
             'ffmpeg',
-            '-i', self.TEMPORARY_OUT_V_FILE_NAME,
+            '-v', 'error',
+            '-i', self.temporary_out_v_file_name,
             '-i', sound_file_path,
             '-c:v', 'copy',
             '-shortest',
-            self.TEMPORARY_OUT_VA_FILE_NAME
+            self.temporary_out_va_file_name
         ]
+        args.extend(vf.ffmpeg_audio_args)
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 
     # DB STUFF
