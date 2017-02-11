@@ -10,6 +10,7 @@ define([
         },
 
         _countImageContainers: null,
+        _lastIndex: null,
 
         getImageContainer: function () {
             var imageContainersCount = this._getImageContainersCount(),
@@ -18,6 +19,16 @@ define([
                 imageContainerIndex;
 
             imageContainerIndex = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (imageContainerIndex === this._lastIndex) {
+                if (imageContainerIndex + 1 <= max) {
+                    imageContainerIndex++;
+                } else if (imageContainerIndex - 1 <= min) {
+                    imageContainerIndex--;
+                }
+            }
+
+            this._lastIndex = imageContainerIndex;
 
             return this.pointerControl._imageContainers[imageContainerIndex];
         },
