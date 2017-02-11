@@ -81,7 +81,7 @@ define([
 
         _bindControlsEvents: function () {
             this._buttonsHandlers.make = new ButtonClickHandler(
-                query('a.icon-plus-circled', this._dialog.domNode)[0],
+                query('a.icon-videocam-2', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
                     this._makeVideo();
                 }),
