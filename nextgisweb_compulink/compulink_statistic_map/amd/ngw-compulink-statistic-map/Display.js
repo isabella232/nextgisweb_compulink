@@ -791,7 +791,7 @@ define([
             );
         },
 
-        appendLayersToMapInOne: function (vectorIds, stylesIds, layerType) {
+        appendLayersToMapInOne: function (vectorIds, stylesIds, layerType, options) {
             var data,
                 adapt = new Adapter({}),
                 lyr;
@@ -807,6 +807,10 @@ define([
             };
 
             lyr = adapt.createLayer(data);
+
+            if (options && options.zIndex) {
+                lyr.olLayer.cl_zIndex = options.zIndex;
+            }
 
             lyr.layer_type = layerType;
             lyr.vectors_ids = vectorIds;

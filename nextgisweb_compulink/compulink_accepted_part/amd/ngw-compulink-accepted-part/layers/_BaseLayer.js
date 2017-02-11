@@ -23,7 +23,7 @@ define([
                 style: this.DEFAULT_STYLE,
                 rendererOptions: {zIndexing: true}
             });
-            this._layer._ap_zindex = this.Z_INDEX;
+            this._layer.cl_zIndex = this.Z_INDEX;
             this._bindEvents();
         },
 
