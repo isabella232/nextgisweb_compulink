@@ -67,6 +67,8 @@
     opacity: 1;
 }
 
-#videoManager div.video-list ul.video-items li a.icon.red {
+#videoManager div.controls a.icon-videocam-2,
+#videoManager div.video-list ul.video-items li a.icon.red,
+#videoManager div.video-list ul.video-items span.caption.red {
     color: red;
 }
