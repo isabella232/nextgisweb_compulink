@@ -191,8 +191,7 @@ define([
             var layer;
 
             layer = new openlayers.Layer.Vector(this.id);
-            layer._ap_zindex = 10000;
-            layer.setZIndex(10000);
+            layer.cl_zIndex = 10000;
 
             return layer;
         }
