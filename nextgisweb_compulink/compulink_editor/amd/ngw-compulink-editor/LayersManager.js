@@ -80,12 +80,10 @@ define([
                             delete this.LayersByVectorId[vectorId];
                         }, this);
                         Display.removeLayerFromMap(layer);
-                        this.removeZIndex(layer);
                         delete this.LayersByTypes[deleted[i]];
                         layersStackChanged = true;
                     }
                 }
-                if (layersStackChanged) this.applyZIndexes();
             }));
 
             topic.subscribe('resources/changed', lang.hitch(this, function (bottom_selected, inserted, deleted) {
@@ -135,6 +133,33 @@ define([
             topic.subscribe('caclulate/resources/count', lang.hitch(this, function () {
 
             }));
+
+            this._bindEvents();
+        },
+
+        _bindEvents: function () {
+            this.Display._mapDeferred.then(
+                lang.hitch(this, function () {
+                    this.Display.map.olMap.events.register('addlayer', this.Display.map, lang.hitch(this, this._applyZIndexes));
+                    this.Display.map.olMap.events.register('removelayer', this.Display.map, lang.hitch(this, this._applyZIndexes));
+                    this.Display.map.olMap.events.register('changelayer', this.Display.map, lang.hitch(this, this._applyZIndexesByChangeLayer));
+                })
+            ).then(undefined, function (err) { console.error(err); });
+        },
+
+        _applyZIndexes: function () {
+            var layers = this.Display.map.olMap.layers;
+            array.forEach(layers, function (layer) {
+                if (layer.hasOwnProperty('cl_zIndex')) {
+                    layer.setZIndex(layer.cl_zIndex);
+                }
+            });
+        },
+
+        _applyZIndexesByChangeLayer: function (e) {
+            if (e.property === 'order') {
+                this._applyZIndexes();
+            }
         },
 
         rebuildLayers: function (layers) {
@@ -169,11 +194,12 @@ define([
                     delete this.LayersByVectorId[vectorId];
                 }, this);
                 this.Display.removeLayerFromMap(layer);
-                this.removeZIndex(layer);
                 delete this.LayersByTypes[layerType];
             }
 
-            layer = this.Display.appendLayersToMapInOne(vectorIds, stylesIds, layerType);
+            layer = this.Display.appendLayersToMapInOne(vectorIds, stylesIds, layerType, {
+                zIndex: this.getZIndex(layerType)
+            });
 
             this.LayersByTypes[layerType] = layer;
 
@@ -182,8 +208,6 @@ define([
             }, this);
 
             layer._layer_type = layerData.type;
-            this.setZIndex(layer);
-            this.applyZIndexes();
         },
 
         clearLayers: function () {
@@ -240,9 +264,8 @@ define([
             return result;
         },
 
-        setZIndex: function (layer) {
-            var layerType = layer.layer_type,
-                layerOrderConfig = this.LayersConfig[layerType],
+        getZIndex: function (layerType) {
+            var layerOrderConfig = this.LayersConfig[layerType],
                 order = layerOrderConfig.order,
                 multiplier = 1000,
                 countZIndexes,
@@ -272,32 +295,7 @@ define([
             }
 
             layerOrderConfig.zIndexes.push(currentZIndex);
-            layer._zIndex = currentZIndex;
-        },
-
-        applyZIndexes: function () {
-            var layerVectorId,
-                layersByVectorId = this.LayersByVectorId,
-                layer;
-
-            for (layerVectorId in layersByVectorId) {
-                if (layersByVectorId.hasOwnProperty(layerVectorId)) {
-                    layer = layersByVectorId[layerVectorId];
-                    layer.olLayer.setZIndex(layer._zIndex);
-                }
-            }
-        },
-
-        removeZIndex: function (layer) {
-            var layerOrderConfig = this.LayersConfig[layer.layer_type],
-                zIndex = parseInt(layer.olLayer.getZIndex()),
-                index;
-
-            index = layerOrderConfig.zIndexes.indexOf(zIndex);
-
-            if (index > -1) {
-                layerOrderConfig.zIndexes.splice(index, 1);
-            }
+            return currentZIndex;
         }
     });
 });

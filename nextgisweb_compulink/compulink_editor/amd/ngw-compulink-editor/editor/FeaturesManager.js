@@ -50,14 +50,14 @@ define([
             this._layer = new openlayers.Layer.Vector('FeaturesManager.Layer', {
                 rendererOptions: {zIndexing: true}
             });
+            this._layer.cl_zIndex = 9999;
             this._map.olMap.addLayer(this._layer);
-            this._map.olMap.setLayerIndex(this._layer, 9999);
 
             this._modifyLayer = new openlayers.Layer.Vector('FeaturesManager.Modify.Layer', {
                 rendererOptions: {zIndexing: true}
             });
+            this._modifyLayer.cl_zIndex = 99999;
             this._map.olMap.addLayer(this._modifyLayer);
-            this._map.olMap.setLayerIndex(this._layer, 99999);
 
             this._bindAddLayerEvent(this._map.olMap);
             this._createClick();

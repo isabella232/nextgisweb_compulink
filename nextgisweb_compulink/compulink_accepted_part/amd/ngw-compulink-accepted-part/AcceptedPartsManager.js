@@ -49,10 +49,6 @@ define([
             topic.subscribe('/table/construct_object/selected', lang.hitch(this, this._selectConstructObjectHandler));
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this,
                 this._dataConstructObjectsTableChangedHandler));
-
-            this._map.olMap.events.register('addlayer', this._map, lang.hitch(this, this._applyZIndexes));
-            this._map.olMap.events.register('removelayer', this._map, lang.hitch(this, this._applyZIndexes));
-            this._map.olMap.events.register('changelayer', this._map, lang.hitch(this, this._applyZIndexesByChangeLayer));
         },
 
         _applyZIndexes: function () {
