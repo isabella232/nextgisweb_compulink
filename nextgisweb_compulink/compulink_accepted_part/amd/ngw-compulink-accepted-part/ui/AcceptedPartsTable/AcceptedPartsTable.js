@@ -39,7 +39,7 @@ define([
                     return ngwDate.day + '/' + ngwDate.month + '/' + ngwDate.year;
                 }
             },
-            acceptor: 'Принял',
+            acceptor: 'Автор изменений',
             subcontr_name: 'Субподрядчик',
             comment: 'Комментарий',
             attachment: {
