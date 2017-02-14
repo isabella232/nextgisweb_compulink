@@ -20,6 +20,7 @@ div.olControlPhotoPointer {
 
 div.olControlPhotoPointer div.image-wrapper {
     position: absolute;
+    overflow: hidden;
 }
 
 div.olControlPhotoPointer div.image-wrapper.left-bottom {
@@ -47,4 +48,10 @@ div.olControlPhotoPointer img {
     -webkit-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
+    transform: scale(1);
+    transition: all 8s;
+}
+
+div.olControlPhotoPointer img.scale-animated {
+    transform: scale(2);
 }

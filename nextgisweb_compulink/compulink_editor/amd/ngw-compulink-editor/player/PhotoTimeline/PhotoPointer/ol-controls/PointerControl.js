@@ -93,6 +93,8 @@ define([
             this._$lastImg.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
 
             }));
+
+            this._$lastImg.addClass('scale-animated');
         },
 
         _makeImageContainers: function () {
