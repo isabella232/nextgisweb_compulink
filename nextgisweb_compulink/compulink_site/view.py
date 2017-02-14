@@ -731,7 +731,10 @@ def export_focl_struct(request, export_type):
             content_type=bytes('application/zip'),
             request=request
         )
-        # response.content_disposition = 'attachment; filename="%s"' % focl_resource.display_name.encode('utf-8')
+        disp_name = focl_resource.display_name
+        for ch in '\\/:*?"<>|':
+            disp_name = disp_name.replace(ch, '')
+        response.content_disposition = (u'attachment; filename="%s [%s].zip"' % (disp_name, export_type)).encode('utf-8')
         return response
 
 
