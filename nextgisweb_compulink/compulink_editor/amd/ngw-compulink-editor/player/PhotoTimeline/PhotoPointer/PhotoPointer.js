@@ -21,7 +21,8 @@ define([
         _makeOlControl: function () {
             this._olControl = new PointerControl({
                 width: this.PHOTO_WIDTH,
-                height: this.PHOTO_HEIGHT
+                height: this.PHOTO_HEIGHT,
+                FADE_EFFECT_TIME: this.FADE_EFFECT_TIME
             });
         },
 

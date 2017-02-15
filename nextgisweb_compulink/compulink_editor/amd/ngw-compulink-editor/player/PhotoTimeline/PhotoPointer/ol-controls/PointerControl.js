@@ -11,7 +11,8 @@ define([
         CLASS_NAME: 'OpenLayers.Control.PhotoPointer',
         template: template,
         photoOrderStrategy: null,
-        _pointerLayer: null,
+        _pointerLayers: null,
+        _lastLayerIndex: null,
         _imageContainers: null,
 
         _style: {
@@ -63,11 +64,14 @@ define([
             var photoInfo = intervalInfo.photoInfo,
                 $imgCloned,
                 $img, imageId,
+                $lastImg,
                 imageContainer,
-                $imageWrapper;
+                $imageWrapper,
+                lastLayer = this._lastLayerIndex === null ? null : this._pointerLayers[this._lastLayerIndex],
+                newLayer;
 
             imageId = photoInfo.featureId + '-' + photoInfo.layerId;
-            if (this._$lastImg && this._$lastImg.attr('data-id') === imageId) {
+            if (lastLayer && lastLayer.cl_$lastImage && lastLayer.cl_$lastImage.attr('data-id') === imageId) {
                 return true;
             }
 
@@ -76,25 +80,33 @@ define([
             $imgCloned.attr('data-id', imageId);
             $imgCloned.hide();
 
-            if (this._$lastImg) {
-                this._$lastImg.fadeOut(this.FADE_EFFECT_TIME, function () {
-                    $(this).remove();
+            if (lastLayer) {
+                lastLayer.cl_$lastImage.fadeOut({
+                    duration: this.FADE_EFFECT_TIME,
+                    step: lang.hitch(this, function (now) {
+                        lastLayer.setOpacity(now);
+                    }),
+                    complete: function () {
+                        lastLayer.cl_$lastImage.remove();
+                    }
                 });
             }
 
             imageContainer = this.photoOrderStrategy.getImageContainer(photoInfo);
             $imageWrapper = imageContainer.$wrapper;
 
-            this._$lastImg = $imgCloned.appendTo($imageWrapper);
-            this._lastImageContainer = imageContainer;
+            $lastImg = $imgCloned.appendTo($imageWrapper);
 
-            this.makePointerLine(photoInfo, imageContainer);
+            newLayer = this.makePointerLine(photoInfo, imageContainer);
+            newLayer.cl_$lastImage = $lastImg;
+            newLayer.cl_imageContainer = imageContainer;
 
-            this._$lastImg.fadeIn(this.FADE_EFFECT_TIME, lang.hitch(this, function () {
-
-            }));
-
-            this._$lastImg.addClass('scale-animated');
+            newLayer.cl_$lastImage.fadeIn({
+                duration: this.FADE_EFFECT_TIME,
+                step: lang.hitch(this, function (now) {
+                    newLayer.setOpacity(now);
+                })
+            });
         },
 
         _makeImageContainers: function () {
@@ -143,25 +155,35 @@ define([
         },
 
         makePointerLine: function (photoInfo, imageContainer) {
-            var linePointer, featurePointer;
+            var newLayer,
+                linePointer, featurePointer;
 
-            this._pointerLayer.destroyFeatures();
+            if (this._lastLayerIndex === null) {
+                this._lastLayerIndex = 0;
+            } else {
+                this._lastLayerIndex = this._lastLayerIndex === 0 ? 1 : 0;
+            }
+
+            newLayer = this._pointerLayers[this._lastLayerIndex];
+            newLayer.setOpacity(0);
+            newLayer.destroyFeatures();
 
             linePointer = new openlayers.Geometry.LineString([imageContainer.position.point, photoInfo.geometry]);
             featurePointer = new openlayers.Feature.Vector(linePointer, {}, this._style);
 
-            this._pointerLayer.addFeatures(featurePointer);
+            newLayer.addFeatures(featurePointer);
+            return newLayer;
         },
 
         _moveHandle: function (event) {
-            var pointerLayer, pointerLine;
+            this._rebuildPointerLine(this._pointerLayers[0], this._pointerLayers[0].features[0]);
+            this._rebuildPointerLine(this._pointerLayers[1], this._pointerLayers[1].features[0]);
+        },
 
-            pointerLayer = this._pointerLayer;
-            pointerLine = this._pointerLayer.features[0];
-
+        _rebuildPointerLine: function (pointerLayer, pointerLine) {
             if (pointerLine) {
-                this._calculateLatlonPosition(this._lastImageContainer);
-                pointerLine.geometry.components[0] = this._lastImageContainer.position.point;
+                this._calculateLatlonPosition(pointerLayer.cl_imageContainer);
+                pointerLine.geometry.components[0] = pointerLayer.cl_imageContainer.position.point;
                 pointerLayer.drawFeature(pointerLine);
             }
         },
@@ -171,7 +193,8 @@ define([
         },
 
         _activateLayer: function () {
-            this.map.addLayer(this._getLayer());
+            var layers = this._addLayers();
+            this._initLayersImageContainers(layers);
             this.map.events.register('move', this, this._moveHandle);
             this.map.events.register('moveend', this, this._moveEndHandle);
         },
@@ -179,23 +202,51 @@ define([
         _deactivateLayer: function () {
             this.map.events.unregister('move', this, this._moveHandle);
             this.map.events.register('moveend', this, this._moveEndHandle);
-            this.map.removeLayer(this._getLayer());
+            this._removeLayers();
+        },
+        
+        _addLayers: function () {
+            var layers = this._getLayers();
+            array.forEach(layers, lang.hitch(this, function (layer) {
+                this.map.addLayer(layer);
+            }));
+            return layers;
+        },
+        
+        _removeLayers: function () {
+            var layers = this._getLayers();
+            array.forEach(layers, lang.hitch(this, function (layer) {
+                this.map.removeLayer(layer);
+            }));
         },
 
-        _getLayer: function () {
-            if (!this._pointerLayer) {
-                this._pointerLayer = this._makeLayer();
+        _getLayers: function () {
+            if (!this._pointerLayers) {
+                this._pointerLayers = this._makeLayers();
             }
-            return this._pointerLayer;
+            return this._pointerLayers;
         },
 
-        _makeLayer: function () {
-            var layer;
+        _makeLayers: function () {
+            var layers = [],
+                layer;
 
-            layer = new openlayers.Layer.Vector(this.id);
+            layer = new openlayers.Layer.Vector(this.id + '_0');
             layer.cl_zIndex = 10000;
+            layers.push(layer);
+            
+            layer = new openlayers.Layer.Vector(this.id + '_1');
+            layer.cl_zIndex = 10001;
+            layers.push(layer);
 
-            return layer;
+            return layers;
+        },
+
+        _initLayersImageContainers: function (layers) {
+            array.forEach(layers, lang.hitch(this, function (layer) {
+                layer.cl_imageContainer = null;
+                layer.cl_$lastImage = null;
+            }));
         }
     });
 });
