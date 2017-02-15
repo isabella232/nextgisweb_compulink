@@ -48,4 +48,20 @@ div.olControlPhotoPointer img {
     -webkit-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
     box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.75);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -webkit-transform: scale(1);
+    -o-transform: scale(1); 
+    transform: scale(1);
+    -webkit-transition: -webkit-transform 8s ease-out;
+    -moz-transition: -moz-transform 8s ease-out;
+    transition: transform 8s ease-out;
+}
+
+div.olControlPhotoPointer img.scale-animated {
+    -moz-transform: scale(2);
+    -ms-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2); 
+    transform: scale(2);
 }

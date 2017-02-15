@@ -107,6 +107,7 @@ define([
                     newLayer.setOpacity(now);
                 })
             });
+            newLayer.cl_$lastImage.addClass('scale-animated');
         },
 
         _makeImageContainers: function () {
