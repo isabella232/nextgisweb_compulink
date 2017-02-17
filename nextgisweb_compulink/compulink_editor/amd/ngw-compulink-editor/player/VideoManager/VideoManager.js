@@ -117,7 +117,11 @@ define([
                             new InfoDialog({
                                 isDestroyedAfterHiding: true,
                                 title: 'Запись видео',
-                                message: 'Записать новое видео не удалось. Попробуйте еще раз.'
+                                message: 'Записать новое видео не удалось. Попробуйте еще раз.',
+                                handlerOk: lang.hitch(this, function () {
+                                    this._updateVideoList();
+                                    this._toggleMakeButton(true);
+                                })
                             }).show();
                         })
                     );
