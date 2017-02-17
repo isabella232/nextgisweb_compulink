@@ -166,10 +166,25 @@ define([
                 array.forEach(videoInfoItems, function (videoInfo) {
                     videoInfo['status_' + videoInfo.status] = true;
                 });
+
+                this._sortVideoInfoItems(videoInfoItems);
+
                 templateItems.videoInfoItems = videoInfoItems;
                 domConstruct.place(mustache.render(videoItemsTemplate, templateItems), videoListElement, "only");
                 this._bindVideoListEvents(videoListElement);
             }));
+        },
+
+        _sortVideoInfoItems: function (videoInfoItems) {
+            var now = Date.now(),
+                a_created_date_time,
+                b_created_date_time;
+
+            videoInfoItems.sort(function (a, b) {
+                a_created_date_time = a.created_date_time || now;
+                b_created_date_time = b.created_date_time || now;
+                return b_created_date_time - a_created_date_time;
+            });
         },
 
         _bindVideoListEvents: function (videoListElement) {
