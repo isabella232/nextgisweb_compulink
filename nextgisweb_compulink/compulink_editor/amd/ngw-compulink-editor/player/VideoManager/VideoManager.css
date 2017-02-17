@@ -67,6 +67,14 @@
     opacity: 1;
 }
 
+#videoManager div.video-list ul.video-items li a.icon.creating{
+    background: url("loading.gif") no-repeat;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-top: -1px;
+}
+
 #videoManager div.controls a.icon-videocam-2,
 #videoManager div.video-list ul.video-items li a.icon.red,
 #videoManager div.video-list ul.video-items span.caption.red {

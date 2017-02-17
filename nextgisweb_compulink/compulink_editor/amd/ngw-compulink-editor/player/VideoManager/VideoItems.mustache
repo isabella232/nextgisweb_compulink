@@ -3,7 +3,7 @@
         <li>
             <span class="caption {{#status_error}}red{{/status_error}}">{{name}} {{#size}}[{{size}}]{{/size}}</span>
             {{#status_creating}}
-                <a class="icon icon-spin6" href="javascript:void(0)" title="Создается"></a>
+                <a class="icon creating" href="javascript:void(0)" title="Создается"></a>
             {{/status_creating}}
             {{#status_ready}}
                 <a class="icon remove-video-item icon-cancel-circled2" data-id="{{id}}" data-name="{{name}}" href="javascript:void(0)" title="Удалить"></a>
