@@ -33,13 +33,6 @@ define([
 
         _columns: {
             act_number_date: 'Номер и дата акта',
-            change_date: {
-                label: "Дата изменений",
-                formatter: function (ngwDate) {
-                    return ngwDate.day + '/' + ngwDate.month + '/' + ngwDate.year;
-                }
-            },
-            acceptor: 'Автор изменений',
             subcontr_name: 'Субподрядчик',
             comment: 'Комментарий',
             attachment: {
@@ -59,6 +52,13 @@ define([
                     }));
                     attachmentsHtml.push('</div>');
                     return attachmentsHtml.join(' ');
+                }
+            },
+            acceptor: 'Автор изменений',
+            change_date: {
+                label: "Дата изменений",
+                formatter: function (ngwDate) {
+                    return ngwDate.day + '/' + ngwDate.month + '/' + ngwDate.year;
                 }
             }
         },
