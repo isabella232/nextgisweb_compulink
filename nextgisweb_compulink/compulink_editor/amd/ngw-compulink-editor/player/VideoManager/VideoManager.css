@@ -55,6 +55,11 @@
     background-color: #E8ECF6;
 }
 
+#videoManager div.video-list ul.video-items span.caption {
+    width: 260px;
+    display: inline-block;
+}
+
 #videoManager div.video-list ul.video-items li a.icon {
     float: right;
     display: inline-block;
