@@ -43,17 +43,18 @@ define([
 
             this._activateLayer();
             this._makeImageContainers();
+            this._activateImageContainers();
+            this._updateImageContainersPositions();
         },
 
         deactivate: function () {
             openlayers.Control.prototype.deactivate.apply(this);
             this._deactivateLayer();
+            this._deactivateImageContainers();
         },
 
         draw: function () {
-            var div = openlayers.Control.prototype.draw.apply(this);
-            div.innerHTML = mustache.render(this.template, this);
-            return div;
+            return openlayers.Control.prototype.draw.apply(this);
         },
 
 
@@ -111,7 +112,7 @@ define([
         },
 
         _makeImageContainers: function () {
-            var $imageWrappers = this.$div.find('div.image-wrapper'),
+            var $imageWrappers = this._renderImagesContainers(),
                 imageContainers = [],
                 imageContainer;
 
@@ -123,12 +124,31 @@ define([
                         point: null
                     }
                 };
-                this._calculatePixelPosition(imageContainer);
-                this._calculateLatlonPosition(imageContainer);
                 imageContainers.push(imageContainer);
             }));
 
             this._imageContainers = imageContainers;
+        },
+
+        _updateImageContainersPositions: function () {
+            $.each(this._imageContainers, lang.hitch(this, function (i, imageContainer) {
+                this._calculatePixelPosition(imageContainer);
+                this._calculateLatlonPosition(imageContainer);
+            }));
+        },
+
+        _renderImagesContainers: function () {
+            var $imagesContainers;
+
+            if (!this._imageContainers) {
+                this.$div.after(mustache.render(this.template, this));
+                $imagesContainers = this.$div.parent().find('div.image-wrapper');
+                $imagesContainers.css('z-index', this.$div.css('z-index'));
+            } else {
+                $imagesContainers = this.$div.parent().find('div.image-wrapper');
+            }
+
+            return $imagesContainers;
         },
 
         _updateImageContainersLatlon: function () {
@@ -139,8 +159,8 @@ define([
 
         _calculatePixelPosition: function (imageContainer) {
             imageContainer.position.pixel = new openlayers.Pixel(
-                imageContainer.$wrapper.offset().left - this.$div.offset().left + this.width / 2,
-                imageContainer.$wrapper.offset().top - this.$div.offset().top + this.height / 2
+                imageContainer.$wrapper.offset().left - this.$div.parent().offset().left + this.width / 2,
+                imageContainer.$wrapper.offset().top - this.$div.parent().offset().top + this.height / 2
             );
         },
 
@@ -200,10 +220,22 @@ define([
             this.map.events.register('moveend', this, this._moveEndHandle);
         },
 
+        _activateImageContainers: function () {
+            $.each(this._imageContainers, lang.hitch(this, function (i, imageContainer) {
+                imageContainer.$wrapper.show();
+            }));
+        },
+
         _deactivateLayer: function () {
             this.map.events.unregister('move', this, this._moveHandle);
             this.map.events.register('moveend', this, this._moveEndHandle);
             this._removeLayers();
+        },
+
+        _deactivateImageContainers: function () {
+            $.each(this._imageContainers, lang.hitch(this, function (i, imageContainer) {
+                imageContainer.$wrapper.hide();
+            }));
         },
         
         _addLayers: function () {
@@ -245,8 +277,8 @@ define([
 
         _initLayersImageContainers: function (layers) {
             array.forEach(layers, lang.hitch(this, function (layer) {
-                layer.cl_imageContainer = null;
-                layer.cl_$lastImage = null;
+                layer.cl_imageContainer = layer.cl_imageContainer || null;
+                layer.cl_$lastImage = layer.cl_$lastImage || null;
             }));
         }
     });
