@@ -125,6 +125,11 @@ define([
                 this._refreshTable();
             }));
 
+            on(this._acceptedPartsStore, 'cleared', lang.hitch(this, function () {
+                this._sourceStore = this._acceptedPartsStore.getAttributesStore();
+                this._refreshTable();
+            }));
+
             this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
                 var row = this._grid.row(evt);
                 topic.publish('compulink/accepted-parts/zoom', row.data, true);
