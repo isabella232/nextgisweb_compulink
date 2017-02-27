@@ -14,6 +14,7 @@ define([
         _pointerLayers: null,
         _lastLayerIndex: null,
         _imageContainers: null,
+        _transitionEventName: null,
 
         _style: {
             strokeColor: '#2175C3',
@@ -32,6 +33,8 @@ define([
             } else {
                 this.photoOrderStrategy = new DefaultPhotoOrderStrategy(this);
             }
+
+            this._transitionEventName = this._transitionEndEventName();
         },
 
         activate: function () {
@@ -82,15 +85,15 @@ define([
             $imgCloned.hide();
 
             if (lastLayer) {
-                lastLayer.cl_$lastImage.fadeOut({
-                    duration: this.FADE_EFFECT_TIME,
-                    step: lang.hitch(this, function (now) {
-                        lastLayer.setOpacity(now);
-                    }),
-                    complete: function () {
-                        lastLayer.cl_$lastImage.remove();
-                    }
-                });
+                lastLayer.cl_$lastImage.addClass('opacity-hidden-animated');
+                lastLayer.cl_$lastImage.one(this._transitionEventName,
+                    function () {
+                        $(this).remove();
+                    });
+                lastLayer.$div
+                    .removeClass('opacity-visible-animated')
+                    .removeClass('opacity-hidden-animated');
+                lastLayer.$div.addClass('opacity-hidden-animated');
             }
 
             imageContainer = this.photoOrderStrategy.getImageContainer(photoInfo);
@@ -102,13 +105,31 @@ define([
             newLayer.cl_$lastImage = $lastImg;
             newLayer.cl_imageContainer = imageContainer;
 
-            newLayer.cl_$lastImage.fadeIn({
-                duration: this.FADE_EFFECT_TIME,
-                step: lang.hitch(this, function (now) {
-                    newLayer.setOpacity(now);
-                })
-            });
+            newLayer.$div
+                    .removeClass('opacity-visible-animated')
+                    .removeClass('opacity-hidden-animated');
+            newLayer.$div.addClass('opacity-visible-animated');
+
+            newLayer.cl_$lastImage.show();
             newLayer.cl_$lastImage.addClass('scale-animated');
+        },
+
+        _transitionEndEventName: function () {
+            var i,
+                undefined,
+                el = document.createElement('div'),
+                transitions = {
+                    'transition': 'transitionend',
+                    'OTransition': 'otransitionend',  // oTransitionEnd in very old Opera
+                    'MozTransition': 'transitionend',
+                    'WebkitTransition': 'webkitTransitionEnd'
+                };
+
+            for (i in transitions) {
+                if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+                    return transitions[i];
+                }
+            }
         },
 
         _makeImageContainers: function () {
@@ -186,7 +207,7 @@ define([
             }
 
             newLayer = this._pointerLayers[this._lastLayerIndex];
-            newLayer.setOpacity(0);
+            newLayer.setOpacity(1);
             newLayer.destroyFeatures();
 
             linePointer = new openlayers.Geometry.LineString([imageContainer.position.point, photoInfo.geometry]);
@@ -242,6 +263,8 @@ define([
             var layers = this._getLayers();
             array.forEach(layers, lang.hitch(this, function (layer) {
                 this.map.addLayer(layer);
+                layer.$div = $(layer.div);
+                layer.$div.addClass('pointer-layer');
             }));
             return layers;
         },
@@ -249,6 +272,7 @@ define([
         _removeLayers: function () {
             var layers = this._getLayers();
             array.forEach(layers, lang.hitch(this, function (layer) {
+                layer.$div.removeClass('pointer-layer');
                 this.map.removeLayer(layer);
             }));
         },
