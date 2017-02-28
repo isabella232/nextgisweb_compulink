@@ -31,8 +31,7 @@ define([
 
         deactivate: function () {
             this._map.olMap.events.unregister('mousemove', this, this._mouseMoveHandler);
-            this._map.olMap.events.unregister('movestart', this, this._moveStartHandler);
-            this._map.olMap.events.unregister('moveend', this, this._moveEndHandler);
+            this._$tooltip.remove();
         }
     });
 });
