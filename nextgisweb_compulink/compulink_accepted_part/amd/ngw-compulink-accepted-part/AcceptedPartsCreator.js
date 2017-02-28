@@ -124,6 +124,8 @@ define([
         },
 
         _afterDrawUpHandler: function () {
+            if (!this._lastPointVerifyResult) return true;
+
             if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/on');
                 this._setTooltipEndMessage();
