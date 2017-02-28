@@ -8,9 +8,10 @@ define([
     'dojo/Evented',
     'dojo/Deferred',
     'ngw/openlayers',
-    './ui/CreateAcceptedPartDialog/CreateAcceptedPartDialog'
+    './ui/CreateAcceptedPartDialog/CreateAcceptedPartDialog',
+    './ui/AcceptedPartsTooltip/AcceptedPartsTooltip'
 ], function (declare, lang, array, on, topic, aspect, Evented, Deferred, openlayers,
-             CreateAcceptedPartDialog) {
+             CreateAcceptedPartDialog, AcceptedPartsTooltip) {
     return declare(null, {
         ACCEPTED_PARTS_TOLERANCE: 100,
         OPTICAL_CABLE_LAYER_TOLERANCE: 20,
@@ -21,6 +22,7 @@ define([
         _acceptedPartsLayer: null,
         _actualRealOpticalCableStore: null,
         _actualRealOpticalCableLayer: null,
+        _acceptedPartsTooltip: null,
 
         constructor: function (map, acceptedPartsStore, acceptedPartsLayer, actualRealOpticalCableStore,
                                actualRealOpticalCableLayer) {
@@ -80,18 +82,22 @@ define([
                 ],
                 greedy: false
             });
+
+            this._acceptedPartsTooltip = new AcceptedPartsTooltip(this._map);
         },
 
         _activate: function () {
             this._map.olMap.addControl(this._drawFeatureControl);
             this._snappingControl.activate();
             this._drawFeatureControl.activate();
+            this._acceptedPartsTooltip.activate('Введите начальную точку');
         },
 
         _deactivate: function () {
             this._map.olMap.removeControl(this._drawFeatureControl);
             this._snappingControl.deactivate();
             this._drawFeatureControl.deactivate();
+            this._acceptedPartsTooltip.deactivate();
         },
 
         _lastPointVerified: {
@@ -120,6 +126,7 @@ define([
         _afterDrawUpHandler: function () {
             if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/on');
+                this._setTooltipEndMessage();
                 return true;
             }
 
@@ -137,6 +144,7 @@ define([
                     this._drawFeatureControl.cancel();
                     this._openCreateAcceptedPartsDialog(acceptedGeometry);
                 }
+                this._setTooltipStartMessage();
             } else {
                 this._drawFeatureControl.undo();
                 return true;
@@ -321,6 +329,14 @@ define([
             } else {
                 return null;
             }
+        },
+
+        _setTooltipStartMessage: function () {
+            this._acceptedPartsTooltip.updateMessage('Введите начальную точку');
+        },
+
+        _setTooltipEndMessage: function () {
+            this._acceptedPartsTooltip.updateMessage('Введите конечную точку');
         }
     });
 });
