@@ -98,7 +98,13 @@ define([
             this._map.olMap.addControl(this._drawFeatureControl);
             this._snappingControl.activate();
             this._drawFeatureControl.activate();
+            this._setDrawLayerZIndex();
             this._acceptedPartsTooltip.activate('Введите начальную точку');
+        },
+
+        _setDrawLayerZIndex: function () {
+            this._drawFeatureControl.handler.layer.cl_zIndex = 999999;
+            this._drawFeatureControl.handler.layer.setZIndex(999999);
         },
 
         _deactivate: function () {
