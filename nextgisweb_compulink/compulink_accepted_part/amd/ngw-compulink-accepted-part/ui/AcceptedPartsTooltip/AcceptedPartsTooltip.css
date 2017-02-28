@@ -1,0 +1,22 @@
+#mapPane {
+    overflow: hidden;
+}
+
+#mapPane:hover span.accepted-parts-tooltip {
+    display: block;
+}
+
+span.accepted-parts-tooltip {
+    display: none;
+    background: white;
+    margin-left: 15px;
+    margin-top: 15px;
+    padding: 4px;
+    position: absolute;
+    z-index: 2000;
+    width: 145px;
+    height: 15px;
+    -webkit-box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.75);
+}
