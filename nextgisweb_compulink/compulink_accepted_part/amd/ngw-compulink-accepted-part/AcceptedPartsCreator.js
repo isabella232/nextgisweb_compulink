@@ -55,10 +55,18 @@ define([
         },
 
         _createControls: function () {
+            var defaultDrawControlStyle;
+
             this._drawFeatureControl = new openlayers.Control.DrawFeature(
                 this._acceptedPartsLayer._layer,
                 openlayers.Handler.Path
             );
+
+            defaultDrawControlStyle = this._drawFeatureControl.handlerOptions.layerOptions.styleMap.styles.default.defaultStyle;
+            defaultDrawControlStyle.strokeOpacity = 0;
+            defaultDrawControlStyle.fillColor = 'red';
+            defaultDrawControlStyle.fillOpacity = 1;
+            defaultDrawControlStyle.pointRadius = 8;
 
             this._drawFeatureControl.handler.callbacks.point = lang.hitch(this, this._createPointSketchHandler);
 
