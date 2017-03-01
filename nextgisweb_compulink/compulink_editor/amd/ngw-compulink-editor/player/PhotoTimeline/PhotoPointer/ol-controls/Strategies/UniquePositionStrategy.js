@@ -23,7 +23,7 @@ define([
             if (imageContainerIndex === this._lastIndex) {
                 if (imageContainerIndex + 1 <= max) {
                     imageContainerIndex++;
-                } else if (imageContainerIndex - 1 <= min) {
+                } else if (imageContainerIndex - 1 >= min) {
                     imageContainerIndex--;
                 }
             }
