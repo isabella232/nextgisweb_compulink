@@ -37,7 +37,6 @@ define([
             topic.subscribe('compulink/accepted-parts/ui/layer/visibility/changed', lang.hitch(this, function (state) {
                 if (state) {
                     this._map.olMap.addLayer(this._layer);
-                    this._map.olMap.zoomToExtent(this._layer.getDataExtent());
                 } else {
                     this._map.olMap.removeLayer(this._layer);
                 }
