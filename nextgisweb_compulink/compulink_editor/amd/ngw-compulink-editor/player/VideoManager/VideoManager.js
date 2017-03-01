@@ -6,6 +6,7 @@ define([
     'dojo/dom-construct',
     'dojo/dom-class',
     'dojo/dom',
+    'dojo/dom-style',
     'dojo/query',
     'dojo/on',
     'dojo/topic',
@@ -26,7 +27,7 @@ define([
     'xstyle/css!ngw-compulink-libs/vis-4.16.1/vis.min.css',
     'xstyle/css!../templates/fontello/css/fontello.css',
     'ngw-compulink-libs/moment/moment-with-locales.min'
-], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
+], function (win, declare, lang, array, domConstruct, domClass, dom, domStyle, query, on,
              topic, FloatingPane, Select, mustache, vis, template, videoItemsTemplate,
              NgwServiceFacade, ButtonClickHandler, ConfirmDialog, InfoDialog) {
     return declare(null, {
@@ -54,12 +55,23 @@ define([
 
             topic.subscribe('compulink/player/video-manager/toggle', lang.hitch(this, function (turned) {
                 if (turned) {
-                    this._dialog.show();
-                    this._dialog.bringToTop();
+                    this._showDialog();
                 } else {
                     this._dialog.hide();
                 }
             }));
+        },
+
+        _showDialog: function () {
+            var $document = $(document);
+            domStyle.set(this._dialog.domNode, {
+                position: "absolute",
+                top: ($document.height() - 300) + 'px',
+                left: ($document.width() - 450) + 'px'
+            });
+
+            this._dialog.show();
+            this._dialog.bringToTop();
         },
 
         _buildFloatingPane: function () {
