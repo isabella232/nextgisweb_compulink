@@ -1,8 +1,3 @@
-#videoManager.initialized {
-    top: auto !important;
-    left: auto !important;
-}
-
 #videoManager div.video-manager-wrapper {
     overflow: hidden;
 }
