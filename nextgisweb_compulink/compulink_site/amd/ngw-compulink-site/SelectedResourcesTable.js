@@ -77,7 +77,11 @@ define([
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_kml';
-                    var win = window.open(exportUrl, '_blank');
+
+                    var link = $('<a download href="' + exportUrl + '" id="down_link">down</a>')
+                    link.appendTo($('body'));
+                    $('#down_link')[0].click();
+                    $('#down_link').remove();
                 })
             }));
 
@@ -87,7 +91,11 @@ define([
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_geojson';
-                    var win = window.open(exportUrl, '_blank');
+
+                    var link = $('<a download href="' + exportUrl + '" id="down_link">down</a>')
+                    link.appendTo($('body'));
+                    $('#down_link')[0].click();
+                    $('#down_link').remove();
                 })
             }));
 
@@ -97,7 +105,11 @@ define([
                     evt.preventDefault();
                     var item = Object.getOwnPropertyNames( this._grid.selection )[0];
                     var exportUrl = ngwConfig.applicationUrl + '/compulink/resources/' + item + '/export_csv';
-                    var win = window.open(exportUrl, '_blank');
+
+                    var link = $('<a download href="' + exportUrl + '" id="down_link">down</a>')
+                    link.appendTo($('body'));
+                    $('#down_link')[0].click();
+                    $('#down_link').remove();
                 })
             }));
 
