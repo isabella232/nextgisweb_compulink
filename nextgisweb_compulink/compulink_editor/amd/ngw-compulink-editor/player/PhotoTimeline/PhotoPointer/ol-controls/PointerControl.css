@@ -50,9 +50,9 @@ div.olMapViewport div.image-wrapper img {
     -webkit-transform: scale(1);
     -o-transform: scale(1); 
     transform: scale(1);
-    -webkit-transition: -webkit-transform 8s ease-out, opacity 2s linear, visibility 0s 2s;
-    -moz-transition: -moz-transform 8s ease-out, opacity 2s linear, visibility 0s 2s;
-    transition: transform 8s ease-out, opacity 2s linear, visibility 0s 2s;
+    -webkit-transition: -webkit-transform 8s ease-out;
+    -moz-transition: -moz-transform 8s ease-out;
+    transition: transform 8s ease-out;
     opacity: 0;
 }
 
@@ -72,9 +72,9 @@ div.olMapViewport div.image-wrapper img.opacity-hidden-animated {
 }
 
 div.olLayerDiv.pointer-layer svg {
-    -webkit-transition: opacity 2s linear;
-    -moz-transition: opacity 2s linear;
-    transition: opacity 2s linear;
+    /*-webkit-transition: opacity 2s linear;*/
+    /*-moz-transition: opacity 2s linear;*/
+    /*transition: opacity 2s linear;*/
     opacity: 0;
 }
 
@@ -83,10 +83,10 @@ div.olLayerDiv.pointer-layer.opacity-visible-animated svg {
     opacity: 1;
 }
 
-div.olLayerDiv.pointer-layer.opacity-hidden-animated svg{
+div.olLayerDiv.pointer-layer.opacity-hidden-animated svg {
     visibility: hidden;
     opacity: 0;
-    -webkit-transition: visibility 0s 2s, opacity 2s linear;
-    -moz-transition: visibility 0s 2s, opacity 2s linear;
-    transition: visibility 0s 2s, opacity 2s linear;
+    /*-webkit-transition: visibility 0s 2s, opacity 2s linear;*/
+    /*-moz-transition: visibility 0s 2s, opacity 2s linear;*/
+    /*transition: visibility 0s 2s, opacity 2s linear;*/
 }
