@@ -20,6 +20,11 @@ div.olMapViewport div.image-wrapper {
     overflow: hidden;
 }
 
+div.olMapViewport div.image-wrapper.left-top {
+    top: 5px;
+    left: 11px;
+}
+
 div.olMapViewport div.image-wrapper.left-bottom {
     bottom: 5px;
     left: 11px;
