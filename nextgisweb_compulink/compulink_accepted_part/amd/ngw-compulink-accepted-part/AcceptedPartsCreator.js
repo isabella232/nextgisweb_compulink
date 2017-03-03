@@ -142,6 +142,7 @@ define([
 
             if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/on');
+                this._makeStartPoint();
                 this._setTooltipEndMessage();
                 return true;
             }
@@ -165,6 +166,19 @@ define([
                 this._drawFeatureControl.undo();
                 return true;
             }
+        },
+
+        _makeStartPoint: function () {
+            var drawLayer = this._drawFeatureControl.handler.layer,
+                featuresCount = drawLayer.features.length,
+                startPointFeature;
+
+            if (featuresCount > 2) {
+                return false;
+            }
+
+            startPointFeature = drawLayer.features[1].clone();
+            drawLayer.addFeatures(startPointFeature);
         },
 
         _openCreateAcceptedPartsDialog: function (acceptedPartGeometry) {
