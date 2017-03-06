@@ -122,7 +122,8 @@ define([
                 height: '100px',
                 locale: 'ru',
                 stack: false,
-                selectable: false
+                selectable: false,
+                zoomable: false
             };
 
             var timeline = new vis.Timeline(this._timelineWidgetDiv, new vis.DataSet(dataSetItems), options);
