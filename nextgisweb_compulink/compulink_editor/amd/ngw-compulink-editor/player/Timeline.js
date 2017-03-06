@@ -85,7 +85,7 @@ define([
                 title: 'Плеер',
                 content: htmlContent,
                 closable: false,
-                resizable: true,
+                resizable: false,
                 dockable: false,
                 maxable: false,
                 style: 'position:absolute;top:100px;left:100px;width:500px;height:160px;visibility:hidden;'
