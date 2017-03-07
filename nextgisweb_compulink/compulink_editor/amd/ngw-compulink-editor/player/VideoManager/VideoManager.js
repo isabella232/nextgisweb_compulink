@@ -63,11 +63,11 @@ define([
         },
 
         _showDialog: function () {
-            var $document = $(document);
+            var $body = $('body');
             domStyle.set(this._dialog.domNode, {
                 position: "absolute",
-                top: ($document.height() - 300) + 'px',
-                left: ($document.width() - 450) + 'px'
+                top: ($body.height() - 300) + 'px',
+                left: ($body.width() - 450) + 'px'
             });
 
             this._dialog.show();

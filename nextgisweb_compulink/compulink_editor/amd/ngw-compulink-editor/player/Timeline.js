@@ -85,7 +85,7 @@ define([
                 title: 'Плеер',
                 content: htmlContent,
                 closable: false,
-                resizable: true,
+                resizable: false,
                 dockable: false,
                 maxable: false,
                 style: 'position:absolute;top:100px;left:100px;width:500px;height:160px;visibility:hidden;'
@@ -122,7 +122,8 @@ define([
                 height: '100px',
                 locale: 'ru',
                 stack: false,
-                selectable: false
+                selectable: false,
+                zoomable: false
             };
 
             var timeline = new vis.Timeline(this._timelineWidgetDiv, new vis.DataSet(dataSetItems), options);
