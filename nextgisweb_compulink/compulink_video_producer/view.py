@@ -14,7 +14,6 @@ from pyramid.view import view_config
 from nextgisweb.file_storage import FileObj
 from nextgisweb.env import env
 from nextgisweb import DBSession
-from nextgisweb import dynmenu as dm
 
 
 from nextgisweb_compulink.compulink_admin.model import FoclStruct
@@ -44,28 +43,6 @@ def setup_pyramid(comp, config):
         'compulink.player.video.get_file',
         '/compulink/player/video/download/{id:\d+}', client=('id',)) \
         .add_view(get_video_file)
-
-
-    # menu in admin
-    config.add_route(
-        'compulink_video_admin.settings',
-        '/compulink_video_admin/settings') \
-        .add_view(settings_page, renderer='nextgisweb_compulink.compulink_video_producer:/template/settings.mako')
-
-
-    class CompulinkVideoAdminMenu(dm.DynItem):
-        def build(self, kwargs):
-            yield dm.Link(
-                self.sub('video_settings'), u'Настройки',
-                lambda kwargs: kwargs.request.route_url('compulink_video_admin.settings')
-            )
-
-    CompulinkVideoAdminMenu.__dynmenu__ = comp.env.pyramid.control_panel
-
-    comp.env.pyramid.control_panel.add(
-        dm.Label('compulink_video_admin', u'Компьюлинк. Запись видео'),
-        CompulinkVideoAdminMenu('compulink_video_admin'),
-    )
 
 
 
@@ -203,5 +180,3 @@ def get_resource_name(res_id):
     else:
         return ''
 
-def settings_page(request):
-    return {'dynmenu': request.env.pyramid.control_panel}
