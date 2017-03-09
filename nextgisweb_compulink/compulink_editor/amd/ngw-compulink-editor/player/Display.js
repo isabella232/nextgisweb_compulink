@@ -364,9 +364,15 @@ define([
                     this.EditorFeaturesManager._setEditorMode('off');
                     var fillObjectsDeferred = this.EditorFeaturesManager.fillObjects();
 
-                    all([audioDeferred, fillObjectsDeferred]).then(lang.hitch(this, function () {
-                        this.hideStandBy();
-                    }));
+                    all([audioDeferred, fillObjectsDeferred]).then(lang.hitch(this,
+                        function () {
+                            this.hideStandBy();
+                        }), lang.hitch(this,
+                        function (results) {
+                            console.error(results);
+                            this.hideStandBy();
+                        })
+                    );
                 })
             ).then(undefined, function (err) { console.error(err); });
 

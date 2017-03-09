@@ -12,16 +12,24 @@ define([
         },
 
         init: function () {
-            var deferred = new Deferred();
+            var deferred = new Deferred(),
+                state;
 
             this._sound = new Howl({
                 src: [displayConfig.playerSoundFile],
                 loop: true
             });
 
-            this._sound.once('load', function () {
+            state = this._sound.state();
+            if (state === 'loading') {
+                this._sound.once('load', function () {
+                    deferred.resolve();
+                });
+            } else if (state === 'loaded') {
                 deferred.resolve();
-            });
+            } else if (state === 'unloaded') {
+                deferred.reject('Audio file is corrupted');
+            }
 
             return deferred.promise;
         },
