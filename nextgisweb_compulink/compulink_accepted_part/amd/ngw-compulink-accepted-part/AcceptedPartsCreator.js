@@ -13,7 +13,7 @@ define([
 ], function (declare, lang, array, on, topic, aspect, Evented, Deferred, openlayers,
              CreateAcceptedPartDialog, AcceptedPartsTooltip) {
     return declare(null, {
-        ACCEPTED_PARTS_TOLERANCE: 100,
+        ACCEPTED_PARTS_TOLERANCE: 40,
         OPTICAL_CABLE_LAYER_TOLERANCE: 20,
 
         _drawFeatureControl: null,
