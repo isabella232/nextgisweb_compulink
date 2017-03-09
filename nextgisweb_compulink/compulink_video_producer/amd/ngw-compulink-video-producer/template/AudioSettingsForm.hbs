@@ -1,0 +1,15 @@
+<div data-dojo-type="${baseClass}" data-dojo-attach-point="focusNode">
+    <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols:1, labelWidth: 150">
+        <select data-dojo-attach-point="wFileList"
+            data-dojo-type="dijit/form/Select"
+            title="Проигрываемый файл" style="width: 100%">
+        </select>
+
+        <div data-dojo-attach-point="wAddFile"
+            data-dojo-type="ngw-compulink-video-producer/AudioFileUploader"
+            title="Добавить файл"></div>
+    </div>
+    <button data-dojo-type="dijit/form/Button"
+            data-dojo-attach-point="buttonSave"
+            class="dijitButton--primary">Сохранить</button>
+</div>

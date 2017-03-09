@@ -41,5 +41,6 @@ def amd_packages():
         ('ngw-compulink-statistic-map', 'nextgisweb_compulink:compulink_statistic_map/amd/ngw-compulink-statistic-map'),
         ('ngw-compulink-deviation', 'nextgisweb_compulink:compulink_deviation/amd/ngw-compulink-deviation'),
         ('ngw-compulink-accepted-part', 'nextgisweb_compulink:compulink_accepted_part/amd/ngw-compulink-accepted-part'),
+        ('ngw-compulink-video-producer', 'nextgisweb_compulink:compulink_video_producer/amd/ngw-compulink-video-producer'),
         ('jquery', 'nextgisweb_compulink:compulink_site/static/js/jquery-1.11.2')
     )

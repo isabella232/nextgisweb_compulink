@@ -7,6 +7,7 @@ import tempfile
 import os
 from datetime import datetime
 from PIL import Image
+from nextgisweb.file_storage import FileObj
 
 from nextgisweb_compulink.compulink_admin.model import FoclStruct, ConstructObject
 from nextgisweb.env import env
@@ -14,6 +15,7 @@ from nextgisweb.env import env
 from nextgisweb import DBSession
 from splinter.browser import Browser
 
+from nextgisweb_compulink.compulink_video_producer.model import VideoBackgroundAudioFile
 from nextgisweb_compulink.compulink_video_producer.splash_generator import SplashGenerator
 
 
@@ -222,12 +224,17 @@ class VideoProducer(object):
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
 
     def append_audio(self):
-        sound_file_sett = env.pyramid.settings.get('player_sound_file', None)
-        if not sound_file_sett:
-            AssertionError('Setup sound_file_sett in config file')
+        try:
+            active_file = env.core.settings_get('compulink_video_producer', 'audio.active_file')
+        except KeyError:
+            AssertionError('Setup active_file in admin page')
 
-        from pkg_resources import resource_filename
-        sound_file_path = resource_filename(sound_file_sett.split(':')[0], sound_file_sett.split(':')[1])
+        vba = VideoBackgroundAudioFile.filter_by(id=active_file).one()
+        file_obj = FileObj.filter(FileObj.id==vba.file_obj_id).one()
+        sound_file_path = env.file_storage.filename(file_obj)
+
+        if not sound_file_path:
+            AssertionError('Setup active_file in admin page')
 
         vf = self.context.video_format
         args = [
