@@ -58,7 +58,7 @@ define([
             change_date: {
                 label: "Дата изменений",
                 formatter: function (ngwDate) {
-                    return ngwDate.day + '/' + ngwDate.month + '/' + ngwDate.year;
+                    return ngwDate.day + '.' + ngwDate.month + '.' + ngwDate.year;
                 }
             }
         },
