@@ -79,12 +79,12 @@
                 "basemap": [
                     "ngw/openlayers/layer/Layer",
                     "ngw/openlayers/layer/OSM",
-                    "ngw/openlayers/layer/Google",
+                    //"ngw/openlayers/layer/Google",
                     "ngw/openlayers/layer/Bing"
                 ],
                 "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
             },
-            "playerSoundFile": "${request.static_url(player_sound_file)}"
+            "playerSoundFile": "${request.route_url(player_sound_file)}"
         };
     </script>
 

@@ -231,12 +231,7 @@ def show_map(request):
 
 def show_map_player(request):
     values = _get_values_for_display(request)
-
-    if 'player_sound_file' in request.env.pyramid.settings:
-        values['player_sound_file'] = request.env.pyramid.settings.get('player_sound_file')
-    else:
-        values['player_sound_file'] = ''
-
+    values['player_sound_file'] = 'compulink_video_admin.audio_file'
     values['is_recording'] = False
 
     return render_to_response('nextgisweb_compulink:compulink_editor/templates/player/display.mako',
@@ -247,11 +242,7 @@ def show_map_player(request):
 def show_player_for_recording_video(request):
     values = _get_values_for_display(request)
 
-    if 'player_sound_file' in request.env.pyramid.settings:
-        values['player_sound_file'] = request.env.pyramid.settings.get('player_sound_file')
-    else:
-        values['player_sound_file'] = ''
-
+    values['player_sound_file'] = 'compulink_video_admin.audio_file'
     values['is_recording'] = True
 
     values['player_parameters'] = {

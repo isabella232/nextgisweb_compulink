@@ -10,6 +10,10 @@ from nextgisweb.file_storage import FileObj
 from nextgisweb.models import declarative_base
 from nextgisweb_compulink.compulink_admin.model import tometadata_event
 
+from nextgisweb.file_storage.models import Base as FoBase
+
+
+
 Base = declarative_base()
 
 
@@ -53,15 +57,15 @@ class VideoProduceTask(Base):
 #VideoProduceTask.__table__.tometadata = types.MethodType(tometadata_event, VideoProduceTask.__table__)
 
 
-class VideoBackgroundAudioFile(Base):
+class VideoBackgroundAudioFile(FoBase):
     __tablename__ = 'video_bg_audio_file'
     __table_args__ = {'schema': 'compulink'}
 
     id = db.Column(db.Integer, primary_key=True)
-    file_obj_uuid = db.Column(db.Unicode(32), nullable=False)
+    file_obj_id = db.Column(db.Integer, nullable=False)
     file_name = db.Column(db.Unicode, nullable=False, unique=True)
     file_size = db.Column(db.BigInteger, nullable=True)
     file_mime_type = db.Column(db.Unicode, nullable=True)
 
     def serialize(self):
-        return {'value': self.file_obj_uuid, 'label': self.file_name}
+        return {'value': self.id, 'label': self.file_name}
