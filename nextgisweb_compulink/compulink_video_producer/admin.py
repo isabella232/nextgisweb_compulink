@@ -43,7 +43,7 @@ def setup_pyramid(comp, config):
 
     config.add_route(
         'compulink_video_admin.audio_file',
-        '/compulink_video_admin/settings/active_audio') \
+        '/compulink_video_admin/settings/active_audio.mp3') \
         .add_view(download_audio_file,  request_method='GET')
 
     # menu in admin
