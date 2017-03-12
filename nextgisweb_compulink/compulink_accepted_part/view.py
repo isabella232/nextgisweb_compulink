@@ -37,6 +37,11 @@ def setup_pyramid(comp, config):
         .add_view(delete_accepted_part, request_method='DELETE') \
         .add_view(update_accepted_part, request_method='POST')
 
+    config.add_route(
+        'compulink.get_accepted_parts_rights',
+        '/compulink/accepted-parts/{construct_object_id:\d+}/access_level',
+        client=('construct_object_id',)).add_view(get_access_level)
+
 
 @view_config(renderer='json')
 def get_layer_info(request):
@@ -217,3 +222,17 @@ def update_accepted_part(request):
         return error_response(ex.message)
 
     return success_response()
+
+
+@view_config(renderer='json')
+def get_access_level(request):
+    construct_object_id = request.matchdict['construct_object_id']
+
+    responses = [
+        {'access_level': 'disable'},
+        {'access_level': 'list'},
+        {'access_level': 'edit'}
+    ]
+
+    import random
+    return random.choice(responses)
