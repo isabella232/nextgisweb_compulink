@@ -76,6 +76,8 @@ class FoclStructScope(Scope):
     edit_prop = Permission(u'Изменение свойств')
     edit_data = Permission(u'Изменение фактических данных')
     approve_deviation = Permission(u'Утверждение отклонений от проекта')
+    read_accepted_parts = Permission(u'Просмотр принятых участков')
+    edit_accepted_parts = Permission(u'Редактирование принятых участков')
 
 
 class FoclStruct(Base, ResourceGroup):

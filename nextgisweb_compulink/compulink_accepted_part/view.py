@@ -40,7 +40,7 @@ def setup_pyramid(comp, config):
     config.add_route(
         'compulink.get_accepted_parts_rights',
         '/compulink/accepted-parts/{construct_object_id:\d+}/access_level',
-        client=('construct_object_id',)).add_view(get_access_level)
+        client=('construct_object_id',)).add_view(get_access_level, request_method='GET', renderer='json')
 
 
 @view_config(renderer='json')
@@ -224,15 +224,24 @@ def update_accepted_part(request):
     return success_response()
 
 
-@view_config(renderer='json')
 def get_access_level(request):
+    # special rights
+    if request.user.keyname == 'guest':
+        return {'access_level': 'disable'}
+    if request.user.is_administrator:
+        return {'access_level': 'edit'}
+
+    # check
     construct_object_id = request.matchdict['construct_object_id']
+    dbsession = DBSession()
+    try:
+        focl_resource = dbsession.query(FoclStruct).get(construct_object_id)
+    except:
+        raise HTTPNotFound()
 
-    responses = [
-        {'access_level': 'disable'},
-        {'access_level': 'list'},
-        {'access_level': 'edit'}
-    ]
-
-    import random
-    return random.choice(responses)
+    if focl_resource.has_permission(FoclStructScope.edit_accepted_parts, request.user):
+        return {'access_level': 'edit'}
+    elif focl_resource.has_permission(FoclStructScope.read_accepted_parts, request.user):
+        return {'access_level': 'list'}
+    else:
+        return {'access_level': 'disable'}
