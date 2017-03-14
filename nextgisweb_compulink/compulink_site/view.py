@@ -523,7 +523,7 @@ def get_extent_by_resource_id(resource_id):
 
     session.close()
 
-    return extent_buff(extent, 1000)
+    return extent_buff(extent, 2000)
 
 
 @view_config(renderer='json')

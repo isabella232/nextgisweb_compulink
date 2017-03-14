@@ -4,6 +4,7 @@ from shutil import copyfileobj
 from uuid import UUID
 
 import transaction
+from datetime import datetime
 
 from nextgisweb.file_storage import FileObj
 from pyramid.httpexceptions import HTTPNotFound
@@ -131,6 +132,9 @@ def download_audio_file(resource, request):
     vba = VideoBackgroundAudioFile.filter_by(id=active_file).one()
     file_obj = FileObj.filter(FileObj.id==vba.file_obj_id).one()
     fn = env.file_storage.filename(file_obj)
+    #cache_control='no-cache, no-store, must-revalidate, max-age=0'
+    fr =FileResponse(fn, content_type=bytes(vba.file_mime_type), request=request, cache_max_age=0)
+    fr.last_modified = int((datetime.utcnow()).strftime("%s")) + 86400
 
-    return FileResponse(fn, content_type=bytes(vba.file_mime_type), request=request)
+    return fr
 
