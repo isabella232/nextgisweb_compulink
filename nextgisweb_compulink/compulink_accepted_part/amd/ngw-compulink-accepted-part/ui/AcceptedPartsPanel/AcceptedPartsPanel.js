@@ -45,6 +45,7 @@ define([
 
             topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this, function () {
                 this.acceptedPartsLayerToggle.set('disabled', false);
+                this.acceptedPartsLayerToggle.set('checked', false);
                 this.acceptedPartsFilter.set('value', '');
                 this.acceptedPartsFilter.set('disabled', false);
             }));
