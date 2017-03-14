@@ -5,14 +5,13 @@ define([
     'dojox/dtl/_base'
 ], function (declare, lang, xhr, dtlBase) {
     return declare(null, {
-        GET_LAYER_INFO: new dtlBase.Template('/compulink/accepted-parts/layer-info/{{layerType}}/{{constructObjectId}}', true),
-        getLayerInfo: function (layerType, constructObjectId) {
+        GET_ACCESS_LEVEL: new dtlBase.Template('/compulink/accepted-parts/{{constructObjectId}}/access_level', true),
+        getAccessLevel: function (constructObjectId) {
             var ngwApplicationUrl = ngwConfig.applicationUrl,
                 dtlContext = new dtlBase.Context({
-                    layerType: layerType,
                     constructObjectId: constructObjectId
                 }),
-                url = ngwApplicationUrl + this.GET_LAYER_INFO.render(dtlContext);
+                url = ngwApplicationUrl + this.GET_ACCESS_LEVEL.render(dtlContext);
 
             return xhr.get(url, {
                 handleAs: 'json'
