@@ -60,6 +60,10 @@ class VideoProducer(object):
         return 'out.%s' % vf.file_ext
 
     @property
+    def temporary_audio_file_name(self):
+        return 'temp_audio.mp3'
+
+    @property
     def temporary_out_va_file_name(self):
         vf = self.context.video_format
         return 'out_audio.%s' % vf.file_ext
@@ -229,25 +233,61 @@ class VideoProducer(object):
         except KeyError:
             AssertionError('Setup active_file in admin page')
 
+        # get original audio file path
         vba = VideoBackgroundAudioFile.filter_by(id=active_file).one()
-        file_obj = FileObj.filter(FileObj.id==vba.file_obj_id).one()
+        file_obj = FileObj.filter(FileObj.id == vba.file_obj_id).one()
         sound_file_path = env.file_storage.filename(file_obj)
 
         if not sound_file_path:
             AssertionError('Setup active_file in admin page')
 
+        # check duration
+        video_duration = self.get_file_duration(self.temporary_out_v_file_name)
+        audio_duration = self.get_file_duration(sound_file_path)
+
+        if video_duration <= audio_duration:
+            # simple copy audio file
+            shutil.copy(sound_file_path, self.temporary_audio_file_name)
+        else:
+            concat_str = 'concat:{0}'.format(sound_file_path)
+            concat_str += '|{0}'.format(sound_file_path) * int(video_duration/audio_duration + 1)
+
+            args = [
+                'ffmpeg',
+                '-i', '"' + concat_str + '"',
+                '-acodec', 'copy',
+                self.temporary_audio_file_name
+            ]
+            subprocess.Popen(args, cwd=self.context.temp_dir).wait()
+
+
+        # composite with video file
         vf = self.context.video_format
         args = [
             'ffmpeg',
             '-v', 'error',
             '-i', self.temporary_out_v_file_name,
-            '-i', sound_file_path,
+            '-i', self.temporary_audio_file_name,
             '-c:v', 'copy',
             '-shortest',
             self.temporary_out_va_file_name
         ]
         args.extend(vf.ffmpeg_audio_args)
         subprocess.Popen(args, cwd=self.context.temp_dir).wait()
+
+    def get_file_duration(self, file_path):
+        args = [
+            'ffprobe',
+            '-v', 'error',
+            '-show_entries',
+            'format=duration',
+            '-of', 'default=noprint_wrappers=1:nokey=1',
+            file_path
+        ]
+        t = subprocess.Popen(args=args, stdout=subprocess.PIPE, cwd=self.context.temp_dir)
+        out, error = t.communicate()
+        return float(out.strip())
+
 
     # DB STUFF
     def get_resource_name(self, res_id):
