@@ -2,6 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/date/locale',
     'dojo/on',
     'dojo/aspect',
     'dojo/dom-style',
@@ -25,7 +26,7 @@ define([
     '../CreateAcceptedPartDialog/CreateAcceptedPartDialog',
     'ngw-compulink-editor/editor/NgwServiceFacade',
     'xstyle/css!./AcceptedPartsTable.css'
-], function (declare, lang, array, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
+], function (declare, lang, array, locale, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
              ConfirmDialog, InfoDialog, CreateAcceptedPartDialog, NgwServiceFacade) {
     return declare(null, {
@@ -58,7 +59,8 @@ define([
             change_date: {
                 label: "Дата изменений",
                 formatter: function (ngwDate) {
-                    return ngwDate.day + '.' + ngwDate.month + '.' + ngwDate.year;
+                    var date_change = new Date(ngwDate.year, ngwDate.month, ngwDate.day);
+                    return locale.format(date_change, {selector:"date", datePattern: 'dd.MM.yyyy' } );
                 }
             }
         },
