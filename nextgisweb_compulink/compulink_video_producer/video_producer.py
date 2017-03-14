@@ -249,12 +249,16 @@ class VideoProducer(object):
             # simple copy audio file
             shutil.copy(sound_file_path, os.path.join(self.context.temp_dir, self.temporary_audio_file_name))
         else:
-            concat_str = 'concat:{0}'.format(sound_file_path)
-            concat_str += '|{0}'.format(sound_file_path) * int(video_duration/audio_duration + 1)
+            # copy orig
+            orig_path = os.path.join(self.context.temp_dir, 'orig.mp3')
+            shutil.copy(sound_file_path, orig_path)
+
+            concat_str = 'concat:{0}'.format(orig_path)
+            concat_str += '|{0}'.format(orig_path) * int(video_duration/audio_duration + 1)
 
             args = [
                 'ffmpeg',
-                '-i', '"' + concat_str + '"',
+                '-i', concat_str,
                 '-acodec', 'copy',
                 self.temporary_audio_file_name
             ]
