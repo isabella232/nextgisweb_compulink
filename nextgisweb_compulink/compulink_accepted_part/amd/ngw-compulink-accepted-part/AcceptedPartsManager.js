@@ -10,18 +10,20 @@ define([
     './layers/AcceptedPartsLayer',
     './layers/ActualRealOpticalCableLayer',
     './AcceptedPartsCreator',
-    './ui/AcceptedPartsTable/AcceptedPartsTable'
+    './ui/AcceptedPartsTable/AcceptedPartsTable',
+    './_ServiceFacadeMixin'
 ], function (declare, lang, array, query, on, topic,
              AcceptedPartsStore, ActualRealOpticalCableStore,
              AcceptedPartsLayer, ActualRealOpticalCableLayer,
-             AcceptedPartsCreator, AcceptedPartsTable) {
-    return declare([], {
+             AcceptedPartsCreator, AcceptedPartsTable, _ServiceFacadeMixin) {
+    return declare([_ServiceFacadeMixin], {
         _map: null,
         _constructObjectId: null,
         _acceptedPartsStore: null,
         _actualRealOpticalCableStore: null,
         _acceptedPartsLayer: null,
         _actualRealOpticalCableLayer: null,
+        _acceptedPartsTable: null,
 
         constructor: function (map, acceptedPartsPanel) {
             this._map = map;
@@ -32,7 +34,7 @@ define([
             this._actualRealOpticalCableStore = new ActualRealOpticalCableStore();
             this._actualRealOpticalCableLayer = new ActualRealOpticalCableLayer(map, this._actualRealOpticalCableStore);
 
-            this._aaceptedPartsCreator = new AcceptedPartsCreator(
+            this._aceptedPartsCreator = new AcceptedPartsCreator(
                 this._map,
                 this._acceptedPartsStore,
                 this._acceptedPartsLayer,
@@ -40,7 +42,7 @@ define([
                 this._actualRealOpticalCableLayer
             );
 
-            this.AcceptedPartsTable = new AcceptedPartsTable(acceptedPartsPanel.acceptedPartsTable, this._acceptedPartsStore);
+            this._acceptedPartsTable = new AcceptedPartsTable(acceptedPartsPanel.acceptedPartsTable, this._acceptedPartsStore);
 
             this._bindEvents();
         },
@@ -69,10 +71,36 @@ define([
             if (this._constructObjectId) {
                 this._clearStores();
             }
+
             var constructObjectId = constructObjectInfo.id;
+
+            this.getAccessLevel(constructObjectId).then(
+                lang.hitch(this, function (accessLevel) {
+                    this._handleAccessLevel(constructObjectId, accessLevel.access_level);
+                })
+            );
+        },
+
+        _handleAccessLevel: function (constructObjectId, accessLevel) {
+            this._constructObjectId = constructObjectId;
+
+            switch (accessLevel) {
+                case "disable":
+                    this._acceptedPartsTable.setNoRightsMode();
+                    return true;
+                case "list":
+                    this._acceptedPartsTable.setListMode();
+                    break;
+                case "edit":
+                    this._acceptedPartsTable.setEditMode();
+                    break;
+                default:
+                    console.error(new Error('AcceptedPartsManager: wrong accessLevel value "' + accessLevel + '"'));
+            }
+
+            topic.publish('/compulink/accepted-parts/manager/access-level/change', accessLevel);
             this._actualRealOpticalCableStore.fetch(constructObjectId);
             this._acceptedPartsStore.fetch(constructObjectId);
-            this._constructObjectId = constructObjectId;
         },
 
         _dataConstructObjectsTableChangedHandler: function (store) {

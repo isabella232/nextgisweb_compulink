@@ -2,6 +2,7 @@ define([
     'dojo/_base/declare',
     'dojo/_base/lang',
     'dojo/_base/array',
+    'dojo/date/locale',
     'dojo/on',
     'dojo/aspect',
     'dojo/dom-style',
@@ -25,7 +26,7 @@ define([
     '../CreateAcceptedPartDialog/CreateAcceptedPartDialog',
     'ngw-compulink-editor/editor/NgwServiceFacade',
     'xstyle/css!./AcceptedPartsTable.css'
-], function (declare, lang, array, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
+], function (declare, lang, array, locale, on, aspect, domStyle, topic, Deferred, xhr, domConstruct, query, registry, mustache,
              OnDemandGrid, ColumnResizer, Memory, Selection, Menu, MenuItem, MenuSeparator, Select,
              ConfirmDialog, InfoDialog, CreateAcceptedPartDialog, NgwServiceFacade) {
     return declare(null, {
@@ -58,7 +59,8 @@ define([
             change_date: {
                 label: "Дата изменений",
                 formatter: function (ngwDate) {
-                    return ngwDate.day + '.' + ngwDate.month + '.' + ngwDate.year;
+                    var date_change = new Date(ngwDate.year, ngwDate.month, ngwDate.day);
+                    return locale.format(date_change, {selector:"date", datePattern: 'dd.MM.yyyy' } );
                 }
             }
         },
@@ -80,9 +82,14 @@ define([
                     _acceptedPartsStore: this._acceptedPartsStore
                 }, domId);
 
-            //context menu
+            this._makeMenu();
+            this._bindMenu();
+
+            this._bindEvents();
+        },
+
+        _makeMenu: function () {
             this._menu = new Menu({
-                targetNodeIds: [this._grid.domNode],
                 selector: 'div.dgrid-row',
                 onShow: lang.hitch(this, function (evt) {
                     evt.preventDefault();
@@ -116,8 +123,22 @@ define([
                     this._deleteAcceptedPart(Object.getOwnPropertyNames(this._grid.selection)[0]);
                 })
             }));
+        },
 
-            this._bindEvents();
+        _bindMenu: function () {
+            var bindingsCount = this._menu._bindings.length;
+            if (bindingsCount === 1) {
+                return true;
+            } else if (bindingsCount > 1) {
+                console.error(new Error('AcceptedPartsTable: multiple Menu bindings - ' +
+                    bindingsCount +' bindings'));
+            }
+            this._menu.bindDomNode(this._grid.domNode);
+        },
+
+        _unbindMenu: function () {
+            this._menu.unBindDomNode(this._grid.domNode);
+            this._menu._bindings = [];
         },
 
         _sourceStore: null,
@@ -194,6 +215,21 @@ define([
             });
 
             deleteAcceptedPartDialog.show();
+        },
+
+        _noRightsMessage: 'У вас нет прав для просмотра принятых участков выбранного объекта строительства',
+        setNoRightsMode: function () {
+            this._grid.noDataMessage = this._noRightsMessage;
+            this._sourceStore = this._acceptedPartsStore.getAttributesStore();
+            this._refreshTable();
+        },
+
+        setListMode: function () {
+            this._unbindMenu();
+        },
+
+        setEditMode: function () {
+            this._bindMenu();
         }
     });
 });

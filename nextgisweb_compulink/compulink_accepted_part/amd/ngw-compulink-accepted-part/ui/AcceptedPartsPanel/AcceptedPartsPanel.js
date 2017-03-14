@@ -19,6 +19,7 @@ define([
              AcceptedPartsTable, template) {
     return declare([_WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin], {
         templateString: template,
+        _mode: 'edit',
 
         postCreate: function () {
             this._bindAcceptedPartsPanelEvents();
@@ -26,7 +27,7 @@ define([
 
         _bindAcceptedPartsPanelEvents: function () {
             on(this.acceptedPartsLayerToggle, 'change', lang.hitch(this, function (state) {
-                if (state) {
+                if (state && this._mode === 'edit') {
                     this.acceptedPartsLayerToggle.set('iconClass', 'icon icon-eye');
                     this.createAcceptedPartToggle.set('disabled', false);
                 } else {
@@ -44,6 +45,7 @@ define([
 
             topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this, function () {
                 this.acceptedPartsLayerToggle.set('disabled', false);
+                this.acceptedPartsLayerToggle.set('checked', false);
                 this.acceptedPartsFilter.set('value', '');
                 this.acceptedPartsFilter.set('disabled', false);
             }));
@@ -68,6 +70,14 @@ define([
             on(this.undoFirstPoint, 'click', lang.hitch(this, function () {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo');
             }));
+
+            topic.subscribe('/compulink/accepted-parts/manager/access-level/change', lang.hitch(this, function (accessLevel) {
+                this.setMode(accessLevel);
+            }));
+        },
+
+        setMode: function (mode) {
+            this._mode = mode;
         }
     });
 });
