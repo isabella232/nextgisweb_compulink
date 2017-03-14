@@ -80,9 +80,14 @@ define([
                     _acceptedPartsStore: this._acceptedPartsStore
                 }, domId);
 
-            //context menu
+            this._makeMenu();
+            this._bindMenu();
+
+            this._bindEvents();
+        },
+
+        _makeMenu: function () {
             this._menu = new Menu({
-                targetNodeIds: [this._grid.domNode],
                 selector: 'div.dgrid-row',
                 onShow: lang.hitch(this, function (evt) {
                     evt.preventDefault();
@@ -116,8 +121,22 @@ define([
                     this._deleteAcceptedPart(Object.getOwnPropertyNames(this._grid.selection)[0]);
                 })
             }));
+        },
 
-            this._bindEvents();
+        _bindMenu: function () {
+            var bindingsCount = this._menu._bindings.length;
+            if (bindingsCount === 1) {
+                return true;
+            } else if (bindingsCount > 1) {
+                console.error(new Error('AcceptedPartsTable: multiple Menu bindings - ' +
+                    bindingsCount +' bindings'));
+            }
+            this._menu.bindDomNode(this._grid.domNode);
+        },
+
+        _unbindMenu: function () {
+            this._menu.unBindDomNode(this._grid.domNode);
+            this._menu._bindings = [];
         },
 
         _sourceStore: null,
@@ -194,6 +213,21 @@ define([
             });
 
             deleteAcceptedPartDialog.show();
+        },
+
+        _noRightsMessage: 'У вас нет прав для просмотра принятых участков выбранного объекта строительства',
+        setNoRightsMode: function () {
+            this._grid.noDataMessage = this._noRightsMessage;
+            this._sourceStore = this._acceptedPartsStore.getAttributesStore();
+            this._refreshTable();
+        },
+
+        setListMode: function () {
+            this._unbindMenu();
+        },
+
+        setEditMode: function () {
+            this._bindMenu();
         }
     });
 });
