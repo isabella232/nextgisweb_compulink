@@ -84,7 +84,7 @@
                 ],
                 "plugin": ["ngw-compulink-site/plugin/FeatureLayer"]
             },
-            "playerSoundFile": "${request.route_url(player_sound_file)}"
+            "playerSoundFile": "${player_sound_file}"
         };
     </script>
 
