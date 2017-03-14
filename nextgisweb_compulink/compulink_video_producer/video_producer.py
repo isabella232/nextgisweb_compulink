@@ -247,7 +247,7 @@ class VideoProducer(object):
 
         if video_duration <= audio_duration:
             # simple copy audio file
-            shutil.copy(sound_file_path, self.temporary_audio_file_name)
+            shutil.copy(sound_file_path, os.path.join(self.context.temp_dir, self.temporary_audio_file_name))
         else:
             concat_str = 'concat:{0}'.format(sound_file_path)
             concat_str += '|{0}'.format(sound_file_path) * int(video_duration/audio_duration + 1)
