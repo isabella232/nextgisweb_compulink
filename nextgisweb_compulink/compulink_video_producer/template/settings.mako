@@ -9,7 +9,7 @@
     <script type="text/javascript">
         require([
             "ngw-compulink-video-producer/AudioSettingsForm",
-            "dojo/domReady!"
+             "dojo/domReady!"
         ], function (
             AudioSettingsForm
         ) {
@@ -19,3 +19,4 @@
 </%def>
 
 <div id="form" style="width: 100%;"></div>
+<div id="main_toaster"></div>
