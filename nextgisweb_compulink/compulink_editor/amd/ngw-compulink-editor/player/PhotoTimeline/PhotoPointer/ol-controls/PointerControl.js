@@ -114,6 +114,22 @@ define([
             newLayer.cl_$lastImage.addClass('scale-animated');
         },
 
+        stopEffects: function () {
+            var lastLayer = this._lastLayerIndex === null ? null : this._pointerLayers[this._lastLayerIndex];
+
+            if (lastLayer) {
+                lastLayer.cl_$lastImage.removeClass('scale-animated').addClass('scale-animated-stop');
+            }
+        },
+
+        startEffects: function () {
+            var lastLayer = this._lastLayerIndex === null ? null : this._pointerLayers[this._lastLayerIndex];
+
+            if (lastLayer) {
+                lastLayer.cl_$lastImage.removeClass('scale-animated-stop').addClass('scale-animated');
+            }
+        },
+
         _transitionEndEventName: function () {
             var i,
                 undefined,
