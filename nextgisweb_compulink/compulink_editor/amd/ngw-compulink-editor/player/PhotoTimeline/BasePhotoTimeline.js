@@ -27,10 +27,26 @@ define([
             this.$imagesContainer = jQuery('#' + this._imagesContainerId);
         },
 
+        mode: 'first',
+
         bindEvents: function () {
-            topic.subscribe('compulink/player/features/builded', lang.hitch(this, function (from, to) {
+            topic.subscribe('compulink/player/features/builded', lang.hitch(this, function (from, to, mode) {
                 if (this._turned === false) return false;
+
                 this._renderPhoto(from, to);
+                switch (mode) {
+                    case 'played':
+                        break;
+                    case 'timeChanged':
+                        this._olControl.stopEffects();
+                        break;
+                    default:
+                        break;
+                }
+            }));
+
+            topic.subscribe('compulink/player/play/start', lang.hitch(this, function () {
+                this._olControl.startEffects();
             }));
 
             topic.subscribe('compulink/player/controls/speed/changed', lang.hitch(this, function () {
@@ -39,6 +55,10 @@ define([
 
             topic.subscribe('compulink/player/photo-timeline/toggle', lang.hitch(this, function (turned) {
                 this.toggle(turned);
+            }));
+
+            topic.subscribe('compulink/player/stopped', lang.hitch(this, function () {
+                this._olControl.stopEffects();
             }));
         },
 
