@@ -71,6 +71,19 @@ div.olMapViewport div.image-wrapper img.scale-animated {
     opacity: 1;
 }
 
+div.olMapViewport div.image-wrapper img.scale-animated-stop {
+    display: block;
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -webkit-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1);
+    -webkit-transition: -webkit-transform 0s ease-out;
+    -moz-transition: -moz-transform 0s ease-out;
+    transition: transform 0s ease-out;
+    opacity: 1;
+}
+
 div.olMapViewport div.image-wrapper img.opacity-hidden-animated {
     visibility: hidden;
     opacity: 0;
