@@ -149,7 +149,7 @@ define([
                 new Date(0) :
                 this._featureManager.minBuiltDate;
             this._handleControlsState(timeChangedEvent.time);
-            this._buildFeatures(minDate, timeChangedEvent.time, true);
+            this._buildFeatures(minDate, timeChangedEvent.time, true, 'timeChanged');
         },
 
         _handleControlsState: function (time) {
@@ -377,6 +377,7 @@ define([
         _interval: null,
         play: function (start) {
             this._state = 'playing';
+            topic.publish('compulink/player/play/start');
             this._buttonsHandlers.play.disable();
             if (start < this._featureManager.minBuiltDate) {
                 this._moveTimeBarToStart();
@@ -400,7 +401,7 @@ define([
                 }
                 this._handleControlsState(intervalTimeByTick.to);
                 this._timeline.setCustomTime(intervalTimeByTick.to, this._barId);
-                this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to);
+                this._buildFeatures(intervalTimeByTick.from, intervalTimeByTick.to, false, 'played');
             }), 1000);
         },
 
@@ -489,8 +490,8 @@ define([
         },
 
         _currentIndexDate: null,
-        _buildFeatures: function (from, to, isNeedRebuild) {
-            topic.publish('compulink/player/features/builded', from, to);
+        _buildFeatures: function (from, to, isNeedRebuild, mode) {
+            topic.publish('compulink/player/features/builded', from, to, mode);
             var layer = this._featureManager._layer,
                 featureBuiltDateMs,
                 featuresToDrawing = [];
