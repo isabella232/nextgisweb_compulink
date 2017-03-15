@@ -65,6 +65,8 @@ define([
             }
         },
 
+        _menuEdit: null,
+        _menuList: null,
         _noDataMessage: 'Нет принятых участков',
         _welcomeToSelectResourceMessage: 'Выберите объект строительства',
 
@@ -82,14 +84,32 @@ define([
                     _acceptedPartsStore: this._acceptedPartsStore
                 }, domId);
 
-            this._makeMenu();
-            this._bindMenu();
+            this._makeMenuEdit();
+            this._makeMenuList();
+            this._bindMenu(this._menuEdit);
 
             this._bindEvents();
         },
 
-        _makeMenu: function () {
-            this._menu = new Menu({
+        _makeMenuList: function () {
+            this._menuList = new Menu({
+                selector: 'div.dgrid-row',
+                onShow: lang.hitch(this, function (evt) {
+                    evt.preventDefault();
+                })
+
+            });
+
+            this._menuList.addChild(new MenuItem({
+                label: 'Нет доступных действий',
+                onClick: lang.hitch(this, function (evt) {
+                    evt.preventDefault();
+                })
+            }));
+        },
+
+        _makeMenuEdit: function () {
+            this._menuEdit = new Menu({
                 selector: 'div.dgrid-row',
                 onShow: lang.hitch(this, function (evt) {
                     evt.preventDefault();
@@ -98,7 +118,7 @@ define([
 
             });
 
-            this._menu.addChild(new MenuItem({
+            this._menuEdit.addChild(new MenuItem({
                 label: 'Редактировать атрибуты',
                 onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
@@ -114,9 +134,9 @@ define([
                 })
             }));
 
-            this._menu.addChild(new MenuSeparator());
+            this._menuEdit.addChild(new MenuSeparator());
 
-            this._menu.addChild(new MenuItem({
+            this._menuEdit.addChild(new MenuItem({
                 label: 'Удалить',
                 onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
@@ -125,20 +145,20 @@ define([
             }));
         },
 
-        _bindMenu: function () {
-            var bindingsCount = this._menu._bindings.length;
+        _bindMenu: function (menu) {
+            var bindingsCount = menu._bindings.length;
             if (bindingsCount === 1) {
                 return true;
             } else if (bindingsCount > 1) {
                 console.error(new Error('AcceptedPartsTable: multiple Menu bindings - ' +
                     bindingsCount +' bindings'));
             }
-            this._menu.bindDomNode(this._grid.domNode);
+            menu.bindDomNode(this._grid.domNode);
         },
 
-        _unbindMenu: function () {
-            this._menu.unBindDomNode(this._grid.domNode);
-            this._menu._bindings = [];
+        _unbindMenu: function (menu) {
+            menu.unBindDomNode(this._grid.domNode);
+            menu._bindings = [];
         },
 
         _sourceStore: null,
@@ -225,11 +245,13 @@ define([
         },
 
         setListMode: function () {
-            this._unbindMenu();
+            this._unbindMenu(this._menuEdit);
+            this._bindMenu(this._menuList);
         },
 
         setEditMode: function () {
-            this._bindMenu();
+            this._unbindMenu(this._menuList);
+            this._bindMenu(this._menuEdit);
         }
     });
 });
