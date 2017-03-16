@@ -17,8 +17,8 @@ define([
         constructor: function () {
             this.inherited(arguments);
 
-            on(this, 'fetched', function () {
-                topic.publish('compulink/accepted-parts/store/accepted-parts/fetched');
+            on(this, 'fetched', function (features, initiator) {
+                topic.publish('compulink/accepted-parts/store/accepted-parts/fetched', features, initiator);
             });
         },
 
@@ -49,7 +49,7 @@ define([
                 method: 'PUT',
                 data: acceptedPart
             }).then(lang.hitch(this, function (result) {
-                this.fetch(this._constructObjectId);
+                this.fetch(this._constructObjectId, 'create')
             }));
         },
 
@@ -66,7 +66,7 @@ define([
                 method: 'POST',
                 data: acceptedPart
             }).then(lang.hitch(this, function (result) {
-                this.fetch(this._constructObjectId);
+                this.fetch(this._constructObjectId, 'modify')
             }));
         },
 
@@ -86,7 +86,7 @@ define([
                     id: acceptedPartId
                 }
             }).then(lang.hitch(this, function (result) {
-                this.fetch(this._constructObjectId);
+                this.fetch(this._constructObjectId, 'delete');
                 deferred.resolve(result);
             }), lang.hitch(this, function (result) {
                 deferred.reject(result);
