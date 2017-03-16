@@ -9,6 +9,9 @@ define([
     "ngw/route",
     "dojo/text!./template/AudioSettingsForm.hbs",
     "dojo/_base/lang",
+    "dijit/registry",
+    "dojo/dom",
+    "dojox/widget/Toaster",
     // template
     "dijit/form/Button",
     "dijit/form/TextBox",
@@ -16,7 +19,9 @@ define([
     "dijit/layout/BorderContainer",
     "./AudioFileUploader",
     "dijit/form/Select",
-    "dojox/layout/TableContainer"
+    "dojox/layout/TableContainer",
+    // css
+    "xstyle/css!" + ngwConfig.amdUrl + 'dojox/widget/Toaster/Toaster.css'
 ], function (
     declare,
     _WidgetBase,
@@ -26,7 +31,10 @@ define([
     json,
     route,
     template,
-    lang
+    lang,
+    registry,
+    dom,
+    Toaster
 ) {
     var API_LIST_URL = route.compulink_video_admin.settings_audio_list();
     var API_ADD_URL = route.compulink_video_admin.settings_audio_add();
@@ -64,6 +72,8 @@ define([
                 });
             });
             this.wAddFile.on('uploading_finished', lang.hitch(this, this.file_uploaded));
+
+            this.toaster = new Toaster({positionDirection: 'bl-right'}, '#main_toaster');
         },
 
         file_uploaded: function(data) {
@@ -87,12 +97,15 @@ define([
                     active: this.wFileList.get('value')
                 })
             }).then(
-                function () {
-                    window.location.reload(true);
-                },
-                function () {
-                    alert("Error!");
-                }
+                lang.hitch(this, function () {
+                    //window.location.reload(true);
+                    this.toaster.setContent('Сохранение успешно', 'message', duration=3000);
+                    this.toaster.show();
+                }),
+                lang.hitch(this, function () {
+                    this.toaster.setContent('Ошибка при сохранении', 'error', duration=3000);
+                    this.toaster.show();
+                })
             );
         }
     });
