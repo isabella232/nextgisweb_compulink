@@ -14,7 +14,8 @@ define([
              CreateAcceptedPartDialog, AcceptedPartsTooltip) {
     return declare(null, {
         ACCEPTED_PARTS_TOLERANCE: 40,
-        OPTICAL_CABLE_LAYER_TOLERANCE: 20,
+        OPTICAL_CABLE_LAYER_LINES_TOLERANCE: 20,
+        OPTICAL_CABLE_LAYER_POINTS_TOLERANCE: 30,
 
         _drawFeatureControl: null,
         _snappingControl: null,
@@ -82,10 +83,17 @@ define([
                     },
                     {
                         layer: this._actualRealOpticalCableLayer._layer,
-                        tolerance: this.OPTICAL_CABLE_LAYER_TOLERANCE,
+                        tolerance: this.OPTICAL_CABLE_LAYER_LINES_TOLERANCE,
                         node: false,
                         vertex: false,
                         edge: true
+                    },
+                    {
+                        layer: this._actualRealOpticalCableLayer._layer,
+                        tolerance: this.OPTICAL_CABLE_LAYER_POINTS_TOLERANCE,
+                        node: false,
+                        vertex: true,
+                        edge: false
                     }
                 ],
                 greedy: false
