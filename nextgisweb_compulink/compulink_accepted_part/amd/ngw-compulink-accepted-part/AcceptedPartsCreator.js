@@ -53,6 +53,10 @@ define([
                     return true;
                 }
             }));
+
+            on(this._acceptedPartsStore, 'cleared', lang.hitch(this, function () {
+                this._deactivate();
+            }));
         },
 
         _createControls: function () {
