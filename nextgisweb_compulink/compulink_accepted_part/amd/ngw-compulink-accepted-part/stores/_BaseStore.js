@@ -22,7 +22,7 @@ define([
             this._ngwServiceFacade = new NgwServiceFacade();
         },
 
-        fetch: function (constructObjectId) {
+        fetch: function (constructObjectId, initiator) {
             var getLayerInfo = this.getLayerInfo(this.LAYER_TYPE, constructObjectId);
             this._constructObjectId = constructObjectId;
             getLayerInfo.then(lang.hitch(this, function (layerInfo) {
@@ -30,7 +30,7 @@ define([
                 var getAllFeatures = this._ngwServiceFacade.getAllFeatures(this._layerId);
                 getAllFeatures.then(lang.hitch(this, function (features) {
                     this.data = features;
-                    this.emit('fetched', features);
+                    this.emit('fetched', features, initiator);
                 }));
             }));
         },
