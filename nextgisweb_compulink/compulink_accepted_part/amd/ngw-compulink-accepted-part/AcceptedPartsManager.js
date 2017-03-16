@@ -49,22 +49,9 @@ define([
 
         _bindEvents: function () {
             topic.subscribe('/table/construct_object/selected', lang.hitch(this, this._selectConstructObjectHandler));
+
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this,
                 this._dataConstructObjectsTableChangedHandler));
-        },
-
-        _applyZIndexes: function () {
-            array.forEach(this._map.olMap.layers, function (layer) {
-                if (layer.hasOwnProperty('_ap_zindex')) {
-                    layer.setZIndex(layer._ap_zindex);
-                }
-            });
-        },
-
-        _applyZIndexesByChangeLayer: function (e) {
-            if (e.property === 'order') {
-                this._applyZIndexes();
-            }
         },
 
         _selectConstructObjectHandler: function (constructObjectInfo) {
@@ -112,6 +99,20 @@ define([
         _clearStores: function () {
             this._acceptedPartsStore.clear();
             this._actualRealOpticalCableStore.clear();
-        }
+        },
+
+        _applyZIndexesByChangeLayer: function (e) {
+            if (e.property === 'order') {
+                this._applyZIndexes();
+            }
+        },
+
+        _applyZIndexes: function () {
+            array.forEach(this._map.olMap.layers, function (layer) {
+                if (layer.hasOwnProperty('_ap_zindex')) {
+                    layer.setZIndex(layer._ap_zindex);
+                }
+            });
+        },
     });
 });
