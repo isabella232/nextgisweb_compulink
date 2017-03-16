@@ -43,20 +43,27 @@ define([
                 topic.publish('compulink/accepted-parts/ui/create-new-accepted-part/changed', state);
             }));
 
-            topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this, function () {
-                this.acceptedPartsLayerToggle.set('disabled', false);
-                this.acceptedPartsLayerToggle.set('checked', false);
-                this.acceptedPartsFilter.set('value', '');
-                this.acceptedPartsFilter.set('disabled', false);
-            }));
+            topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this,
+                function (features, initiator) {
+                    if (initiator === 'create' || initiator === 'delete' || initiator === 'modify') {
+                        return true;
+                    }
+                    this.acceptedPartsLayerToggle.set('disabled', false);
+                    this.acceptedPartsLayerToggle.set('checked', false);
+                    this._changeFilter('');
+                    this.acceptedPartsFilter.set('disabled', false);
+                })
+            );
 
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this, function (store) {
                 this.acceptedPartsLayerToggle.set('disabled', 'disabled');
                 this.createAcceptedPartToggle.set('disabled', 'disabled');
+                this._changeFilter('');
+                this.acceptedPartsFilter.set('disabled', 'disabled');
             }));
 
             on(this.acceptedPartsFilter, 'keyup', lang.hitch(this, function (event) {
-                topic.publish('compulink/accepted-parts/ui/table/filter/changed', this.acceptedPartsFilter.get('value'));
+                this._handleFilterChanged();
             }));
 
             topic.subscribe('compulink/accepted-parts/layers/first-point/undo/on', lang.hitch(this, function () {
@@ -74,6 +81,15 @@ define([
             topic.subscribe('/compulink/accepted-parts/manager/access-level/change', lang.hitch(this, function (accessLevel) {
                 this.setMode(accessLevel);
             }));
+        },
+
+        _changeFilter: function (value) {
+            this.acceptedPartsFilter.set('value', '');
+            this._handleFilterChanged();
+        },
+
+        _handleFilterChanged: function () {
+            topic.publish('compulink/accepted-parts/ui/table/filter/changed', this.acceptedPartsFilter.get('value'));
         },
 
         setMode: function (mode) {

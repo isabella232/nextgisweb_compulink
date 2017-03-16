@@ -65,6 +65,8 @@ define([
             }
         },
 
+        _sourceStore: null,
+
         _menuEdit: null,
         _menuList: null,
         _noDataMessage: 'Нет принятых участков',
@@ -72,6 +74,7 @@ define([
 
         constructor: function (domId, acceptedPartsStore) {
             this._acceptedPartsStore = acceptedPartsStore;
+            this._sourceStore = this._acceptedPartsStore.getAttributesStore();
 
             this._grid = new (declare([OnDemandGrid, ColumnResizer, Selection]))(
                 {
@@ -161,7 +164,6 @@ define([
             menu._bindings = [];
         },
 
-        _sourceStore: null,
         _filter: '',
         _bindEvents: function () {
             on(this._acceptedPartsStore, 'fetched', lang.hitch(this, function () {
