@@ -126,42 +126,68 @@ define([
             this._acceptedPartsTooltip.deactivate();
         },
 
-        _lastPointVerified: {
+        _lastPointVerifyResult: {
             result: false,
             pointsInSketchLine: 0
         },
 
+        _isCreateCalled: false,
+
         _createPointSketchHandler: function (point, sketchLine) {
-            var pointsInSketchLine = sketchLine.components.length;
+            var pointsInSketchLine = sketchLine.components.length,
+                verifyResult = true;
+
+            this._isCreateCalled = true;
 
             if (pointsInSketchLine === 2) {
+                verifyResult = this._verifyStartPoint(point, sketchLine);
                 this._lastPointVerifyResult = {
-                    result: this._verifyStartPoint(point, sketchLine),
+                    result: verifyResult,
                     pointsInSketchLine: pointsInSketchLine
                 };
             }
 
             if (pointsInSketchLine === 3) {
+                verifyResult = this._verifyEndPoint(point, sketchLine);
                 this._lastPointVerifyResult = {
-                    result: this._verifyEndPoint(point, sketchLine),
+                    result: verifyResult,
                     pointsInSketchLine: pointsInSketchLine
                 };
             }
         },
 
         _afterDrawUpHandler: function () {
+            // if moving map by pressed left mouse button
+            // this._isCreateCalled should be equal false
+            if (this._isCreateCalled) {
+                this._isCreateCalled = false;
+            } else {
+                return true;
+            }
+
             if (!this._lastPointVerifyResult) return true;
 
-            if (this._lastPointVerifyResult.result && this._lastPointVerifyResult.pointsInSketchLine === 2) {
+            var pointsInSketchLine = this._lastPointVerifyResult.pointsInSketchLine;
+
+            // check points consistency
+            if (pointsInSketchLine > 3) {
+                console.error(new Exception('_afterDrawUpHandler: pointsInSketchLine = ' + pointsInSketchLine));
+            } else if (pointsInSketchLine < 2) {
+                return true;
+            }
+
+            if (this._lastPointVerifyResult.result && pointsInSketchLine === 2) {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/on');
                 this._makeStartPoint();
                 this._setTooltipEndMessage();
+                this._resetLastPointVerifyResult();
                 return true;
             }
 
             // if start point, then this._lastPointVerifyResult.pointsInSketchLine === 2
             if (this._lastPointVerifyResult.pointsInSketchLine === 2) {
                 this._drawFeatureControl.cancel();
+                this._resetLastPointVerifyResult();
                 return true;
             }
 
@@ -173,11 +199,17 @@ define([
                     this._drawFeatureControl.cancel();
                     this._openCreateAcceptedPartsDialog(acceptedGeometry);
                 }
+                this._resetLastPointVerifyResult();
                 this._setTooltipStartMessage();
             } else {
                 this._drawFeatureControl.undo();
+                this._resetLastPointVerifyResult();
                 return true;
             }
+        },
+
+        _resetLastPointVerifyResult: function () {
+            this._lastPointVerifyResult.result = false;
         },
 
         _makeStartPoint: function () {
