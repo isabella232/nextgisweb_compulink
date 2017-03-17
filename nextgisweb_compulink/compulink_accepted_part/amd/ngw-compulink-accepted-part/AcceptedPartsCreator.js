@@ -75,6 +75,10 @@ define([
 
             this._drawFeatureControl.handler.callbacks.point = lang.hitch(this, this._createPointSketchHandler);
 
+            this._drawFeatureControl.handler.dblclick = lang.hitch(this, function () {
+                return true;
+            });
+
             aspect.after(this._drawFeatureControl.handler, 'up', lang.hitch(this, this._afterDrawUpHandler));
 
             this._snappingControl = new openlayers.Control.Snapping({
