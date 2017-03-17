@@ -200,7 +200,6 @@ define([
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 var acceptedGeometry = this._createAcceptedPartGeometry();
                 if (acceptedGeometry) {
-                    this._drawFeatureControl.cancel();
                     this._openCreateAcceptedPartsDialog(acceptedGeometry);
                 }
                 this._resetLastPointVerifyResult();
@@ -235,6 +234,11 @@ define([
                 acceptedPartsStore: this._acceptedPartsStore,
                 acceptedPartGeometryWkt: this._getAcceptedPartWkt(acceptedPartGeometry)
             });
+
+            aspect.after(acceptedPartDialog, 'hide', lang.hitch(this, function () {
+                this._drawFeatureControl.cancel();
+            }));
+
             acceptedPartDialog.show();
         },
 
