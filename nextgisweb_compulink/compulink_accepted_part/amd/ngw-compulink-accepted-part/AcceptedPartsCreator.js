@@ -201,6 +201,8 @@ define([
                 var acceptedGeometry = this._createAcceptedPartGeometry();
                 if (acceptedGeometry) {
                     this._openCreateAcceptedPartsDialog(acceptedGeometry);
+                } else {
+                    this._drawFeatureControl.cancel();
                 }
                 this._resetLastPointVerifyResult();
                 this._setTooltipStartMessage();
