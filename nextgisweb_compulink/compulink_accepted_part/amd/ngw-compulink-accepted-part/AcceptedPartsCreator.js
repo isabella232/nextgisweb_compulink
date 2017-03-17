@@ -161,22 +161,22 @@ define([
         },
 
         _afterDrawUpHandler: function () {
-            // if moving map by pressed left mouse button
-            // this._isCreateCalled should be equal false
-            if (this._isCreateCalled) {
-                this._isCreateCalled = false;
-            } else {
-                return true;
-            }
-
             if (!this._lastPointVerifyResult) return true;
-
             var pointsInSketchLine = this._lastPointVerifyResult.pointsInSketchLine;
 
             // check points consistency
             if (pointsInSketchLine > 3) {
                 console.error(new Exception('_afterDrawUpHandler: pointsInSketchLine = ' + pointsInSketchLine));
             } else if (pointsInSketchLine < 2) {
+                return true;
+            }
+
+            // if moving map by pressed left mouse button
+            // this._isCreateCalled should be equal false
+            if (this._isCreateCalled) {
+                this._isCreateCalled = false;
+            } else {
+                if (pointsInSketchLine === 3) this._drawFeatureControl.undo();
                 return true;
             }
 
@@ -208,6 +208,7 @@ define([
             } else {
                 this._drawFeatureControl.undo();
                 this._resetLastPointVerifyResult();
+                this._lastPointVerifyResult.pointsInSketchLine = pointsInSketchLine - 1;
                 return true;
             }
         },
