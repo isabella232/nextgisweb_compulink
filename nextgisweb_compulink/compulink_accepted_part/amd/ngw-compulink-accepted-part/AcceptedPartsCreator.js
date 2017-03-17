@@ -275,9 +275,12 @@ define([
                 endPoint = sketchLine.components[1],
                 linestring;
 
-            if (this._isPointContainsInLinesLayer(endPoint, this._actualRealOpticalCableLayer._layer) !== true ||
-                this._verifyPointByAcceptedPartsLayer(startPoint) !== true) {
+            if (this._isPointContainsInLinesLayer(endPoint, this._actualRealOpticalCableLayer._layer) === false) {
                 return false;
+            }
+
+            if (this._isPointContainsInLinesLayer(endPoint, this._acceptedPartsLayer._layer) === true ) {
+                if (this._verifyPointByAcceptedPartsLayer(endPoint) === false) return false;
             }
 
             if (startPoint.distanceTo(endPoint) === 0) {
