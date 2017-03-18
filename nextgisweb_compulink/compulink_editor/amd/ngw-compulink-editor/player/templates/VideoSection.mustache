@@ -1,0 +1,18 @@
+<div class="video-section">
+    {{#state-init}}
+    <span>Инициализация видео...<span>
+    {{/state-init}}
+
+    {{^state-init}}
+        <a class="icon icon-videocam-2 {{#state-recording}}disable{{/state-recording}}" aria-hidden="true"
+           title="{{recordTitle}}"></a>
+        <div class="message">{{message}}</div>
+        {{#state-download}}
+            <a class="icon icon-download-alt"{{#url}}href="{{url}}"{{/url}} {{^url}}href="javascript:void(0)"{{/url}}
+               title="Скачать"></a>
+        {{/state-download}}
+        {{#state-recording}}
+            <a class="icon creating" href="javascript:void(0)" title="Создается"></a>
+        {{/state-recording}}
+    {{/state-init}}
+</div>

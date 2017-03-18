@@ -17,6 +17,7 @@ define([
     'ngw-compulink-editor/player/AudioManager',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
     './PhotoTimeline/PhotoPointer/PhotoPointer',
+    './_VideoSectionMixin',
     'xstyle/css!./templates/Timeline.css',
     'xstyle/css!dojox/layout/resources/FloatingPane.css',
     'xstyle/css!dojox/layout/resources/ResizeHandle.css',
@@ -26,8 +27,8 @@ define([
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler,
-             PhotoPointer) {
-    return declare([], {
+             PhotoPointer, _VideoSectionMixin) {
+    return declare([_VideoSectionMixin], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
         _featureManager: null,
@@ -91,6 +92,7 @@ define([
                 style: 'position:absolute;top:100px;left:100px;width:500px;height:160px;visibility:hidden;'
             }, floatingDiv);
             this._dialog.startup();
+            this.initVideoSection(this._dialog);
             this._dialog.show();
             this._dialog.bringToTop();
 
@@ -234,13 +236,6 @@ define([
                 domClass.toggle(photoBtn, 'fa-eye');
                 domClass.toggle(photoBtn, 'fa-low-vision');
                 topic.publish('compulink/player/photo-timeline/toggle', domClass.contains(photoBtn, 'fa-eye'));
-            }));
-
-            on(query('i.video', this._dialog.domNode), 'click', lang.hitch(this, function () {
-                var photoBtn = query('i.video', this._dialog.domNode)[0];
-                domClass.toggle(photoBtn, 'icon-video');
-                domClass.toggle(photoBtn, 'icon-video-alt');
-                topic.publish('compulink/player/video-manager/toggle', domClass.contains(photoBtn, 'icon-video-alt'));
             }));
         },
 
