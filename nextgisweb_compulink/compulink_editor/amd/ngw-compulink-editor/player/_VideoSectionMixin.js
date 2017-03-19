@@ -14,10 +14,11 @@ define([
     'dojo/text!./templates/VideoSection.mustache',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
     'ngw-compulink-site/ConfirmDialog',
-    'ngw-compulink-site/InfoDialog'
+    'ngw-compulink-site/InfoDialog',
+    'ngw-compulink-editor/player/VideoOverwriteDialog/VideoOverwriteDialog'
 ], function (win, declare, lang, array, locale, domConstruct, domClass,
              dom, query, on, topic, mustache, template, ButtonClickHandler,
-             ConfirmDialog, InfoDialog) {
+             ConfirmDialog, InfoDialog, VideoOverwriteDialog) {
     return declare([], {
         _videoMode: null,
         CHECK_STATUS_INTERVAL: 5000,
@@ -93,44 +94,64 @@ define([
             this._buttonsHandlers.makeVideo = new ButtonClickHandler(
                 query('a.icon-videocam-2', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
-                    this._makeVideo();
+                    if (this._videoMode === 'ready') {
+                        this._buildOverwriteVideoDialog();
+                    } else {
+                        this._buildMakeVideoDialog();
+                    }
                 }),
                 true
             );
         },
 
-        _makeVideo: function () {
+        _buildOverwriteVideoDialog: function () {
+            var videoOverwriteDialog = new VideoOverwriteDialog({
+                title: 'Запись видео',
+                id: 'overwriteVideo',
+                buttonOk: 'ОК',
+                buttonCancel: 'Отменить',
+                url: $(this._dialog.domNode).find('a.icon-download-alt').one().attr('href'),
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, this._makeVideo),
+                handlerCancel: lang.hitch(this, function () {
+                })
+            });
+            videoOverwriteDialog.show();
+        },
+
+        _buildMakeVideoDialog: function () {
             var makeVideoItemDialog = new ConfirmDialog({
                 title: 'Запись видео',
-                id: 'makeVideoItem',
+                id: 'makeVideo',
                 message: 'Записать новое видео с текущими параметрами проигрывания?',
                 buttonOk: 'ОК',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
-                handlerOk: lang.hitch(this, function () {
-                    this._changeMode('creating');
-                    var recordingVideoParams = this.getRecordingVideoParams();
-                    this._ngwServiceFacade.makeVideo(recordingVideoParams).then(
-                        lang.hitch(this, function () {
-                            this._startUpdateTimer();
-                        }),
-                        lang.hitch(this, function () {
-                            new InfoDialog({
-                                isDestroyedAfterHiding: true,
-                                title: 'Запись видео',
-                                message: 'Записать новое видео не удалось. Попробуйте еще раз.',
-                                handlerOk: lang.hitch(this, function () {
-                                    this._changeMode('error');
-                                })
-                            }).show();
-                        })
-                    );
-                }),
+                handlerOk: lang.hitch(this, this._makeVideo),
                 handlerCancel: lang.hitch(this, function () {
                 })
             });
-
             makeVideoItemDialog.show();
+        },
+
+        _makeVideo: function () {
+            var recordingVideoParams = this.getRecordingVideoParams();
+            this._changeMode('creating');
+            this._ngwServiceFacade.makeVideo(recordingVideoParams).then(
+                lang.hitch(this, function () {
+                    this._startUpdateTimer();
+                }),
+                lang.hitch(this, function () {
+                    new InfoDialog({
+                        isDestroyedAfterHiding: true,
+                        title: 'Запись видео',
+                        message: 'Записать новое видео не удалось. Попробуйте еще раз.',
+                        handlerOk: lang.hitch(this, function () {
+                            this._changeMode('error');
+                        })
+                    }).show();
+                })
+            );
         },
 
         _startUpdateTimer: function () {
