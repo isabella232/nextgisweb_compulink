@@ -16,6 +16,7 @@ define([
     'dojo/text!./templates/Timeline.mustache',
     'ngw-compulink-editor/player/AudioManager',
     'ngw-compulink-editor/player/utils/ButtonClickHandler',
+    'ngw-compulink-editor/editor/NgwServiceFacade',
     './PhotoTimeline/PhotoPointer/PhotoPointer',
     './_VideoSectionMixin',
     'xstyle/css!./templates/Timeline.css',
@@ -27,7 +28,7 @@ define([
     'ngw-compulink-libs/moment/moment-with-locales.min'
 ], function (win, declare, lang, array, domConstruct, domClass, dom, query, on,
              topic, FloatingPane, Select, mustache, vis, template, AudioManager, ButtonClickHandler,
-             PhotoPointer, _VideoSectionMixin) {
+             NgwServiceFacade, PhotoPointer, _VideoSectionMixin) {
     return declare([_VideoSectionMixin], {
         _timelineWidgetDiv: null,
         _barId: 'currentTime',
@@ -51,9 +52,11 @@ define([
             {label: 'месяц(ев)', value: 'Months'}
         ],
         _audio: null,
+        _ngwServiceFacade: null,
 
         constructor: function () {
             mustache.parse(template);
+            this._ngwServiceFacade = new NgwServiceFacade();
             this._audio = new AudioManager();
             this.initPhotoTimeline();
             this._bindEvents();
@@ -69,6 +72,7 @@ define([
 
         _bindEvents: function () {
             topic.subscribe('features/manager/filled', lang.hitch(this, function (featureManager) {
+                this._featureManager = featureManager;
                 this._buildFloatingPane();
                 this._buildTimeline(featureManager);
                 this._buildSpeedSelectors();
@@ -101,8 +105,6 @@ define([
 
         _buildTimeline: function (featureManager) {
             var dataSetItems = [];
-
-            this._featureManager = featureManager;
 
             array.forEach(featureManager._layer.features, function (feature) {
                 dataSetItems.push({
