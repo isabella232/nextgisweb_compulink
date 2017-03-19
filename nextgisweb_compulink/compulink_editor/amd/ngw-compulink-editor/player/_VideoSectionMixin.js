@@ -12,11 +12,15 @@ define([
     'dojo/topic',
     'ngw-compulink-libs/mustache/mustache',
     'dojo/text!./templates/VideoSection.mustache',
-    'ngw-compulink-editor/player/utils/ButtonClickHandler'
-], function (win, declare, lang, array, locale, domConstruct, domClass, dom, query, on,
-             topic, mustache, template, ButtonClickHandler) {
+    'ngw-compulink-editor/player/utils/ButtonClickHandler',
+    'ngw-compulink-site/ConfirmDialog',
+    'ngw-compulink-site/InfoDialog'
+], function (win, declare, lang, array, locale, domConstruct, domClass,
+             dom, query, on, topic, mustache, template, ButtonClickHandler,
+             ConfirmDialog, InfoDialog) {
     return declare([], {
         _videoMode: null,
+        CHECK_STATUS_INTERVAL: 5000,
 
         initVideoSection: function () {
             this._changeMode('init');
@@ -82,6 +86,63 @@ define([
             videoInfoDetail['message'] = mustache.render(this._readyMessageTemplate, templateData);
 
             this._renderTemplate(mode, videoInfoDetail);
+            this._bindMakeVideoEvent();
+        },
+
+        _bindMakeVideoEvent: function () {
+            this._buttonsHandlers.makeVideo = new ButtonClickHandler(
+                query('a.icon-videocam-2', this._dialog.domNode)[0],
+                lang.hitch(this, function () {
+                    this._makeVideo();
+                }),
+                true
+            );
+        },
+
+        _makeVideo: function () {
+            var makeVideoItemDialog = new ConfirmDialog({
+                title: 'Запись видео',
+                id: 'makeVideoItem',
+                message: 'Записать новое видео с текущими параметрами проигрывания?',
+                buttonOk: 'ОК',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, function () {
+                    this._changeMode('creating');
+                    var recordingVideoParams = this.getRecordingVideoParams();
+                    this._ngwServiceFacade.makeVideo(recordingVideoParams).then(
+                        lang.hitch(this, function () {
+                            this._startUpdateTimer();
+                        }),
+                        lang.hitch(this, function () {
+                            new InfoDialog({
+                                isDestroyedAfterHiding: true,
+                                title: 'Запись видео',
+                                message: 'Записать новое видео не удалось. Попробуйте еще раз.',
+                                handlerOk: lang.hitch(this, function () {
+                                    this._changeMode('error');
+                                })
+                            }).show();
+                        })
+                    );
+                }),
+                handlerCancel: lang.hitch(this, function () {
+                })
+            });
+
+            makeVideoItemDialog.show();
+        },
+
+        _startUpdateTimer: function () {
+            var timerId = setInterval(lang.hitch(this, function () {
+                this._ngwServiceFacade.getVideoStatus(this._featureManager._resourceId)
+                    .then(lang.hitch(this, function (videoInfo) {
+                        if (videoInfo.status === 'ready' || videoInfo.status == 'error') {
+                            clearInterval(timerId);
+                            this._changeMode(videoInfo.status, videoInfo);
+                        }
+                    }));
+            }), this.CHECK_STATUS_INTERVAL);
         },
 
         _setCreatingMode: function (mode) {
@@ -96,6 +157,7 @@ define([
                 message: 'Записать новое видео не удалось. Попробуйте еще раз.'
             };
             this._renderTemplate(mode, detail);
+            this._bindMakeVideoEvent();
         },
 
         _getVideoStatus: function () {

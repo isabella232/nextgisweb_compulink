@@ -6,8 +6,9 @@
 
     {{^mode-init}}
         <div class="icon-wrapper">
-            <a class="icon icon-videocam-2 {{#mode-recording}}disable{{/mode-recording}}" aria-hidden="true"
-               title="{{recordTitle}}"></a>
+            <a class="icon 
+            icon-videocam-2 {{#mode-creating}}disable{{/mode-creating}}" aria-hidden="true"
+               title="Сформировать видео-файл"></a>
         </div>
         <div class="message">{{{message}}}</div>
         {{#mode-ready}}
@@ -17,11 +18,11 @@
                    title="Скачать"></a>
             </div>
         {{/mode-ready}}
-        {{#mode-recording}}
+        {{#mode-creating}}
             <div class="icon-wrapper">
                 <a class="icon creating" href="javascript:void(0)" title="Создается"></a>
             </div>
-        {{/mode-recording}}
+        {{/mode-creating}}
         {{#mode-error}}
             <div class="icon-wrapper">
                 <a class="icon icon-attention" href="javascript:void(0)" title="Ошибка"></a>
