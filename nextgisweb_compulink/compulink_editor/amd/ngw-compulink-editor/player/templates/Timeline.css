@@ -20,12 +20,22 @@ div.timeline div.controls-section {
 
 div.timeline div.video-section {
     width: 255px;
+    height: 57px;
     float: right;
     margin-top: 1px;
+    border: 1px solid #bfbfbf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 div.timeline div.video-section div {
     display: inline-block;
+}
+
+div.timeline div.video-section div.init-message {
+    display: block;
+    margin-top: 20px;
 }
 
 div.timeline div.video-section a.icon-videocam-2 {
@@ -47,11 +57,13 @@ div.timeline div.video-section a.icon-videocam-2.disable:hover {
 }
 
 div.timeline div.video-section div.message {
-    width: 150px;
+    width: 180px;
+    padding: 3px;
 }
 
 div.timeline div.video-section a.icon-download-alt {
     font-size: 20px;
+    color: #478CF6;
 }
 
 div.timeline div.video-section a.icon.creating{
@@ -60,6 +72,11 @@ div.timeline div.video-section a.icon.creating{
     height: 25px;
     display: inline-block;
     margin-top: -1px;
+}
+
+div.timeline div.video-section a.icon.icon-attention {
+    font-size: 19px;
+    color: #FF6900;
 }
 
 div.timeline div.controls {

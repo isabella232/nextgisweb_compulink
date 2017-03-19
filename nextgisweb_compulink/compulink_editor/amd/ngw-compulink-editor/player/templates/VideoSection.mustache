@@ -1,18 +1,31 @@
 <div class="video-section">
-    {{#state-init}}
-    <span>Инициализация видео...<span>
-    {{/state-init}}
+    {{#mode-init}}
+    <div class="init-message">Инициализация видео...
+    <div>
+    {{/mode-init}}
 
-    {{^state-init}}
-        <a class="icon icon-videocam-2 {{#state-recording}}disable{{/state-recording}}" aria-hidden="true"
-           title="{{recordTitle}}"></a>
-        <div class="message">{{message}}</div>
-        {{#state-download}}
-            <a class="icon icon-download-alt"{{#url}}href="{{url}}"{{/url}} {{^url}}href="javascript:void(0)"{{/url}}
-               title="Скачать"></a>
-        {{/state-download}}
-        {{#state-recording}}
-            <a class="icon creating" href="javascript:void(0)" title="Создается"></a>
-        {{/state-recording}}
-    {{/state-init}}
+    {{^mode-init}}
+        <div class="icon-wrapper">
+            <a class="icon icon-videocam-2 {{#mode-recording}}disable{{/mode-recording}}" aria-hidden="true"
+               title="{{recordTitle}}"></a>
+        </div>
+        <div class="message">{{{message}}}</div>
+        {{#mode-ready}}
+            <div class="icon-wrapper">
+                <a class="icon icon-download-alt"
+                   {{#url}}href="{{url}}"{{/url}} {{^url}}href="javascript:void(0)"{{/url}}
+                   title="Скачать"></a>
+            </div>
+        {{/mode-ready}}
+        {{#mode-recording}}
+            <div class="icon-wrapper">
+                <a class="icon creating" href="javascript:void(0)" title="Создается"></a>
+            </div>
+        {{/mode-recording}}
+        {{#mode-error}}
+            <div class="icon-wrapper">
+                <a class="icon icon-attention" href="javascript:void(0)" title="Ошибка"></a>
+            </div>
+        {{/mode-error}}
+    {{/mode-init}}
 </div>
