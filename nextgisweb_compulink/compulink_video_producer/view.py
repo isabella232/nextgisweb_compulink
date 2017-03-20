@@ -137,15 +137,25 @@ def get_video_status(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    video_id = int(request.matchdict['id'])
+    res_id = int(request.matchdict['id'])
 
-    task = VideoProduceTask.filter(VideoProduceTask.user_id == request.user.id, VideoProduceTask.id == video_id)[0]
+    task = VideoProduceTask.filter(VideoProduceTask.user_id == request.user.id, VideoProduceTask.resource_id == res_id).first()
 
-    return Response(json.dumps({
-        'id': video_id,
-        'name': get_task_full_name(task),
-        'status': get_task_status(task)
-    }))
+    if task:
+        task_info = {
+            'id': res_id,
+            'name': get_task_full_name(task),
+            'status': get_task_status(task)
+        }
+
+        if task.state in [TaskState.SUCCESS_FINISHED, TaskState.ERROR_FINISHED, TaskState.TIMEOUT_FINISHED]:
+            task_info['size'] = u'%.2f Мб' % (task.file_size/(1024*1024)) if task.file_size else '--'
+            task_info['created_date_time'] = (task.creation_dt - datetime(1970, 1, 1)).total_seconds() * 1000
+            task_info['url'] = request.route_url('compulink.player.video.get_file', id=task.id),
+
+        return Response(json.dumps(task_info))
+    else:
+        return Response(json.dumps({'id': res_id, 'status': 'none'}))
 
 
 @view_config(renderer='json')
