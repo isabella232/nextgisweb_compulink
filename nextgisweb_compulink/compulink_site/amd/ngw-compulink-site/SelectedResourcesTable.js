@@ -206,6 +206,10 @@ define([
                 this.updateDataStore(selection);
             }));
 
+            topic.subscribe('compulink/site/ui/update_tables', lang.hitch(this, function () {
+                this._grid.resize();
+            }));
+
             this._grid.on('.dgrid-row:dblclick', lang.hitch(this, function (evt) {
                 this.zoomToResource(evt);
             }));
