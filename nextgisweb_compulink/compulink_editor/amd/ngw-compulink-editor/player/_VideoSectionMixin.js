@@ -46,6 +46,9 @@ define([
                 case 'error':
                     this._setErrorMode(mode);
                     break;
+                case 'none':
+                    this._setNoneMode(mode);
+                    break;
                 default:
                     console.error(new Exception('Wrong _VideoSection mode: ' + mode));
             }
@@ -79,7 +82,7 @@ define([
         _setReadyMode: function (mode, videoInfoDetail) {
             var date = new Date(videoInfoDetail.created_date_time),
                 templateData = {};
-            date = locale.format(date, {selector:"date", datePattern: 'dd.MM.yyyy' } );
+            date = locale.format(date, {selector:'date', datePattern: 'dd.MM.yyyy' } );
 
             $.extend(templateData, videoInfoDetail);
             templateData.date = date;
@@ -87,6 +90,15 @@ define([
             videoInfoDetail['message'] = mustache.render(this._readyMessageTemplate, templateData);
 
             this._renderTemplate(mode, videoInfoDetail);
+            this._bindMakeVideoEvent();
+        },
+        
+        _setNoneMode: function (mode) {
+            var detail = {
+                message: 'Нажмите кнопку для<br/>формирования файла',
+                modeClass: 'mode-none'
+            };
+            this._renderTemplate(mode, detail);
             this._bindMakeVideoEvent();
         },
 

@@ -60,6 +60,10 @@ div.timeline div.video-section div.message {
     padding: 3px;
 }
 
+div.timeline div.video-section.mode-none div.message {
+    width: 208px;
+}
+
 div.timeline div.video-section a.icon-download-alt {
     font-size: 20px;
     color: #478CF6;
