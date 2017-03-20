@@ -31,7 +31,9 @@ define([
 
         deactivate: function () {
             this._map.olMap.events.unregister('mousemove', this, this._mouseMoveHandler);
-            this._$tooltip.remove();
+            if (this._$tooltip) {
+                this._$tooltip.remove();
+            }
         }
     });
 });
