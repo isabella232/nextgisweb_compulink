@@ -72,6 +72,11 @@ def make_video(request):
 
     params = request.json_body
 
+    tasks = VideoProduceTask.filter(VideoProduceTask.resource_id == params['resource_id'],
+                                   VideoProduceTask.user_id == request.user.id)
+    for task in tasks:
+        _remove_video_entry(task.id)
+
     # create task in db
     transaction.manager.begin()
 
@@ -108,26 +113,26 @@ def remove_video(request):
         raise HTTPForbidden()
 
     video_id = request.json_body['id']
+    return _remove_video_entry(video_id)
 
+def _remove_video_entry(video_id):
     db_session = DBSession()
     transaction.manager.begin()
 
-    task = VideoProduceTask.filter(VideoProduceTask.user_id == request.user.id, VideoProduceTask.id == video_id)[0]
-    fileobjs = FileObj.filter(FileObj.id == task.fileobj_id, FileObj.component == COMP_ID)
-    for fileobj in fileobjs:
-        fn = env.file_storage.filename(fileobj)
-        db_session.delete(fileobj)
-        try:
-            remove(fn)
-        except:
-            pass
+    task = VideoProduceTask.filter(VideoProduceTask.id == video_id).first()
+    if task:
+        fileobjs = FileObj.filter(FileObj.id == task.fileobj_id, FileObj.component == COMP_ID)
+        for fileobj in fileobjs:
+            fn = env.file_storage.filename(fileobj)
+            db_session.delete(fileobj)
+            try:
+                remove(fn)
+            except:
+                pass
 
-    db_session.delete(task)
-
+        db_session.delete(task)
     db_session.flush()
     transaction.manager.commit()
-
-
 
     return success_response()
 
@@ -171,7 +176,6 @@ def get_video_file(request):
     fr = FileResponse(fn, content_type=bytes(task.file_mime_type), request=request)
     fr.content_disposition = (u'attachment; filename="%s"' % task.file_name).encode('utf-8')  #quote_plus
     return fr
-
 
 def get_task_full_name(task):
     return task.name + format_date(task.creation_dt, ' dd.MM.YYYY', locale='ru'),
