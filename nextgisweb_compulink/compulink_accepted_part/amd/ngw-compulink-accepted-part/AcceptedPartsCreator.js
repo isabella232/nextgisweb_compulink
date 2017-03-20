@@ -50,6 +50,7 @@ define([
                 if (this._lastPointVerifyResult.pointsInSketchLine === 2) {
                     this._drawFeatureControl.cancel();
                     topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
+                    this._setTooltipStartMessage();
                     return true;
                 }
             }));
