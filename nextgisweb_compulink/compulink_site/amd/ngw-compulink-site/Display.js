@@ -551,6 +551,11 @@ define([
             topic.subscribe('map/zoom_to', lang.hitch(this, function (new_ext) {
                  this.map.olMap.zoomToExtent(new_ext, false);
             }));
+
+            // Баг с панелью и таблицами
+            aspect.after(registry.byId("resourcesTablePane"), "resize", lang.hitch(this, function() {
+               topic.publish('compulink/site/ui/update_tables');
+            }));
         },
 
         buildLayersSelector: function () {

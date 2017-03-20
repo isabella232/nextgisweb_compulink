@@ -188,6 +188,10 @@ define([
                 this._refreshTable();
             }));
 
+            topic.subscribe('compulink/site/ui/update_tables', lang.hitch(this, function () {
+                this._grid.resize();
+            }));
+
             this._grid.on('dgrid-select', lang.hitch(this, function (evt) {
                 var row = evt.rows[0];
                 topic.publish('compulink/accepted-parts/ui/table/selected', row.data);
