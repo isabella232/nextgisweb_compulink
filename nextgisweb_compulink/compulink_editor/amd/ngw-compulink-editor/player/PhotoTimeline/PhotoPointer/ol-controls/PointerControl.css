@@ -15,6 +15,16 @@ div.olControlPhotoPointer {
     background-color: transparent;
 }
 
+div.olMap.photo-pointer-first div.image-wrapper,
+div.olMap.photo-pointer-first div.pointer-layer {
+    opacity: 0 !important;
+}
+
+div.olMap div.image-wrapper,
+div.olMap div.pointer-layer {
+    opacity: 1;
+}
+
 div.olMapViewport div.image-wrapper {
     position: absolute;
     overflow: hidden;

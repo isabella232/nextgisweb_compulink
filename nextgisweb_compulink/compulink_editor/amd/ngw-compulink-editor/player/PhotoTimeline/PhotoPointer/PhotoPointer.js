@@ -46,6 +46,18 @@ define([
             } else {
                 this._olControl.deactivate();
             }
+        },
+
+        _mode: null,
+        setMode: function (mode) {
+            if (this._mode === mode) return true;
+            var map = this._featureManager.getLayer().map;
+            if (mode === 'first') {
+                $(map.div).addClass('photo-pointer-first');
+            } else {
+                $(map.div).removeClass('photo-pointer-first');
+            }
+            this._mode = mode;
         }
     });
 });

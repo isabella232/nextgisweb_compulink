@@ -79,6 +79,7 @@ define([
                 this._setOptimalSpeed();
                 this._photoTimeline.init(this);
                 this._moveTimeBarToStart();
+                this._photoTimeline.setMode('first');
                 topic.publish('compulink/player/loaded');
             }));
         },
@@ -147,6 +148,7 @@ define([
         },
 
         _handleTimeChanged: function (timeChangedEvent) {
+            this._photoTimeline.setMode('normal');
             this.stop();
             this._timeline.setCustomTime(timeChangedEvent.time, this._barId);
             var minDate = timeChangedEvent.time < this._featureManager.minBuiltDate ?
@@ -373,6 +375,7 @@ define([
         _state: 'wait',
         _interval: null,
         play: function (start) {
+            this._photoTimeline.setMode('normal');
             this._state = 'playing';
             topic.publish('compulink/player/play/start');
             this._buttonsHandlers.play.disable();
