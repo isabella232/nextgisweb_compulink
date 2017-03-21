@@ -29,4 +29,5 @@ class CompulinkVideoProducerComponent(Component):
         dict(key='video_rec_pass', desc=u"Пароль пользователя"),
         dict(key='video_format', desc=u"Формат записи видео ('Mpeg4' или 'X264')"),
         dict(key='site_address', desc=u"Адрес сайта развертывания системы(например http://localhost:6543)"),
+        dict(key='video_outdated_periods', desc=u"Количество дней перед удалением видео файлов"),
     )

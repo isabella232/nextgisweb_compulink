@@ -2,7 +2,7 @@
 from __future__ import print_function, unicode_literals
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from os import remove
 
 import transaction
@@ -75,7 +75,7 @@ def make_video(request):
     tasks = VideoProduceTask.filter(VideoProduceTask.resource_id == params['resource_id'],
                                    VideoProduceTask.user_id == request.user.id)
     for task in tasks:
-        _remove_video_entry(task.id)
+        remove_video_entry(task.id)
 
     # create task in db
     transaction.manager.begin()
@@ -113,9 +113,9 @@ def remove_video(request):
         raise HTTPForbidden()
 
     video_id = request.json_body['id']
-    return _remove_video_entry(video_id)
+    return remove_video_entry(video_id)
 
-def _remove_video_entry(video_id):
+def remove_video_entry(video_id):
     db_session = DBSession()
     transaction.manager.begin()
 
