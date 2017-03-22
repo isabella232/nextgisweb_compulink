@@ -124,6 +124,11 @@ def setup_pyramid(comp, config):
         '/compulink/player/recording_video',
         client=()).add_view(show_player_for_recording_video)
 
+    config.add_route(
+        'compulink.editor.not-editable-features',
+        '/compulink/editor/features/not-editable/{id:\d+}', client=('id',)) \
+        .add_view(get_not_editable_features)
+
 
 @view_config(renderer='json')
 def get_child_resx_by_parent(request):
@@ -1151,3 +1156,23 @@ def reset_all_layer(request):
         return error_response(ex.message)
 
     return success_response()
+
+
+@view_config(renderer='json')
+def get_not_editable_features(request):
+    if request.user.keyname == 'guest':
+        raise HTTPForbidden()
+    res_id = request.matchdict['id']
+
+    return Response(json.dumps({
+        '25893': {
+            '9': True,
+            '10': True,
+            '11': True
+        },
+        '25894': {
+            '9': True,
+            '10': True,
+            '11': True
+        }
+    }))
