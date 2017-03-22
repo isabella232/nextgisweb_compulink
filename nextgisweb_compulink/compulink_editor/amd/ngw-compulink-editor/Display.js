@@ -262,6 +262,7 @@ define([
                 this._midDeferred[k] = deferred;
 
                 var midarr = mids[k];
+                if (midarr == false) return false;
                 require(midarr, function () {
                     var obj = {},
                         argumentsCount,
