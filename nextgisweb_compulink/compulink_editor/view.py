@@ -1210,7 +1210,7 @@ def get_not_editable_features(request):
                         # additional check for distance second point
                         acc_segments = [map(lambda x: acc_geom.coords[x:x+1], range(len(acc_geom.coords)-1))]
                         for acc_segment in acc_segments:
-                            if acc_segment[0] != acc_segment[1]:  # dummy check
+                            if len(acc_segment) == 2 and acc_segment[0] != acc_segment[1]:  # dummy check
                                 dist1 = Point(acc_segment[0]).distance(line_geom)
                                 dist2 = Point(acc_segment[1]).distance(line_geom)
                                 if dist1 < 0.0000001 and dist2 < 0.0000001:
