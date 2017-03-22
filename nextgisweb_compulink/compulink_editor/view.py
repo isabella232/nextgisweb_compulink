@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import print_function
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 import json
 import uuid
@@ -20,7 +17,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from shapely.wkt import loads
 from sqlalchemy.orm import joinedload_all
-from shapely.geometry import MultiLineString, Polygon
+from shapely.geometry import MultiLineString, Polygon, Point, LineString
 
 from config.editor import get_editable_layers_styles
 from config.player import get_playable_layers_styles
@@ -49,6 +46,7 @@ from ..compulink_admin.well_known_resource import DICTIONARY_GROUP_KEYNAME
 CURR_PATH = path.dirname(__file__)
 ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 GUID_LENGTH = 32
+
 
 
 def setup_pyramid(comp, config):
@@ -1158,21 +1156,99 @@ def reset_all_layer(request):
     return success_response()
 
 
-@view_config(renderer='json')
 def get_not_editable_features(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
-    res_id = request.matchdict['id']
 
-    return Response(json.dumps({
-        '25893': {
-            '9': True,
-            '10': True,
-            '11': True
-        },
-        '25894': {
-            '9': True,
-            '10': True,
-            '11': True
-        }
-    }))
+    result = {}
+
+    db_session = DBSession
+
+    # get root resource
+    res_id = request.matchdict['id']
+    parent_res = db_session.query(Resource) \
+        .options(joinedload_all('children')) \
+        .filter(Resource.id == res_id) \
+        .first()
+
+    if not parent_res:
+        return error_response(u'Редактируемый объект строительства не найден')
+    if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
+        return error_response(u'У вас недостаточно прав для редактирования данных')
+
+    # get acceptable parts
+    acc_parts_lyr = get_layer_by_type(parent_res, 'accepted_part')
+    if not acc_parts_lyr:
+        return error_response(u'Слой с принятыми участками не найден')
+
+    acc_parts = []
+    query = acc_parts_lyr.feature_query()
+    query.geom()
+    for f in query():
+        acc_parts.append(f.geom[0])
+
+
+    if acc_parts:
+        # get all intersected lines objects
+        inter_line_geoms = []
+
+        line_lyrs = get_line_lyrs(parent_res)
+        for line_lyr in line_lyrs:
+            # get all geoms intersected with acc_parts
+            intersected_feats = []
+            query = line_lyr.feature_query()
+            query.geom()
+            for f in query():
+                line_geom = f.geom[0]
+                for acc_geom in acc_parts:
+                    inters = line_geom.intersection(acc_geom)
+                    if inters and inters.geom_type in ('LineString', 'MultiLineString'):
+                        intersected_feats.append(f.id)
+                        inter_line_geoms.append(line_geom)
+                        break
+                    if inters and inters.geom_type == 'Point':
+                        # additional check for distance second point
+                        acc_segments = [map(lambda x: acc_geom.coords[x:x+1], range(len(acc_geom.coords)-1))]
+                        for acc_segment in acc_segments:
+                            if acc_segment[0] != acc_segment[1]:  # dummy check
+                                dist1 = Point(acc_segment[0]).distance(line_geom)
+                                dist2 = Point(acc_segment[1]).distance(line_geom)
+                                if dist1 < 0.0000001 and dist2 < 0.0000001:
+                                    intersected_feats.append(f.id)
+                                    inter_line_geoms.append(line_geom)
+                                    break
+
+            if intersected_feats:
+                result[str(line_lyr.id)] = dict(map(lambda x: (str(x), 1), set(intersected_feats)))
+
+
+        # get all point objects
+        for point_lyr_id in ['actual_real_optical_cable_point',
+                             'actual_real_special_transition_point',
+                             'actual_real_fosc',
+                             'actual_real_optical_cross',
+                             'actual_real_access_point']:
+            # get fact layer
+            point_lyr = get_layer_by_type(parent_res, point_lyr_id)
+
+            if not point_lyr:
+                continue  # mmm... wtf?
+
+            intersected_feats = []
+            query = point_lyr.feature_query()
+            query.geom()
+            for f in query():
+                point_geom = f.geom
+                for acc_geom in acc_parts:
+                    if point_geom.intersects(acc_geom):
+                        intersected_feats.append(f.id)
+                        break
+                for line_geom in inter_line_geoms:
+                    if point_geom.intersects(line_geom):
+                        intersected_feats.append(f.id)
+                        break
+
+            if intersected_feats:
+                result[str(point_lyr.id)] = dict(map(lambda x: (str(x), 1), set(intersected_feats)))
+
+    return Response(json.dumps(result))
