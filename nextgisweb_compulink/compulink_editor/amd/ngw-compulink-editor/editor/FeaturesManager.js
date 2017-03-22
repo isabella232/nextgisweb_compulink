@@ -44,6 +44,17 @@ define([
         _wkt: new openlayers.Format.WKT(),
         _modify: null,
 
+        _notEditableStyle: {
+            'stroke': true, 
+            'strokeWidth': 1, 
+            'fillColor': '#A9A9A9',
+            'pointRadius': 5, 
+            'strokeColor': '#A9A9A9', 
+            'graphicZIndex': 9999, 
+            'fillOpacity': 1, 
+            'fill': true
+        },
+
         _getLayer: function () {
             if (this._layer) return this._layer;
 
@@ -112,6 +123,10 @@ define([
             IdentifyLayers.showIdentify(this._map.olMap, lonlat);
 
             array.forEach(this._layer.features, function (feature) {
+                if (feature.notEditable) {
+                    return false;
+                }
+
                 featureGeometry = feature.geometry;
                 if (polygonAroundPoint.intersects(featureGeometry)) {
                     if (this.isPoint(featureGeometry)) {
@@ -664,6 +679,18 @@ define([
         },
 
         fillObjects: function () {
+            var deferred = new Deferred();
+
+            this._fillNotEdatableFeatures().then(lang.hitch(this, function (notEditableFeaturesByLayers) {
+                this._fillObjects(notEditableFeaturesByLayers).then(function () {
+                    deferred.resolve();
+                });
+            }));
+
+            return deferred.promise;
+        },
+
+        _fillObjects: function (notEditableFeaturesByLayers) {
             var deferred = new Deferred(),
                 getFeaturesPromises = [];
 
@@ -672,7 +699,7 @@ define([
             }, this);
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
-                this._createFeatures(ngwFeatureItems);
+                this._createFeatures(ngwFeatureItems, notEditableFeaturesByLayers);
                 if (this.settings.zoomToHidingPoints) {
                     this.setInitialPointsVisibilityState();
                 }
@@ -683,10 +710,27 @@ define([
             return deferred.promise;
         },
 
+        _fillNotEdatableFeatures: function () {
+            var deferred = new Deferred(),
+                layersId = [];
+
+            array.forEach(this._editableLayersInfo.default, function (editableLayerInfo) {
+                layersId.push(editableLayerInfo.id);
+            }, this);
+
+            this._ngwServiceFacade.getNotEditableFeatures(this._resourceId, layersId)
+                .then(lang.hitch(this, function (notEditableFeaturesByLayers) {
+                    deferred.resolve(notEditableFeaturesByLayers);
+                }));
+
+            return deferred.promise;
+        },
+
         _features: {},
-        _createFeatures: function (ngwFeatureItems) {
+        _createFeatures: function (ngwFeatureItems, notEditableFeaturesByLayers) {
             var feature,
-                editableLayerInfo;
+                editableLayerInfo,
+                layerId, featureId;
 
             this._features = {};
 
@@ -695,10 +739,20 @@ define([
                 array.forEach(ngwFeatures, lang.hitch(this, function (ngwFeature) {
                     feature = this._wkt.read(ngwFeature.geom);
                     feature.attributes.keyname = editableLayerInfo.layerKeyname;
-                    feature.style = editableLayerInfo.styles;
-                    feature.attributes.ngwLayerId = editableLayerInfo.id;
-                    feature.attributes.ngwFeatureId = ngwFeature.id;
-                    this._features[feature.attributes.ngwLayerId + '_' + feature.attributes.ngwFeatureId] = feature;
+
+                    layerId = editableLayerInfo.id;
+                    featureId = ngwFeature.id;
+
+                    if (notEditableFeaturesByLayers[layerId] && notEditableFeaturesByLayers[layerId][featureId]) {
+                        feature.notEditable = true;
+                        feature.style = this._notEditableStyle;
+                    } else {
+                        feature.style = editableLayerInfo.styles;
+                    }
+
+                    feature.attributes.ngwLayerId = layerId;
+                    feature.attributes.ngwFeatureId = featureId;
+                    this._features[layerId + '_' + featureId] = feature;
                     this.getLayer().addFeatures(feature);
                 }))
             }, this);

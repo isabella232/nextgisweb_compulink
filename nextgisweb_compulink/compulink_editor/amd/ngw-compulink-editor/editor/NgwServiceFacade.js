@@ -149,6 +149,20 @@ define([
             });
         },
 
+        GET_NOT_EDITABLE_FEATURES: new dtlBase.Template('/compulink/editor/features/not-editable/{{resourceId}}', true),
+        getNotEditableFeatures: function (resourceId, layersIds) {
+            var dtlContext = new dtlBase.Context({
+                    resourceId: resourceId
+                }),
+                url = this.ngwApplicationUrl + this.GET_NOT_EDITABLE_FEATURES.render(dtlContext);
+
+            return xhr(url, {
+                handleAs: 'json',
+                method: 'POST',
+                data: JSON.stringify(layersIds)
+            });
+        },
+
         ATTACHMENT_TO_FEATURE_URL: new dtlBase.Template('/api/resource/{{resourceId}}/feature/{{featureId}}/attachment/', true),
         applyAttachmentToFeature: function (resourceId, featureId, attachmentInfo) {
             var dtlContext = new dtlBase.Context({
