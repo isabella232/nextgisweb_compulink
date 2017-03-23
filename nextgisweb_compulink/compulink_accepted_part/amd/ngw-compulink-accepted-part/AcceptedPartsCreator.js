@@ -199,9 +199,8 @@ define([
             // if this._lastPointVerifyResult.pointsInSketchLine !== 2 then current point is end point
             if (this._lastPointVerifyResult.result) {
                 topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
-                var acceptedGeometry = this._createAcceptedPartGeometry();
-                if (acceptedGeometry) {
-                    this._openCreateAcceptedPartsDialog(acceptedGeometry);
+                if (this._lastPointVerifyResult.result.acceptedPartGeometry) {
+                    this._openCreateAcceptedPartsDialog(this._lastPointVerifyResult.result.acceptedPartGeometry);
                 } else {
                     this._drawFeatureControl.cancel();
                 }
@@ -274,13 +273,15 @@ define([
         _verifyEndPoint: function (point, sketchLine) {
             var startPoint = sketchLine.components[0],
                 endPoint = sketchLine.components[1],
-                linestring;
+                linestring,
+                acceptedPartGeometry,
+                intersectsWithAcceptedPartsLayer;
 
             if (this._isPointContainsInLinesLayer(endPoint, this._actualRealOpticalCableLayer._layer) === false) {
                 return false;
             }
 
-            if (this._isPointContainsInLinesLayer(endPoint, this._acceptedPartsLayer._layer) === true ) {
+            if (this._isPointContainsInLinesLayer(endPoint, this._acceptedPartsLayer._layer) === true) {
                 if (this._verifyPointByAcceptedPartsLayer(endPoint) === false) return false;
             }
 
@@ -288,16 +289,58 @@ define([
                 return false;
             }
 
-            linestring = this._pointsOnOneLine(startPoint, endPoint, this._actualRealOpticalCableLayer._layer.features[0].geometry);
+            linestring = this._getLineContainedPoints(startPoint, endPoint, 
+                this._actualRealOpticalCableLayer._layer.features[0].geometry);
             if (!linestring) {
                 return false;
             }
 
+            acceptedPartGeometry = this._createAcceptedPartGeometry(linestring, startPoint, endPoint);
+            if (!acceptedPartGeometry) return false;
+
+            intersectsWithAcceptedPartsLayer = this._intersectsWithLayer(acceptedPartGeometry, this._acceptedPartsLayer._layer);
+
+            if (intersectsWithAcceptedPartsLayer && this._checkBoundaryAcceptedPartsGeometry(acceptedPartGeometry)) {
+                return false;
+            }
+
             return {
-                startPoint: startPoint,
-                endPoint: endPoint,
-                linestring: linestring
+                acceptedPartGeometry: acceptedPartGeometry
             };
+        },
+
+        _checkBoundaryAcceptedPartsGeometry: function (acceptedPartGeometry) {
+            var reducedGeometry = new openlayers.Geometry.LineString(),
+                countPoints = acceptedPartGeometry.components.length,
+                reduceDistance = 0.5,
+                pointReduced;
+
+            array.forEach(acceptedPartGeometry.components, lang.hitch(this, function (point, i) {
+                if (i === 0) {
+                    pointReduced = this._getPointOnLineByDistance(point,
+                        acceptedPartGeometry.components[1], reduceDistance);
+                    reducedGeometry.addComponent(pointReduced);
+                } else if (i === countPoints - 1) {
+                    pointReduced = this._getPointOnLineByDistance(acceptedPartGeometry.components[countPoints - 2],
+                        point, reduceDistance);
+                    reducedGeometry.addComponent(pointReduced);
+                } else {
+                    reducedGeometry.addComponent(point);
+                }
+            }));
+
+            return this._intersectsWithLayer(reducedGeometry, this._acceptedPartsLayer._layer);
+        },
+
+        _getPointOnLineByDistance: function (startPoint, endPoint, distance) {
+            var d = startPoint.distanceTo(endPoint),
+                t, x, y;
+            t = distance / d;
+
+            x = (1 - t) * startPoint.x + t * endPoint.x;
+            y = (1 - t) * startPoint.y + t * endPoint.y;
+
+            return new openlayers.Geometry.Point(x, y);
         },
 
         _verifyPointByAcceptedPartsLayer: function (point) {
@@ -320,7 +363,7 @@ define([
             return false;
         },
 
-        _pointsOnOneLine: function (startPoint, endPoint, multiline) {
+        _getLineContainedPoints: function (startPoint, endPoint, multiline) {
             var isPointsOneLine = false;
 
             array.forEach(multiline.components, lang.hitch(this, function (linestring) {
@@ -335,18 +378,34 @@ define([
         },
 
         _intersectsWithLayer: function (geometry, layer) {
-            array.forEach(layer.features, function (feature) {
-                if (geometry.intersects(feature.geometry)) return true;
+            var featureGeometry,
+                lineString,
+                intersected = false;
+
+            array.some(layer.features, function (feature) {
+                featureGeometry = feature.geometry;
+                // if (featureGeometry.id.indexOf('MultiLineString') > -1) {
+                //     lineString = featureGeometry.components[0];
+                //     if (geometry.intersects(lineString)) {
+                //         intersected = true;
+                //         return false;
+                //     }
+                // } else {
+                if (geometry.intersects(feature.geometry)) {
+                    intersected = true;
+                    return false;
+                }
+                // }
             });
-            return false;
+            return intersected;
         },
 
         _isPointContainsInLinesLayer: function (point, linesLayer) {
             var contained = false;
-            array.forEach(linesLayer.features, lang.hitch(this, function (feature) {
+            array.some(linesLayer.features, lang.hitch(this, function (feature) {
                 if (this._isPointContainsInLine(point, feature.geometry)) {
                     contained = true;
-                    return true;
+                    return false;
                 }
             }));
             return contained;
@@ -356,60 +415,73 @@ define([
             return point.distanceTo(line) === 0;
         },
 
-        _createAcceptedPartGeometry: function () {
-            var verificationResult = this._lastPointVerifyResult.result,
-                startPoint = verificationResult.startPoint,
-                endPoint = verificationResult.endPoint,
-                linestringPoints = verificationResult.linestring.components,
+        _createAcceptedPartGeometry: function (linestring, point1, point2) {
+            var linestringPoints = linestring.components,
                 linestringPointsCount = linestringPoints.length,
                 acceptedPartGeometry = new openlayers.Geometry.LineString(),
                 acceptedPartGeometryCreating = false,
-                startPointContained, endPointContained,
+                containedPoint1, containedPoint2,
                 pointContained,
                 linePoint,
-                segment;
+                segment,
+                segmentStartPoint,
+                segmentEndPoint,
+                isBeginSegment, isEndSegment;
 
             for (var i = 0; i < linestringPointsCount; i++) {
                 linePoint = linestringPoints[i];
 
-                if (i === 0 && (linePoint.equals(startPoint) || linePoint.equals(endPoint))) {
-                    acceptedPartGeometry.addComponent(linePoint);
-                    acceptedPartGeometryCreating = true;
+                if (i === 0) {
                     continue;
-                }
-
-                if (i === linestringPointsCount - 1) {
-                    break;
                 }
 
                 segment = new openlayers.Geometry.LineString([linestringPoints[i - 1], linePoint]);
+                segmentStartPoint = linestringPoints[i - 1];
+                segmentEndPoint = linePoint;
 
-                startPointContained = this._isPointContainsInLine(startPoint, segment);
-                endPointContained = this._isPointContainsInLine(endPoint, segment);
+                containedPoint1 = this._isPointContainsInLine(point1, segment);
+                containedPoint2 = this._isPointContainsInLine(point2, segment);
 
-                if (startPointContained && endPointContained) {
-                    acceptedPartGeometry = new openlayers.Geometry.LineString([startPoint, endPoint]);
+                if (containedPoint1 && containedPoint2) {
+                    acceptedPartGeometry = new openlayers.Geometry.LineString([point1, point2]);
                     break;
                 }
 
-                if (startPointContained || endPointContained) {
-                    pointContained = startPointContained ? startPoint : endPoint;
+                if (containedPoint1 || containedPoint2) {
+                    pointContained = containedPoint1 ? point1 : point2;
+
+                    isBeginSegment = segmentStartPoint.equals(pointContained);
+                    isEndSegment = segmentEndPoint.equals(pointContained);
+
                     if (acceptedPartGeometryCreating) {
-                        acceptedPartGeometry.addComponent(pointContained);
-                        break;
-                    }
-                    if (linestringPoints[i + 1].equals(pointContained)) {
-                        acceptedPartGeometry.addComponent(pointContained);
+                        if (isEndSegment) {
+                            acceptedPartGeometry.addComponent(segmentEndPoint);
+                            break;
+                        } else if (isBeginSegment) {
+                            acceptedPartGeometry.addComponent(segmentEndPoint);
+                            continue;
+                        } else {
+                            acceptedPartGeometry.addComponent(pointContained);
+                            break;
+                        }
                     } else {
-                        acceptedPartGeometry.addComponent(pointContained);
-                        acceptedPartGeometry.addComponent(linestringPoints[i + 1]);
+                        if (isBeginSegment) {
+                            acceptedPartGeometry = new openlayers.Geometry.LineString(
+                                [segmentStartPoint, segmentEndPoint]);
+                        } else if (isEndSegment) {
+                            acceptedPartGeometry = new openlayers.Geometry.LineString();
+                            acceptedPartGeometry.addComponent(segmentEndPoint);
+                        } else {
+                            acceptedPartGeometry = new openlayers.Geometry.LineString(
+                                [pointContained, segmentEndPoint]);
+                        }
+                        acceptedPartGeometryCreating = true;
+                        continue;
                     }
-                    acceptedPartGeometryCreating = true;
-                    continue;
                 }
 
                 if (acceptedPartGeometryCreating) {
-                    acceptedPartGeometry.addComponent(linePoint);
+                    acceptedPartGeometry.addComponent(segmentEndPoint);
                 }
             }
 
