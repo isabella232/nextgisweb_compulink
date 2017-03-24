@@ -256,6 +256,7 @@ def show_player_for_recording_video(request):
         'zoom': request.GET.get('zoom'),
         'lat_center': request.GET.get('lat_center'),
         'lon_center': request.GET.get('lon_center'),
+        'basemap': request.GET.get('basemap'),
         'DELAY_AFTER_LOADED': 3000,
         'DELAY_AFTER_PLAY_FINISHED': 3000
     }

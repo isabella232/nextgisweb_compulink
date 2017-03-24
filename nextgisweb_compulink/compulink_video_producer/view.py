@@ -90,7 +90,7 @@ def make_video(request):
     task.photo_enabled = params['photo']
     task.sound_enabled = params['audio']
     task.zoom = params['zoom']
-    task.basemap = 'openstreetmap'  # params['basemap']
+    task.basemap = params['basemap']
     task.user_id = request.user.id
     task.persist()
     transaction.manager.commit()
