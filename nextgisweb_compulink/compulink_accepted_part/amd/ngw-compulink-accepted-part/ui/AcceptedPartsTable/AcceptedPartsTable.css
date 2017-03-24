@@ -1,15 +1,21 @@
-.dgrid-cell { white-space: normal; width: 7em; }
+div.accepted-parts-table .dgrid-header {
+    height: 35px;
+    border-bottom: 1px solid #ddd;
+    line-height: 14px;
+}
 
-.field-act_number_date { width: 12em; }
-.field-subcontr_name { width: 12em; }
-.field-comment { width: 13em; }
-.field-attachment { width: 12em; }
-.field-acceptor { width: 12em; }
-.field-change_date { width: 8em; }
+div.accepted-parts-table .dgrid-cell { white-space: normal; width: 7em; }
+
+div.accepted-parts-table .field-act_number_date { width: 192px; }
+div.accepted-parts-table .field-subcontr_name { width: 192px; }
+div.accepted-parts-table .field-comment { width: 208px; }
+div.accepted-parts-table .field-attachment { width: 192px; }
+div.accepted-parts-table .field-acceptor { width: 192px; }
+div.accepted-parts-table .field-change_date { width: 128px; }
 
 
-div.ap_row_attachment a.icon-doc-text,
-div.ap_row_attachment a.icon-doc-text:visited {
+div.accepted-parts-table div.ap_row_attachment a.icon-doc-text,
+div.accepted-parts-table div.ap_row_attachment a.icon-doc-text:visited {
     color: #2074C3;
     opacity: 0.5;
     width: auto;
@@ -18,11 +24,11 @@ div.ap_row_attachment a.icon-doc-text:visited {
     display: inline-block;
 }
 
-div.ap_row_attachment a.icon-doc-text:hover {
+div.accepted-parts-table div.ap_row_attachment a.icon-doc-text:hover {
     opacity: 1.0;
 }
 
-div.ap_row_attachment a.icon-doc-text:before {
+div.accepted-parts-table div.ap_row_attachment a.icon-doc-text:before {
     width: auto;
     height: auto;
     margin: 0;

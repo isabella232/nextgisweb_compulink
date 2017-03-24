@@ -1,12 +1,18 @@
-.dgrid-cell { white-space: normal; width: 7em; }
+div.selected-resources-table .dgrid-header {
+    height: 50px;
+    border-bottom: 1px solid #ddd;
+    line-height: 14px;
+}
 
-.field-display_name { width: 12em; }
-.field-region { width: 12em; }
-.field-district { width: 13em; }
-.field-status { width: 12em; }
-.field-cabling_plan { width: 8em; }
-.field-start_build_time { width: 8em; }
-.field-end_build_time { width: 8em; }
-.field-start_deliver_time { width: 9em; }
-.field-end_deliver_time { width: 9em; }
-.field-subcontr { width: 12em; }
+div.selected-resources-table .dgrid-cell { white-space: normal; width: 7em; }
+
+div.selected-resources-table .field-display_name { width: 192px; }
+div.selected-resources-table .field-region { width: 192px; }
+div.selected-resources-table .field-district { width: 208px; }
+div.selected-resources-table .field-status { width: 192px; }
+div.selected-resources-table .field-cabling_plan { width: 128px; }
+div.selected-resources-table .field-start_build_time { width: 128px; }
+div.selected-resources-table .field-end_build_time { width: 128px; }
+div.selected-resources-table .field-start_deliver_time { width: 144px; }
+div.selected-resources-table .field-end_deliver_time { width: 144px; }
+div.selected-resources-table .field-subcontr { width: 192px; }
