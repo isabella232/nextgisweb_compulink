@@ -67,6 +67,10 @@ define([
                 this._deactivateToolbar();
             }));
 
+            topic.subscribe('/compulink/panel/undo-all/disable', lang.hitch(this, function () {
+                this.undoAllButton.set('disabled', 'disabled');
+            }));
+
             this._toggleButtonOn = registry.byId('selectAndMoveButton');
         },
 

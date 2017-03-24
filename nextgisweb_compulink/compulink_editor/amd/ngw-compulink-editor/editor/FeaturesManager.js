@@ -681,7 +681,7 @@ define([
         fillObjects: function () {
             var deferred = new Deferred();
 
-            this._fillNotEdatableFeatures().then(lang.hitch(this, function (notEditableFeaturesByLayers) {
+            this._fillNotEditableFeatures().then(lang.hitch(this, function (notEditableFeaturesByLayers) {
                 this._fillObjects(notEditableFeaturesByLayers).then(function () {
                     deferred.resolve();
                 });
@@ -692,7 +692,8 @@ define([
 
         _fillObjects: function (notEditableFeaturesByLayers) {
             var deferred = new Deferred(),
-                getFeaturesPromises = [];
+                getFeaturesPromises = [],
+                notEditableExists = false;
 
             array.forEach(this._editableLayersInfo.default, function (editableLayerInfo) {
                 getFeaturesPromises.push(this._ngwServiceFacade.getAllFeatures(editableLayerInfo.id));
@@ -700,9 +701,20 @@ define([
 
             all(getFeaturesPromises).then(lang.hitch(this, function (ngwFeatureItems) {
                 this._createFeatures(ngwFeatureItems, notEditableFeaturesByLayers);
+
+                for (var k in notEditableFeaturesByLayers) {
+                    if (notEditableFeaturesByLayers.hasOwnProperty(k)) {
+                        notEditableExists = true;
+                    }
+                }
+                if (notEditableExists) {
+                    topic.publish('/compulink/panel/undo-all/disable');
+                }
+
                 if (this.settings.zoomToHidingPoints) {
                     this.setInitialPointsVisibilityState();
                 }
+
                 topic.publish('features/manager/filled', this);
                 deferred.resolve();
             }));
@@ -710,7 +722,7 @@ define([
             return deferred.promise;
         },
 
-        _fillNotEdatableFeatures: function () {
+        _fillNotEditableFeatures: function () {
             var deferred = new Deferred(),
                 layersId = [];
 
