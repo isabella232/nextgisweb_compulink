@@ -396,6 +396,11 @@ define([
                         }
                     });
 
+                    topic.subscribe('/compulink/map/set/baselayer', function (baseLayerKeyname) {
+                        widget.map.olMap.setBaseLayer(widget.map.layers[baseLayerKeyname].olLayer);
+                        widget.basemapSelect.set('label', widget.map.layers[baseLayerKeyname].title);
+                    });
+
                     baseLayersMenu.startup();
                     widget.basemapSelect.dropDown = baseLayersMenu;
                     widget.basemapSelect.label = baseLayersMenu.getChildren()[0].label;
