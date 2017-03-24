@@ -9,7 +9,7 @@ PHOTO = ('false', 'true')
 
 class DefaultVideoPage:
     _base_url = '/compulink/player/recording_video?resource_id={res_id}&units={units}&count_units={count_units}&photo={photo}'
-    _base_url_extra = '&zoom={zoom}&lat_center={lat_center}&lon_center={lon_center}'
+    _base_url_extra = '&zoom={zoom}&lat_center={lat_center}&lon_center={lon_center}&basemap={basemap}'
     _login_url = '/login?next=/resource/0'
 
     @property
@@ -25,7 +25,7 @@ class DefaultVideoPage:
         return self._base_url_extra
 
 
-    def __init__(self, res_id, site_address, units=UNITS[0], count_units=1, photo=PHOTO[1], zoom=None, lat_center=None, lon_center=None):
+    def __init__(self, res_id, site_address, units=UNITS[0], count_units=1, photo=PHOTO[1], zoom=None, lat_center=None, lon_center=None, basemap=None):
         self._site_address = site_address
         self._res_id = res_id
         self._units = units
@@ -34,6 +34,7 @@ class DefaultVideoPage:
         self._zoom = zoom
         self._lat_center = lat_center
         self._lon_center = lon_center
+        self._basemap = basemap
 
     def set_context(self, context):
         self.context = context
@@ -87,7 +88,7 @@ class DefaultVideoPage:
     def url(self):
         url = self.base_url.format(res_id=self._res_id, count_units=self._count_units, units=self._units, photo=self._photo)
         if self._zoom and self._lat_center and self._lon_center:
-            url += self.base_url_extra.format(zoom=self._zoom, lat_center=self._lat_center, lon_center=self._lat_center)
+            url += self.base_url_extra.format(zoom=self._zoom, lat_center=self._lat_center, lon_center=self._lon_center, basemap=self._basemap)
         return url
 
     @property

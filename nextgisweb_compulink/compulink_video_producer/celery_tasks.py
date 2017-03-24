@@ -58,7 +58,8 @@ def task_make_video(task_id):
             photo=PHOTO[1 if task.photo_enabled else 0],
             zoom=task.zoom,
             lat_center=task.lat_center,
-            lon_center=task.lon_center
+            lon_center=task.lon_center,
+            basemap=task.basemap
         )
 
         vf_name = env.compulink_video_producer.settings.get('video_format', None)
