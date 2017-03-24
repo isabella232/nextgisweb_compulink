@@ -34,6 +34,7 @@ define([
                 setTimeout(lang.hitch(this, function () {
                     this._setStoppedHandler();
                     this._setPhotoMode();
+                    this._setBasemap();
                     this._setMapParams();
                     this._overrideGlobalFunctions();
                 }), this.DELAY_AFTER_LOADED);
@@ -57,6 +58,7 @@ define([
             this._handleParameter('lat_center');
             this._handleParameter('lon_center');
             this._handleParameter('photo');
+            this._handleParameter('basemap');
 
             if (this._handleParameter('DELAY_AFTER_LOADED')) {
                 this.DELAY_AFTER_LOADED = parseInt(this.DELAY_AFTER_LOADED, 10);
@@ -90,6 +92,11 @@ define([
 
             var map = this._featureManager._layer.map;
             map.setCenter(new openlayers.LonLat(this.lon_center, this.lat_center), this.zoom);
+        },
+
+        _setBasemap: function () {
+            if (!this.basemap) return false;
+            topic.publish('/compulink/map/set/baselayer', this.basemap);
         },
 
         _handleParameter: function (parameterName) {
