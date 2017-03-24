@@ -47,6 +47,7 @@ class VideoProduceTask(Base):
     photo_enabled = db.Column(db.Boolean, nullable=False)
     units = db.Column(db.Unicode, nullable=False)
     units_count = db.Column(db.Integer, nullable=False)
+    basemap = db.Column(db.Unicode, nullable=False)
     # task results
     fileobj_id = db.Column(db.Integer, nullable=True)
     file_name = db.Column(db.Unicode, nullable=True)
