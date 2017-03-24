@@ -5,8 +5,9 @@ define([
     'dojo/Deferred',
     '../Timeline',
     './PhotoPointer/PhotoPointer',
+    'ngw/openlayers',
     'xstyle/css!./Timeline.css'
-], function (declare, lang, topic, Deferred, Timeline, PhotoPointer) {
+], function (declare, lang, topic, Deferred, Timeline, PhotoPointer, openlayers) {
     return declare([Timeline], {
         DELAY_AFTER_LOADED: 3000,
         DELAY_AFTER_PLAY_FINISHED: 3000,
@@ -88,10 +89,7 @@ define([
             if (!this.zoom || !this.lat_center || !this.lon_center) { return false; }
 
             var map = this._featureManager._layer.map;
-            map.setCenter({
-                lat: this.lat_center,
-                lon: this.lon_center
-            }, this.zoom);
+            map.setCenter(new openlayers.LonLat(this.lon_center, this.lat_center), this.zoom);
         },
 
         _handleParameter: function (parameterName) {
