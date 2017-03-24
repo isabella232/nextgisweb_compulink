@@ -598,7 +598,8 @@ define([
                 audio: this._audio._activate,
                 zoom: map.getZoom(),
                 lat_center: map.getCenter().lat,
-                lon_center: map.getCenter().lon
+                lon_center: map.getCenter().lon,
+                basemap: map.baseLayer.keyname
             }
         }
     });
