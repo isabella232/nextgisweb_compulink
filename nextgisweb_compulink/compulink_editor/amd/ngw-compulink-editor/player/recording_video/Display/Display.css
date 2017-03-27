@@ -4,6 +4,12 @@ body.claro div.main-wrapper div.body-wrapper {
     right: 0;
     left: 0;
     bottom: 0;
+    overflow: hidden;
+}
+
+#mapPane,
+div.olMap {
+    overflow: hidden;
 }
 
 div.olControlZoom,
