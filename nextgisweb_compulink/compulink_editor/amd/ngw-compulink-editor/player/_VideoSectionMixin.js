@@ -95,7 +95,7 @@ define([
         
         _setNoneMode: function (mode) {
             var detail = {
-                message: 'Нажмите кнопку для<br/>формирования файла',
+                message: 'Нажмите кнопку для<br/>формирования видео-файла',
                 modeClass: 'mode-none'
             };
             this._renderTemplate(mode, detail);
@@ -135,7 +135,7 @@ define([
             var makeVideoItemDialog = new ConfirmDialog({
                 title: 'Запись видео',
                 id: 'makeVideo',
-                message: 'Записать новое видео с текущими параметрами проигрывания?',
+                message: 'Записать новый видео-файл с текущими параметрами проигрывания?<br/> По окончании записи видео-файл станет доступным для скачивания.',
                 buttonOk: 'ОК',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
