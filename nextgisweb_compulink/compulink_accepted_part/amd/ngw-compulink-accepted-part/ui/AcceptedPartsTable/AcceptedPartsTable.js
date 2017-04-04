@@ -122,7 +122,7 @@ define([
             });
 
             this._menuEdit.addChild(new MenuItem({
-                label: 'Редактировать атрибуты',
+                label: 'Открыть карточку принятого участка',
                 onClick: lang.hitch(this, function (evt) {
                     evt.preventDefault();
                     var acceptedPartId = Object.getOwnPropertyNames(this._grid.selection)[0],
