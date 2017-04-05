@@ -53,6 +53,7 @@ define([
         ],
         _audio: null,
         _ngwServiceFacade: null,
+        _state: null,
 
         constructor: function () {
             mustache.parse(template);
@@ -78,6 +79,7 @@ define([
                 this._buildSpeedSelectors();
                 this._setOptimalSpeed();
                 this._photoTimeline.init(this);
+                this._setState('wait');
                 this._moveTimeBarToStart();
                 this._photoTimeline.setMode('first');
                 topic.publish('compulink/player/loaded');
@@ -148,80 +150,59 @@ define([
         },
 
         _handleTimeChanged: function (timeChangedEvent) {
+            var time = timeChangedEvent.time;
+
             this._photoTimeline.setMode('normal');
             this.stop();
-            this._timeline.setCustomTime(timeChangedEvent.time, this._barId);
-            var minDate = timeChangedEvent.time < this._featureManager.minBuiltDate ?
-                new Date(0) :
-                this._featureManager.minBuiltDate;
-            this._handleControlsState(timeChangedEvent.time);
-            this._buildFeatures(minDate, timeChangedEvent.time, true, 'timeChanged');
+
+            if (time < this._featureManager.minBuiltDate) {
+                time = this._featureManager.minBuiltDate;
+            } else if (time > this._featureManager.maxBuiltDate) {
+                time = this._featureManager.maxBuiltDate;
+            }
+            this._timeline.setCustomTime(time, this._barId);
+
+            this._handleControlsState(time);
+            this._buildFeatures(this._featureManager.minBuiltDate, time,
+                true, 'timeChanged');
         },
 
         _handleControlsState: function (time) {
             if (time == this._featureManager.minBuiltDate) {
                 this._buttonsHandlers.play.enable();
-                this._buttonsHandlers.forward.enable();
-                this._buttonsHandlers.backward.disable();
             }
             if (time == this._featureManager.maxBuiltDate) {
                 this._buttonsHandlers.play.disable();
-                this._buttonsHandlers.forward.disable();
-                this._buttonsHandlers.backward.enable();
-            }
-            if ((this._featureManager.minBuiltDate < time) &&
-                (time < this._featureManager.maxBuiltDate)) {
-                if (this._state === 'playing') {
-                    this._buttonsHandlers.play.disable();
-                } else {
-                    this._buttonsHandlers.play.enable();
-                }
-                this._buttonsHandlers.forward.enable();
-                this._buttonsHandlers.backward.enable();
             }
             if (time > this._featureManager.maxBuiltDate) {
                 this._buttonsHandlers.play.disable();
-                this._buttonsHandlers.forward.enable();
-                this._buttonsHandlers.backward.enable();
             }
             if (time < this._featureManager.minBuiltDate) {
                 this._buttonsHandlers.play.enable();
-                this._buttonsHandlers.forward.enable();
-                this._buttonsHandlers.backward.enable();
             }
         },
 
         _buttonsHandlers: {},
+        _buttonPlay: null,
 
         _bindPlayerControlsEvents: function () {
+            this._buttonPlay = query('i.fa-play-circle', this._dialog.domNode)[0];
+
             this._buttonsHandlers.play = new ButtonClickHandler(
-                query('i.fa-play-circle', this._dialog.domNode)[0],
+                this._buttonPlay,
                 lang.hitch(this, function () {
-                    this.play(this._timeline.getCustomTime(this._barId));
-                }),
-                true
-            );
-
-            this._buttonsHandlers.backward = new ButtonClickHandler(
-                query('i.fa-fast-backward', this._dialog.domNode)[0],
-                lang.hitch(this, function () {
-                    this._moveTimeBarToStart();
-                }),
-                true
-            );
-
-            this._buttonsHandlers.forward = new ButtonClickHandler(
-                query('i.fa-fast-forward', this._dialog.domNode)[0],
-                lang.hitch(this, function () {
-                    this._handleTimeChanged({
-                        time: this._featureManager.maxBuiltDate
-                    });
+                    if (this._state === 'playing') {
+                        this.stop();
+                    } else {
+                        this.play(this._timeline.getCustomTime(this._barId));
+                    }
                 }),
                 true
             );
 
             on(query('i.fa-stop-circle', this._dialog.domNode), 'click', lang.hitch(this, function () {
                 this.stop();
+                this._moveTimeBarToStart();
             }));
 
             on(query('i.sound', this._dialog.domNode), 'click', lang.hitch(this, function () {
@@ -372,13 +353,11 @@ define([
             return false;
         },
 
-        _state: 'wait',
         _interval: null,
         play: function (start) {
             this._photoTimeline.setMode('normal');
-            this._state = 'playing';
+            this._setState('playing');
             topic.publish('compulink/player/play/start');
-            this._buttonsHandlers.play.disable();
             if (start < this._featureManager.minBuiltDate) {
                 this._moveTimeBarToStart();
                 start = this._featureManager.minBuiltDate;
@@ -483,8 +462,7 @@ define([
             if (this._interval) {
                 clearInterval(this._interval);
             }
-            this._state = 'wait';
-            this._buttonsHandlers.play.enable();
+            this._setState('wait');
             this._audio.stop();
             topic.publish('compulink/player/stopped');
         },
@@ -601,6 +579,30 @@ define([
                 lon_center: map.getCenter().lon,
                 basemap: map.baseLayer.keyname
             }
+        },
+
+        _setState: function (state) {
+            switch (state) {
+                case 'playing':
+                    this._setPlayingState();
+                    break;
+                case 'wait':
+                    this._setWaitState();
+                    break;
+                default:
+                    console.error('Unknown state = ' + state);
+            }
+            this._state = state;
+        },
+
+        _setPlayingState: function () {
+            domClass.remove(this._buttonPlay, 'fa-play-circle');
+            domClass.add(this._buttonPlay, 'fa-pause-circle');
+        },
+
+        _setWaitState: function () {
+            domClass.remove(this._buttonPlay, 'fa-pause-circle');
+            domClass.add(this._buttonPlay, 'fa-play-circle');
         }
     });
 });
