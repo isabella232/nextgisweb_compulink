@@ -27,15 +27,19 @@ define([
 
         _bindAcceptedPartsPanelEvents: function () {
             on(this.acceptedPartsLayerToggle, 'change', lang.hitch(this, function (state) {
-                if (state && this._mode === 'edit') {
+                if (state) {
                     this.acceptedPartsLayerToggle.set('iconClass', 'icon icon-eye');
-                    this.createAcceptedPartToggle.set('disabled', false);
                 } else {
                     this.acceptedPartsLayerToggle.set('iconClass', 'icon icon-eye-off');
                     this.createAcceptedPartToggle.set('disabled', 'disabled');
                     this.createAcceptedPartToggle.attr('checked', false);
                     topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
                 }
+
+                if (state && this._mode === 'edit' && this.acceptedPartsManager.getConstructObjectId()) {
+                    this.createAcceptedPartToggle.set('disabled', false);
+                }
+
                 topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', state);
             }));
 
@@ -48,15 +52,13 @@ define([
                     if (initiator === 'create' || initiator === 'delete' || initiator === 'modify') {
                         return true;
                     }
-                    this.acceptedPartsLayerToggle.set('disabled', false);
-                    this.acceptedPartsLayerToggle.set('checked', false);
                     this._changeFilter('');
                     this.acceptedPartsFilter.set('disabled', false);
+                    topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', this.isLayerToggleTurned());
                 })
             );
 
             topic.subscribe('/table/construct_object/data/changed', lang.hitch(this, function (store) {
-                this.acceptedPartsLayerToggle.set('disabled', 'disabled');
                 this.createAcceptedPartToggle.set('disabled', 'disabled');
                 this._changeFilter('');
                 this.acceptedPartsFilter.set('disabled', 'disabled');
@@ -94,6 +96,10 @@ define([
 
         setMode: function (mode) {
             this._mode = mode;
+        },
+
+        isLayerToggleTurned: function () {
+            return this.acceptedPartsLayerToggle.get('checked');
         }
     });
 });
