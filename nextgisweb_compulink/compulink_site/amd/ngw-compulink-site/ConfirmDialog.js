@@ -36,8 +36,6 @@ define([
 
             contentWidget.startup();
             this.content = contentWidget;
-
-            this.hide = this._hideDialog;
         },
 
         postCreate: function () {
@@ -48,14 +46,14 @@ define([
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
                     if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
+                    this._hideDialog();
                 }));
             }
             if (this.handlerCancel) {
                 on(this.content.cancelButton, 'click', lang.hitch(this, function () {
                     this.handlerCancel.call();
                     if (!this.isClosedAfterButtonClick) return false;
-                    this.hide();
+                    this._hideDialog();
                 }));
             }
         },
@@ -77,6 +75,7 @@ define([
         },
 
         _hideDialog: function () {
+            this.hide();
             if (this.isDestroyedAfterHiding) this.destroyRecursive();
         }
     });
