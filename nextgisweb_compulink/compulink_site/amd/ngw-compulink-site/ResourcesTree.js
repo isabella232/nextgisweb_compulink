@@ -7,7 +7,8 @@ define([
     'dojo/request/xhr',
     'dojo/aspect',
     'ngw-compulink-libs/jstree-3.0.9/jstree'
-], function (declare, lang, array, topic, Deferred, xhr, aspect, jstree) {
+], function (declare, lang, array, topic, Deferred, xhr,
+             aspect, jstree) {
     return declare([], {
         $tree: null,
         settings: {},
@@ -84,6 +85,12 @@ define([
                 }
 
                 node = changed.node;
+
+                if (node.original.res_type === 'resource_group') {
+                    this._onClickResourceGroup(node.original, changed);
+                    return true;
+                }
+
                 if (node.original.has_children) {
                     if ($tree.jstree('is_loaded', node)) {
                         insertedDeletedNodes = this._getInsertedDeletedNodes(node.children, changed.action);
@@ -153,6 +160,91 @@ define([
             topic.subscribe('resources/tree/refresh', lang.hitch(this, function () {
                 this.$tree.jstree('refresh');
             }));
+        },
+
+        _onClickResourceGroup: function (node, changed) {
+            var insertedDeletedNodes;
+            this.$tree.jstree('load_all', node, lang.hitch(this, function (parentNode) {
+                insertedDeletedNodes = this._getGroupInsertedDeletedNodes(parentNode, changed.action);
+                var validated = this._validate('LimitLayersValidator', insertedDeletedNodes);
+                if (validated) {
+                    validated.then(lang.hitch(this, function (result) {
+                        if (result) {
+                            this._previousState = this.$tree.jstree('get_state');
+                            topic.publish('resources/changed', insertedDeletedNodes.bottom_selected, insertedDeletedNodes.inserted, insertedDeletedNodes.deleted);
+                        } else {
+                            this._set_previous_state();
+                        }
+                    }))
+                } else {
+                    topic.publish('resources/changed', insertedDeletedNodes.bottom_selected, insertedDeletedNodes.inserted, insertedDeletedNodes.deleted);
+                }
+            }));
+        },
+
+        _getGroupInsertedDeletedNodes: function (parentNode, action) {
+            var childrenNodesId,
+                result = {
+                bottom_selected: this.$tree.jstree().get_bottom_selected(),
+                inserted: [],
+                deleted: []
+            };
+
+            childrenNodesId = this._getSelectedChildrenForNode(parentNode, result.bottom_selected);
+
+            switch (action) {
+                case 'select_node':
+                    result.inserted = childrenNodesId;
+                    break;
+                case 'deselect_node':
+                    result.deleted = this._getDeselectedNodesForGroup(parentNode);
+                    break;
+            }
+            return result;
+        },
+
+        _getDeselectedNodesForGroup: function (parentNode) {
+            var childrens = parentNode.children_d,
+                deselectedNodes = [],
+                node;
+
+            array.forEach(childrens, lang.hitch(this, function (nodeId) {
+                node = this.$tree.jstree('get_node', nodeId);
+
+                if (!node.original.has_children) {
+                    deselectedNodes.push(node.id);
+                }
+            }));
+
+            return deselectedNodes;
+        },
+
+        _getSelectedChildrenForNode: function (node, bottomSelected) {
+            var nodes = [],
+                bottomSelectedNode;
+
+            array.forEach(bottomSelected, lang.hitch(this, function (nodeId) {
+                bottomSelectedNode = this.$tree.jstree('get_node', nodeId);
+                if (this._isChild(bottomSelectedNode, node)) {
+                    nodes.push(nodeId);
+                }
+            }));
+
+            return nodes;
+        },
+
+        _isChild: function (node, parentNode) {
+            var parentNodeId = parentNode.id,
+                isChild = false;
+
+            array.some(node.parents, function (parentId) {
+                if (parentId === parentNodeId) {
+                    isChild = true;
+                    return true;
+                }
+            });
+
+            return isChild;
         },
 
         selectResource: function () {
