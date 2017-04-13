@@ -119,7 +119,7 @@ define([
 
         setUploaderAccept: function (uploader) {
             array.forEach(query('input', uploader.domNode), function (node) {
-                domAttr.set(node, 'accept', '.docx,.doc,.xls,.xlsx,.zip,.rar,.csv');
+                //domAttr.set(node, 'accept', '.docx,.doc,.xls,.xlsx,.zip,.rar,.csv');
             });
         },
 
