@@ -509,7 +509,7 @@ def get_extent_by_resource_id(resource_id):
 
     extent = None
     for res in resource.children:
-        if res.identity != VectorLayer.identity:
+        if res.identity != VectorLayer.identity or (res.keyname and res.keyname.startswith('real_')):
             continue
 
         table_info = TableInfo.from_layer(res)
