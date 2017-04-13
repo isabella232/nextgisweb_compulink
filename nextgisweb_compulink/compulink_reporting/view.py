@@ -434,13 +434,17 @@ def get_project_focls(resource_id):
     return focl_ids
 
 def get_user_writable_focls(user):
+
+    principal_ids = [user.principal_id,]
+    for group in user.member_of:
+        principal_ids.append(group.principal_id)
+
     # get explicit rules
-    rules_query = DBSession.query(ResourceACLRule) \
-        .filter(ResourceACLRule.principal_id == user.principal_id) \
-        .filter(ResourceACLRule.scope == DataScope.identity) \
+    rules_query = DBSession.query(ResourceACLRule)\
+        .filter(ResourceACLRule.principal_id.in_(principal_ids))\
+        .filter(ResourceACLRule.scope == DataScope.identity)\
         .options(joinedload_all(ResourceACLRule.resource))
 
-    # todo: user groups explicit rules???
     # get permission for resource and children
     allowed_res_ids = []
 
