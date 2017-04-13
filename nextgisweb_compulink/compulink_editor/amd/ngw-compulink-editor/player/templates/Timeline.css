@@ -2,6 +2,10 @@
     height: 185px !important;
 }
 
+#timeline div.dojoxFloatingPaneContent {
+    overflow: hidden;
+}
+
 div.dojoxFloatingPaneCanvas {
     height: 165px !important;
 }
@@ -13,7 +17,7 @@ div.timeline {
 }
 
 div.timeline div.controls-section {
-    width: 240px;
+    width: 245px;
     float: left;
     margin-top: 1px;
 }
