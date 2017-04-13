@@ -1176,10 +1176,10 @@ def get_not_editable_features(request):
         .filter(Resource.id == res_id) \
         .first()
 
-    if not parent_res:
-        return error_response(u'Редактируемый объект строительства не найден')
-    if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
-        return error_response(u'У вас недостаточно прав для редактирования данных')
+    # if not parent_res:
+    #     return error_response(u'Редактируемый объект строительства не найден')
+    # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
+    #     return error_response(u'У вас недостаточно прав для редактирования данных')
 
     # get acceptable parts
     acc_parts_lyr = get_layer_by_type(parent_res, 'accepted_part')
