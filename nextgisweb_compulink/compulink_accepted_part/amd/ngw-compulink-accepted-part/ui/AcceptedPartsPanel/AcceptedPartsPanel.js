@@ -53,7 +53,13 @@ define([
                     }
                     this._changeFilter('');
                     this.acceptedPartsFilter.set('disabled', false);
-                    topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', this.isLayerToggleTurned());
+
+                    var layerTurned = this.isLayerToggleTurned();
+                    topic.publish('compulink/accepted-parts/ui/layer/visibility/changed', layerTurned);
+                    if (layerTurned && this._mode === 'edit' && this.acceptedPartsManager.getConstructObjectId()) {
+                        this.createAcceptedPartToggle.attr('checked', false);
+                        this.createAcceptedPartToggle.set('disabled', false);
+                    }
                 })
             );
 
