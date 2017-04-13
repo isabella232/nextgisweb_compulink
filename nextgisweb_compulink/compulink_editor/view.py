@@ -238,7 +238,7 @@ def show_map(request):
 
 
 def show_map_player(request):
-    values = _get_values_for_display(request)
+    values = _get_values_for_display(request, permission=DataScope.read)
     values['player_sound_file'] = request.route_url('compulink_video_admin.audio_file') + '?hash=' + str(uuid.uuid4())
     values['is_recording'] = False
 
@@ -270,7 +270,7 @@ def show_player_for_recording_video(request):
                               request=request)
 
 
-def _get_values_for_display(request):
+def _get_values_for_display(request, permission=FoclStructScope.edit_data):
     resource_id = int(request.GET['resource_id'])
     dbsession = DBSession()
     resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
@@ -279,7 +279,7 @@ def _get_values_for_display(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    if not(request.user.is_administrator or resource.has_permission(FoclStructScope.edit_data, request.user)):
+    if not(request.user.is_administrator or resource.has_permission(permission, request.user)):
         raise HTTPForbidden()
 
     extent3857 = get_extent_by_resource_id(resource_id)
