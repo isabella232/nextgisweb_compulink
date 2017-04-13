@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/query',
+    'dojo/aspect',
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/html',
@@ -10,8 +11,8 @@ define([
     'dijit/Dialog',
     'dojo/on',
     'dojo/text!./templates/ConfirmDialog.html'
-], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on,
-             template) {
+], function (declare, query, aspect, array, lang, html, _Widget, _TemplatedMixin,
+            _WidgetsInTemplateMixin, Dialog, on, template) {
     return declare([Dialog], {
         title: 'Confirm',
         message: 'Are you sure?',
@@ -46,16 +47,20 @@ define([
                 on(this.content.okButton, 'click', lang.hitch(this, function () {
                     this.handlerOk.call();
                     if (!this.isClosedAfterButtonClick) return false;
-                    this._hideDialog();
+                    this.hide();
                 }));
             }
             if (this.handlerCancel) {
                 on(this.content.cancelButton, 'click', lang.hitch(this, function () {
                     this.handlerCancel.call();
                     if (!this.isClosedAfterButtonClick) return false;
-                    this._hideDialog();
+                    this.hide();
                 }));
             }
+
+            aspect.after(this, 'hide', lang.hitch(this, function () {
+                if (this.isDestroyedAfterHiding) this.destroyRecursive();
+            }));
         },
 
         disableButtons: function () {
@@ -72,11 +77,6 @@ define([
         config: function (params) {
             lang.mixin(this, params);
             return this;
-        },
-
-        _hideDialog: function () {
-            this.hide();
-            if (this.isDestroyedAfterHiding) this.destroyRecursive();
         }
     });
 });

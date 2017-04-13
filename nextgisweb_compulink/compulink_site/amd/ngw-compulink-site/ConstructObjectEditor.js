@@ -164,10 +164,6 @@ define([
             return this;
         },
 
-        _hideDialog: function () {
-            if (this.isDestroyedAfterHiding) this.destroyRecursive();
-        },
-
         _saveChangesUrl: 'compulink/services/reference_books/construct_object/{{id}}',
         _saveChanges: function () {
             var editedConstructObject = this.getValue(),
