@@ -166,8 +166,8 @@ def get_child_resx_by_parent(request):
                 'a_attr': {'chb': is_need_checkbox}
             })
 
-            if not is_need_checkbox:
-                child_resources_json[-1]['state'] = {'disabled': True}
+            # if not is_need_checkbox:
+            #     child_resources_json[-1]['state'] = {'disabled': True}
 
     dbsession.close()
 

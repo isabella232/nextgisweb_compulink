@@ -67,8 +67,6 @@ define([
 
             contentWidget.startup();
             this.content = contentWidget;
-
-            this.hide = this._hideDialog;
         },
 
         postCreate: function () {

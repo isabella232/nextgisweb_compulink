@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/query',
+    'dojo/aspect',
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/html',
@@ -10,13 +11,15 @@ define([
     'dijit/Dialog',
     'dojo/on',
     'dojo/text!./templates/InfoDialog.html'
-], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on,
+], function (declare, query, aspect, array, lang, html, _Widget, _TemplatedMixin,
+             _WidgetsInTemplateMixin, Dialog, on,
              template) {
     return declare([Dialog], {
         title: 'Info',
         message: 'Info',
         buttonOk: 'OK',
-        handlerOk: function () {},
+        handlerOk: function () {
+        },
         isDestroyedAfterHiding: false,
         isClosedAfterButtonClick: true,
 
@@ -31,8 +34,6 @@ define([
 
             contentWidget.startup();
             this.content = contentWidget;
-
-            this.hide = this._hideDialog;
         },
 
         postCreate: function () {
@@ -46,6 +47,10 @@ define([
                     this.hide();
                 }));
             }
+
+            aspect.after(this, 'hide', lang.hitch(this, function () {
+                if (this.isDestroyedAfterHiding) this.destroyRecursive();
+            }));
         },
 
         disableButtons: function () {
@@ -59,10 +64,6 @@ define([
         config: function (params) {
             lang.mixin(this, params);
             return this;
-        },
-
-        _hideDialog: function () {
-            if (this.isDestroyedAfterHiding) this.destroyRecursive();
         }
     });
 });

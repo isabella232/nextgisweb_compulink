@@ -43,6 +43,7 @@ define([
             );
 
             this._acceptedPartsTable = new AcceptedPartsTable(acceptedPartsPanel.acceptedPartsTable, this._acceptedPartsStore);
+            acceptedPartsPanel.acceptedPartsManager = this;
 
             this._bindEvents();
         },
@@ -72,13 +73,13 @@ define([
             this._constructObjectId = constructObjectId;
 
             switch (accessLevel) {
-                case "disable":
+                case 'disable':
                     this._acceptedPartsTable.setNoRightsMode();
-                    return true;
-                case "list":
+                    break;
+                case 'list':
                     this._acceptedPartsTable.setListMode();
                     break;
-                case "edit":
+                case 'edit':
                     this._acceptedPartsTable.setEditMode();
                     break;
                 default:
@@ -86,8 +87,10 @@ define([
             }
 
             topic.publish('/compulink/accepted-parts/manager/access-level/change', accessLevel);
-            this._actualRealOpticalCableStore.fetch(constructObjectId);
-            this._acceptedPartsStore.fetch(constructObjectId);
+            if (accessLevel !== 'disable') {
+                this._actualRealOpticalCableStore.fetch(constructObjectId);
+                this._acceptedPartsStore.fetch(constructObjectId);
+            }
         },
 
         _dataConstructObjectsTableChangedHandler: function (store) {
@@ -114,5 +117,9 @@ define([
                 }
             });
         },
+
+        getConstructObjectId: function () {
+            return this._constructObjectId;
+        }
     });
 });

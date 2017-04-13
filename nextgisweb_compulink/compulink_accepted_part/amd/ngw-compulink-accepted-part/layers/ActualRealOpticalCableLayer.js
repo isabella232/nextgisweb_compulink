@@ -38,7 +38,7 @@ define([
                 if (state) {
                     this._map.olMap.addLayer(this._layer);
                 } else {
-                    this._map.olMap.removeLayer(this._layer);
+                    if (this._layer.map) this._map.olMap.removeLayer(this._layer);
                 }
             }));
         }

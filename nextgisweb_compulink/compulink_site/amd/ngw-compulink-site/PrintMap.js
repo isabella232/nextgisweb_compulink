@@ -51,14 +51,11 @@ define([
                 buttonCancel: this.buttonCancel,
                 style: 'width: 100%; height: 100%;',
                 func: function () {
-                    console.log(111111);
                 }
             }));
 
             contentWidget.startup();
             this.content = contentWidget;
-
-            this.hide = this._hideDialog;
         },
 
         postCreate: function () {
@@ -86,6 +83,13 @@ define([
                     this._resizeMapContainer(width, height);
                 }
             }));
+
+            aspect.after(this, 'hide', lang.hitch(this, function () {
+                this.printMap.olMap.destroy();
+                domClass.add(this.printElement, 'inactive');
+                this._removePageStyle();
+                this.destroyRecursive();
+            }));
         },
 
         show: function () {
@@ -93,13 +97,6 @@ define([
             this._buildPrintElement();
             this._buildMap();
             this.content.sizesSelect.attr('value', '210_297');
-        },
-
-        _hideDialog: function () {
-            this.printMap.olMap.destroy();
-            domClass.add(this.printElement, 'inactive');
-            this._removePageStyle();
-            this.destroyRecursive();
         },
 
         _buildPrintElement: function () {

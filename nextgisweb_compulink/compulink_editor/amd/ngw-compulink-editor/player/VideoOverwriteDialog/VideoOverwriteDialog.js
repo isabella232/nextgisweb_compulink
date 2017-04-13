@@ -11,8 +11,8 @@ define([
     'dojo/on',
     'dojo/text!./VideoOverwriteDialog.html',
     'ngw-compulink-site/ConfirmDialog'
-], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on,
-             template, ConfirmDialog) {
+], function (declare, query, array, lang, html, _Widget,
+             _TemplatedMixin, _WidgetsInTemplateMixin, Dialog, on, template, ConfirmDialog) {
     return declare([ConfirmDialog], {
         constructor: function (kwArgs) {
             lang.mixin(this, kwArgs);
@@ -28,8 +28,6 @@ define([
 
             contentWidget.startup();
             this.content = contentWidget;
-
-            this.hide = this._hideDialog;
         }
     });
 });
