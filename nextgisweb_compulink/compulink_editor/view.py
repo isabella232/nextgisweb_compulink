@@ -193,13 +193,17 @@ def get_child_resx_by_parent(request):
 
 
 def _get_user_resources_tree(user):
+
+    principal_ids = [user.principal_id,]
+    for group in user.member_of:
+        principal_ids.append(group.principal_id)
+
     # get explicit rules
     rules_query = DBSession.query(ResourceACLRule)\
-        .filter(ResourceACLRule.principal_id == user.principal_id)\
+        .filter(ResourceACLRule.principal_id.in_(principal_ids))\
         .filter(ResourceACLRule.scope == DataScope.identity)\
         .options(joinedload_all(ResourceACLRule.resource))
 
-    # todo: user groups explicit rules???
     allowed_res_ids = set()
 
     def get_child_perms_recursive(resource):
@@ -234,7 +238,7 @@ def show_map(request):
 
 
 def show_map_player(request):
-    values = _get_values_for_display(request)
+    values = _get_values_for_display(request, permission=DataScope.read)
     values['player_sound_file'] = request.route_url('compulink_video_admin.audio_file') + '?hash=' + str(uuid.uuid4())
     values['is_recording'] = False
 
@@ -266,7 +270,7 @@ def show_player_for_recording_video(request):
                               request=request)
 
 
-def _get_values_for_display(request):
+def _get_values_for_display(request, permission=FoclStructScope.edit_data):
     resource_id = int(request.GET['resource_id'])
     dbsession = DBSession()
     resource = dbsession.query(Resource).filter(Resource.id == resource_id).first()
@@ -275,7 +279,7 @@ def _get_values_for_display(request):
     if request.user.keyname == 'guest':
         raise HTTPForbidden()
 
-    if not(request.user.is_administrator or resource.has_permission(FoclStructScope.edit_data, request.user)):
+    if not(request.user.is_administrator or resource.has_permission(permission, request.user)):
         raise HTTPForbidden()
 
     extent3857 = get_extent_by_resource_id(resource_id)
@@ -494,7 +498,7 @@ def get_extent_by_resource_id(resource_id):
 
     extent = None
     for res in resource.children:
-        if res.identity != VectorLayer.identity:
+        if res.identity != VectorLayer.identity or (res.keyname and res.keyname.startswith('real_')):
             continue
 
         tableinfo = TableInfo.from_layer(res)
@@ -1172,10 +1176,10 @@ def get_not_editable_features(request):
         .filter(Resource.id == res_id) \
         .first()
 
-    if not parent_res:
-        return error_response(u'Редактируемый объект строительства не найден')
-    if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
-        return error_response(u'У вас недостаточно прав для редактирования данных')
+    # if not parent_res:
+    #     return error_response(u'Редактируемый объект строительства не найден')
+    # if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)):
+    #     return error_response(u'У вас недостаточно прав для редактирования данных')
 
     # get acceptable parts
     acc_parts_lyr = get_layer_by_type(parent_res, 'accepted_part')

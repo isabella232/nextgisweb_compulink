@@ -143,6 +143,8 @@ def get_child_resx_by_parent(request):
     if not request.user.is_administrator:
         allowed_res_list = _get_user_resources_tree(request.user)
 
+    allowed_res_list = _get_user_resources_tree(request.user)
+
     child_resources_json = []
     for child_resource in children:
         if child_resource.identity in suitable_types:
@@ -173,13 +175,16 @@ def get_child_resx_by_parent(request):
 
 
 def _get_user_resources_tree(user):
+
+    principal_ids = [user.principal_id,]
+    for group in user.member_of:
+        principal_ids.append(group.principal_id)
+
     # get explicit rules
     rules_query = DBSession.query(ResourceACLRule)\
-        .filter(ResourceACLRule.principal_id==user.principal_id)\
-        .filter(ResourceACLRule.scope==DataScope.identity)\
+        .filter(ResourceACLRule.principal_id.in_(principal_ids))\
+        .filter(ResourceACLRule.scope == DataScope.identity)\
         .options(joinedload_all(ResourceACLRule.resource))
-
-    #todo: user groups explicit rules???
 
     allowed_res_ids = set()
 
@@ -504,7 +509,7 @@ def get_extent_by_resource_id(resource_id):
 
     extent = None
     for res in resource.children:
-        if res.identity != VectorLayer.identity:
+        if res.identity != VectorLayer.identity or (res.keyname and res.keyname.startswith('real_')):
             continue
 
         table_info = TableInfo.from_layer(res)
