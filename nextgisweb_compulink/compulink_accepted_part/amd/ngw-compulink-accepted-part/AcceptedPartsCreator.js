@@ -100,7 +100,7 @@ define([
                     {
                         layer: this._actualRealOpticalCableLayer._layer,
                         tolerance: this.OPTICAL_CABLE_LAYER_POINTS_TOLERANCE,
-                        node: false,
+                        node: true,
                         vertex: true,
                         edge: false
                     }
