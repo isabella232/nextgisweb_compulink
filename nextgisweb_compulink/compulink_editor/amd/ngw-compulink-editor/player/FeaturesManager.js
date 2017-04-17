@@ -31,7 +31,7 @@ define([
                     feature.attributes.attachments = ngwFeature.extensions.attachment;
                     feature.attributes.keyname = playableLayersInfo.layerKeyname;
                     built_date = ngwFeature.fields.built_date;
-                    feature.attributes.built_date = new Date(built_date.year, built_date.month, built_date.day,
+                    feature.attributes.built_date = new Date(built_date.year, built_date.month - 1, built_date.day,
                         built_date.hour, built_date.minute, built_date.second);
                     built_date_ms = feature.attributes.built_date.getTime();
                     feature.attributes.built_date_ms = built_date_ms;
