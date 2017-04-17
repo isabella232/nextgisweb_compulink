@@ -603,6 +603,17 @@ define([
         _setWaitState: function () {
             domClass.remove(this._buttonPlay, 'fa-pause-circle');
             domClass.add(this._buttonPlay, 'fa-play-circle');
+        },
+
+        getPlayingDuration: function () {
+            var unitsInfo = this.getUnitsInfo(),
+                intervalBuiltDurationMs,
+                allBuiltDurationMs;
+
+            intervalBuiltDurationMs = this._getIntervalTime(unitsInfo.units, unitsInfo.unitsPerSec);
+            allBuiltDurationMs = this._featureManager.maxBuiltDate - this._featureManager.minBuiltDate;
+
+            return allBuiltDurationMs / intervalBuiltDurationMs;
         }
     });
 });
