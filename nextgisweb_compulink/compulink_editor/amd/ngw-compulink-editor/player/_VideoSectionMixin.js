@@ -107,13 +107,48 @@ define([
                 query('a.icon-videocam-2', this._dialog.domNode)[0],
                 lang.hitch(this, function () {
                     if (this._videoMode === 'ready') {
-                        this._buildOverwriteVideoDialog();
+                        this._verifyDuration(this._buildOverwriteVideoDialog);
                     } else {
-                        this._buildMakeVideoDialog();
+                        this._verifyDuration(this._buildMakeVideoDialog);
                     }
                 }),
                 true
             );
+        },
+
+
+        warningDurationMessage: ' <br/>',
+        _verifyDuration: function (callback) {
+            var duration = this.getPlayingDuration();
+
+            if (duration < 300) {
+                callback.call(this);
+            } else if (duration >= 300 && duration < 3600) {
+                this._buildWarningDurationDialog(callback);
+            } else {
+                this._buildDisableRecordingDialog();
+            }
+        },
+
+        _buildWarningDurationDialog: function (callback) {
+            var warningDurationDialog = new ConfirmDialog({
+                title: 'Внимание!',
+                id: 'warningDuration',
+                message: 'Длительность проигрывания больше 5 минут!<br/>Запись файла может занять продолжительное время.',
+                buttonOk: 'Продолжить',
+                buttonCancel: 'Отменить',
+                isDestroyedAfterHiding: true,
+                handlerOk: lang.hitch(this, callback)
+            });
+            warningDurationDialog.show();
+        },
+
+        _buildDisableRecordingDialog: function () {
+            new InfoDialog({
+                isDestroyedAfterHiding: true,
+                title: 'Внимание!',
+                message: 'Выбрана слишком большая продолжительность проигрывания.'
+            }).show();
         },
 
         _buildOverwriteVideoDialog: function () {
