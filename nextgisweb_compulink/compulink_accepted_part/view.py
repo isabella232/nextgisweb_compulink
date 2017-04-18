@@ -117,12 +117,22 @@ def create_accepted_part(request):
 
         # save feat
         accepted_part_layer.feature_create(feature)
+
+        # todo: should update created accepted part from db
+        # for filling property 'id' the accepted part
+        # and return it's in json format
+
         transaction.manager.commit()
 
     except Exception as ex:
         return error_response(ex.message)
 
-    return success_response()
+    # todo: serializing created accepted part
+    # on client side to need only id
+    result = json.dumps({
+        'id': 'created accepted part id'
+    })
+    return Response(result)
 
 
 @view_config(renderer='json')
@@ -225,6 +235,8 @@ def update_accepted_part(request):
 
 
 def get_access_level(request):
+    return {'access_level': 'edit'}
+
     # special rights
     if request.user.keyname == 'guest':
         return {'access_level': 'disable'}
