@@ -52,6 +52,10 @@ def setup_pyramid(comp, config):
         client=()).add_view(show_map)
 
     config.add_route(
+        'compulink.site.empty',
+        '/compulink/empty').add_view(empty)
+
+    config.add_route(
         'compulink.site.json',
         '/compulink/resources/child').add_view(get_child_resx_by_parent)
 
@@ -108,6 +112,11 @@ def setup_pyramid(comp, config):
         'compulink.site.get_focl_parents',
         '/compulink/resources/{id:\d+}/get_focl_parents', client=('id',)) \
         .add_view(get_focl_parents)
+
+
+@view_config(renderer='json')
+def empty(request):
+    return Response(json.dumps({}))
 
 
 @view_config(renderer='json')
@@ -595,7 +604,6 @@ def get_layer_type(layer):
         return '_'.join(layer.keyname.rsplit('_')[:-1])
     else:
         return None
-
 
 
 @view_config(renderer='json')
