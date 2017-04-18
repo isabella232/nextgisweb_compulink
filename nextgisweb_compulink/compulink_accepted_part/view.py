@@ -116,21 +116,15 @@ def create_accepted_part(request):
         )
 
         # save feat
-        accepted_part_layer.feature_create(feature)
-
-        # todo: should update created accepted part from db
-        # for filling property 'id' the accepted part
-        # and return it's in json format
+        feat_id = accepted_part_layer.feature_create(feature)
 
         transaction.manager.commit()
 
     except Exception as ex:
         return error_response(ex.message)
 
-    # todo: serializing created accepted part
-    # on client side to need only id
     result = json.dumps({
-        'id': 'created accepted part id'
+        'id': feat_id
     })
     return Response(result)
 
