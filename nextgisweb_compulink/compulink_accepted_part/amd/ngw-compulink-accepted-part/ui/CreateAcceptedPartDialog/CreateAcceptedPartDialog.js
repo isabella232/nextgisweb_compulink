@@ -10,6 +10,8 @@ define([
     'ngw-compulink-site/ConfirmDialog',
     'ngw-compulink-editor/editor/NgwServiceFacade',
     'ngw-compulink-site/InfoDialog',
+    'ngw-compulink-site/MapStandBy',
+    './_CreatingDropzoneMixin',
     'dojo/on',
     'dojo/text!./CreateAcceptedPartDialog.html',
     'ngw-compulink-libs/dropzone/dropzone.min',
@@ -18,8 +20,9 @@ define([
     'dijit/form/TextBox',
     'dijit/form/Form'
 ], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin,
-             ConfirmDialog, NgwServiceFacade, InfoDialog, on, template, dropzone) {
-    return declare([ConfirmDialog], {
+             ConfirmDialog, NgwServiceFacade, InfoDialog, MapStandBy, _CreatingDropzoneMixin,
+             on, template, dropzone) {
+    return declare([ConfirmDialog, _CreatingDropzoneMixin], {
         title: 'Создать принятый участок',
         message: 'Are you sure?',
         buttonOk: 'OK',
@@ -76,7 +79,7 @@ define([
                 this._fillAcceptedPartInputs(this.acceptedPartAttributes);
                 this._initDropzone();
             } else {
-                $('#ap_files').parents('tr').css('display', 'none');
+                this._initCreatingDropzone();
             }
         },
 
@@ -208,7 +211,23 @@ define([
             var acceptedPart = {};
             this._fillAcceptedPartAttributes(acceptedPart);
             acceptedPart.geom = this.acceptedPartGeometryWkt;
-            this.acceptedPartsStore.createAcceptedPart(acceptedPart);
+            this.acceptedPartsStore.createAcceptedPart(acceptedPart)
+                .then(lang.hitch(this, this._onCreateAcceptedPart));
+        },
+
+        _onCreateAcceptedPart: function (result) {
+            this.acceptedPartId = result.acceptedPart.id;
+
+            if (this._dropzone.files.length > 0) {
+                var mapStandBy = new MapStandBy();
+                mapStandBy.show();
+                this._uploadFiles(this._dropzone.files).then(lang.hitch(this, function () {
+                    mapStandBy.hide();
+                    result.store.fetch(result.store._constructObjectId, 'create');
+                }));
+            } else {
+                result.store.fetch(result.store._constructObjectId, 'create');
+            }
         },
 
         _fillAcceptedPartAttributes: function (acceptedPart) {
