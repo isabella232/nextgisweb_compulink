@@ -42,15 +42,21 @@ define([
                     constructObjectId: this._constructObjectId,
                     acceptedPartId: 1
                 }),
-                url = ngwApplicationUrl + this.URL.render(dtlContext);
+                url = ngwApplicationUrl + this.URL.render(dtlContext),
+                deffered = new Deferred();
 
             xhr(url, {
                 handleAs: 'json',
                 method: 'PUT',
                 data: acceptedPart
-            }).then(lang.hitch(this, function (result) {
-                this.fetch(this._constructObjectId, 'create')
+            }).then(lang.hitch(this, function (acceptedPart) {
+                deffered.resolve({
+                    store: this,
+                    acceptedPart: acceptedPart
+                });
             }));
+
+            return deffered.promise;
         },
 
         modifyAcceptedPart: function (acceptedPart) {
