@@ -605,7 +605,7 @@ define([
             domClass.add(this._buttonPlay, 'fa-play-circle');
         },
 
-        getPlayingDuration: function () {
+        getPlayingDurationInSec: function () {
             var unitsInfo = this.getUnitsInfo(),
                 intervalBuiltDurationMs,
                 allBuiltDurationMs;

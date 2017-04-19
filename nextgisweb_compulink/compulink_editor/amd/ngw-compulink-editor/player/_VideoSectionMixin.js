@@ -116,17 +116,17 @@ define([
             );
         },
 
-
-        warningDurationMessage: ' <br/>',
+        warningDurationSec: 300,
+        criticalDurationSec: 3600,
         _verifyDuration: function (callback) {
-            var duration = this.getPlayingDuration();
+            var duration = this.getPlayingDurationInSec();
 
-            if (duration < 300) {
+            if (duration < this.warningDurationSec) {
                 callback.call(this);
-            } else if (duration >= 300 && duration < 3600) {
+            } else if (duration >= this.warningDurationSec && duration < this.criticalDurationSec) {
                 this._buildWarningDurationDialog(callback);
             } else {
-                this._buildDisableRecordingDialog();
+                this._buildDisableRecordingDialog(duration);
             }
         },
 
@@ -134,7 +134,9 @@ define([
             var warningDurationDialog = new ConfirmDialog({
                 title: 'Внимание!',
                 id: 'warningDuration',
-                message: 'Длительность проигрывания больше 5 минут!<br/>Запись файла может занять продолжительное время.',
+                message: 'Продолжительность результирующего видео будет больше ' +
+                    Math.ceil(this.warningDurationSec / 60) +
+                    ' минут.<br/>Увеличьте скорость проигрывания перед формированием файла.',
                 buttonOk: 'Продолжить',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
@@ -143,11 +145,21 @@ define([
             warningDurationDialog.show();
         },
 
-        _buildDisableRecordingDialog: function () {
+        _buildDisableRecordingDialog: function (duration) {
+            var durationInMin = duration / 60,
+                durationStr;
+            if (duration < 60) {
+                durationStr = durationInMin + ' минут.';
+            } else {
+                durationStr = (durationInMin / 60).toFixed(1) + ' часов.';
+            }
+
             new InfoDialog({
                 isDestroyedAfterHiding: true,
                 title: 'Внимание!',
-                message: 'Выбрана слишком большая продолжительность проигрывания.'
+                message: 'Продолжительность результирующего видео будет около ' +
+                    durationStr +
+                    '<br/>Формирование файла может занять продолжительное время.'
             }).show();
         },
 
