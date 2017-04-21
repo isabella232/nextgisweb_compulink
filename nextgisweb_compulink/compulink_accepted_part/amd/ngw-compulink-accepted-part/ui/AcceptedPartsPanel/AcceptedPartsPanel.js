@@ -46,6 +46,12 @@ define([
                 topic.publish('compulink/accepted-parts/ui/create-new-accepted-part/changed', state);
             }));
 
+            topic.subscribe('compulink/accepted-parts/ui/create-ap-toggle/off', lang.hitch(this,
+                function () {
+                    this.createAcceptedPartToggle.attr('checked', false);
+                })
+            );
+
             topic.subscribe('compulink/accepted-parts/store/accepted-parts/fetched', lang.hitch(this,
                 function (features, initiator) {
                     if (initiator === 'create' || initiator === 'delete' || initiator === 'modify') {
