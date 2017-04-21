@@ -517,12 +517,26 @@ define([
         },
 
         switchLegendPane: function(val) {
-            panel = registry.byId("legendPane");
-            mainContainer = registry.byId("rightPanel");
-            if(val)
-                mainContainer.addChild(panel);
-            else
-                mainContainer.removeChild(panel);
+            var legendPanel = registry.byId("legendPane"),
+                foclLayersPanel = registry.byId("foclLayersPane"),
+                mainContainer = registry.byId("rightPanelsBorderContainer");
+            if (val) {
+                domStyle.set(foclLayersPanel.domNode, {
+                    height: '20%'
+                });
+                mainContainer.addChild(legendPanel);
+                domStyle.set(legendPanel.domNode, {
+                    height: '80%'
+                });
+                mainContainer.resize();
+            }
+            else {
+                mainContainer.removeChild(legendPanel);
+                domStyle.set(foclLayersPanel.domNode, {
+                    height: '98%'
+                });
+                mainContainer.resize();
+            }
         },
 
         printMap: function () {
