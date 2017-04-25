@@ -59,7 +59,7 @@ define([
             change_date: {
                 label: "Дата изменений",
                 formatter: function (ngwDate) {
-                    var date_change = new Date(ngwDate.year, ngwDate.month, ngwDate.day,
+                    var date_change = new Date(ngwDate.year, ngwDate.month - 1, ngwDate.day,
                         ngwDate.hour, ngwDate.minute, ngwDate.second);
                     return locale.format(date_change, {selector:"date", datePattern: 'dd.MM.yyyy HH:mm:ss' } );
                 }
