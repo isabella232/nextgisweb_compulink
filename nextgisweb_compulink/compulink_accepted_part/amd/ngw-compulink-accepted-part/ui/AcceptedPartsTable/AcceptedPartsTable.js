@@ -72,6 +72,7 @@ define([
         _menuList: null,
         _noDataMessage: 'Нет принятых участков',
         _welcomeToSelectResourceMessage: 'Выберите объект строительства',
+        _loadingMessage: 'Загрузка данных...',
 
         constructor: function (domId, acceptedPartsStore) {
             this._acceptedPartsStore = acceptedPartsStore;
@@ -82,7 +83,7 @@ define([
                     store: acceptedPartsStore.getAttributesStore(),
                     columns: this._columns,
                     selectionMode: 'single',
-                    loadingMessage: 'Загрузка данных...',
+                    loadingMessage: this._loadingMessage,
                     noDataMessage: this._welcomeToSelectResourceMessage,
                     _ngwServiceFacade: this._ngwServiceFacade,
                     _acceptedPartsStore: this._acceptedPartsStore
@@ -173,8 +174,12 @@ define([
                 this._refreshTable();
             }));
 
-            on(this._acceptedPartsStore, 'cleared', lang.hitch(this, function () {
-                this._grid.noDataMessage = this._welcomeToSelectResourceMessage;
+            on(this._acceptedPartsStore, 'cleared', lang.hitch(this, function (initiator) {
+                if (initiator === 'selectConstructObject') {
+                    this._grid.noDataMessage = this._loadingMessage;
+                } else {
+                    this._grid.noDataMessage = this._welcomeToSelectResourceMessage;
+                }
                 this._sourceStore = this._acceptedPartsStore.getAttributesStore();
                 this._refreshTable();
             }));

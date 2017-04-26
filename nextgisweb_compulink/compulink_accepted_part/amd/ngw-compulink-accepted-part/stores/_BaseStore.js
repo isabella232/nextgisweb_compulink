@@ -35,9 +35,9 @@ define([
             }));
         },
 
-        clear: function () {
+        clear: function (initiator) {
             this.data = [];
-            this.emit('cleared');
+            this.emit('cleared', initiator);
         }
     });
 });
