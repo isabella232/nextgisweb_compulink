@@ -134,9 +134,9 @@ define([
             var warningDurationDialog = new ConfirmDialog({
                 title: 'Внимание!',
                 id: 'warningDuration',
-                message: 'Продолжительность результирующего видео будет больше ' +
+                message: 'Продолжительность результирующего видео будет около ' +
                     Math.ceil(this.warningDurationSec / 60) +
-                    ' минут.<br/>Увеличьте скорость проигрывания перед формированием файла.',
+                    ' минут.<br/>Формирование файла может занять продолжительное время.',
                 buttonOk: 'Продолжить',
                 buttonCancel: 'Отменить',
                 isDestroyedAfterHiding: true,
@@ -157,9 +157,9 @@ define([
             new InfoDialog({
                 isDestroyedAfterHiding: true,
                 title: 'Внимание!',
-                message: 'Продолжительность результирующего видео будет около ' +
+                message: 'Продолжительность результирующего видео будет больше ' +
                     durationStr +
-                    '<br/>Формирование файла может занять продолжительное время.'
+                    '<br/>Увеличьте скорость проигрывания перед формированием файла.'
             }).show();
         },
 

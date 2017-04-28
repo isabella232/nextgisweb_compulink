@@ -521,11 +521,15 @@ define([
 
         _checkClickCreateLineCallback: null,
         _activateCreateLineMode: function () {
-            var context = this;
+            var context = this,
+                func;
             this._checkClickCreateLineCallback = function (e) {
                 context._checkClickCreateLine(e)
             };
-            this.getLayer().events.register('featureclick', this.getLayer(), this._checkClickCreateLineCallback);
+
+            func = this._checkClickCreateLineCallback;
+
+            this.getLayer().events.register('featureclick', this.getLayer(), func);
         },
 
         _deactivateCreateLineMode: function () {

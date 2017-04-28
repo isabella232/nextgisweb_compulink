@@ -251,19 +251,6 @@ define([
             return wkt.write(acceptedPartFeature);
         },
 
-        _createAcceptedPart: function (acceptedPartDialog, acceptedPartGeometry) {
-            var wkt = new openlayers.Format.WKT(),
-                acceptedPartFeature = new openlayers.Feature.Vector(new openlayers.Geometry.MultiLineString([acceptedPartGeometry])),
-                acceptedPart = {},
-                $input;
-            $(acceptedPartDialog.domNode).find('input[data-field]').each(function (i, input) {
-                $input = $(input);
-                acceptedPart[$input.data('field')] = input.value;
-            });
-            acceptedPart.geom = wkt.write(acceptedPartFeature);
-            this._acceptedPartsStore.createAcceptedPart(acceptedPart);
-        },
-
         _verifyStartPoint: function (point, sketchLine) {
             var startPoint = sketchLine.components[0];
             return (this._isPointContainsInLinesLayer(startPoint, this._actualRealOpticalCableLayer._layer) === true) &&
@@ -379,23 +366,14 @@ define([
 
         _intersectsWithLayer: function (geometry, layer) {
             var featureGeometry,
-                lineString,
                 intersected = false;
 
             array.some(layer.features, function (feature) {
                 featureGeometry = feature.geometry;
-                // if (featureGeometry.id.indexOf('MultiLineString') > -1) {
-                //     lineString = featureGeometry.components[0];
-                //     if (geometry.intersects(lineString)) {
-                //         intersected = true;
-                //         return false;
-                //     }
-                // } else {
                 if (geometry.intersects(feature.geometry)) {
                     intersected = true;
                     return false;
                 }
-                // }
             });
             return intersected;
         },

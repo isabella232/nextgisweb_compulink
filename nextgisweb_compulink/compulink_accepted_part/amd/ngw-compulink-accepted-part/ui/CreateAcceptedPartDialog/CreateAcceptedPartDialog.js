@@ -1,6 +1,7 @@
 define([
     'dojo/_base/declare',
     'dojo/query',
+    'dojo/topic',
     'dojo/_base/array',
     'dojo/_base/lang',
     'dojo/_base/html',
@@ -19,7 +20,7 @@ define([
     'dojox/layout/TableContainer',
     'dijit/form/TextBox',
     'dijit/form/Form'
-], function (declare, query, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin,
+], function (declare, query, topic, array, lang, html, _Widget, _TemplatedMixin, _WidgetsInTemplateMixin,
              ConfirmDialog, NgwServiceFacade, InfoDialog, MapStandBy, _CreatingDropzoneMixin,
              on, template, dropzone) {
     return declare([ConfirmDialog, _CreatingDropzoneMixin], {
@@ -228,6 +229,7 @@ define([
             } else {
                 result.store.fetch(result.store._constructObjectId, 'create');
             }
+            topic.publish('compulink/accepted-parts/ui/create-ap-toggle/off');
         },
 
         _fillAcceptedPartAttributes: function (acceptedPart) {

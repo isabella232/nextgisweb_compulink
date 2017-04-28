@@ -57,7 +57,7 @@ define([
 
         _selectConstructObjectHandler: function (constructObjectInfo) {
             if (this._constructObjectId) {
-                this._clearStores();
+                this._clearStores('selectConstructObject');
             }
 
             var constructObjectId = constructObjectInfo.id;
@@ -99,9 +99,9 @@ define([
             this._constructObjectId = null;
         },
 
-        _clearStores: function () {
-            this._acceptedPartsStore.clear();
-            this._actualRealOpticalCableStore.clear();
+        _clearStores: function (initiator) {
+            this._acceptedPartsStore.clear(initiator);
+            this._actualRealOpticalCableStore.clear(initiator);
         },
 
         _applyZIndexesByChangeLayer: function (e) {
