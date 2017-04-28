@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import print_function
 
+import base64
 import shutil
 import subprocess
 import tempfile
@@ -91,7 +92,27 @@ class VideoProducer(object):
         screenshot_path = self._get_temp_frame_path(self.context.frame_counter)
         self.context.browser.driver.get_screenshot_as_file(screenshot_path)
         self.context.frame_counter += self.FRAME_INC
-        print('Screen: %s' % self.context.frame_counter)
+        #print('Screen: %s' % self.context.frame_counter)
+
+    def raw_shoot(self):
+        screenshot_path = self._get_temp_frame_path(self.context.frame_counter)
+        scr_str = self.context.browser.driver.get_screenshot_as_base64()
+
+        with open(screenshot_path, 'wt') as f:
+                f.write(scr_str)
+
+        self.context.frame_counter += self.FRAME_INC
+
+    def decode_raw_image(self, frame_num):
+        base_screenshot_path = self._get_temp_frame_path(frame_num)
+        with open(base_screenshot_path, 'rt') as f:
+            content = f.read()
+
+        png = base64.b64decode(content.encode('ascii'))
+
+        with open(base_screenshot_path, 'wb') as f:
+            f.write(png)
+
 
     def add_frame(self, image):
         screenshot_path = self._get_temp_frame_path(self.context.frame_counter)
@@ -175,8 +196,9 @@ class VideoProducer(object):
 
         video_page.start_play()
         while not video_page.is_finished:
-            self.shoot()
-            #sleep(0.2)
+            for i in xrange(0, 5):
+                self.raw_shoot()
+                #sleep(0.2)
 
         # add more frames
         total_time = (datetime.now() - start_time).seconds
@@ -185,6 +207,11 @@ class VideoProducer(object):
         print('Avg fps: %s' % avg_fps)
         add_frames = int(round((self.FPS-avg_fps)/avg_fps))
         print('Add frames: %s' % add_frames)
+
+        #TEMP decode
+        for frame_num in range(start_frame_num, self.context.frame_counter, self.FRAME_INC):
+            self.decode_raw_image(frame_num)
+
 
         if add_frames >= 1:
             while start_frame_num < self.context.frame_counter:
