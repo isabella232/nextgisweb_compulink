@@ -90,10 +90,6 @@ define([
                     function () {
                         $(this).remove();
                     });
-                lastLayer.$div
-                    .removeClass('opacity-visible-animated')
-                    .removeClass('opacity-hidden-animated');
-                lastLayer.$div.addClass('opacity-hidden-animated');
             }
 
             imageContainer = this.photoOrderStrategy.getImageContainer(photoInfo);
@@ -104,11 +100,6 @@ define([
             newLayer = this.makePointerLine(photoInfo, imageContainer);
             newLayer.cl_$lastImage = $lastImg;
             newLayer.cl_imageContainer = imageContainer;
-
-            newLayer.$div
-                    .removeClass('opacity-visible-animated')
-                    .removeClass('opacity-hidden-animated');
-            newLayer.$div.addClass('opacity-visible-animated');
 
             newLayer.cl_$lastImage.show();
             newLayer.cl_$lastImage.addClass('scale-animated');
@@ -213,8 +204,7 @@ define([
         },
 
         makePointerLine: function (photoInfo, imageContainer) {
-            var newLayer,
-                linePointer, featurePointer;
+            var newLayer;
 
             if (this._lastLayerIndex === null) {
                 this._lastLayerIndex = 0;
@@ -224,12 +214,6 @@ define([
 
             newLayer = this._pointerLayers[this._lastLayerIndex];
             newLayer.setOpacity(1);
-            newLayer.destroyFeatures();
-
-            linePointer = new openlayers.Geometry.LineString([imageContainer.position.point, photoInfo.geometry]);
-            featurePointer = new openlayers.Feature.Vector(linePointer, {}, this._style);
-
-            newLayer.addFeatures(featurePointer);
             return newLayer;
         },
 
@@ -253,8 +237,6 @@ define([
         _activateLayer: function () {
             var layers = this._addLayers();
             this._initLayersImageContainers(layers);
-            this.map.events.register('move', this, this._moveHandle);
-            this.map.events.register('moveend', this, this._moveEndHandle);
         },
 
         _activateImageContainers: function () {
@@ -264,8 +246,6 @@ define([
         },
 
         _deactivateLayer: function () {
-            this.map.events.unregister('move', this, this._moveHandle);
-            this.map.events.register('moveend', this, this._moveEndHandle);
             this._removeLayers();
         },
 
