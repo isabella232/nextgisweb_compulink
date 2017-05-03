@@ -577,7 +577,9 @@ define([
                 zoom: map.getZoom(),
                 lat_center: map.getCenter().lat,
                 lon_center: map.getCenter().lon,
-                basemap: map.baseLayer.keyname
+                basemap: map.baseLayer.keyname,
+                screen_width: screen.width,
+                screen_height: screen.height
             }
         },
 
