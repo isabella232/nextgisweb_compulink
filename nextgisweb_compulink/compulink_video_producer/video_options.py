@@ -1,7 +1,7 @@
 
 class VideoOptions:
-    width = 1280  #1024
-    height = 720  #768
+    width = 1024   #1280  #1024  #854
+    height = 768  #720  #768    #480
 
     sound_enabled = True
     photo_enabled = True
