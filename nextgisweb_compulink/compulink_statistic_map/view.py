@@ -311,6 +311,7 @@ def get_federal_districts_layer(request):
     return Response(
         geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
         content_type=b'application/json',
+        charset='utf-8',
         content_disposition=content_disposition)\
 
 
@@ -377,6 +378,7 @@ def get_regions_layer(request):
     return Response(
         geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
         content_type=b'application/json',
+        charset='utf-8',
         content_disposition=content_disposition)
 
 
@@ -443,6 +445,7 @@ def get_district_layer(request):
     return Response(
         geojson.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
         content_type=b'application/json',
+        charset='utf-8',
         content_disposition=content_disposition)
 
 
@@ -508,7 +511,9 @@ def _get_co(user, project_filter, dist_id=None, reg_id=None):
 
     return Response(
         json.dumps(result, ensure_ascii=False, cls=ComplexEncoder),
-        content_type=b'application/json')
+        content_type=b'application/json',
+        charset='utf-8'
+    )
 
 
 def get_child_regions_ids(federal_district_id):
