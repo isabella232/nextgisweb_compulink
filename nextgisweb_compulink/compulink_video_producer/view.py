@@ -24,7 +24,6 @@ from .model import VideoProduceTask, TaskState
 from .celery_tasks import task_make_video
 
 
-
 def setup_pyramid(comp, config):
     config.add_route(
         'compulink.player.video.crud',
@@ -43,7 +42,6 @@ def setup_pyramid(comp, config):
         'compulink.player.video.get_file',
         '/compulink/player/video/download/{id:\d+}', client=('id',)) \
         .add_view(get_video_file)
-
 
 
 @view_config(renderer='json')
@@ -92,6 +90,8 @@ def make_video(request):
     task.zoom = params['zoom']
     task.basemap = params['basemap']
     task.user_id = request.user.id
+    task.screen_width = params['screen_width']
+    task.screen_height = params['screen_height']
     task.persist()
     transaction.manager.commit()
 
@@ -115,6 +115,7 @@ def remove_video(request):
 
     video_id = request.json_body['id']
     return remove_video_entry(video_id)
+
 
 def remove_video_entry(video_id):
     db_session = DBSession()
@@ -178,14 +179,17 @@ def get_video_file(request):
     fr.content_disposition = (u'attachment; filename="%s"' % task.file_name).encode('utf-8')  #quote_plus
     return fr
 
+
 def get_task_full_name(task):
     return task.name + format_date(task.creation_dt, ' dd.MM.YYYY', locale='ru'),
+
 
 def get_task_status(task):
     status = 'creating' * (task.state in [TaskState.CREATED, TaskState.STARTED]) + \
              'ready' * (task.state in [TaskState.SUCCESS_FINISHED]) + \
              'error' * (task.state in [TaskState.ERROR_FINISHED, TaskState.TIMEOUT_FINISHED])
     return status
+
 
 def get_resource_name(res_id):
     db_session = DBSession()

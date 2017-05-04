@@ -48,7 +48,6 @@ ADMIN_BASE_PATH = path.dirname(path.abspath(compulink_admin.__file__))
 GUID_LENGTH = 32
 
 
-
 def setup_pyramid(comp, config):
     # todo: check URL's
     config.add_route(
@@ -260,6 +259,8 @@ def show_player_for_recording_video(request):
         'zoom': request.GET.get('zoom'),
         'lat_center': request.GET.get('lat_center'),
         'lon_center': request.GET.get('lon_center'),
+        'screen_width': request.GET.get('screen_width'),
+        'screen_height': request.GET.get('screen_height'),
         'basemap': request.GET.get('basemap'),
         'DELAY_AFTER_LOADED': 3000,
         'DELAY_AFTER_PLAY_FINISHED': 3000
@@ -943,7 +944,6 @@ def reset_point(request):
         # get global id of feat
         feat_guid = feature.fields['feat_guid']
 
-
         # try to get mirror layer
         actual_layer_name = '_'.join(res.keyname.rsplit('_')[0:-1])
         real_layer_name = actual_layer_name.replace('actual_', '')
@@ -1192,7 +1192,6 @@ def get_not_editable_features(request):
     for f in query():
         acc_parts.append(f.geom[0])
 
-
     if acc_parts:
         # get all intersected lines objects
         inter_line_geoms = []
@@ -1226,7 +1225,6 @@ def get_not_editable_features(request):
 
             if intersected_feats:
                 result[str(line_lyr.id)] = dict(map(lambda x: (str(x), 1), set(intersected_feats)))
-
 
         # get all point objects
         for point_lyr_id in ['actual_real_optical_cable_point',
