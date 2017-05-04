@@ -53,6 +53,8 @@ class VideoProduceTask(Base):
     file_name = db.Column(db.Unicode, nullable=True)
     file_size = db.Column(db.BigInteger, nullable=True)
     file_mime_type = db.Column(db.Unicode, nullable=True)
+    screen_width = db.Column(db.Integer, nullable=True)
+    screen_height = db.Column(db.Integer, nullable=True)
 
 #---- Metadata and scheme staff
 #VideoProduceTask.__table__.tometadata = types.MethodType(tometadata_event, VideoProduceTask.__table__)
