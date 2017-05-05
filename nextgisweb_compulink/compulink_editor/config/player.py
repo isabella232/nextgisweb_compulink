@@ -29,10 +29,10 @@ def get_playable_layers_styles(request):
         },
         'actual_real_optical_cable': {
             'default': {
-                'strokeColor': '#9C7900',
+                'strokeColor': '#ffa800',
                 'pointRadius': 4,
-                'fillColor': '#9C7900',
-                'strokeWidth': 3,
+                'fillColor': '#ffa800',
+                'strokeWidth': 5,
                 'stroke': True,
                 'fill': True,
                 'fillOpacity': 1,
