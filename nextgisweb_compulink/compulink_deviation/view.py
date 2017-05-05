@@ -239,7 +239,7 @@ def set_deviation_approve(ngw_session, user, layer, feature_id, comment):
     if not (user.is_administrator or layer.parent.has_permission(FoclStructScope.approve_deviation, user)):
         return 'Forbidden deviation'
 
-    # set approved flag to feat
+    # get feature
     query = layer.feature_query()
     query.filter_by(id=feature_id)
     feat = None
@@ -250,11 +250,7 @@ def set_deviation_approve(ngw_session, user, layer, feature_id, comment):
     if not feat:
         return 'Feature not found!'
 
-    feat.fields['deviation_approved'] = 1
-    feat.fields['approval_comment'] = comment
-    layer.feature_put(feat)
-
-    # set to table
+    # get row from deviation table
     deviation = ngw_session.query(ConstructDeviation) \
         .filter(
         ConstructDeviation.focl_res_id == focl_res_id,
@@ -263,7 +259,16 @@ def set_deviation_approve(ngw_session, user, layer, feature_id, comment):
     ).first()
     if not deviation:
         return 'Deviation not found in table'
+    if deviation.deviation_approved:
+        return 'Deviation already approved'
 
+
+    # set approved flag to feat
+    feat.fields['deviation_approved'] = 1
+    feat.fields['approval_comment'] = comment
+    layer.feature_put(feat)
+
+    # set to table
     deviation.deviation_approved = True
     deviation.approval_author = user.display_name or user.keyname
     deviation.approval_timestamp = datetime.now()

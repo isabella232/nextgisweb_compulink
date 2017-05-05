@@ -9,7 +9,7 @@ PHOTO = ('false', 'true')
 
 class DefaultVideoPage:
     _base_url = '/compulink/player/recording_video?resource_id={res_id}&units={units}&count_units={count_units}&photo={photo}'
-    _base_url_extra = '&zoom={zoom}&lat_center={lat_center}&lon_center={lon_center}&basemap={basemap}&screen_width={screen_width}&screen_height={screen_height}'
+    _base_url_extra = '&zoom={zoom}&lat_center={lat_center}&lon_center={lon_center}&basemap={basemap}'
     _login_url = '/login?next=/resource/0'
 
     @property
@@ -96,8 +96,6 @@ class DefaultVideoPage:
             count_units=self._count_units,
             units=self._units,
             photo=self._photo,
-            screen_width=self._screen_width,
-            screen_height=self._screen_height
         )
 
         if self._zoom and self._lat_center and self._lon_center:

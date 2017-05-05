@@ -44,6 +44,8 @@ def task_make_video(task_id):
         vo = VideoOptions()
         vo.photo_enabled = task.photo_enabled
         vo.sound_enabled = task.sound_enabled
+        vo.height = task.screen_height
+        vo.width = task.screen_width
 
         # create page and format
         site_address = env.compulink_video_producer.settings.get('site_address', None)
