@@ -5,6 +5,7 @@ import codecs
 import os
 
 from nextgisweb_compulink.db_migrations.append_accepted_part_layer import append_accepted_part_layer
+from nextgisweb_compulink.db_migrations.append_picket_layer import append_picket_layer
 from nextgisweb_compulink.db_migrations.link_regions_to_fed import link_regions_to_fed
 from nextgisweb_compulink.db_migrations.link_shp_to_dict import link_shp_to_dict
 from sqlalchemy import Table
@@ -61,7 +62,8 @@ class DBMigrates():
                                 'load_federal_dist_dict',
                                 'link_regions_to_fed',
                                 'link_shp_to_dict',
-                                'append_accepted_part_layer'
+                                'append_accepted_part_layer',
+                                'append_picket_layer'
                             ])
 
     @classmethod
@@ -108,6 +110,8 @@ class DBMigrates():
             link_shp_to_dict(args)
         if args.migration == 'append_accepted_part_layer':  # 19.10.2016
             append_accepted_part_layer(args)
+        if args.migration == 'append_picket_layer':  # 05.05.2017
+            append_picket_layer(args)
 
 
     @classmethod
