@@ -23,6 +23,7 @@ FOCL_LAYER_STRUCT = [
     'optical_cross',
     'access_point',
     'endpoint',
+    'picket',
 ]
 
 FOCL_REAL_LAYER_STRUCT = [

@@ -1,0 +1,26 @@
+{
+    "resource": {
+        "keyname": null,
+        "display_name": "Пикеты (проект)",
+        "description": null,
+        "identify_name": "Пикеты (проект)"
+    },
+    "feature_layer": {
+        "fields": [
+            {
+                "keyname": "name",
+                "datatype": "STRING",
+                "typemod": null,
+                "display_name": "Наименование",
+                "label_field": true,
+                "grid_visibility": true
+            }
+        ]
+    },
+    "vector_layer": {
+        "geometry_type": "POINT",
+        "srs": {
+            "id": 3857
+        }
+    }
+}
