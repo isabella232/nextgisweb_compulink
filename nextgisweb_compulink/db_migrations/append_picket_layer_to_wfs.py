@@ -30,10 +30,15 @@ def append_picket_layer_to_wfs(args):
 
             if wfs_services:
                 for wfs_service in wfs_services:
-                    ModelsUtils.append_lyr_to_wfs(wfs_service, picket_layer[0], vl_name)
+                    already_added = bool([lyr for lyr in wfs_service.layers if lyr.keyname == vl_name])
+                    if not already_added:
+                        ModelsUtils.append_lyr_to_wfs(wfs_service, picket_layer[0], vl_name)
+                        print 'Focl struct %s. Added to wfs service: %s' % (fs.display_name, vl_name)
+                    else:
+                        print 'Focl struct %s. Layer %s already added' % (fs.display_name, vl_name)
                     #wfs_service.persist()
 
-            print 'Focl struct %s. Added to wfs service: %s' % (fs.display_name, vl_name)
+
 
     transaction.manager.commit()
     db_session.close()
