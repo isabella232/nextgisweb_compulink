@@ -3,6 +3,7 @@ import json
 
 import codecs
 import os
+from nextgisweb_compulink.db_migrations.append_picket_layer_to_wfs import append_picket_layer_to_wfs
 
 from nextgisweb_compulink.db_migrations.append_accepted_part_layer import append_accepted_part_layer
 from nextgisweb_compulink.db_migrations.append_picket_layer import append_picket_layer
@@ -63,7 +64,8 @@ class DBMigrates():
                                 'link_regions_to_fed',
                                 'link_shp_to_dict',
                                 'append_accepted_part_layer',
-                                'append_picket_layer'
+                                'append_picket_layer',
+                                'append_picket_layer_to_wfs',
                             ])
 
     @classmethod
@@ -112,6 +114,8 @@ class DBMigrates():
             append_accepted_part_layer(args)
         if args.migration == 'append_picket_layer':  # 05.05.2017
             append_picket_layer(args)
+        if args.migration == 'append_picket_layer_to_wfs':  # 15.05.2017
+            append_picket_layer_to_wfs(args)
 
 
     @classmethod
