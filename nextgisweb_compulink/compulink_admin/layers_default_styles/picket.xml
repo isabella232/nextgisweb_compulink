@@ -1,9 +1,9 @@
 <map>
   <layer>
    <type>Point</type>
+   <labelitem>name</labelitem>
    <class>
       <style>
-        <outlinecolor red="0" green="0" blue="0"/>
         <symbol>std:cross</symbol>
         <color red="0" green="0" blue="0" />
         <size>9</size>
@@ -15,8 +15,8 @@
         <color blue="0" green="0" red="0"/>
         <outlinewidth>3</outlinewidth>
         <outlinecolor blue="255" green="255" red="255"/>
-        <position>cl</position>
-        <offset x="7" y="0" />
+        <position>cr</position>
+        <offset x="4" y="15" />
         <maxscaledenom>15000</maxscaledenom>
       </label>
       <maxscaledenom>15000</maxscaledenom>
