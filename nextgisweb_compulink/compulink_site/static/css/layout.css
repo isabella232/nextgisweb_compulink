@@ -145,6 +145,7 @@ div.dijitTabPaneWrapper.dijitTabContainerTop-container.dijitAlignCenter {
     background: url('../img/layers-type-sprite.png') 0 0;
 }
 
+#rightPanel i.picket,
 #rightPanel i.optical_cross,
 #rightPanel i.sp_optical_cross {
     background: url('../img/layers-type-sprite.png') -16px 0;

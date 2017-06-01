@@ -731,7 +731,7 @@ def export_focl_struct(request, export_type):
 
         for file_name in os.listdir(zip_dir):
             src_file = path.join(zip_dir, file_name)
-            zip_file.write(src_file, (zip_subpath+unicode(file_name, 'utf-8')).encode('cp866'))
+            zip_file.write(src_file, (zip_subpath+unicode(file_name, 'utf-8')).encode('cp866', errors='ignore'))
         zip_file.close()
 
         # remove temporary dir
