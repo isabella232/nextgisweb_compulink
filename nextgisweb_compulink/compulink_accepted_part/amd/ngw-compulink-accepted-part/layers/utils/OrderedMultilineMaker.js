@@ -16,7 +16,8 @@ define([
                 endsPointsDict = {},
                 pointStringBegin,
                 pointStringEnd,
-                linestrings = [];
+                linestrings = [],
+                firstPoint, endPoint, lineValidation;
 
             array.forEach(multilinesFeatures, lang.hitch(this, function (multilineFeature) {
                 var multilineFeatureGeometryComponents = multilineFeature.geometry.components;
@@ -27,13 +28,20 @@ define([
 
                 line = multilineFeature.geometry.components[0].clone();
 
-                pointStringBegin = this._pointToString(line.components[0]);
+                firstPoint = line.components[0];
+                endPoint = line.components[line.components.length - 1];
+
+                lineValidation = this._validateLine(line, firstPoint, endPoint);
+
+                if (!lineValidation) return false;
+
+                pointStringBegin = this._pointToString(firstPoint);
                 if (!firstPointsDict.hasOwnProperty(pointStringBegin)) {
                     firstPointsDict[pointStringBegin] = [];
                 }
                 firstPointsDict[pointStringBegin].push(line);
 
-                pointStringEnd = this._pointToString(line.components[line.components.length - 1]);
+                pointStringEnd = this._pointToString(endPoint);
                 if (!endsPointsDict.hasOwnProperty(pointStringEnd)) {
                     endsPointsDict[pointStringEnd] = [];
                 }
@@ -44,6 +52,13 @@ define([
             orderedMultiLinestring = new openlayers.Geometry.MultiLineString();
             this._makeOrderedMultilineString(firstPointsDict, endsPointsDict, orderedMultiLinestring);
             return orderedMultiLinestring;
+        },
+
+        _validateLine: function (line, firstPoint, endPoint) {
+            firstPoint = firstPoint || line.components[0];
+            endPoint = endPoint || line.components[line.components.length - 1];
+
+            return !firstPoint.equals(endPoint);
         },
 
         _makeOrderedMultilineString: function (firstPointsDict, endsPointsDict, orderedMultiLinestring, beginSegments) {
