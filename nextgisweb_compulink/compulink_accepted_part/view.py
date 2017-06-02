@@ -91,7 +91,7 @@ def create_accepted_part(request):
         #check exists and perms
         if not parent_res:
             return error_response(u'Не найден объект строительства')
-        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)): #TODO: special rights!
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_accepted_parts, request.user)):
             return error_response(u'У вас недостаточно прав для изменения информации о принятых участках')
 
         #get layer
@@ -149,7 +149,7 @@ def delete_accepted_part(request):
         #check exists and perms
         if not parent_res:
             return error_response(u'Не найден объект строительства')
-        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)): #TODO: special rights!
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_accepted_parts, request.user)):
             return error_response(u'У вас недостаточно прав для изменения информации о принятых участках')
 
         #get layer
@@ -189,7 +189,7 @@ def update_accepted_part(request):
         #check exists and perms
         if not parent_res:
             return error_response(u'Не найден объект строительства')
-        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_data, request.user)): #TODO: special rights!
+        if not (request.user.is_administrator or parent_res.has_permission(FoclStructScope.edit_accepted_parts, request.user)):
             return error_response(u'У вас недостаточно прав для изменения информации о принятых участках')
 
         #get layer
