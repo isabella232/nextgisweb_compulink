@@ -16,7 +16,8 @@ define([
                 endsPointsDict = {},
                 pointStringBegin,
                 pointStringEnd,
-                linestrings = [];
+                linestrings = [],
+                firstPoint, endPoint, lineValidation;
 
             array.forEach(multilinesFeatures, lang.hitch(this, function (multilineFeature) {
                 var multilineFeatureGeometryComponents = multilineFeature.geometry.components;
@@ -27,13 +28,20 @@ define([
 
                 line = multilineFeature.geometry.components[0].clone();
 
-                pointStringBegin = this._pointToString(line.components[0]);
+                firstPoint = line.components[0];
+                endPoint = line.components[line.components.length - 1];
+
+                lineValidation = this._validateLine(line, firstPoint, endPoint);
+
+                if (!lineValidation) return false;
+
+                pointStringBegin = this._pointToString(firstPoint);
                 if (!firstPointsDict.hasOwnProperty(pointStringBegin)) {
                     firstPointsDict[pointStringBegin] = [];
                 }
                 firstPointsDict[pointStringBegin].push(line);
 
-                pointStringEnd = this._pointToString(line.components[line.components.length - 1]);
+                pointStringEnd = this._pointToString(endPoint);
                 if (!endsPointsDict.hasOwnProperty(pointStringEnd)) {
                     endsPointsDict[pointStringEnd] = [];
                 }
@@ -42,8 +50,71 @@ define([
             }));
 
             orderedMultiLinestring = new openlayers.Geometry.MultiLineString();
+            this._checkIdenticalLine(firstPointsDict, endsPointsDict);
             this._makeOrderedMultilineString(firstPointsDict, endsPointsDict, orderedMultiLinestring);
             return orderedMultiLinestring;
+        },
+
+        _validateLine: function (line, firstPoint, endPoint) {
+            firstPoint = firstPoint || line.components[0];
+            endPoint = endPoint || line.components[line.components.length - 1];
+
+            return !firstPoint.equals(endPoint);
+        },
+
+        _checkIdenticalLine: function (firstPointsDict, endsPointsDict) {
+            this._checkIdenticalLineInDict(firstPointsDict);
+            this._checkIdenticalLineInDict(endsPointsDict);
+        },
+
+        _checkIdenticalLineInDict: function (targetLinesDict) {
+            var latLonKey,
+                lines,
+                line,
+                currentLine,
+                i, k;
+
+            for (latLonKey in targetLinesDict) {
+                if (targetLinesDict.hasOwnProperty(latLonKey)) {
+                    lines = targetLinesDict[latLonKey];
+                    i = lines.length;
+                    if (i > 1) {
+                        while (i--) {
+                            currentLine = lines[i];
+                            k = lines.length;
+                            while (k--) {
+                                line = lines[k];
+                                if (currentLine.id !== line.id && this._equalsLinesByBeginEnd(currentLine, line)) {
+                                    lines.splice(k, 1);
+                                    console.log('Found identical lines:');
+                                    console.log(currentLine);
+                                    console.log(line);
+                                }
+                            }
+                        }
+                    }
+                    if (lines.length === 0) {
+                        delete targetLinesDict[latLonKey];
+                    }
+                }
+            }
+        },
+
+        _equalsLinesByBeginEnd: function (line1, line2) {
+            var pointsLine1 = line1.components.length,
+                pointsLine2 = line2.components.length;
+
+            if (line1.components[0].equals(line2.components[0]) &&
+                line1.components[pointsLine1 - 1].equals(line2.components[pointsLine2 - 1])) {
+                return true;
+            }
+
+            if (line1.components[0].equals(line2.components[pointsLine2 - 1]) &&
+                line1.components[pointsLine1 - 1].equals(line2.components[0])) {
+                return true;
+            }
+
+            return false;
         },
 
         _makeOrderedMultilineString: function (firstPointsDict, endsPointsDict, orderedMultiLinestring, beginSegments) {
