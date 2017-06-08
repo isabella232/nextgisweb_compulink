@@ -229,8 +229,7 @@ def update_accepted_part(request):
 
 
 def get_access_level(request):
-    return {'access_level': 'edit'}
-
+    
     # special rights
     if request.user.keyname == 'guest':
         return {'access_level': 'disable'}
