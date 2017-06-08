@@ -106,6 +106,17 @@ define([
         },
 
         setMode: function (mode) {
+            if (mode === 'disable' || mode === 'list') {
+                this.createAcceptedPartToggle.attr('checked', false);
+                this.createAcceptedPartToggle.set('disabled', 'disabled');
+                topic.publish('compulink/accepted-parts/layers/first-point/undo/off');
+            }
+
+            if (mode === 'disable') {
+                this._changeFilter('');
+                this.acceptedPartsFilter.set('disabled', 'disabled');
+            }
+
             this._mode = mode;
         },
 

@@ -87,6 +87,7 @@ define([
             }
 
             topic.publish('/compulink/accepted-parts/manager/access-level/change', accessLevel);
+
             if (accessLevel !== 'disable') {
                 this._actualRealOpticalCableStore.fetch(constructObjectId);
                 this._acceptedPartsStore.fetch(constructObjectId);
